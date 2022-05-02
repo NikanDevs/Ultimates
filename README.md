@@ -1,4 +1,4 @@
-<h1><img src="assets/ultimates.png" width="60" align="bottom" style="vertical-align:middle;margin:1px -10px"/>Ultimates</h1>
+<h1><img src="assets/ultimates.png" width="70" align="bottom" style="vertical-align:middle;margin:-10px -10px"/>Ultimates</h1>
 
 ## 📚 Description
 
