@@ -1,0 +1,23 @@
+{
+	"lengths": {
+		"automod-id": 6,
+		"manual-id": 18,
+		"moderated-nickname": 5
+	},
+	"reasons": {
+		"warn": [
+			"Spamming after verbal warnings.",
+			"Disrespecting other members.",
+			"Bypassing the filtered words in the server.",
+			"Sending content that includes gore or nsfw.",
+			"Mini Moderating after verbal warnings.",
+			"Keeps begging after several warnings.",
+			"Pinging moderators and staff for no specific reason.",
+			"Talking in other languages after verbal warnings."
+		],
+		"timeout": [],
+		"ban": [],
+		"kick": [],
+		"unban": []
+	}
+}
