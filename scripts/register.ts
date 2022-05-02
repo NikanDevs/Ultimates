@@ -8,7 +8,7 @@ import { enabledModules, guildId, clientId } from '../src/json/config.json';
 const globPromise = promisify(glob);
 require('dotenv').config();
 
-const rest = new REST({ version: '9' }).setToken(process.env.TOKEN.toString());
+const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN.toString());
 const commands: ApplicationCommandDataResolvable[] = [];
 const interactions: commandType[] = [];
 

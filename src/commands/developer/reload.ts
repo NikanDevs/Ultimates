@@ -46,7 +46,7 @@ export default new Command({
 
 				client.destroy();
 				client
-					.login(process.env.TOKEN)
+					.login(process.env.DISCORD_TOKEN)
 					.then(() => (clientSecondTime = Date.now()))
 					.then(() => {
 						clientMsg?.edit({

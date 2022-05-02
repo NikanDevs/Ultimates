@@ -41,7 +41,7 @@ export class nikansUtil extends Client {
 	born() {
 		// Registering
 		this.registerModules().then(() => console.log('Registered Modules.'));
-		this.login(process.env.TOKEN);
+		this.login(process.env.DISCORD_TOKEN);
 
 		// Connecting to mongoDB
 		const mongoDBConnection = process.env.MONGODB;

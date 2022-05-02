@@ -28,7 +28,7 @@ Ultimates is a discord moderation bot with lots of features.
 Make a file called `.env` in your preject's main directory `(/.env)`. Paste the code below into the file and set the requirements.
 
 ```
-TOKEN=your_client_token
+DISCORD_TOKEN=your_client_token
 MONGODB=your_mongoDB_connection_string
 ```
 
