@@ -10,7 +10,7 @@
 		"setup": "ts-node scripts/setup.ts"
 	},
 	"engines": {
-                "node": "16.x"
+                "node": "16.9.0"
 	},
 	"private": true,
 	"keywords": [],
