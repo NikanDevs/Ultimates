@@ -13,6 +13,9 @@
 	"keywords": [],
 	"author": "Nikan",
 	"license": "ISC",
+	"engines": {
+                "node": ">=16.9.0"
+        },
 	"dependencies": {
 		"discord.js": "^14.0.0-dev.1646914074.dcd4797",
 		"dotenv": "^16.0.0",
