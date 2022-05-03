@@ -9,9 +9,6 @@
 		"format": "prettier --config .prettierrc 'src' --write",
 		"setup": "ts-node scripts/setup.ts"
 	},
-	"engines": {
-                "node": "16.9.0"
-	},
 	"private": true,
 	"keywords": [],
 	"author": "Nikan",
