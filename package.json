@@ -10,8 +10,8 @@
 		"setup": "ts-node scripts/setup.ts"
 	},
 	"engines": {
-                "node": "16.9.0"
-	}.
+                "node": "16.x"
+	},
 	"private": true,
 	"keywords": [],
 	"author": "Nikan",
