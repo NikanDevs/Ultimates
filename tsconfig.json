@@ -1,5 +1,13 @@
 {
 	"compilerOptions": {
+		// Type checks
+		"allowUnreachableCode": false,
+		// "allowUnusedLabels": false,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		// "noUnusedLocals": true,
+		// "noUnusedParameters": true,
+		// Library
 		"lib": ["ESNext"],
 		"module": "commonjs",
 		"moduleResolution": "node",
@@ -15,7 +23,7 @@
 		"resolveJsonModule": true,
 		"importHelpers": true
 	},
-	"include": ["src", "environment.d.ts", "scripts", "package.json", "package-lock.json"],
+	"include": ["src"],
 	"exclude": ["node_modules"]
 }
 
