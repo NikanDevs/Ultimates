@@ -66,7 +66,7 @@ export class nikansUtil extends Client {
 	/** Registers commands and events if called. */
 	async registerModules() {
 		// Commands
-		const slashFiles = await globPromise(`${process.cwd()}/src/commands/**/*{.ts,.js}`);
+		const slashFiles = await globPromise(`${__dirname}/../commands/**/*{.ts,.js}`);
 		slashFiles
 			.filter((file) => (!configEnabledModules.modmail ? !file.includes('modmail') : true))
 			.forEach(async (filePaths) => {
@@ -77,8 +77,8 @@ export class nikansUtil extends Client {
 			});
 
 		const eventFiles =
-			(await globPromise(`${process.cwd()}/src/events/**/*{.ts,.js}`)) ||
-			(await globPromise(`${process.cwd()}/src/events/**{.ts,.js}`));
+			(await globPromise(`${__dirname}/../events/**/*{.ts,.js}`)) ||
+			(await globPromise(`${__dirname}/../events/**{.ts,.js}`));
 		eventFiles
 			// automod
 			.filter((file) => (!configEnabledModules.automod ? !file.includes('automod') : true))

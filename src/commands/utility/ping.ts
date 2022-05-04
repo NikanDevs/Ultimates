@@ -10,7 +10,7 @@ export default new Command({
 
 	excute: async ({ interaction }) => {
 		interaction.reply({
-			content: `im alive, replied in \`${interaction.createdTimestamp - Date.now()}ms\``,
+			content: `im alive, replied in \`${Date.now() - interaction.createdTimestamp}ms\``,
 			ephemeral: true,
 		});
 	},

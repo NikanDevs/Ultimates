@@ -77,7 +77,7 @@ export default new Command({
 				// Commands
 				client.commands.sweep(() => true);
 				const commandFiles = await globPromise(
-					`${process.cwd()}/src/commands/**/*{.ts,.js}`
+					`${__dirname}/../commands/**/*{.ts,.js}`
 				);
 				commandFiles.forEach(async (filePaths) => {
 					const command: commandType = await client.importFiles(filePaths);

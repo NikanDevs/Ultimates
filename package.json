@@ -5,6 +5,9 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"start": "ts-node src/index.ts",
+		"dist:start": "node dist/src/index.js",
+		"dist:delete": "rm -r dist && node -e \"console.log('Dist folder was deleted.')\"",
+		"dist:build": "tsc && node -e \"console.log('Dist folder created.')\"",
 		"register": "ts-node scripts/register.ts",
 		"format": "prettier --config .prettierrc 'src' --write",
 		"setup": "ts-node scripts/setup.ts"
