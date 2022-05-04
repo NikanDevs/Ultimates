@@ -27,7 +27,7 @@ export default new Event('guildBanAdd', async (ban) => {
 		type: PunishmentType.Ban,
 		userId: ban.user.id,
 		moderatorId: executor.id,
-		reason: reason,
+		reason: reason || 'No reason was provided!',
 		timestamp: Date.now(),
 		expires: banSystemExpiry,
 	});
@@ -38,6 +38,6 @@ export default new Event('guildBanAdd', async (ban) => {
 		punishmentId: data_._id,
 		user: ban.user,
 		moderator: executor,
-		reason: reason,
+		reason: reason || 'No reason was provided!',
 	});
 });

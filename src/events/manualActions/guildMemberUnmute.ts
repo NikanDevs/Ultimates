@@ -47,7 +47,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 				punishmentId: data_._id,
 				user: newMember.user,
 				moderator: executor,
-				reason: reason,
+				reason: reason || 'No reason was provided!',
 				referencedPunishment: { case: findLogs._id },
 			}).then(() => {
 				findLogs.delete();
@@ -59,7 +59,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 				punishmentId: data_._id,
 				user: newMember.user,
 				moderator: executor,
-				reason: reason,
+				reason: reason || 'No reason was provided!',
 			});
 		}
 	}

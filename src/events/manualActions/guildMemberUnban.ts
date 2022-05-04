@@ -38,6 +38,6 @@ export default new Event('guildBanRemove', async (ban) => {
 		punishmentId: data_._id,
 		user: ban.user,
 		moderator: executor,
-		reason: reason,
+		reason: reason || 'No reason was provided!',
 	});
 });

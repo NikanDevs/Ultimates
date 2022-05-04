@@ -28,7 +28,7 @@ export default new Event('guildMemberRemove', async (member) => {
 		type: PunishmentType.Kick,
 		userId: member.id,
 		moderatorId: executor.id,
-		reason: reason,
+		reason: reason || 'No reason was provided!',
 		timestamp: Date.now(),
 		expires: manualWarningExpiry,
 	});
@@ -39,6 +39,6 @@ export default new Event('guildMemberRemove', async (member) => {
 		punishmentId: data_._id,
 		user: member.user,
 		moderator: executor,
-		reason: reason,
+		reason: reason || 'No reason was provided!',
 	});
 });

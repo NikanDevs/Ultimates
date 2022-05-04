@@ -34,6 +34,7 @@ const interactions: commandType[] = [];
 		await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
 			body: commands,
 		});
+		console.log('Registered Interactions!');
 	}, 5000);
 })();
 

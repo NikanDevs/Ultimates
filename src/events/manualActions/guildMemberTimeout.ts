@@ -2,7 +2,6 @@ import { Event } from '../../structures/Event';
 import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
-import { client } from '../..';
 import { manualWarningExpiry } from '../../constants';
 import { GuildMember } from 'discord.js';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -33,7 +32,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: PunishmentType.Timeout,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
-			reason: reason,
+			reason: reason || 'No reason was provided!',
 			timestamp: Date.now(),
 			expires: manualWarningExpiry,
 		});
@@ -44,7 +43,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			punishmentId: data_._id,
 			user: newMember.user,
 			moderator: executor,
-			reason: reason,
+			reason: reason || 'No reason was provided!',
 			duration: duration,
 		});
 	}

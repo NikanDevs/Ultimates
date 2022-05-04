@@ -49,7 +49,9 @@ export async function createModLog(
 				`${
 					!options.referencedPunishment
 						? `• **ID:** ${options.punishmentId}`
-						: `• **Referenced to:** Case #${options.referencedPunishment.case}`
+						: `• **Referenced to:** [Case #${
+								options.referencedPunishment.case
+						  }](${await getUrlFromCase(options.referencedPunishment.case)})`
 				}\n`,
 				`• **Action:** ${client.util.capitalize(options.action)} ${
 					options.action === PunishmentType.Timeout
@@ -63,15 +65,13 @@ export async function createModLog(
 						: 'Automatic'
 				}`,
 				`• **Date:** <t:${~~(Date.now() / 1000)}:f>`,
-				`• **Reason:** ${options.reason || 'No reason provided'}`,
+				`• **Reason:** ${options.reason}`,
 				`\n${
 					!options.referencedPunishment
 						? options.actionMessage
 							? `[Take me there!](${options.actionMessage.url})`
 							: ''
-						: `[Take me to case #${
-								options.referencedPunishment.case
-						  }](${await getUrlFromCase(options.referencedPunishment.case)})`
+						: ''
 				}`,
 			].join('\n')
 		);
