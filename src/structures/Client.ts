@@ -34,6 +34,9 @@ export class nikansUtil extends Client {
 				Partials.ThreadMember,
 			],
 			allowedMentions: { repliedUser: false },
+			presence: {
+				status: 'idle',
+			},
 		});
 	}
 
