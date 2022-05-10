@@ -11,3 +11,6 @@ export const manualWarningExpiry = Date.now() + 1000 * 60 * 60 * 24 * 30;
 
 // 3 months - Ban system
 export const banSystemExpiry = Date.now() + 1000 * 60 * 60 * 24 * 90;
+
+// Other constants
+export const EMBED_DESCRIPTION_MAX_LENGTH = 4096;

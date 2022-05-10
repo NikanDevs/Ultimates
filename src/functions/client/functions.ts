@@ -1,5 +1,6 @@
 import { ButtonStyle } from 'discord.js';
 import { client } from '../..';
+import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
 
 // Capitalize
 export function capitalizeFunction(str: string) {
@@ -35,7 +36,7 @@ export function splitTextFunction(text: string, options?: splitOptions) {
 	if (splitFor) {
 		switch (splitFor) {
 			case 'Embed Description':
-				splitValue = 4096 - endsWith.length;
+				splitValue = EMBED_DESCRIPTION_MAX_LENGTH - endsWith.length;
 				break;
 			case 'Message Content':
 				splitValue = 4000 - endsWith.length;
