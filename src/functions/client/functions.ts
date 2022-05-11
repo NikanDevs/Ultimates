@@ -128,12 +128,12 @@ export function buildConfirmationButtons(firstLabel: string, secondLabel: string
 			client.util
 				.button()
 				.setLabel(firstLabel)
-				.setStyle(ButtonStyle['Danger'])
+				.setStyle(ButtonStyle['Success'])
 				.setCustomId('1'),
 			client.util
 				.button()
 				.setLabel(secondLabel)
-				.setStyle(ButtonStyle['Success'])
+				.setStyle(ButtonStyle['Danger'])
 				.setCustomId('2')
 		);
 }

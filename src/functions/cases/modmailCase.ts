@@ -10,6 +10,6 @@ export async function addModmailCase() {
 	const currentTicket = data.currentTicket;
 
 	await modmailModel.findByIdAndUpdate('substance', {
-		$set: { currentCase: currentTicket + 1 },
+		$set: { currentTicket: currentTicket + 1 },
 	});
 }

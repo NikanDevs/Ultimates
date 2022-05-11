@@ -4,7 +4,6 @@ import { Event } from '../../structures/Event';
 import { categoryId, serverId } from './messageCreate';
 
 export default new Event('typingStart', async (typing) => {
-	// Fetching the channel
 	await typing.channel?.fetch().catch(() => {});
 
 	const guild =
@@ -12,10 +11,8 @@ export default new Event('typingStart', async (typing) => {
 	if (typing.user.bot) return;
 
 	if (typing.guild) {
-		// Ignoring other categories
 		if ((typing.channel as GuildBasedChannel).parentId !== categoryId) return;
 
-		// Finding the user
 		const channelTopic = (typing.channel as TextChannel).topic;
 		const usersThread = guild.members.cache.find(
 			(user) => user.id === channelTopic.slice(channelTopic.length - user.id.length)
@@ -28,7 +25,6 @@ export default new Event('typingStart', async (typing) => {
 			((await usersThread?.user.dmChannel.fetch()) as DMChannel);
 		await usersDM?.sendTyping();
 	} else if (!typing.guild && typing.channel.type === ChannelType.DM) {
-		// Finding the channel
 		const openedThread = guild.channels.cache
 			.filter(
 				(channel) =>

@@ -16,6 +16,7 @@ import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { modmailModel } from '../../models/modmail';
 import { Command } from '../../structures/Command';
 import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
+import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 
 export default new Command({
 	name: 'modmail',
@@ -82,7 +83,6 @@ export default new Command({
 		if (subCommands === 'close') {
 			const currentTextChannel = interaction.channel as TextChannel;
 
-			// Filtering out the channels
 			if (
 				currentTextChannel.guildId !== client.server.id ||
 				currentTextChannel.parentId !== categoryId ||
@@ -92,13 +92,12 @@ export default new Command({
 				return interaction.reply({
 					embeds: [
 						client.embeds.attention(
-							'You may run this command in a ticket channel.'
+							'You should run this command in a ticket channel.'
 						),
 					],
 					ephemeral: true,
 				});
 
-			// Fetching the user
 			const user = await client.users.fetch(
 				currentTextChannel.topic?.slice(
 					currentTextChannel.topic?.length - client.user.id.length
@@ -106,149 +105,94 @@ export default new Command({
 			);
 			if (!user)
 				return interaction.reply({
-					embeds: [
-						client.embeds.error(
-							"I wasn't able to find the user, is the channel's topic changed?"
-						),
-					],
+					embeds: [client.embeds.error("I wasn't able to find the user.")],
 					ephemeral: true,
 				});
 
-			// Confirmation process
-			const confirmationEmbed = client.util
-				.embed()
-				.setAuthor({
-					name: client.user.username,
-					iconURL: client.user.displayAvatarURL(),
+			await interaction.deferReply();
+			const userId = currentTextChannel.topic.slice(
+				currentTextChannel.topic.length - client.user.id.length
+			);
+			let fetchMessages = await interaction.channel.messages.fetch({
+				limit: 100,
+			});
+			fetchMessages = fetchMessages.filter(
+				(fetchedMessage) =>
+					!fetchedMessage.author.bot || fetchedMessage.author.id === client.user.id
+			);
+
+			let filtered = fetchMessages
+				.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
+				.map((msg) => {
+					if (msg.author.bot && msg.author.id !== client.user.id) return 'FORCESKIP';
+					if (msg.author.id === client.user.id) {
+						if (!msg.embeds[0]?.author?.url?.endsWith(userId)) return 'FORCESKIP';
+						return `${msg.embeds[0]?.author.name} :: ${
+							msg.embeds[0]?.description || 'No content.'
+						}`;
+					} else if (!msg.author.bot) {
+						return `${msg?.author?.tag} :: ${msg?.content || 'No content.'}`;
+					}
 				})
-				.setTitle('Are you sure?')
-				.setDescription(
-					`Wait! This will close **${user.username}**'s modmail thread. Are you sure about continuing?`
-				)
-				.setColor(client.colors.wait);
+				.join('\n')
+				.replaceAll('FORCESKIP', '');
 
-			const sentInteraction = (await interaction.reply({
-				embeds: [confirmationEmbed],
-				components: [client.util.build.confirmationButtons('Close', 'Cancel')],
-				fetchReply: true,
-			})) as Message;
+			const openedTickets = (await modmailModel.findById('substance')).openedTickets;
+			const ticketData = (openedTickets as ModmailTicketData[]).find(
+				(data) => data.userId === userId
+			);
 
-			const confirmationCollector = sentInteraction.createMessageComponentCollector({
-				time: 20000,
-				componentType: ComponentType.Button,
-			});
-
-			confirmationCollector.on('collect', async (collected) => {
-				if (collected.user.id !== interaction.user.id)
-					return collected.reply(client.cc.cannotInteract);
-				collected.deferUpdate();
-
-				switch (collected.customId) {
-					case '2':
-						confirmationCollector.stop('success');
-						interaction.deleteReply();
-						break;
-
-					case '1':
-						confirmationCollector.stop('success');
-
-						// Deleting the thread
-						const savingTrascriptEmbed = client.util
-							.embed()
-							.setAuthor({
-								name: client.user.username,
-								iconURL: client.user.displayAvatarURL(),
-							})
-							.setTitle('Saving the transcript')
-							.setColor(client.colors.wait)
-							.setDescription(
-								'The transcript of the thread is getting saved... please wait.'
-							);
-
-						await interaction.editReply({
-							embeds: [savingTrascriptEmbed],
-							components: [],
-						});
-
-						// Generating the transcript
-						const userId = currentTextChannel.topic.slice(
-							currentTextChannel.topic.length - client.user.id.length
-						);
-						let fetchMessages = await interaction.channel.messages.fetch({
-							limit: 100,
-						});
-						fetchMessages = fetchMessages.filter(
-							(fetchedMessage) =>
-								(fetchedMessage.author.bot &&
-									fetchedMessage.author.id === client.user.id) ||
-								!fetchedMessage.author.bot
-						);
-						let filtered = fetchMessages
-							.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
-							.map((msg) => {
-								if (msg.author.bot && msg.author.id === client.user.id) {
-									if (msg.embeds[0]?.author?.url?.endsWith(userId)) {
-										return `${msg.embeds[0]?.author.name} :: ${msg.embeds[0]?.description}`;
-									}
-								} else if (!msg.author.bot) {
-									return `${msg?.author?.tag} :: ${msg?.content}`;
-								}
-							});
-
-						const openedTickets = (await modmailModel.findById('substance'))
-							.openedTickets;
-						const ticketData = (openedTickets as ModmailTicketData[]).find(
-							(data) => data.userId === userId
-						);
-						const transcript = await create(
-							[
-								{
-									content: filtered.toString(),
-									language: 'AsciiDoc',
-								},
-							],
-							{
-								title: `Modmail Transcript`,
-								description: `Modmail Transcript for the user: ${user.tag}`,
-							}
-						);
-
-						createModmailLog({
-							action: ModmailActionType.Close,
-							user: await client.users.fetch(userId),
-							moderator: interaction.user,
-							referencedCaseUrl: ticketData.url,
-							transcript: transcript.url,
-							ticketId: ticketData.id,
-						});
-
-						const transcriptSavedEmbed = client.util
-							.embed()
-							.setAuthor({
-								name: client.user.username,
-								iconURL: client.user.displayAvatarURL(),
-							})
-							.setTitle('Transcript Saved')
-							.setColor(client.colors.success)
-							.setDescription(
-								`${client.cc.success} Trascript Saved! This channel is going to be deleted in 10 seconds!`
-							);
-
-						await interaction
-							.editReply({ embeds: [transcriptSavedEmbed], components: [] })
-							.then(() => {
-								setTimeout(() => {
-									interaction?.channel?.delete();
-								}, 10000);
-							});
-						break;
+			const transcript = await create(
+				[
+					{
+						content: filtered.toString(),
+						language: 'AsciiDoc',
+					},
+				],
+				{
+					title: `Modmail Transcript`,
+					description: `Modmail Transcript for the user: ${user.tag}`,
 				}
+			);
+
+			createModmailLog({
+				action: ModmailActionType.Close,
+				user: await client.users.fetch(userId),
+				moderator: interaction.user,
+				referencedCaseUrl: ticketData.url,
+				transcript: transcript.url,
+				ticketId: ticketData.id,
 			});
 
-			confirmationCollector.on('end', async (_, reason) => {
-				if (reason === 'success') return;
-				interaction.deleteReply();
-			});
+			await interaction
+				.followUp({
+					embeds: [
+						client.embeds.attention(
+							'This ticket is going to be deleted in 10 seconds...'
+						),
+					],
+					components: [],
+				})
+				.then(() => {
+					setTimeout(() => {
+						interaction?.channel?.delete();
+
+						const closedEmbed = client.util
+							.embed()
+							.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
+							.setTitle('Ticket closed')
+							.setDescription(
+								'Your ticket was closed by a staff member. If you got other questions in the future, feel free to ask them!'
+							)
+							.setColor(client.util.resolve.color('Red'));
+						user?.send({ embeds: [closedEmbed] }).catch(() => {});
+
+						modmailCooldown.set(`open_${user?.id}`, Date.now() + 600000);
+						setTimeout(() => {
+							modmailCooldown.delete(`open_${user?.id}`);
+						}, 600000);
+					}, 10000);
+				});
 		} else if (subCommands === 'blacklist') {
 			// Final user
 			let user: User;
@@ -274,94 +218,55 @@ export default new Command({
 
 			const findData = await modmailModel.findById(user.id);
 
-			// Missing args
 			if (!findData && !options.getString('reason'))
 				return interaction.reply({
 					embeds: [client.embeds.attention('You have to provide a reason.')],
 					ephemeral: true,
 				});
 
-			const confirmationEmbed = client.util
-				.embed()
-				.setAuthor({
-					name: client.user.username,
-					iconURL: client.user.displayAvatarURL(),
-				})
-				.setTitle('Are you sure?')
-				.setDescription(
-					`Wait! This will ${
-						findData ? 'remove the blacklist from ' : 'blacklist '
-					} **${
-						user.tag
-					}** from opening modmail threads. Are you sure you want to continue?`
-				)
-				.setColor(client.colors.wait);
+			if (!findData) {
+				const blacklistAdd = new modmailModel({
+					_id: user.id,
+					moderatorId: interaction.id,
+					reason: options.getString('reason'),
+					url: null,
+				});
+				blacklistAdd.save();
 
-			const sentInteraction = (await interaction.reply({
-				embeds: [confirmationEmbed],
-				components: [client.util.build.confirmationButtons('Continue', 'Cancel')],
-				fetchReply: true,
-			})) as Message;
-			const collector = sentInteraction.createMessageComponentCollector({
-				time: 20000,
-				componentType: ComponentType['Button'],
-			});
+				await interaction.reply({
+					embeds: [
+						client.embeds.success(
+							`**${user.tag}** was added to the modmail blacklist.`
+						),
+					],
+					components: [],
+				});
 
-			collector.on('collect', async (collected) => {
-				if (collected.user.id !== interaction.user.id)
-					return collected.reply(client.cc.cannotInteract);
-				collector.stop('success');
-				if (collected.customId === '2') return interaction.deleteReply();
+				createModmailLog({
+					action: ModmailActionType.BlacklistAdd,
+					user: user,
+					moderator: interaction.user,
+					reason: options.getString('reason'),
+				});
+			} else if (findData) {
+				await findData.delete();
 
-				if (!findData) {
-					const blacklistAdd = new modmailModel({
-						_id: user.id,
-						moderatorId: interaction.id,
-						reason: options.getString('reason'),
-						url: null,
-					});
-					blacklistAdd.save();
+				await interaction.reply({
+					embeds: [
+						client.embeds.success(
+							`**${user.tag}** was removed from the modmail blacklist.`
+						),
+					],
+					components: [],
+				});
 
-					await interaction.editReply({
-						embeds: [
-							client.embeds.success(
-								`**${user.tag}** was added to the modmail blacklist.`
-							),
-						],
-						components: [],
-					});
-
-					createModmailLog({
-						action: ModmailActionType.BlacklistAdd,
-						user: user,
-						moderator: interaction.user,
-						reason: options.getString('reason'),
-					});
-				} else if (findData) {
-					await findData.delete();
-
-					await interaction.editReply({
-						embeds: [
-							client.embeds.success(
-								`**${user.tag}** was removed from the modmail blacklist.`
-							),
-						],
-						components: [],
-					});
-
-					createModmailLog({
-						action: ModmailActionType.BlacklistRemove,
-						user: user,
-						moderator: interaction.user,
-						reason: options.getString('reason'),
-					});
-				}
-			});
-
-			collector.on('end', (_, reason) => {
-				if (reason === 'success') return;
-				interaction.deleteReply();
-			});
+				createModmailLog({
+					action: ModmailActionType.BlacklistRemove,
+					user: user,
+					moderator: interaction.user,
+					reason: options.getString('reason'),
+				});
+			}
 		} else if (subCommands === 'open') {
 			const user = options.getMember('user') as GuildMember;
 			let canOpen: boolean = true;
@@ -388,7 +293,7 @@ export default new Command({
 				return interaction.reply({
 					embeds: [
 						client.embeds.attention(
-							'Looks like this user already has a thread opened at ' +
+							'Looks like this user already has a ticket opened at ' +
 								findExisting.toString()
 						),
 					],
@@ -415,12 +320,10 @@ export default new Command({
 				.setColor(client.util.resolve.color('Yellow'))
 				.setDescription(
 					[
-						'A wild ticket has appeared!',
-						`You've received a direct modmail from a moderator in **${guild.name}**.`,
-						"If you're wondering of how this ticket got opened, be patient until the moderator contact from within this ticket.",
+						'**A wild ticket has appeared!**',
+						`You've received a direct modmail from a staff member in **${guild.name}**. If you're wondering of how this ticket got opened, be patient until the moderator contact from through this ticket.`,
 					].join('\n')
 				);
-
 			if (options?.getString('reason'))
 				openedModmailEmbed.addFields({
 					name: 'Reason',
@@ -461,52 +364,16 @@ export default new Command({
 								{
 									type: ChannelType.GuildText,
 									parent: categoryId,
-									topic: `[Moderator]: ${interaction.user.tag} - Thread Created for ${user.user.tag} - ID: ${user.user.id}`,
-									reason: `Modmail thread created for ${user.user.tag} by ${interaction.user.tag}`,
+									topic: `A tunnel to contact **${user.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${user.id}`,
+									reason: `Direct modmail thread opened.`,
 								}
 							);
-
-							const threadChannelFirstEmbed = client.util
-								.embed()
-								.setAuthor({
-									name: user.user.tag,
-									iconURL: user.user.displayAvatarURL(),
-								})
-								.setColor(client.colors.ultimates)
-								.setDescription(`${user.user} • ID: ${user.user.id}`)
-								.setThumbnail(user.user.displayAvatarURL())
-								.addFields(
-									{
-										name: 'Account Information',
-										value: [
-											`• **Username:** ${user.user.tag}`,
-											`• **ID:** ${user.user.id}`,
-											`• **Registered:** <t:${~~(
-												+user.user.createdAt / 1000
-											)}:f> | <t:${~~(
-												+user.user.createdAt / 1000
-											)}:R>`,
-										].join('\n'),
-									},
-									{
-										name: 'Server Information',
-										value: [
-											`• **Joined**: <t:${~~(
-												+user.joinedAt / 1000
-											)}:f> | <t:${~~(+user.joinedAt / 1000)}:R>`,
-											`• **Nickname**: ${
-												user.user.username == user.displayName
-													? `No Nickname`
-													: user.displayName
-											}`,
-										].join('\n'),
-									}
-								);
-
-							await threadChannel.send({ embeds: [threadChannelFirstEmbed] });
+							await threadChannel.send({
+								embeds: [await generateModmailInfoEmbed(user.user)],
+							});
 
 							// Deleting any cooldowns from past
-							modmailCooldown.delete(`create-new-on-close_${user.user.id}`);
+							modmailCooldown.delete(`open_${user.user.id}`);
 
 							await interaction.editReply({
 								embeds: [
