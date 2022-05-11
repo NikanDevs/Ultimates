@@ -20,7 +20,7 @@ export default new Event('messageCreate', async (message) => {
 
 		if (guildMember) guildMember.timeout(null, 'Mute ended based on the duration.');
 
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Unmute,
 			user: findUser,
 			moderator: client.user,

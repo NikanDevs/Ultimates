@@ -87,7 +87,7 @@ export default new Event('messageCreate', async (message) => {
 			reason: reasons['large-message'],
 		});
 
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -125,7 +125,7 @@ export default new Event('messageCreate', async (message) => {
 		sendDM({
 			reason: reasons['invites'],
 		});
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -159,7 +159,7 @@ export default new Event('messageCreate', async (message) => {
 		sendDM({
 			reason: reasons['urls'],
 		});
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -197,7 +197,7 @@ export default new Event('messageCreate', async (message) => {
 		sendDM({
 			reason: reasons['mass-mention'],
 		});
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -235,7 +235,7 @@ export default new Event('messageCreate', async (message) => {
 		sendDM({
 			reason: reasons['capitals'],
 		});
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -273,7 +273,7 @@ export default new Event('messageCreate', async (message) => {
 		sendDM({
 			reason: reasons['mass-emoji'],
 		});
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -312,7 +312,7 @@ export default new Event('messageCreate', async (message) => {
 			reason: reasons['badwords'],
 		});
 
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -355,7 +355,7 @@ export default new Event('messageCreate', async (message) => {
 		sendDM({
 			reason: reasons['spam'],
 		});
-		await createModLog(message, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
 			user: message.author,
@@ -470,7 +470,7 @@ export default new Event('messageCreate', async (message) => {
 			});
 			data.save();
 
-			await createModLog(message, {
+			await createModLog({
 				action: PunishmentType.Timeout,
 				punishmentId: data._id,
 				user: message.author,
@@ -496,7 +496,7 @@ export default new Event('messageCreate', async (message) => {
 			});
 			data.save();
 
-			await createModLog(message, {
+			await createModLog({
 				action: PunishmentType.Timeout,
 				punishmentId: data._id,
 				user: message.author,

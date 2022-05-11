@@ -59,16 +59,13 @@ export default new Command({
 		await warnData.save();
 
 		interaction.reply({
-			embeds: [client.embeds.success(`**${member.displayName}** was warned!`)],
-			ephemeral: true,
-		});
-		var warnedMsg = await interaction.channel.send({
 			embeds: [
 				client.embeds.moderation(member.user, {
 					action: PunishmentType.Warn,
 					id: warnData._id,
 				}),
 			],
+			ephemeral: true,
 		});
 
 		const dmEmbed = client.util
@@ -98,13 +95,12 @@ export default new Command({
 			);
 		await member.send({ embeds: [dmEmbed] }).catch(() => {});
 
-		await createModLog(interaction, {
+		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: warnData._id,
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
-			actionMessage: warnedMsg,
 		}).then(async () => {
 			// ------------------------------------- checking for auto action on warn counts --------------------------------
 
@@ -133,7 +129,7 @@ export default new Command({
 					});
 					data.save();
 
-					await createModLog(interaction, {
+					await createModLog({
 						action: PunishmentType.Timeout,
 						punishmentId: data._id,
 						user: member.user,
@@ -189,7 +185,7 @@ export default new Command({
 					});
 					data2.save();
 
-					await createModLog(interaction, {
+					await createModLog({
 						action: PunishmentType.Timeout,
 						punishmentId: data2._id,
 						user: member.user,
@@ -240,7 +236,7 @@ export default new Command({
 					});
 					data3.save();
 
-					await createModLog(interaction, {
+					await createModLog({
 						action: PunishmentType.Ban,
 						punishmentId: data3._id,
 						user: member.user,

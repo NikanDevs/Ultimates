@@ -72,25 +72,21 @@ export default new Command({
 		await member.ban({ reason: reason });
 
 		await interaction.reply({
-			embeds: [client.embeds.success(`**${member.displayName}** was banned!`)],
-			ephemeral: true,
-		});
-		var actionMessage = await interaction.channel.send({
 			embeds: [
 				client.embeds.moderation(member.user, {
 					action: PunishmentType.Ban,
 					id: data._id,
 				}),
 			],
+			ephemeral: true,
 		});
 
-		await createModLog(interaction, {
+		await createModLog({
 			action: PunishmentType.Ban,
 			punishmentId: data._id,
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
-			actionMessage: actionMessage,
 		});
 	},
 });

@@ -97,15 +97,15 @@ export default new Command({
 						if (getMember)
 							getMember.timeout(null, 'Mute ended based on the duration.');
 
-						const actionMessage = (await interaction.followUp({
+						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
 									`Punishment **${warnId}** was **revoked**.`
 								),
 							],
-						})) as Message;
+						});
 
-						await createModLog(interaction, {
+						await createModLog({
 							action: PunishmentType.Unmute,
 							user: fetchUser,
 							moderator: interaction.user,
@@ -113,13 +113,12 @@ export default new Command({
 							referencedPunishment: data,
 						})
 							.then(() => {
-								createRmPunishLog(interaction, {
+								createRmPunishLog({
 									type: RmPunishmentType.Revoke,
 									user: fetchUser,
 									moderator: interaction.user,
 									punishment: data,
 									reason: reason,
-									actionMessage: actionMessage,
 								});
 							})
 							.then(async () => {
@@ -128,21 +127,20 @@ export default new Command({
 								data.delete();
 							});
 					} else {
-						const actionMessage = (await interaction.followUp({
+						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
 									`Punishment **${warnId}** was **revoked**.`
 								),
 							],
-						})) as Message;
+						});
 
-						await createRmPunishLog(interaction, {
+						await createRmPunishLog({
 							type: RmPunishmentType.Revoke,
 							user: fetchUser,
 							moderator: interaction.user,
 							punishment: data,
 							reason: reason,
-							actionMessage: actionMessage,
 						}).then(async () => {
 							await logsModel.findByIdAndDelete(data.case);
 							data.delete();
@@ -153,15 +151,15 @@ export default new Command({
 					if (await interaction.guild.bans.fetch(data.userId).catch(() => {})) {
 						interaction.guild.members.unban(fetchUser, reason);
 
-						const actionMessage = (await interaction.followUp({
+						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
 									`Punishment **${warnId}** was **revoked**.`
 								),
 							],
-						})) as Message;
+						});
 
-						createModLog(interaction, {
+						createModLog({
 							action: PunishmentType.Unban,
 							user: fetchUser,
 							moderator: interaction.user,
@@ -169,13 +167,12 @@ export default new Command({
 							referencedPunishment: data,
 						})
 							.then(() => {
-								createRmPunishLog(interaction, {
+								createRmPunishLog({
 									type: RmPunishmentType.Revoke,
 									user: fetchUser,
 									moderator: interaction.user,
 									punishment: data,
 									reason: reason,
-									actionMessage: actionMessage,
 								});
 							})
 							.then(async () => {
@@ -183,21 +180,20 @@ export default new Command({
 								data.delete();
 							});
 					} else {
-						const actionMessage = (await interaction.followUp({
+						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
 									`Punishment **${warnId}** was **revoked**.`
 								),
 							],
-						})) as Message;
+						});
 
-						await createRmPunishLog(interaction, {
+						await createRmPunishLog({
 							type: RmPunishmentType.Revoke,
 							user: fetchUser,
 							moderator: interaction.user,
 							punishment: data,
 							reason: reason,
-							actionMessage: actionMessage,
 						}).then(async () => {
 							await logsModel.findByIdAndDelete(data.case);
 							data.delete();
@@ -205,21 +201,20 @@ export default new Command({
 					}
 					break;
 				default:
-					const actionMessage = (await interaction.followUp({
+					await interaction.followUp({
 						embeds: [
 							client.embeds.success(
 								`Punishment **${warnId}** was **revoked**.`
 							),
 						],
-					})) as Message;
+					});
 
-					createRmPunishLog(interaction, {
+					createRmPunishLog({
 						type: RmPunishmentType.Revoke,
 						user: fetchUser,
 						moderator: interaction.user,
 						punishment: data,
 						reason: reason,
-						actionMessage: actionMessage,
 					}).then(async () => {
 						await logsModel.findByIdAndDelete(data.case);
 						data.delete();

@@ -18,14 +18,10 @@ interface options {
 	reason?: string;
 	transcript?: string;
 	referencedCaseUrl?: string;
-	actionMessage?: Message;
 }
 
 /** Creates a new modmail log and post the log to the modmail webhook. */
-export async function createModmailLog(
-	interaction: CommandInteraction | Message,
-	options: options
-) {
+export async function createModmailLog(options: options) {
 	enum colors {
 		'OPEN' = '#95b874',
 		'CLOSE' = '#b89b74',
@@ -67,9 +63,7 @@ export async function createModmailLog(
 				`• **Reason:** ${options.reason || 'No reason provided'}`,
 				`\n${
 					!options.referencedCaseUrl
-						? options.actionMessage
-							? `[Take me there!](${options.actionMessage.url})`
-							: ''
+						? ''
 						: options.action === ModmailActionType.Close
 						? `[Take me to the creation](${options.referencedCaseUrl}) • [View transcript](${options.transcript})`
 						: options.action === ModmailActionType.BlacklistRemove

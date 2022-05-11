@@ -4,7 +4,6 @@ import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { client } from '../..';
 import { manualWarningExpiry } from '../../constants';
-import { GuildMember } from 'discord.js';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -34,7 +33,7 @@ export default new Event('guildMemberRemove', async (member) => {
 	});
 	await data_.save();
 
-	await createModLog(member as GuildMember, {
+	await createModLog({
 		action: PunishmentType.Kick,
 		punishmentId: data_._id,
 		user: member.user,

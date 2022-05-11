@@ -2,9 +2,7 @@ import { Event } from '../../structures/Event';
 import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
-import { client } from '../..';
 import { manualWarningExpiry } from '../../constants';
-import { GuildMember } from 'discord.js';
 import { timeoutsModel } from '../../models/timeouts';
 import { logsModel } from '../../models/logs';
 import { getModCase } from '../../functions/cases/modCase';
@@ -42,7 +40,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		await data_.save();
 
 		if (findLogs && findTimeout !== undefined) {
-			await createModLog(newMember as GuildMember, {
+			await createModLog({
 				action: PunishmentType.Unmute,
 				punishmentId: data_._id,
 				user: newMember.user,
@@ -54,7 +52,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 				findTimeout.delete();
 			});
 		} else {
-			await createModLog(newMember as GuildMember, {
+			await createModLog({
 				action: PunishmentType.Unmute,
 				punishmentId: data_._id,
 				user: newMember.user,

@@ -15,7 +15,7 @@ export default new Event('messageCreate', async (message) => {
 	manualFiltered.forEach(async (data) => {
 		await data.delete();
 		if (data.type === PunishmentType.Warn) {
-			await createRmPunishLog(message, {
+			await createRmPunishLog({
 				type: RmPunishmentType.Expire,
 				user: await client.users.fetch(data.userId),
 				punishment: data,
@@ -34,7 +34,7 @@ export default new Event('messageCreate', async (message) => {
 	automodFiltered.forEach(async (data) => {
 		await data.delete();
 		if (data.type === PunishmentType.Warn) {
-			await createRmPunishLog(message, {
+			await createRmPunishLog({
 				type: RmPunishmentType.Expire,
 				user: await client.users.fetch(data.userId),
 				punishment: data,

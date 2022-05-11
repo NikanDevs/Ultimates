@@ -104,16 +104,13 @@ export default new Command({
 		await data.save();
 
 		await interaction.reply({
-			embeds: [client.embeds.success(`**${member.displayName}** was timed out!`)],
-			ephemeral: true,
-		});
-		var sentInteraction = await interaction.channel.send({
 			embeds: [
 				client.embeds.moderation(member.user, {
 					action: PunishmentType.Timeout,
 					id: data._id,
 				}),
 			],
+			ephemeral: true,
 		});
 
 		const DMembed = client.util
@@ -143,14 +140,13 @@ export default new Command({
 			);
 		await member.send({ embeds: [DMembed] }).catch(() => {});
 
-		await createModLog(interaction, {
+		await createModLog({
 			action: PunishmentType.Timeout,
 			punishmentId: data._id,
 			duration: ms(duration),
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
-			actionMessage: sentInteraction,
 		});
 	},
 });

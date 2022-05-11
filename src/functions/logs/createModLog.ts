@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember, Message, TextChannel, User, Util } from 'discord.js';
+import { TextChannel, User, Util } from 'discord.js';
 import { client } from '../..';
 import { logsModel } from '../../models/logs';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -12,7 +12,6 @@ interface options {
 	moderator: User;
 	reason: string;
 	duration?: number;
-	actionMessage?: Message;
 	referencedPunishment?: any;
 }
 
@@ -22,10 +21,7 @@ async function getUrlFromCase(tofindCase: string | number) {
 	return data ? data.url : 'https://discord.com/404';
 }
 
-export async function createModLog(
-	interaction: CommandInteraction | Message | GuildMember,
-	options: options
-) {
+export async function createModLog(options: options) {
 	enum colors {
 		'WARN' = '#d4c03f',
 		'TIMEOUT' = '#f5a742',
@@ -66,13 +62,7 @@ export async function createModLog(
 				}`,
 				`• **Date:** <t:${~~(Date.now() / 1000)}:f>`,
 				`• **Reason:** ${options.reason}`,
-				`\n${
-					!options.referencedPunishment
-						? options.actionMessage
-							? `[Take me there!](${options.actionMessage.url})`
-							: ''
-						: ''
-				}`,
+				``,
 			].join('\n')
 		);
 	var logMessage = await moderationLogging.send({ embeds: [embed] });

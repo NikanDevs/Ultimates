@@ -1,4 +1,4 @@
-import { CommandInteraction, Message, User, Util } from 'discord.js';
+import { Message, User, Util } from 'discord.js';
 import { client } from '../..';
 import { logsModel } from '../../models/logs';
 import { RmPunishmentType } from '../../typings/PunishmentType';
@@ -10,7 +10,6 @@ interface options {
 	moderator?: User;
 	punishment: any;
 	reason?: string;
-	actionMessage?: Message;
 }
 
 async function getUrlFromCase(tofindCase: string | number) {
@@ -19,10 +18,7 @@ async function getUrlFromCase(tofindCase: string | number) {
 	return data ? data.url : 'https://discord.com/404';
 }
 
-export async function createRmPunishLog(
-	interaction: CommandInteraction | Message,
-	options: options
-) {
+export async function createRmPunishLog(options: options) {
 	enum colors {
 		'REVOKE' = '#b04d46',
 		'EXPIRE' = '#d4a383',
@@ -60,12 +56,9 @@ export async function createRmPunishLog(
 					`• **Moderator:** ${options.moderator.tag} • ${options.moderator.id}`,
 					`• **Date:** <t:${~~(Date.now() / 1000)}:f>`,
 					`• **Reason:** ${options.reason}\n`,
-					[
-						`[Take me there!](${options.actionMessage.url})`,
-						`[Take me to case #${punishment.case}](${await getUrlFromCase(
-							punishment.case
-						)})`,
-					].join(' • '),
+					`[Take me to case #${punishment.case}](${await getUrlFromCase(
+						punishment.case
+					)})`,
 				].join('\n')
 			);
 			break;

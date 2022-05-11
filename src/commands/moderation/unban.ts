@@ -43,6 +43,7 @@ export default new Command({
 				ephemeral: true,
 			});
 
+		await interaction.deferReply();
 		const data = new punishmentModel({
 			_id: generateManualId(),
 			case: await getModCase(),
@@ -55,23 +56,21 @@ export default new Command({
 		});
 		await data.save();
 
-		await interaction.deferReply();
-		var actionMessage = (await interaction.followUp({
+		await interaction.followUp({
 			embeds: [
 				client.embeds.moderation(`**${bannedMember.user.tag}**`, {
 					action: PunishmentType.Unban,
 					id: data._id,
 				}),
 			],
-		})) as Message;
+		});
 
-		await createModLog(interaction, {
+		await createModLog({
 			action: PunishmentType.Unban,
 			punishmentId: data._id,
 			user: bannedMember.user,
 			moderator: interaction.user,
 			reason: reason,
-			actionMessage: actionMessage,
 		});
 	},
 });

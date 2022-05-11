@@ -3,7 +3,6 @@ import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { manualWarningExpiry } from '../../constants';
-import { GuildMember } from 'discord.js';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -38,7 +37,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		});
 		await data_.save();
 
-		await createModLog(newMember as GuildMember, {
+		await createModLog({
 			action: PunishmentType.Timeout,
 			punishmentId: data_._id,
 			user: newMember.user,

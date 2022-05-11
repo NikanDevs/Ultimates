@@ -310,7 +310,7 @@ export default new Event('messageCreate', async (message) => {
 
 						await threadChannel.send({ embeds: [threadChannelFirstEmbed] });
 
-						createModmailLog(message, {
+						createModmailLog({
 							action: ModmailActionType.Open,
 							user: message.author,
 							ticket: {

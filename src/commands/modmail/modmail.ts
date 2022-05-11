@@ -213,7 +213,7 @@ export default new Command({
 							}
 						);
 
-						createModmailLog(interaction, {
+						createModmailLog({
 							action: ModmailActionType.Close,
 							user: await client.users.fetch(userId),
 							moderator: interaction.user,
@@ -322,40 +322,38 @@ export default new Command({
 					});
 					blacklistAdd.save();
 
-					const sentInteraction = (await interaction.editReply({
+					await interaction.editReply({
 						embeds: [
 							client.embeds.success(
 								`**${user.tag}** was added to the modmail blacklist.`
 							),
 						],
 						components: [],
-					})) as Message;
+					});
 
-					createModmailLog(interaction, {
+					createModmailLog({
 						action: ModmailActionType.BlacklistAdd,
 						user: user,
 						moderator: interaction.user,
 						reason: options.getString('reason'),
-						actionMessage: sentInteraction,
 					});
 				} else if (findData) {
 					await findData.delete();
 
-					const sentInteraction = (await interaction.editReply({
+					await interaction.editReply({
 						embeds: [
 							client.embeds.success(
 								`**${user.tag}** was removed from the modmail blacklist.`
 							),
 						],
 						components: [],
-					})) as Message;
+					});
 
-					createModmailLog(interaction, {
+					createModmailLog({
 						action: ModmailActionType.BlacklistRemove,
 						user: user,
 						moderator: interaction.user,
 						reason: options.getString('reason'),
-						actionMessage: sentInteraction,
 					});
 				}
 			});
@@ -510,22 +508,21 @@ export default new Command({
 							// Deleting any cooldowns from past
 							modmailCooldown.delete(`create-new-on-close_${user.user.id}`);
 
-							const sentInteraction = (await interaction.editReply({
+							await interaction.editReply({
 								embeds: [
 									client.embeds.success(
 										`Thread was created at ${threadChannel}`
 									),
 								],
-							})) as Message;
+							});
 
-							createModmailLog(interaction, {
+							createModmailLog({
 								action: ModmailActionType.Open,
 								ticketId: await getModmailCase(),
 								user: user.user,
 								moderator: interaction.user,
 								ticket: { type: 'DIRECT', channel: threadChannel },
 								reason: options.getString('reason'),
-								actionMessage: sentInteraction,
 							});
 							break;
 					}

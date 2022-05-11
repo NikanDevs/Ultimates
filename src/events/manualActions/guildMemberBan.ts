@@ -4,7 +4,6 @@ import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { client } from '../..';
 import { banSystemExpiry } from '../../constants';
-import { GuildMember } from 'discord.js';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -33,7 +32,7 @@ export default new Event('guildBanAdd', async (ban) => {
 	});
 	await data_.save();
 
-	await createModLog(ban as GuildMember, {
+	await createModLog({
 		action: PunishmentType.Ban,
 		punishmentId: data_._id,
 		user: ban.user,

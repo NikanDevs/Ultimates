@@ -72,25 +72,21 @@ export default new Command({
 		await member.kick(reason);
 
 		await interaction.reply({
-			embeds: [client.embeds.success(`**${member.displayName}** was kicked!`)],
-			ephemeral: true,
-		});
-		var actionMessage = await interaction.channel.send({
 			embeds: [
 				client.embeds.moderation(member.user, {
 					action: PunishmentType.Kick,
 					id: data._id,
 				}),
 			],
+			ephemeral: true,
 		});
 
-		await createModLog(interaction, {
+		await createModLog({
 			action: PunishmentType.Kick,
 			punishmentId: data._id,
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
-			actionMessage: actionMessage,
 		});
 	},
 });
