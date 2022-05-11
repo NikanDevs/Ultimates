@@ -1,0 +1,21 @@
+{
+	"Create Command": {
+		"prefix": "!Command",
+		"body": [
+			"import { Command } from '../../structures/Command';",
+			"",
+			"export default new Command({",
+			"    name: '',",
+			"    description: '',",
+			"    directory: '',",
+			"    cooldown: 0,",
+			"    permission: [],",
+			"",
+			"    excute: async ({ client, interaction, options }) => {",
+			"",
+			"    }",
+			"})"
+		],
+		"description": "Creates a slash command handler in the file."
+	},
+}
