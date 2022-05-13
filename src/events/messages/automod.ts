@@ -1,15 +1,16 @@
 import { GuildMember, Message, PermissionResolvable, TextChannel, Util } from 'discord.js';
 import { client } from '../..';
-import { automodWarningExpiry as automodDataExpiry } from '../../constants';
+import { automodPunishmentExpiry } from '../../constants';
 import { Event } from '../../structures/Event';
 import { badwords, ignore, enabledModules, counts } from '../../json/automod.json';
 import { automodModel } from '../../models/automod';
-import { automodSpamCollection } from '../../models/collections';
+import { automodSpamCollection } from '../../constants';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateAutomodId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 const bypassRoleId = ignore['bypass-roleId'];
 const categoryIgnores = ignore['categoryIds'];
 const channelIgnores = ignore['channelNames'];
@@ -78,8 +79,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['large-message'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -93,6 +94,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['large-message'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		isDiscordInvite(message.content) &&
@@ -117,8 +119,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['invites'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -131,6 +133,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['invites'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (isURL(message.content) && enabledModules.urls && !(await getsIgnored('urls'))) {
 		message?.delete();
@@ -151,8 +154,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['urls'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -165,6 +168,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['urls'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		message.mentions?.members.size > 4 &&
@@ -189,8 +193,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['mass-mention'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -203,6 +207,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['mass-mention'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		mostIsCap(message.content) &&
@@ -227,8 +232,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['capitals'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -241,6 +246,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['capitals'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		mostIsEmojis(message.content) &&
@@ -265,8 +271,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['mass-emoji'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -279,6 +285,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['mass-emoji'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		badwords.some((word) => message.content.toUpperCase().includes(word)) &&
@@ -303,8 +310,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['badwords'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -318,6 +325,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['badwords'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		automodSpamCollection.get(message.author.id) === counts['spam_count'] &&
@@ -347,8 +355,8 @@ export default new Event('messageCreate', async (message) => {
 			type: PunishmentType.Warn,
 			userId: message.author.id,
 			reason: reasons['spam'],
-			timestamp: Date.now(),
-			expires: automodDataExpiry,
+			date: new Date(),
+			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
@@ -361,6 +369,7 @@ export default new Event('messageCreate', async (message) => {
 			user: message.author,
 			moderator: client.user,
 			reason: reasons['spam'],
+			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	}
 
@@ -387,8 +396,8 @@ export default new Event('messageCreate', async (message) => {
 					inline: true,
 				},
 				{
-					name: 'Expire',
-					value: `<t:${Math.floor(automodDataExpiry / 1000)}:R>`,
+					name: 'Expiry',
+					value: generateDiscordTimestamp(new Date()),
 					inline: true,
 				},
 				{
@@ -464,8 +473,8 @@ export default new Event('messageCreate', async (message) => {
 				case: await getModCase(),
 				type: PunishmentType.Timeout,
 				userId: message.author.id,
-				timestamp: Date.now(),
-				expires: automodDataExpiry,
+				date: new Date(),
+				expire: automodPunishmentExpiry,
 				reason: 'Reaching 2 automod warnings.',
 			});
 			data.save();
@@ -478,6 +487,7 @@ export default new Event('messageCreate', async (message) => {
 				duration: muteDurationAt2,
 				reason: 'Reaching 2 automod warnings.',
 				referencedPunishment: warnData,
+				expire: automodPunishmentExpiry,
 			});
 		} else if (punishmentCount > 2) {
 			const muteDurationAtmore2 = 1000 * 60 * 60;
@@ -490,8 +500,8 @@ export default new Event('messageCreate', async (message) => {
 				case: getModCase(),
 				type: PunishmentType.Timeout,
 				userId: message.author.id,
-				timestamp: Date.now(),
-				expires: automodDataExpiry,
+				date: new Date(),
+				expire: automodPunishmentExpiry,
 				reason: `Reaching ${punishmentCount} automod warnings.`,
 			});
 			data.save();
@@ -504,6 +514,7 @@ export default new Event('messageCreate', async (message) => {
 				duration: muteDurationAtmore2,
 				reason: `Reaching ${punishmentCount} automod warnings.`,
 				referencedPunishment: warnData,
+				expire: automodPunishmentExpiry,
 			});
 		}
 	}

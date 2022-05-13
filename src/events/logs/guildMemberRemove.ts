@@ -33,7 +33,7 @@ export default new Event('guildMemberRemove', async (member) => {
 		new leftMembersModel({
 			userId: member.user.id,
 			roles: roles,
-			expires: leftMemberExpiry,
+			expire: leftMemberExpiry,
 		}).save();
 	}
 

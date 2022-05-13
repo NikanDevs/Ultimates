@@ -3,6 +3,7 @@ import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
 	name: 'warnings',
@@ -55,14 +56,17 @@ export default new Command({
 						`\`${warnCounter}\` **${client.util.capitalize(
 							data.type
 						)}** | **ID: ${data._id}**`,
-						`• **Date:** <t:${~~(data.timestamp / 1000)}:f>`,
+						`• **Date:** ${generateDiscordTimestamp(
+							data.date,
+							'Short Date/Time'
+						)}`,
 						data.type === PunishmentType.Warn
-							? `• **Expire:** <t:${~~(data.expires / 1000)}:R>`
-							: 'null',
+							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							: 'LINE_BREAK',
 						`• **Reason:** ${data.reason}`,
 					]
 						.join('\n')
-						.replaceAll('\nnull', '')
+						.replaceAll('\nLINE_BREAK', '')
 				);
 			});
 			findWarningsAutomod.forEach((data) => {
@@ -72,14 +76,17 @@ export default new Command({
 						`\`${warnCounter}\` **${client.util.capitalize(
 							data.type
 						)}** | Auto Moderation`,
-						`• **Date:** <t:${~~(data.timestamp / 1000)}:f>`,
+						`• **Date:** ${generateDiscordTimestamp(
+							data.date,
+							'Short Date/Time'
+						)}`,
 						data.type === PunishmentType.Warn
-							? `• **Expire:** <t:${~~(data.expires / 1000)}:R>`
-							: 'null',
+							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							: 'LINE_BREAK',
 						`• **Reason:** ${data.reason}`,
 					]
 						.join('\n')
-						.replaceAll('\nnull', '')
+						.replaceAll('\nLINE_BREAK', '')
 				);
 			});
 		} else if (optionChoice === 1) {
@@ -93,14 +100,14 @@ export default new Command({
 					`\`${warnCounter}\` **${client.util.capitalize(data.type)}** | **ID: ${
 						data._id
 					}**`,
-					`• **Date:** <t:${~~(data.timestamp / 1000)}:f>`,
+					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
 					data.type === PunishmentType.Warn
-						? `• **Expire:** <t:${~~(data.expires / 1000)}:R>`
-						: 'null',
+						? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+						: 'LINE_BREAK',
 					`• **Reason:** ${data.reason}`,
 				]
 					.join('\n')
-					.replaceAll('\nnull', '');
+					.replaceAll('\nLINE_BREAK', '');
 			});
 		} else if (optionChoice === 2) {
 			const findWarningsAutomod = await automodModel.find({ userId: user.id });
@@ -112,14 +119,14 @@ export default new Command({
 					`\`${warnCounter}\` **${client.util.capitalize(
 						data.type
 					)}** | Auto Moderation`,
-					`• **Date:** <t:${~~(data.timestamp / 1000)}:f>`,
+					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
 					data.type === PunishmentType.Warn
-						? `• **Expire:** <t:${~~(data.expires / 1000)}:R>`
-						: 'null',
+						? `• **Expire:** ${generateDiscordTimestamp(data.date)}`
+						: 'LINE_BREAK',
 					`• **Reason:** ${data.reason}`,
 				]
 					.join('\n')
-					.replaceAll('\nnull', '');
+					.replaceAll('\nLINE_BREAK', '');
 			});
 		}
 

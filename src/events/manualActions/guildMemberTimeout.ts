@@ -2,7 +2,7 @@ import { Event } from '../../structures/Event';
 import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
-import { manualWarningExpiry } from '../../constants';
+import { warningExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -32,8 +32,8 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			userId: newMember.user.id,
 			moderatorId: executor.id,
 			reason: reason || 'No reason was provided!',
-			timestamp: Date.now(),
-			expires: manualWarningExpiry,
+			date: new Date(),
+			expire: warningExpiry,
 		});
 		await data_.save();
 
@@ -44,6 +44,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			moderator: executor,
 			reason: reason || 'No reason was provided!',
 			duration: duration,
+			expire: warningExpiry,
 		});
 	}
 });

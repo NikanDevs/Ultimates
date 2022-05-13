@@ -4,6 +4,7 @@ import { logsModel } from '../../models/logs';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { addModCase, getModCase } from '../cases/modCase';
 import { moderationLogging } from '../../webhooks';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 interface options {
 	action: PunishmentType;
@@ -13,6 +14,7 @@ interface options {
 	reason: string;
 	duration?: number;
 	referencedPunishment?: any;
+	expire?: Date;
 }
 
 async function getUrlFromCase(tofindCase: string | number) {
@@ -60,12 +62,15 @@ export async function createModLog(options: options) {
 						? `${options.moderator.tag} • ${options.moderator.id}`
 						: 'Automatic'
 				}`,
-				`• **Date:** <t:${~~(Date.now() / 1000)}:f>`,
+				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
 				`• **Reason:** ${options.reason}`,
 				``,
 			].join('\n')
 		);
 	var logMessage = await moderationLogging.send({ embeds: [embed] });
+
+	if (options.action === PunishmentType.Unmute || options.action === PunishmentType.Unban)
+		return;
 
 	var findMessage = await (
 		client.channels.cache.get(logMessage.channel_id) as TextChannel
@@ -73,6 +78,7 @@ export async function createModLog(options: options) {
 	const newLogData = new logsModel({
 		_id: currentCase,
 		url: findMessage.url,
+		expire: options.expire,
 	});
 	await newLogData.save();
 }

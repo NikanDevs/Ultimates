@@ -2,7 +2,7 @@ import { Event } from '../../structures/Event';
 import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
-import { manualWarningExpiry } from '../../constants';
+import { warningExpiry } from '../../constants';
 import { timeoutsModel } from '../../models/timeouts';
 import { logsModel } from '../../models/logs';
 import { getModCase } from '../../functions/cases/modCase';
@@ -34,8 +34,8 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			userId: newMember.user.id,
 			moderatorId: executor.id,
 			reason: reason,
-			timestamp: Date.now(),
-			expires: manualWarningExpiry,
+			date: new Date(),
+			expire: warningExpiry,
 		});
 		await data_.save();
 

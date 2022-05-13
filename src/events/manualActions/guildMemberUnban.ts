@@ -3,7 +3,7 @@ import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { client } from '../..';
-import { banSystemExpiry } from '../../constants';
+import { punishmentExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -27,8 +27,8 @@ export default new Event('guildBanRemove', async (ban) => {
 		userId: ban.user.id,
 		moderatorId: executor.id,
 		reason: reason || 'No reason provided.',
-		timestamp: Date.now(),
-		expires: banSystemExpiry,
+		date: new Date(),
+		expire: punishmentExpiry,
 	});
 	await data_.save();
 

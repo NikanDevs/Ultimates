@@ -4,6 +4,7 @@ import { modmailModel } from '../../models/modmail';
 import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
 import { addModmailCase } from '../cases/ModmailCase';
 import { modmailLogging } from '../../webhooks';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 interface ticketOptions {
 	type: 'DIRECT' | 'REQUEST';
@@ -51,15 +52,15 @@ export async function createModmailLog(options: options) {
 				`• **Member:** ${options.user.tag} • ${options.user.id}`,
 				options.action === ModmailActionType.Open
 					? `• **Channel:** ${ticket.channel}`
-					: 'SKIP',
+					: 'LINE_BREAK',
 				options.moderator
 					? `• **Moderator:** ${
 							options.moderator.id !== client.user.id
 								? `${options.moderator.tag} • ${options.moderator.id}`
 								: 'Automatic'
 					  }`
-					: 'SKIP',
-				`• **Date:** <t:${~~(Date.now() / 1000)}:f>`,
+					: 'LINE_BREAK',
+				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
 				`• **Reason:** ${options.reason || 'No reason provided'}`,
 				`\n${
 					!options.referencedCaseUrl
@@ -72,7 +73,7 @@ export async function createModmailLog(options: options) {
 				}`,
 			]
 				.join('\n')
-				.replaceAll('SKIP\n', '')
+				.replaceAll('LINE_BREAK\n', '')
 		);
 	var logMessage = await modmailLogging.send({ embeds: [embed] });
 

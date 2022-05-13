@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType, Message } from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { banSystemExpiry } from '../../constants';
+import { punishmentExpiry } from '../../constants';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -51,8 +51,8 @@ export default new Command({
 			userId: userId,
 			moderatorId: interaction.user.id,
 			reason: reason,
-			timestamp: Date.now(),
-			expires: banSystemExpiry,
+			date: new Date(),
+			expire: punishmentExpiry,
 		});
 		await data.save();
 
@@ -71,6 +71,7 @@ export default new Command({
 			user: bannedMember.user,
 			moderator: interaction.user,
 			reason: reason,
+			expire: punishmentExpiry,
 		});
 	},
 });

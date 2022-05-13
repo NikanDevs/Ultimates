@@ -2,7 +2,7 @@ import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import ms from 'ms';
 import { punishmentModel } from '../../models/punishments';
-import { manualWarningExpiry } from '../../constants';
+import { warningExpiry } from '../../constants';
 import { timeoutsModel } from '../../models/timeouts';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -98,8 +98,8 @@ export default new Command({
 			userId: member.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
-			timestamp: Date.now(),
-			expires: manualWarningExpiry,
+			date: new Date(),
+			expire: warningExpiry,
 		});
 		await data.save();
 
@@ -147,6 +147,7 @@ export default new Command({
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
+			expire: warningExpiry,
 		});
 	},
 });

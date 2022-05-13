@@ -124,9 +124,11 @@ export default new Command({
 			let filtered = fetchMessages
 				.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
 				.map((msg) => {
-					if (msg.author.bot && msg.author.id !== client.user.id) return 'FORCESKIP';
+					if (msg.author.bot && msg.author.id !== client.user.id)
+						return 'LINE_BREAK';
 					if (msg.author.id === client.user.id) {
-						if (!msg.embeds[0]?.author?.url?.endsWith(userId)) return 'FORCESKIP';
+						if (!msg.embeds[0]?.author?.url?.endsWith(userId))
+							return 'LINE_BREAK';
 						return `${msg.embeds[0]?.author.name} :: ${
 							msg.embeds[0]?.description || 'No content.'
 						}`;
@@ -135,7 +137,7 @@ export default new Command({
 					}
 				})
 				.join('\n')
-				.replaceAll('FORCESKIP', '');
+				.replaceAll('LINE_BREAK', '');
 
 			const openedTickets = (await modmailModel.findById('substance')).openedTickets;
 			const ticketData = (openedTickets as ModmailTicketData[]).find(

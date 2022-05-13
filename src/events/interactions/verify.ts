@@ -8,7 +8,7 @@ import {
 	TextInputStyle,
 } from 'discord.js';
 import { client } from '../..';
-import { verificationCollection } from '../../models/collections';
+import { verificationCollection } from '../../constants';
 import { Event } from '../../structures/Event';
 const memberRoleId = client.config.memberRoleId;
 const characters = '0123456789';

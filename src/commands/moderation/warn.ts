@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, ButtonStyle, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { banSystemExpiry, manualWarningExpiry } from '../../constants';
+import { punishmentExpiry, warningExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -8,6 +8,7 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { timeoutMember } from '../../utils/timeoutMember';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 enum reasons {
 	'two' = 'Reaching 2 manual warnings.',
 	'four' = 'Reaching 4 manual warnings.',
@@ -53,8 +54,8 @@ export default new Command({
 			userId: member.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
-			timestamp: Date.now(),
-			expires: manualWarningExpiry,
+			date: new Date(),
+			expire: warningExpiry,
 		});
 		await warnData.save();
 
@@ -83,8 +84,8 @@ export default new Command({
 					inline: true,
 				},
 				{
-					name: 'Expire',
-					value: `<t:${~~(manualWarningExpiry / 1000)}:R>`,
+					name: 'Expiry',
+					value: `${generateDiscordTimestamp(warnData.expire)}`,
 					inline: true,
 				},
 				{
@@ -101,6 +102,7 @@ export default new Command({
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
+			expire: warningExpiry,
 		}).then(async () => {
 			// ------------------------------------- checking for auto action on warn counts --------------------------------
 
@@ -124,8 +126,8 @@ export default new Command({
 						userId: member.id,
 						moderatorId: client.user.id,
 						reason: reasons['two'],
-						timestamp: Date.now(),
-						expires: manualWarningExpiry,
+						date: new Date(),
+						expire: warningExpiry,
 					});
 					data.save();
 
@@ -137,6 +139,7 @@ export default new Command({
 						reason: reasons['two'],
 						duration: durations['two'],
 						referencedPunishment: warnData,
+						expire: warningExpiry,
 					});
 
 					const DMembed = client.util
@@ -174,14 +177,14 @@ export default new Command({
 					});
 
 					const data2 = new punishmentModel({
-						_id: await generateManualId(),
+						_id: generateManualId(),
 						case: await getModCase(),
 						type: PunishmentType.Timeout,
 						userId: member.id,
 						moderatorId: client.user.id,
 						reason: reasons['four'],
-						timestamp: Date.now(),
-						expires: manualWarningExpiry,
+						date: new Date(),
+						expire: warningExpiry,
 					});
 					data2.save();
 
@@ -193,6 +196,7 @@ export default new Command({
 						reason: reasons['four'],
 						duration: durations['four'],
 						referencedPunishment: warnData,
+						expire: warningExpiry,
 					});
 
 					const DMembed2 = client.util
@@ -231,8 +235,8 @@ export default new Command({
 						userId: member.id,
 						moderatorId: client.user.id,
 						reason: reasons['six'],
-						timestamp: Date.now(),
-						expires: banSystemExpiry,
+						date: new Date(),
+						expire: punishmentExpiry,
 					});
 					data3.save();
 
@@ -243,6 +247,7 @@ export default new Command({
 						moderator: client.user,
 						reason: reasons['six'],
 						referencedPunishment: warnData,
+						expire: punishmentExpiry,
 					});
 
 					const DMembed3 = client.util

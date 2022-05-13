@@ -1,16 +1,22 @@
+import { Collection } from 'discord.js';
+
 // DB expiry calculations.
 
-// 14 days - left member model
-export const leftMemberExpiry = Date.now() + 1000 * 60 * 60 * 24 * 14;
+// 14 days - left member roles data
+export const leftMemberExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14);
 
-// 1 day - automod warnings
-export const automodWarningExpiry = Date.now() + 1000 * 60 * 60 * 24 * 1;
+// 1 day - automod punishments
+export const automodPunishmentExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 1);
 
-// 30 days - manual warnings
-export const manualWarningExpiry = Date.now() + 1000 * 60 * 60 * 24 * 30;
+// 30 days - warnings
+export const warningExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 
-// 3 months - Ban system
-export const banSystemExpiry = Date.now() + 1000 * 60 * 60 * 24 * 90;
+// 3 months - All punishments
+export const punishmentExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 90);
+
+// Collections
+export const verificationCollection: Collection<string, string | number> = new Collection();
+export const automodSpamCollection: Collection<string, number> = new Collection();
 
 // Other constants
 export const EMBED_DESCRIPTION_MAX_LENGTH = 4096;

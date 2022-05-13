@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { manualWarningExpiry } from '../../constants';
+import { punishmentExpiry, warningExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -43,8 +43,8 @@ export default new Command({
 			userId: member.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
-			timestamp: Date.now(),
-			expires: manualWarningExpiry,
+			date: new Date(),
+			expire: punishmentExpiry,
 		});
 		await data.save();
 
@@ -87,6 +87,7 @@ export default new Command({
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
+			expire: punishmentExpiry,
 		});
 	},
 });

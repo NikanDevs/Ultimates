@@ -8,6 +8,7 @@ import { lengths } from '../../json/moderation.json';
 import { PunishmentType, RmPunishmentType } from '../../typings/PunishmentType';
 import { createModLog } from '../../functions/logs/createModLog';
 import { createRmPunishLog } from '../../functions/logs/createRmpunishLog';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
 	name: 'punishment',
@@ -414,19 +415,22 @@ export default new Command({
 						`\`${warnCounter}\` **${client.util.capitalize(
 							data.type
 						)}** | **ID: ${data._id}**`,
-						`• **Date:** <t:${~~(data.timestamp / 1000)}:f>`,
+						`• **Date:** ${generateDiscordTimestamp(
+							data.date,
+							'Short Date/Time'
+						)}`,
 						client.users.cache.get(data.moderatorId) === undefined
 							? `• **Moderator ID:** ${data.moderatorId}`
 							: `• **Moderator:** ${
 									client.users.cache.get(data.moderatorId).tag
 							  }`,
 						data.type === 'WARN'
-							? `• **Expire:** <t:${~~(data.expires / 1000)}:R>`
-							: 'null',
+							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							: 'LINE_BREAK',
 						`• **Reason:** ${data.reason}`,
 					]
 						.join('\n')
-						.replaceAll('\nnull', '')
+						.replaceAll('\nLINE_BREAK', '')
 				);
 			});
 			findWarningsAutomod.forEach((data) => {
@@ -436,14 +440,17 @@ export default new Command({
 						`\`${warnCounter}\` **${client.util.capitalize(
 							data.type
 						)}** | Auto Moderation`,
-						`• **Date:** <t:${~~(data.timestamp / 1000)}:f>`,
+						`• **Date:** ${generateDiscordTimestamp(
+							data.date,
+							'Short Date/Time'
+						)}`,
 						data.type === 'WARN'
-							? `• **Expire:** <t:${~~(data.expires / 1000)}:R>`
-							: 'null',
+							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							: 'LINE_BREAK',
 						`• **Reason:** ${data.reason}`,
 					]
 						.join('\n')
-						.replaceAll('\nnull', '')
+						.replaceAll('\nLINE_BREAK', '')
 				);
 			});
 

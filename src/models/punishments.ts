@@ -7,8 +7,10 @@ const schema = new mongoose.Schema({
 	userId: String,
 	moderatorId: String,
 	reason: String,
-	timestamp: Number,
-	expires: Number,
+	date: Date,
+	expire: Date,
 });
 
 export const punishmentModel = mongoose.model('punishment', schema);
+
+schema.index({ expire: 1 }, { expireAfterSeconds: 0 });
