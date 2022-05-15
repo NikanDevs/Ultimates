@@ -70,7 +70,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				client.util
 					.embed()
 					.setDescription(
-						`Please wait for **${client.util.convertTime(
+						`Please wait **${client.util.convertTime(
 							~~(+cooldownRemaining / 1000)
 						)}** before trying to verify again.`
 					)
