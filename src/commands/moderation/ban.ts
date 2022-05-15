@@ -22,6 +22,26 @@ export default new Command({
 			required: true,
 		},
 		{
+			name: 'delete_messages',
+			description: 'Deletes the messages sent for the member in a specific duration.',
+			type: ApplicationCommandOptionType.Number,
+			required: false,
+			choices: [
+				{
+					name: "Don't delete any",
+					value: 0,
+				},
+				{
+					name: 'Previous 24 hours',
+					value: 1,
+				},
+				{
+					name: 'Previous 7 days',
+					value: 7,
+				},
+			],
+		},
+		{
 			name: 'reason',
 			description: 'The reason of the ban.',
 			type: ApplicationCommandOptionType.String,
@@ -33,6 +53,7 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason = options.getString('reason') || 'No reason was provided.';
+		const delete_messages = options.getNumber('delete_messages') || 0;
 
 		if (getsIgnored(interaction, member)) return;
 
@@ -69,7 +90,7 @@ export default new Command({
 				}
 			);
 		await member.send({ embeds: [DMembed] }).catch(() => {});
-		await member.ban({ reason: reason });
+		await member.ban({ reason: reason, deleteMessageDays: delete_messages });
 
 		await interaction.reply({
 			embeds: [
