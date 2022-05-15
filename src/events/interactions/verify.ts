@@ -1,7 +1,6 @@
 import {
 	ButtonInteraction,
 	ButtonStyle,
-	Colors,
 	ComponentType,
 	GuildMember,
 	Message,
@@ -12,7 +11,7 @@ import { verificationCollection } from '../../constants';
 import { Event } from '../../structures/Event';
 const memberRoleId = client.config.memberRoleId;
 const characters = '0123456789';
-let firstCode = '';
+let key1 = '';
 
 export default new Event('interactionCreate', async (interaction) => {
 	// --- Modal answers
@@ -24,15 +23,8 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (getValue.toString() === verificationCollection.get('modal-' + interaction.user.id)) {
 			const verifedEmbed = client.util
 				.embed()
-				.setAuthor({
-					name: interaction.guild.name,
-					iconURL: interaction.guild.iconURL(),
-				})
-				.setTitle('Verification Succeeded')
 				.setColor(client.colors.success)
-				.setDescription(
-					`Congrats, You entered your verification code correct, you were verified into the server.`
-				);
+				.setDescription('Congrats! You were verified in the server.');
 
 			(interaction.member as GuildMember).roles.add(memberRoleId);
 
@@ -44,14 +36,9 @@ export default new Event('interactionCreate', async (interaction) => {
 		) {
 			const deniedEmbed = client.util
 				.embed()
-				.setAuthor({
-					name: interaction.guild.name,
-					iconURL: interaction.guild.iconURL(),
-				})
-				.setTitle('Verification Denied')
 				.setColor(client.colors.error)
 				.setDescription(
-					`Sadly, you didn't enter the correct code in the field, try again to get verified.`
+					"Whoops, your answer wasn't correct. Try again to get verified."
 				);
 
 			interaction.reply({ embeds: [deniedEmbed], ephemeral: true });
@@ -75,78 +62,82 @@ export default new Event('interactionCreate', async (interaction) => {
 
 	// Verificaton Cooldown
 	const cooldownRemaining = `${~~(
-		+verificationCollection.get('cooldown-' + interaction.user.id) - +Date.now()
+		+verificationCollection.get('cooldown-' + interaction.user.id) - Date.now()
 	)}`;
 	if (verificationCollection.has('cooldown-' + interaction.user.id))
 		return interaction.reply({
-			content: `Please wait for **${client.util.convertTime(
-				~~(+cooldownRemaining / 1000)
-			)}** before trying to verify again.`,
+			embeds: [
+				client.util
+					.embed()
+					.setDescription(
+						`Please wait for **${client.util.convertTime(
+							~~(+cooldownRemaining / 1000)
+						)}** before trying to verify again.`
+					)
+					.setColor(client.colors.wait),
+			],
 			ephemeral: true,
 		});
 
-	verificationCollection.set('cooldown-' + interaction.user.id, Date.now() + 60000);
+	verificationCollection.set('cooldown-' + interaction.user.id, Date.now() + 20000);
 	setTimeout(() => {
 		verificationCollection.delete(interaction.user.id);
-	}, 60000);
+	}, 20000);
 
 	const verifiactionMode = ~~(Math.random() * (10 - 1 + 1) + 1);
 
-	// Making the random verification code
-	function generateLetter1() {
+	// Making random verification keys
+	function generateKey1() {
 		let code = '';
 		for (var i = 0; i < 5; i++) {
 			code += characters.charAt(Math.floor(Math.random() * characters.length));
 		}
-		firstCode = code;
+		key1 = code;
 	}
-
 	if (verifiactionMode > 5) {
 		await interaction.deferReply({ ephemeral: true });
-		let secondCode = '';
+		let key2 = '';
 
-		function generateLetter2() {
+		function generateKey2() {
 			const randomNumber = ~~(Math.random() * (10 - 1 + 1) + 1);
 
 			if (randomNumber > 5) {
-				secondCode = firstCode;
+				key2 = key1;
 			} else if (randomNumber <= 5) {
 				let code = '';
 				for (var i = 0; i < 5; i++) {
 					code += characters.charAt(Math.floor(Math.random() * characters.length));
 				}
-				secondCode = code;
+				key2 = code;
 			}
 		}
 
 		// Calling out the functions
-		generateLetter1();
-		generateLetter2();
+		generateKey1();
+		generateKey2();
 
 		// Embeds and components
 		const embed = client.util
 			.embed()
 			.setAuthor({
-				name: interaction.guild.name,
-				iconURL: interaction.guild.iconURL(),
+				name: 'Are these keys matching each other?',
 			})
-			.setTitle('Are these letters matching each other?')
 			.setDescription(
-				'You need to check if the 2 letters/codes below are **exactly** the same as each other. You need to provide the capital letters too.'
+				'Check if the 2 keys below are **exactly** the same as each other. Submit your answer by clicking the buttons!'
 			)
 			.addFields(
 				{
-					name: 'Letter #1',
-					value: firstCode,
+					name: 'Key #1',
+					value: key1,
 					inline: true,
 				},
 				{
-					name: 'Letter #2',
-					value: secondCode,
+					name: 'Ley #2',
+					value: key2,
 					inline: true,
 				}
 			)
-			.setColor(client.colors.ultimates);
+			.setColor(client.colors.invisible);
 
 		const buttonComponent = client.util
 			.actionRow()
@@ -177,52 +168,30 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		collector.on('collect', (collected) => {
 			if (interaction.user.id !== collected.user.id) return;
-			var isMatching: boolean = firstCode === secondCode;
+			var areMatching: boolean = key1 === key2;
 			collector.stop('success');
 
 			if (
-				(isMatching && collected.customId === 'verify-1') ||
-				(!isMatching && collected.customId === 'verify-2')
+				(areMatching && collected.customId === 'verify-1') ||
+				(!areMatching && collected.customId === 'verify-2')
 			) {
 				const verifedEmbed = client.util
 					.embed()
-					.setAuthor({
-						name: interaction.guild.name,
-						iconURL: interaction.guild.iconURL(),
-					})
-					.setTitle('Verification Succeeded')
 					.setColor(client.colors.success)
-					.setDescription(
-						`Congrats, \`${firstCode}\` and \`${secondCode}\` ${matchingBoolean()}. You were verified into the server!`
-					);
+					.setDescription('Congrats! You were verified in the server.');
 
 				if (!interaction.guild.roles.cache.get(memberRoleId)) return;
 				(interaction.member as GuildMember).roles.add(memberRoleId);
 				interaction.editReply({ embeds: [verifedEmbed], components: [] });
-
-				verificationCollection.delete('cooldown-' + interaction.user.id);
 			} else {
 				const deniedEmbed = client.util
 					.embed()
-					.setAuthor({
-						name: interaction.guild.name,
-						iconURL: interaction.guild.iconURL(),
-					})
-					.setTitle('Verification Denied')
 					.setColor(client.colors.error)
 					.setDescription(
-						`Sadly, \`${firstCode}\` and \`${secondCode}\` ${matchingBoolean()}, and... you chose the wrong answer, try again to get verifed.`
+						"Whoops, your answer wasn't correct. Try again to get verified."
 					);
 
 				interaction.editReply({ embeds: [deniedEmbed], components: [] });
-			}
-
-			function matchingBoolean() {
-				if (isMatching) {
-					return 'were matching each other';
-				} else if (!isMatching) {
-					return 'were not matching each other';
-				}
 			}
 		});
 
@@ -231,26 +200,17 @@ export default new Event('interactionCreate', async (interaction) => {
 
 			const timedOut = client.util
 				.embed()
-				.setAuthor({
-					name: interaction.guild.name,
-					iconURL: interaction.guild.iconURL(),
-				})
-				.setTitle('Verification Timed Out')
-				.setColor(Colors['Red'])
-				.setDescription(
-					"The verifiaction timed out most likely because you didn't answer in time, try again to get verifed."
-				);
+				.setColor(client.colors.error)
+				.setDescription('Verification timed out, try again to verify yourself.');
 
 			interaction.editReply({ embeds: [timedOut], components: [] });
 		});
 	} else if (verifiactionMode <= 5) {
-		// Calling out the functions
-		generateLetter1();
+		generateKey1();
 
-		// Sending the modal
 		const modal = client.util
 			.modal()
-			.setTitle('Verification | Code: ' + firstCode)
+			.setTitle('Verification | Code: ' + key1)
 			.setCustomId('verify-' + interaction.user.id)
 			.addComponents({
 				type: ComponentType['ActionRow'],
@@ -258,7 +218,7 @@ export default new Event('interactionCreate', async (interaction) => {
 					{
 						type: ComponentType['TextInput'],
 						custom_id: 'verify-' + interaction.user.id,
-						label: 'Your Code: ' + firstCode,
+						label: 'Your Code: ' + key1,
 						style: TextInputStyle['Short'],
 						required: true,
 						max_length: 5,
@@ -269,6 +229,6 @@ export default new Event('interactionCreate', async (interaction) => {
 			});
 
 		await interaction.showModal(modal);
-		verificationCollection.set('modal-' + interaction.user.id, firstCode);
+		verificationCollection.set('modal-' + interaction.user.id, key1);
 	}
 });
