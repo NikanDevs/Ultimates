@@ -2,7 +2,7 @@ import { GuildMember, Message, PermissionResolvable, TextChannel, Util } from 'd
 import { client } from '../..';
 import { automodPunishmentExpiry } from '../../constants';
 import { Event } from '../../structures/Event';
-import { badwords, ignore, enabledModules, counts } from '../../json/automod.json';
+import { badwords, ignore, enabledModules, amounts } from '../../json/automod.json';
 import { automodModel } from '../../models/automod';
 import { automodSpamCollection } from '../../constants';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -11,6 +11,7 @@ import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
+import ms from 'ms';
 const bypassRoleId = ignore['bypass-roleId'];
 const categoryIgnores = ignore['categoryIds'];
 const channelIgnores = ignore['channelNames'];
@@ -328,7 +329,7 @@ export default new Event('messageCreate', async (message) => {
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
-		automodSpamCollection.get(message.author.id) === counts['spam_count'] &&
+		automodSpamCollection.get(message.author.id) === amounts['spam_count'] &&
 		enabledModules.spam &&
 		!(await getsIgnored('spam'))
 	) {
@@ -462,12 +463,12 @@ export default new Event('messageCreate', async (message) => {
 		}
 
 		if (punishmentCount == 2) {
-			const muteDurationAt2 = 1000 * 60 * 30;
+			const timeoutDurationAt2 = ms(amounts.timeoutDurationAt2Warns);
 			await timeoutMember(message.member, {
 				reason: 'Reaching 2 automod warnings.',
-				duration: muteDurationAt2,
+				duration: timeoutDurationAt2,
 			});
-			muteDM({ duration: muteDurationAt2, reason: 'Reaching 2 automod warnings' });
+			muteDM({ duration: timeoutDurationAt2, reason: 'Reaching 2 automod warnings' });
 			const data = new automodModel({
 				_id: generateAutomodId(),
 				case: await getModCase(),
@@ -484,13 +485,13 @@ export default new Event('messageCreate', async (message) => {
 				punishmentId: data._id,
 				user: message.author,
 				moderator: client.user,
-				duration: muteDurationAt2,
+				duration: timeoutDurationAt2,
 				reason: 'Reaching 2 automod warnings.',
 				referencedPunishment: warnData,
 				expire: automodPunishmentExpiry,
 			});
 		} else if (punishmentCount > 2) {
-			const muteDurationAtmore2 = 1000 * 60 * 60;
+			const muteDurationAtmore2 = ms(amounts['timeoutDurationAt+2Warns']);
 			await timeoutMember(message.member, {
 				reason: `Reaching ${punishmentCount} automod warnings.`,
 				duration: muteDurationAtmore2,
@@ -549,7 +550,7 @@ function mostIsCap(str: string) {
 	});
 
 	if (capitals.length > nonCapitals.length) {
-		if ((capitals.length / nonCapitals.length) * 100 > counts['max_caps_percentage'])
+		if ((capitals.length / nonCapitals.length) * 100 > amounts['max_caps_percentage'])
 			return true;
 		else return false;
 	} else return false;
@@ -560,7 +561,7 @@ function mostIsEmojis(str: string) {
 		const parseEmoji = Util.parseEmoji(rawStr);
 		if (parseEmoji?.id) countEmojis.push(rawStr);
 	}
-	if (countEmojis.length > counts['max_emoji']) {
+	if (countEmojis.length > amounts['max_emoji']) {
 		return true;
 	} else {
 		return false;

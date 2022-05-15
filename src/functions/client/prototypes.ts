@@ -62,6 +62,7 @@ export const clientEmbeds = {
 			'KICK' = 'kicked',
 			'TIMEOUT' = 'timed out',
 			'UNBAN' = 'unbanned',
+			'SOFTBAN' = 'soft banned',
 		}
 		const embed = client.util
 			.embed()

@@ -2,8 +2,9 @@ import mongoose from 'mongoose';
 
 const schema = new mongoose.Schema({
 	case: Number,
+	type: String,
 	userId: String,
-	unmuteAt: Number,
+	endsAt: Date,
 });
 
-export const timeoutsModel = mongoose.model('timeouts', schema);
+export const durationsModel = mongoose.model('durations', schema);

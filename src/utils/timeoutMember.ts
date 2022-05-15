@@ -1,6 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../functions/cases/modCase';
-import { timeoutsModel } from '../models/timeouts';
+import { durationsModel } from '../models/durations';
+import { PunishmentType } from '../typings/PunishmentType';
 
 export async function timeoutMember(
 	member: GuildMember,
@@ -11,10 +12,11 @@ export async function timeoutMember(
 ) {
 	await member.timeout(options['duration'], options['reason']);
 
-	const data = new timeoutsModel({
+	const data = new durationsModel({
 		case: await getModCase(),
+		type: PunishmentType.Timeout,
 		userId: member.user.id,
-		unmuteAt: Date.now() + options['duration'],
+		endsAt: new Date(Date.now() + options['duration']),
 	});
 	await data.save();
 }

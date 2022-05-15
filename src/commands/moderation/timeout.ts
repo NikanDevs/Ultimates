@@ -3,13 +3,14 @@ import { Command } from '../../structures/Command';
 import ms from 'ms';
 import { punishmentModel } from '../../models/punishments';
 import { warningExpiry } from '../../constants';
-import { timeoutsModel } from '../../models/timeouts';
+import { durationsModel } from '../../models/durations';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { getsIgnored } from '../../functions/getsIgnored';
+import { default_config } from '../../json/moderation.json';
 
 export default new Command({
 	name: 'timeout',
@@ -41,7 +42,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const duration = options.getString('duration') || '6h';
+		const duration = options.getString('duration') || default_config.timeout_duration;
 		const reason = options.getString('reason') || 'No reason provided.';
 
 		if (getsIgnored(interaction, member)) return;
@@ -65,7 +66,7 @@ export default new Command({
 				],
 				ephemeral: true,
 			});
-		if (await timeoutsModel.findOne({ userId: member.id }))
+		if (await durationsModel.findOne({ userId: member.id }))
 			return interaction.reply({
 				embeds: [client.embeds.error('This member is already timed out.')],
 				ephemeral: true,

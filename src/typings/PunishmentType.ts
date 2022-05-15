@@ -5,6 +5,7 @@ export enum PunishmentType {
 	Timeout = 'TIMEOUT',
 	Unmute = 'UNMUTE',
 	Unban = 'UNBAN',
+	Softban = 'SOFTBAN',
 }
 
 export enum RmPunishmentType {

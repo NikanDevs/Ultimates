@@ -4,6 +4,11 @@
 		"manual-id": 18,
 		"moderated-nickname": 5
 	},
+	"default_config": {
+		"timeout_duration": "6h",
+		"softban_duration": "90d",
+		"ban_delete_messages": 0
+	},
 	"reasons": {
 		"warn": [
 			"Spamming after verbal warnings.",
@@ -18,6 +23,7 @@
 		"timeout": [],
 		"ban": [],
 		"kick": [],
-		"unban": []
+		"unban": [],
+		"softban": []
 	}
 }

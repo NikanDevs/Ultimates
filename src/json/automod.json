@@ -9,10 +9,12 @@
 		"capitals": true,
 		"urls": false
 	},
-	"counts": {
+	"amounts": {
 		"max_emoji": 10,
 		"max_caps_percentage": 90,
-		"spam_count": 5
+		"spam_count": 5,
+		"timeoutDurationAt2Warns": "30m",
+		"timeoutDurationAt+2Warns": "1h"
 	},
 	"ignore": {
 		"bypass-roleId": "881628276735483955",

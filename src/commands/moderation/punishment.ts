@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ComponentType, Message, User } from 'discord.js';
-import { timeoutsModel } from '../../models/timeouts';
+import { durationsModel } from '../../models/durations';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { automodModel } from '../../models/automod';
@@ -94,7 +94,12 @@ export default new Command({
 			const fetchUser = await client.users.fetch(data.userId);
 			switch (data.type) {
 				case PunishmentType.Timeout:
-					if (await timeoutsModel.findOne({ userId: data.userId })) {
+					if (
+						await durationsModel.findOne({
+							type: PunishmentType.Timeout,
+							userId: data.userId,
+						})
+					) {
 						if (getMember)
 							getMember.timeout(null, 'Mute ended based on the duration.');
 
@@ -123,7 +128,10 @@ export default new Command({
 								});
 							})
 							.then(async () => {
-								await timeoutsModel.findOneAndDelete({ case: data.case });
+								await durationsModel.findOneAndDelete({
+									type: PunishmentType.Timeout,
+									case: data.case,
+								});
 								await logsModel.findByIdAndDelete(data.case);
 								data.delete();
 							});
@@ -149,8 +157,15 @@ export default new Command({
 					}
 					break;
 				case PunishmentType.Ban:
+				case PunishmentType.Softban:
 					if (await interaction.guild.bans.fetch(data.userId).catch(() => {})) {
 						interaction.guild.members.unban(fetchUser, reason);
+
+						if (data.type === PunishmentType.Softban)
+							await durationsModel.findOneAndDelete({
+								type: PunishmentType.Softban,
+								case: data.case,
+							});
 
 						await interaction.followUp({
 							embeds: [
@@ -258,14 +273,17 @@ export default new Command({
 									},
 									{
 										name: 'Date & Time',
-										value: `<t:${~~(
-											automodWarn.timestamp / 1000
-										)}:f>`,
+										value: generateDiscordTimestamp(
+											automodWarn.date,
+											'Short Date/Time'
+										),
 										inline: true,
 									},
 									{
 										name: 'Expire',
-										value: `<t:${~~(automodWarn.expires / 1000)}:R>`,
+										value: generateDiscordTimestamp(
+											automodWarn.expire
+										),
 										inline: true,
 									},
 									{
@@ -324,12 +342,17 @@ export default new Command({
 									},
 									{
 										name: 'Date & Time',
-										value: `<t:${~~(manualWarn.timestamp / 1000)}:f>`,
+										value: generateDiscordTimestamp(
+											manualWarn.date,
+											'Short Date/Time'
+										),
 										inline: true,
 									},
 									{
 										name: 'Expire',
-										value: `<t:${~~(manualWarn.expires / 1000)}:R>`,
+										value: generateDiscordTimestamp(
+											manualWarn.expire
+										),
 										inline: true,
 									},
 									{

@@ -31,6 +31,7 @@ export async function createModLog(options: options) {
 		'KICK' = '#db644f',
 		'UNMUTE' = '#2F3136',
 		'UNBAN' = '#68b7bd',
+		'SOFTBAN' = '#f07046',
 	}
 
 	const currentCase = await getModCase();
@@ -52,7 +53,7 @@ export async function createModLog(options: options) {
 						  }](${await getUrlFromCase(options.referencedPunishment.case)})`
 				}\n`,
 				`• **Action:** ${client.util.capitalize(options.action)} ${
-					options.action === PunishmentType.Timeout
+					options.duration
 						? `• ${client.util.convertTime(options.duration / 1000)}`
 						: ''
 				}`,

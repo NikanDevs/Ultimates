@@ -3,7 +3,7 @@ import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { warningExpiry } from '../../constants';
-import { timeoutsModel } from '../../models/timeouts';
+import { durationsModel } from '../../models/durations';
 import { logsModel } from '../../models/logs';
 import { getModCase } from '../../functions/cases/modCase';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -23,7 +23,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		if (executor.bot) return;
 
 		// Finding the proper case
-		const findTimeout = await timeoutsModel.findOne({
+		const findTimeout = await durationsModel.findOne({
 			userId: newMember.id,
 		});
 		const findLogs = await logsModel.findById(findTimeout?.case);
