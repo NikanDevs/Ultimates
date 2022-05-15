@@ -147,7 +147,6 @@ export default new Command({
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
-			expire: warningExpiry,
 		});
 	},
 });

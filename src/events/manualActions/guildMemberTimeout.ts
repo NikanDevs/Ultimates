@@ -44,7 +44,6 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			moderator: executor,
 			reason: reason || 'No reason was provided!',
 			duration: duration,
-			expire: warningExpiry,
 		});
 	}
 });

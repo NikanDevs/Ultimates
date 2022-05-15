@@ -1,6 +1,7 @@
 import { GuildMember, User } from 'discord.js';
 import { client } from '../..';
 import { createModLog } from '../../functions/logs/createModLog';
+import { logsModel } from '../../models/logs';
 import { timeoutsModel } from '../../models/timeouts';
 import { Event } from '../../structures/Event';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -27,5 +28,7 @@ export default new Event('messageCreate', async (message) => {
 			reason: 'Timeout ended based on the duration.',
 			referencedPunishment: data,
 		});
+
+		await logsModel.findByIdAndDelete(data.case);
 	});
 });
