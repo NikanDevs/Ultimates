@@ -81,7 +81,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 	verificationCollection.set('cooldown-' + interaction.user.id, Date.now() + 20000);
 	setTimeout(() => {
-		verificationCollection.delete(interaction.user.id);
+		verificationCollection.delete('cooldown-' + interaction.user.id);
 	}, 20000);
 
 	const verifiactionMode = ~~(Math.random() * (10 - 1 + 1) + 1);
