@@ -15,6 +15,7 @@ interface options {
 	duration?: number;
 	referencedPunishment?: any;
 	expire?: Date;
+	revoke?: boolean;
 }
 
 async function getUrlFromCase(tofindCase: string | number) {
@@ -34,15 +35,20 @@ export async function createModLog(options: options) {
 		'SOFTBAN' = '#f07046',
 	}
 
+	const revoke: boolean = options.revoke ? options.revoke : false;
 	const currentCase = await getModCase();
 	await addModCase();
 	const embed = client.util
 		.embed()
 		.setAuthor({
-			name: ` ${client.util.capitalize(options.action)} | Case: #${currentCase}`,
+			name: ` ${revoke ? 'Revoke' : client.util.capitalize(options.action)} | Case: #${
+				revoke ? options.referencedPunishment.case : currentCase
+			}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
-		.setColor(Util.resolveColor(colors[options.action]))
+		.setColor(
+			revoke ? Util.resolveColor('#b04d46') : Util.resolveColor(colors[options.action])
+		)
 		.setDescription(
 			[
 				`${
@@ -65,12 +71,15 @@ export async function createModLog(options: options) {
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
 				`• **Reason:** ${options.reason}`,
-				``,
 			].join('\n')
 		);
 	var logMessage = await moderationLogging.send({ embeds: [embed] });
 
-	if (options.action === PunishmentType.Unmute || options.action === PunishmentType.Unban)
+	if (
+		options.action === PunishmentType.Unmute ||
+		options.action === PunishmentType.Unban ||
+		revoke
+	)
 		return;
 
 	var findMessage = await (
@@ -79,7 +88,7 @@ export async function createModLog(options: options) {
 	const newLogData = new logsModel({
 		_id: currentCase,
 		url: findMessage.url,
-		expire: options.expire,
+		expire: options.expire ? options.expire : null,
 	});
 	await newLogData.save();
 }

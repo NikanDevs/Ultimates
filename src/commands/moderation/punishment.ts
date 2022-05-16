@@ -5,9 +5,8 @@ import { Command } from '../../structures/Command';
 import { automodModel } from '../../models/automod';
 import { logsModel } from '../../models/logs';
 import { lengths } from '../../json/moderation.json';
-import { PunishmentType, RmPunishmentType } from '../../typings/PunishmentType';
+import { PunishmentType } from '../../typings/PunishmentType';
 import { createModLog } from '../../functions/logs/createModLog';
-import { createRmPunishLog } from '../../functions/logs/createRmpunishLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
@@ -77,7 +76,7 @@ export default new Command({
 
 		if (getSubCommand === 'revoke') {
 			const warnId = options.getString('id');
-			const reason = options.getString('reason') || 'No reason provided.';
+			const reason = options.getString('reason') || 'No reason was provided.';
 
 			const data =
 				warnId.length === lengths['automod-id']
@@ -106,7 +105,7 @@ export default new Command({
 						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
-									`Punishment **${warnId}** was **revoked**.`
+									`Punishment **${warnId}** was revoked.`
 								),
 							],
 						});
@@ -115,41 +114,32 @@ export default new Command({
 							action: PunishmentType.Unmute,
 							user: fetchUser,
 							moderator: interaction.user,
-							reason: reason,
+							reason: '[Revoke]: ' + reason,
 							referencedPunishment: data,
-						})
-							.then(() => {
-								createRmPunishLog({
-									type: RmPunishmentType.Revoke,
-									user: fetchUser,
-									moderator: interaction.user,
-									punishment: data,
-									reason: reason,
-								});
-							})
-							.then(async () => {
-								await durationsModel.findOneAndDelete({
-									type: PunishmentType.Timeout,
-									case: data.case,
-								});
-								await logsModel.findByIdAndDelete(data.case);
-								data.delete();
+						}).then(async () => {
+							await durationsModel.findOneAndDelete({
+								type: PunishmentType.Timeout,
+								case: data.case,
 							});
+							await logsModel.findByIdAndDelete(data.case);
+							data.delete();
+						});
 					} else {
 						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
-									`Punishment **${warnId}** was **revoked**.`
+									`Punishment **${warnId}** was revoked.`
 								),
 							],
 						});
 
-						await createRmPunishLog({
-							type: RmPunishmentType.Revoke,
+						await createModLog({
+							action: data.type as PunishmentType,
 							user: fetchUser,
 							moderator: interaction.user,
-							punishment: data,
 							reason: reason,
+							referencedPunishment: data,
+							revoke: true,
 						}).then(async () => {
 							await logsModel.findByIdAndDelete(data.case);
 							data.delete();
@@ -170,31 +160,21 @@ export default new Command({
 						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
-									`Punishment **${warnId}** was **revoked**.`
+									`Punishment **${warnId}** was revoked.`
 								),
 							],
 						});
 
-						createModLog({
+						await createModLog({
 							action: PunishmentType.Unban,
 							user: fetchUser,
 							moderator: interaction.user,
-							reason: reason,
+							reason: '[Revoke]: ' + reason,
 							referencedPunishment: data,
-						})
-							.then(() => {
-								createRmPunishLog({
-									type: RmPunishmentType.Revoke,
-									user: fetchUser,
-									moderator: interaction.user,
-									punishment: data,
-									reason: reason,
-								});
-							})
-							.then(async () => {
-								await logsModel.findByIdAndDelete(data.case);
-								data.delete();
-							});
+						}).then(async () => {
+							await logsModel.findByIdAndDelete(data.case);
+							data.delete();
+						});
 					} else {
 						await interaction.followUp({
 							embeds: [
@@ -204,12 +184,13 @@ export default new Command({
 							],
 						});
 
-						await createRmPunishLog({
-							type: RmPunishmentType.Revoke,
+						await createModLog({
+							action: data.type as PunishmentType,
 							user: fetchUser,
 							moderator: interaction.user,
-							punishment: data,
 							reason: reason,
+							referencedPunishment: data,
+							revoke: true,
 						}).then(async () => {
 							await logsModel.findByIdAndDelete(data.case);
 							data.delete();
@@ -219,18 +200,17 @@ export default new Command({
 				default:
 					await interaction.followUp({
 						embeds: [
-							client.embeds.success(
-								`Punishment **${warnId}** was **revoked**.`
-							),
+							client.embeds.success(`Punishment **${warnId}** was revoked.`),
 						],
 					});
 
-					createRmPunishLog({
-						type: RmPunishmentType.Revoke,
+					await createModLog({
+						action: data.type as PunishmentType,
 						user: fetchUser,
 						moderator: interaction.user,
-						punishment: data,
 						reason: reason,
+						referencedPunishment: data,
+						revoke: true,
 					}).then(async () => {
 						await logsModel.findByIdAndDelete(data.case);
 						data.delete();

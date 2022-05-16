@@ -28,8 +28,6 @@ export default new Event('messageCreate', async (message) => {
 			reason: 'Timeout ended based on the duration.',
 			referencedPunishment: data,
 		});
-
-		await logsModel.findByIdAndDelete(data.case);
 	});
 
 	// Unbans
@@ -57,7 +55,5 @@ export default new Event('messageCreate', async (message) => {
 			reason: reason,
 			referencedPunishment: data,
 		});
-
-		await logsModel.findByIdAndDelete(data.case);
 	});
 });

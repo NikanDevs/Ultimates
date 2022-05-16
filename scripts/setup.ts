@@ -108,15 +108,6 @@ client.on('messageCreate', async (message) => {
 			.then((webhook) => dataArray.push(webhook.url));
 
 		await (
-			client.channels.cache.get(args.split('-')[3].replace(/[<#!>, ]/g, '')) as TextChannel
-		)
-			.createWebhook(`Punishment-Remove-Logs`, {
-				avatar: client.user.displayAvatarURL(),
-				reason: `${client.user.username} setup`,
-			})
-			.then((webhook) => dataArray.push(webhook.url));
-
-		await (
 			client.channels.cache.get(args.split('-')[4].replace(/[<#!>, ]/g, '')) as TextChannel
 		)
 			.createWebhook(`Modmail-Logs`, {
@@ -166,14 +157,13 @@ client.on('messageCreate', async (message) => {
 						`		"error-handler": "${dataArray[0]}",`,
 						`		"mod-logs": "${dataArray[1]}",`,
 						`		"message-logs": "${dataArray[2]}",`,
-						`		"rmpunish-logs": "${dataArray[3]}",`,
-						`		"modmail": "${dataArray[4]}",`,
-						`		"server-gate": "${dataArray[5]}"`,
+						`		"modmail": "${dataArray[3]}",`,
+						`		"server-gate": "${dataArray[4]}"`,
 						'	},',
 						'	"emojis": {',
-						`		"sucess": "${dataArray[6]}",`,
-						`		"error": "${dataArray[7]}",`,
-						`		"attention": "${dataArray[8]}"`,
+						`		"sucess": "${dataArray[5]}",`,
+						`		"error": "${dataArray[8]}",`,
+						`		"attention": "${dataArray[9]}"`,
 						'	}',
 						'}',
 					].join('\n') +

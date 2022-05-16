@@ -7,8 +7,3 @@ export enum PunishmentType {
 	Unban = 'UNBAN',
 	Softban = 'SOFTBAN',
 }
-
-export enum RmPunishmentType {
-	Revoke = 'REVOKE',
-	Expire = 'EXPIRE',
-}

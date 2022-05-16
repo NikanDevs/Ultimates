@@ -20,11 +20,6 @@ export const moderationLogging = new WebhookClient({
 	token: getWebhookInfo(webhooks['mod-logs'])[1],
 });
 
-export const rmpunishmentLogging = new WebhookClient({
-	id: getWebhookInfo(webhooks['rmpunish-logs'])[0],
-	token: getWebhookInfo(webhooks['rmpunish-logs'])[1],
-});
-
 export const joinAndLeaveLogging = new WebhookClient({
 	id: getWebhookInfo(webhooks['server-gate'])[0],
 	token: getWebhookInfo(webhooks['server-gate'])[1],
