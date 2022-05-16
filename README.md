@@ -52,7 +52,7 @@ Format: first 6 arguments are channel mentions, and the 3 arguments at the end a
 
 ```
 
-SETUP START [errors] - [mod-logs] - [message-logs] - [warn-remove-logs] - [modmail-logs] - [join-leaves-logs] - | [sucess] | [error] | [attention]
+SETUP START [errors] - [mod-logs] - [message-logs] - [modmail-logs] - [join-leaves-logs] - | [sucess] | [error] | [attention]
 
 ```
 

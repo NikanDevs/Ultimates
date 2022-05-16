@@ -40,7 +40,7 @@ client.on('ready', async (client) => {
 			'Please mention (#channel) the channels you want to set and replace them in the []s',
 			'After that, type a "|" and type your emojis in the order.',
 		].join('\n') +
-			`\n\n\nSETUP START [errors] - [mod-logs] - [message-logs] - [warn-remove-logs] - [modmail-logs] - [join-leaves-logs] - | [sucess] | [error] | [attention]\n\n`
+			`\n\n\nSETUP START [errors] - [mod-logs] - [message-logs] - [modmail-logs] - [join-leaves-logs] - | [sucess] | [error] | [attention]\n\n`
 	);
 });
 
@@ -71,7 +71,7 @@ client.on('messageCreate', async (message) => {
 					'Please mention (#channel) the channels you want to set and replace them in the []s',
 					'After that, type a "|" and type your emojis in the order.',
 				].join('\n') +
-					`\n\n\nSETUP START [errors] - [mod-logs] - [message-logs] - [warn-remove-logs] - [modmail-logs] - [join-leaves-logs] - | [sucess] | [error] | [attention]`
+					`\n\n\nSETUP START [errors] - [mod-logs] - [message-logs] - [modmail-logs] - [join-leaves-logs] - | [sucess] | [error] | [attention]`
 			);
 			process.exit();
 		}
@@ -162,8 +162,8 @@ client.on('messageCreate', async (message) => {
 						'	},',
 						'	"emojis": {',
 						`		"sucess": "${dataArray[5]}",`,
-						`		"error": "${dataArray[8]}",`,
-						`		"attention": "${dataArray[9]}"`,
+						`		"error": "${dataArray[6]}",`,
+						`		"attention": "${dataArray[7]}"`,
 						'	}',
 						'}',
 					].join('\n') +
