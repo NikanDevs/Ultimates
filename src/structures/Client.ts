@@ -49,7 +49,7 @@ export class Ultimates extends Client {
 		// Connecting to mongoDB
 		const mongoDBConnection = process.env.MONGODB;
 		if (!mongoDBConnection) return;
-		// connect(mongoDBConnection).then(() => console.log('Connected to MongoDB!'));
+		connect(mongoDBConnection).then(() => console.log('Connected to MongoDB!'));
 
 		// Handler Errors And exit
 		this.handlerErrors();
@@ -58,13 +58,6 @@ export class Ultimates extends Client {
 	async importFiles(filePath: string) {
 		return (await import(filePath))?.default;
 	}
-
-	// async registerCommandOptions({ commands }: registerSlashCommandOptions) {
-	// 	this.guilds.cache.get(this.server.id).commands.set(commands);
-	// 	console.log(
-	// 		`Registering interaction commands to ${this.guilds.cache.get(this.server.id).name}`
-	// 	);
-	// }
 
 	/** Registers commands and events if called. */
 	async registerModules() {
