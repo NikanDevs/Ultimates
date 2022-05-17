@@ -88,7 +88,7 @@ export default new Command({
 					ephemeral: true,
 				});
 
-			await interaction.deferReply();
+			await interaction.deferReply({ ephemeral: true });
 			const getMember = interaction.guild.members.cache.get(data.userId);
 			const fetchUser = await client.users.fetch(data.userId);
 			switch (data.type) {
@@ -108,7 +108,6 @@ export default new Command({
 									`Punishment **${warnId}** was revoked.`
 								),
 							],
-							ephemeral: true,
 						});
 
 						await createModLog({
@@ -132,7 +131,6 @@ export default new Command({
 									`Punishment **${warnId}** was revoked.`
 								),
 							],
-							ephemeral: true,
 						});
 
 						await createModLog({
@@ -165,7 +163,6 @@ export default new Command({
 									`Punishment **${warnId}** was revoked.`
 								),
 							],
-							ephemeral: true,
 						});
 
 						await createModLog({
@@ -185,7 +182,6 @@ export default new Command({
 									`Punishment **${warnId}** was **revoked**.`
 								),
 							],
-							ephemeral: true,
 						});
 
 						await createModLog({
@@ -206,7 +202,6 @@ export default new Command({
 						embeds: [
 							client.embeds.success(`Punishment **${warnId}** was revoked.`),
 						],
-						ephemeral: true,
 					});
 
 					await createModLog({
