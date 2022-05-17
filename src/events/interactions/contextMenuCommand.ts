@@ -8,6 +8,7 @@ import {
 } from 'discord.js';
 import { reportError } from '../../functions/reportError';
 const cooldown = new Collection();
+import { connection, ConnectionStates } from 'mongoose';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction.inGuild()) return;
@@ -23,7 +24,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						`No commands were found matching \`/${interaction.commandName}\``
+						`No context menus were found matching \`/${interaction.commandName}\``
 					),
 				],
 				ephemeral: true,
@@ -56,6 +57,23 @@ export default new Event('interactionCreate', async (interaction) => {
 				);
 
 			return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
+		}
+
+		if (command.directory !== 'developer' && connection.readyState !== 1) {
+			interaction.reply({
+				embeds: [
+					client.embeds.attention(
+						'MongoDB is not connected properly, please contact a developer.'
+					),
+				],
+				ephemeral: true,
+			});
+			return reportError(interaction, interaction.commandName, {
+				stack: `MongoDB connection was not found. Ready state: ${
+					connection.readyState
+				}\n\nStatus: ${ConnectionStates[connection.readyState]} `,
+				name: 'MongoDB connection was not found.',
+			} as Error);
 		}
 
 		await command

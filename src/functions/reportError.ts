@@ -9,24 +9,30 @@ export function reportError(interaction: CommandInteraction, commandName: string
 		case false:
 			switch (interaction.deferred) {
 				case true:
-					interaction.followUp({
-						embeds: [client.embeds.error(errorMsg)],
-						ephemeral: true,
-					});
+					interaction
+						.followUp({
+							embeds: [client.embeds.error(errorMsg)],
+							ephemeral: true,
+						})
+						.catch(() => {});
 					break;
 				case false:
-					interaction.reply({
-						embeds: [client.embeds.error(errorMsg)],
-						ephemeral: true,
-					});
+					interaction
+						.reply({
+							embeds: [client.embeds.error(errorMsg)],
+							ephemeral: true,
+						})
+						.catch(() => {});
 					break;
 			}
 			break;
 
 		case true:
-			interaction.editReply({
-				embeds: [client.embeds.error(errorMsg)],
-			});
+			interaction
+				.editReply({
+					embeds: [client.embeds.error(errorMsg)],
+				})
+				.catch(() => {});
 			break;
 	}
 
