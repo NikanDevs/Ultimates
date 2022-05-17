@@ -108,6 +108,7 @@ export default new Command({
 									`Punishment **${warnId}** was revoked.`
 								),
 							],
+							ephemeral: true,
 						});
 
 						await createModLog({
@@ -131,6 +132,7 @@ export default new Command({
 									`Punishment **${warnId}** was revoked.`
 								),
 							],
+							ephemeral: true,
 						});
 
 						await createModLog({
@@ -163,6 +165,7 @@ export default new Command({
 									`Punishment **${warnId}** was revoked.`
 								),
 							],
+							ephemeral: true,
 						});
 
 						await createModLog({
@@ -182,6 +185,7 @@ export default new Command({
 									`Punishment **${warnId}** was **revoked**.`
 								),
 							],
+							ephemeral: true,
 						});
 
 						await createModLog({
@@ -202,6 +206,7 @@ export default new Command({
 						embeds: [
 							client.embeds.success(`Punishment **${warnId}** was revoked.`),
 						],
+						ephemeral: true,
 					});
 
 					await createModLog({
