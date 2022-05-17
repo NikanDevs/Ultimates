@@ -17,7 +17,7 @@ interface excuteOptions {
 
 type excuteFunction = (options: excuteOptions) => any;
 
-type directories = 'moderation' | 'developer' | 'utility' | 'secret' | 'server' | 'modmail';
+type directories = 'moderation' | 'developer' | 'utility' | 'modmail';
 
 export type commandType = {
 	name: string;
