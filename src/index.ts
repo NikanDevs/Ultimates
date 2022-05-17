@@ -1,6 +1,6 @@
 require('dotenv').config();
-import { nikansUtil } from './structures/Client';
+import { Ultimates } from './structures/Client';
 
-export const client = new nikansUtil();
+export const client = new Ultimates();
 
 client.born();

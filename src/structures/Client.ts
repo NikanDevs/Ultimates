@@ -11,7 +11,7 @@ import { clientCc, clientColors, clientEmbeds, clientServer } from '../functions
 import { enabledModules as logsEnabledModules } from '../json/logs.json';
 const globPromise = promisify(glob);
 
-export class nikansUtil extends Client {
+export class Ultimates extends Client {
 	commands = new Collection() as Collection<string, commandType>;
 	config = botConfig;
 	util = new clientUtil();

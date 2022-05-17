@@ -5,10 +5,10 @@ import {
 	PermissionResolvable,
 	Message,
 } from 'discord.js';
-import { nikansUtil } from '../structures/Client';
+import { Ultimates } from '../structures/Client';
 
 interface excuteOptions {
-	client: nikansUtil;
+	client: Ultimates;
 	interaction?: CommandInteraction;
 	message?: Message;
 	args?: string[];
