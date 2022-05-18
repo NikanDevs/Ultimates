@@ -32,7 +32,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user-id');
-		const reason = options.getString('reason') || 'No reason was provided.';
+		const reason = options.getString('reason');
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
 		if (!bannedMember)

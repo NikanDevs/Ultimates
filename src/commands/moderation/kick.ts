@@ -33,7 +33,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason = options.getString('reason') || 'No reason provided.';
+		const reason = options.getString('reason');
 
 		if (getsIgnored(interaction, member)) return;
 
