@@ -31,7 +31,9 @@ export default new Command({
 						data._id
 					}**`,
 					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
-					client.users.cache.get(data.moderatorId) === undefined
+					data.moderatorId === client.user.id
+						? `• **Moderator:** Automatic`
+						: client.users.cache.get(data.moderatorId) === undefined
 						? `• **Moderator ID:** ${data.moderatorId}`
 						: `• **Moderator:** ${client.users.cache.get(data.moderatorId).tag}`,
 					data.type === PunishmentType.Warn
