@@ -24,11 +24,6 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		const { executor, reason } = findCase;
 		if (executor.bot) return;
 
-		// Finding the proper case
-		const findTimeout = await durationsModel.findOne({
-			userId: newMember.id,
-		});
-		const findLogs = await logsModel.findById(findTimeout?.case);
 		const data_ = new punishmentModel({
 			_id: generateManualId(),
 			case: await getModCase(),
@@ -41,26 +36,12 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		});
 		await data_.save();
 
-		if (findLogs && findTimeout !== undefined) {
-			await createModLog({
-				action: PunishmentType.Unmute,
-				punishmentId: data_._id,
-				user: newMember.user,
-				moderator: executor,
-				reason: reason || 'No reason was provided!',
-				referencedPunishment: { case: findLogs._id },
-			}).then(() => {
-				findLogs.delete();
-				findTimeout.delete();
-			});
-		} else {
-			await createModLog({
-				action: PunishmentType.Unmute,
-				punishmentId: data_._id,
-				user: newMember.user,
-				moderator: executor,
-				reason: reason || 'No reason was provided!',
-			});
-		}
+		await createModLog({
+			action: PunishmentType.Unmute,
+			punishmentId: data_._id,
+			user: newMember.user,
+			moderator: executor,
+			reason: reason,
+		});
 	}
 });

@@ -33,9 +33,9 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: PunishmentType.Timeout,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
-			reason: reason || 'No reason was provided!',
+			reason: reason,
 			date: new Date(),
-			expire: warningExpiry,
+			expire: new Date(warningExpiry.getTime() + duration),
 		});
 		await data_.save();
 
@@ -44,7 +44,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			punishmentId: data_._id,
 			user: newMember.user,
 			moderator: executor,
-			reason: reason || 'No reason was provided!',
+			reason: reason,
 			duration: duration,
 		});
 	}
