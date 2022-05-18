@@ -7,6 +7,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
+import { default_config } from '../../json/moderation.json';
 import { client } from '../..';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
@@ -33,7 +34,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: PunishmentType.Timeout,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
-			reason: reason,
+			reason: reason || default_config.reason,
 			date: new Date(),
 			expire: new Date(warningExpiry.getTime() + duration),
 		});

@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { punishmentExpiry, warningExpiry } from '../../constants';
+import { punishmentExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -8,6 +8,7 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
+import { default_config } from '../../json/moderation.json';
 
 export default new Command({
 	name: 'kick',
@@ -33,7 +34,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason = options.getString('reason');
+		const reason = options.getString('reason') || default_config.reason;
 
 		if (getsIgnored(interaction, member)) return;
 

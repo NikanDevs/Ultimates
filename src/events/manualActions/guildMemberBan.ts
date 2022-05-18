@@ -7,6 +7,7 @@ import { punishmentExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
+import { default_config } from '../../json/moderation.json';
 
 export default new Event('guildBanAdd', async (ban) => {
 	if (ban.guild.id !== client.server.id) return;
@@ -26,7 +27,7 @@ export default new Event('guildBanAdd', async (ban) => {
 		type: PunishmentType.Ban,
 		userId: ban.user.id,
 		moderatorId: executor.id,
-		reason: reason,
+		reason: reason || default_config.reason,
 		date: new Date(),
 		expire: punishmentExpiry,
 	});

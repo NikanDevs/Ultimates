@@ -4,7 +4,6 @@ import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { warningExpiry } from '../../constants';
 import { durationsModel } from '../../models/durations';
-import { logsModel } from '../../models/logs';
 import { getModCase } from '../../functions/cases/modCase';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -24,6 +23,12 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		const { executor, reason } = findCase;
 		if (executor.bot) return;
 
+		// Finding the proper case
+		const findTimeout = await durationsModel.findOne({
+			type: PunishmentType.Timeout,
+			userId: newMember.id,
+		});
+
 		const data_ = new punishmentModel({
 			_id: generateManualId(),
 			case: await getModCase(),
@@ -42,6 +47,9 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			user: newMember.user,
 			moderator: executor,
 			reason: reason,
+		}).then(async () => {
+			if (!findTimeout || findTimeout === undefined) return;
+			await findTimeout.delete();
 		});
 	}
 });

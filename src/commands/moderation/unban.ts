@@ -6,6 +6,7 @@ import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
+import { default_config } from '../../json/moderation.json';
 
 export default new Command({
 	name: 'unban',
@@ -32,7 +33,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user-id');
-		const reason = options.getString('reason');
+		const reason = options.getString('reason') || default_config.reason;
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
 		if (!bannedMember)

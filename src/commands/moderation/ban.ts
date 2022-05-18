@@ -50,7 +50,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason = options.getString('reason');
+		const reason = options.getString('reason') || default_config.reason;
 		const delete_messages =
 			options.getNumber('delete_messages') || default_config.ban_delete_messages;
 

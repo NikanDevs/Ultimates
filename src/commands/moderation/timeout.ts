@@ -44,7 +44,7 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const duration = options.getString('duration') || default_config.timeout_duration;
-		const reason = options.getString('reason');
+		const reason = options.getString('reason') || default_config.reason;
 
 		if (getsIgnored(interaction, member)) return;
 		if (member.permissions.has('Administrator'))

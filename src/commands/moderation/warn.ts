@@ -45,7 +45,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason: string | null = options.getString('reason');
+		const reason = options.getString('reason') || default_config.reason;
 
 		if (getsIgnored(interaction, member)) return;
 
