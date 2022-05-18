@@ -8,6 +8,7 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { default_config } from '../../json/moderation.json';
+import { sendModDM } from '../../utils/sendModDM';
 
 export default new Command({
 	name: 'ban',
@@ -67,27 +68,10 @@ export default new Command({
 		});
 		await data.save();
 
-		const DMembed = client.util
-			.embed()
-			.setAuthor({
-				name: client.user.username,
-				iconURL: client.user.displayAvatarURL(),
-			})
-			.setTitle('You were banned from ' + interaction.guild.name)
-			.setColor(client.colors.moderation)
-			.addFields(
-				{
-					name: 'Punishment Id',
-					value: data._id,
-					inline: true,
-				},
-				{
-					name: 'Reason',
-					value: reason,
-					inline: false,
-				}
-			);
-		await member.send({ embeds: [DMembed] }).catch(() => {});
+		await sendModDM(member, {
+			action: PunishmentType.Ban,
+			punishment: data,
+		});
 		await member.ban({ reason: reason, deleteMessageDays: delete_messages });
 
 		await interaction.reply({

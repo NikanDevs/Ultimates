@@ -10,6 +10,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import ms from 'ms';
 import { durationsModel } from '../../models/durations';
 import { default_config } from '../../json/moderation.json';
+import { sendModDM } from '../../utils/sendModDM';
 
 export default new Command({
 	name: 'softban',
@@ -94,32 +95,11 @@ export default new Command({
 		});
 		await data.save();
 
-		const DMembed = client.util
-			.embed()
-			.setAuthor({
-				name: client.user.username,
-				iconURL: client.user.displayAvatarURL(),
-			})
-			.setTitle('You were soft banned from ' + interaction.guild.name)
-			.setColor(client.colors.moderation)
-			.addFields(
-				{
-					name: 'Punishment Id',
-					value: data._id,
-					inline: true,
-				},
-				{
-					name: 'Duration',
-					value: client.util.convertTime(ms(duration) / 1000),
-					inline: true,
-				},
-				{
-					name: 'Reason',
-					value: reason,
-					inline: false,
-				}
-			);
-		await member.send({ embeds: [DMembed] }).catch(() => {});
+		await sendModDM(member, {
+			action: PunishmentType.Softban,
+			punishment: data,
+			expire: new Date(ms(duration)),
+		});
 		await member.ban({ reason: reason, deleteMessageDays: delete_messages });
 
 		const durationData = new durationsModel({

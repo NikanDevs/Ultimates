@@ -11,6 +11,7 @@ import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { getsIgnored } from '../../functions/getsIgnored';
 import { default_config } from '../../json/moderation.json';
+import { sendModDM } from '../../utils/sendModDM';
 
 export default new Command({
 	name: 'timeout',
@@ -100,7 +101,7 @@ export default new Command({
 			moderatorId: interaction.user.id,
 			reason: reason,
 			date: new Date(),
-			expire: warningExpiry,
+			expire: new Date(warningExpiry.getTime() + ms(duration)),
 		});
 		await data.save();
 
@@ -114,32 +115,11 @@ export default new Command({
 			ephemeral: true,
 		});
 
-		const DMembed = client.util
-			.embed()
-			.setAuthor({
-				name: client.user.username,
-				iconURL: client.user.displayAvatarURL(),
-			})
-			.setColor(client.colors.moderation)
-			.setTitle(`You were timed out in ${interaction.guild.name}`)
-			.addFields(
-				{
-					name: 'Punishment ID',
-					value: data._id,
-					inline: true,
-				},
-				{
-					name: 'Duration',
-					value: client.util.convertTime(ms(duration) / 1000),
-					inline: true,
-				},
-				{
-					name: 'Reason',
-					value: reason,
-					inline: false,
-				}
-			);
-		await member.send({ embeds: [DMembed] }).catch(() => {});
+		await sendModDM(member, {
+			action: PunishmentType.Timeout,
+			punishment: data,
+			expire: new Date(Date.now() + ms(duration)),
+		});
 
 		await createModLog({
 			action: PunishmentType.Timeout,

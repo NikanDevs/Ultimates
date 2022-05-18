@@ -7,6 +7,7 @@ import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
+import { sendModDM } from '../../utils/sendModDM';
 
 export default new Command({
 	name: 'kick',
@@ -48,27 +49,10 @@ export default new Command({
 		});
 		await data.save();
 
-		const DMembed = client.util
-			.embed()
-			.setAuthor({
-				name: client.user.username,
-				iconURL: client.user.displayAvatarURL(),
-			})
-			.setTitle('You were kicked from ' + interaction.guild.name)
-			.setColor(client.colors.moderation)
-			.addFields(
-				{
-					name: 'Punishment Id',
-					value: data._id,
-					inline: true,
-				},
-				{
-					name: 'Reason',
-					value: reason,
-					inline: false,
-				}
-			);
-		await member.send({ embeds: [DMembed] }).catch(() => {});
+		await sendModDM(member, {
+			action: PunishmentType.Kick,
+			punishment: data,
+		});
 		await member.kick(reason);
 
 		await interaction.reply({

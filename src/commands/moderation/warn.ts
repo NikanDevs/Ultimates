@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ButtonStyle, GuildMember } from 'discord.js';
+import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry, warningExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
@@ -8,15 +8,17 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { timeoutMember } from '../../utils/timeoutMember';
-import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
+import { sendModDM } from '../../utils/sendModDM';
+import { default_config, auto_mute } from '../../json/moderation.json';
+import ms from 'ms';
 enum reasons {
 	'two' = 'Reaching 2 manual warnings.',
 	'four' = 'Reaching 4 manual warnings.',
 	'six' = 'Reaching 6 manual warnings.',
 }
 enum durations {
-	'two' = 1000 * 60 * 60 * 2,
-	'four' = 1000 * 10 * 60 * 6,
+	'two' = ms(auto_mute[2]),
+	'four' = ms(auto_mute[4]),
 }
 
 export default new Command({
@@ -43,7 +45,7 @@ export default new Command({
 
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason = options.getString('reason');
+		const reason: string | null = options.getString('reason');
 
 		if (getsIgnored(interaction, member)) return;
 
@@ -69,32 +71,11 @@ export default new Command({
 			ephemeral: true,
 		});
 
-		const dmEmbed = client.util
-			.embed()
-			.setAuthor({
-				name: client.user.username,
-				iconURL: client.user.displayAvatarURL(),
-			})
-			.setTitle('You were warned in ' + interaction.guild.name)
-			.setColor(client.colors.moderation)
-			.addFields(
-				{
-					name: 'Punishment Id',
-					value: warnData._id,
-					inline: true,
-				},
-				{
-					name: 'Expiry',
-					value: `${generateDiscordTimestamp(warnData.expire)}`,
-					inline: true,
-				},
-				{
-					name: 'Reason',
-					value: reason,
-					inline: false,
-				}
-			);
-		await member.send({ embeds: [dmEmbed] }).catch(() => {});
+		sendModDM(member, {
+			action: PunishmentType.Warn,
+			expire: warnData.expire,
+			punishment: warnData,
+		});
 
 		await createModLog({
 			action: PunishmentType.Warn,
@@ -127,7 +108,7 @@ export default new Command({
 						moderatorId: client.user.id,
 						reason: reasons['two'],
 						date: new Date(),
-						expire: warningExpiry,
+						expire: new Date(warningExpiry.getTime() + durations.two),
 					});
 					data.save();
 
@@ -139,36 +120,13 @@ export default new Command({
 						reason: reasons['two'],
 						duration: durations['two'],
 						referencedPunishment: warnData,
-						expire: warningExpiry,
 					});
 
-					const DMembed = client.util
-						.embed()
-						.setAuthor({
-							name: client.user.username,
-							iconURL: client.user.displayAvatarURL(),
-						})
-						.setColor(client.colors.moderation)
-						.setTitle(`You were timed out in ${interaction.guild.name}`)
-						.addFields(
-							{
-								name: 'Type',
-								value: 'Automatic',
-								inline: true,
-							},
-							{
-								name: 'Duration',
-								value: client.util.convertTime(durations['two'] / 1000),
-								inline: true,
-							},
-							{
-								name: 'Reason',
-								value: reasons['two'],
-								inline: false,
-							}
-						);
-					await member.send({ embeds: [DMembed] }).catch(() => {});
-
+					sendModDM(member, {
+						action: PunishmentType.Timeout,
+						punishment: data,
+						expire: new Date(Date.now() + durations.two),
+					});
 					break;
 				case 4:
 					await timeoutMember(member, {
@@ -184,7 +142,7 @@ export default new Command({
 						moderatorId: client.user.id,
 						reason: reasons['four'],
 						date: new Date(),
-						expire: warningExpiry,
+						expire: new Date(warningExpiry.getTime() + durations.two),
 					});
 					data2.save();
 
@@ -196,36 +154,13 @@ export default new Command({
 						reason: reasons['four'],
 						duration: durations['four'],
 						referencedPunishment: warnData,
-						expire: warningExpiry,
 					});
 
-					const DMembed2 = client.util
-						.embed()
-						.setAuthor({
-							name: client.user.username,
-							iconURL: client.user.displayAvatarURL(),
-						})
-						.setColor(client.colors.moderation)
-						.setTitle(`You were timed out in ${interaction.guild.name}`)
-						.addFields(
-							{
-								name: 'Type',
-								value: 'Automatic',
-								inline: true,
-							},
-							{
-								name: 'Duration',
-								value: client.util.convertTime(durations['two'] / 1000),
-								inline: true,
-							},
-							{
-								name: 'Reason',
-								value: reasons['four'],
-								inline: false,
-							}
-						);
-					await member.send({ embeds: [DMembed2] }).catch(() => {});
-
+					sendModDM(member, {
+						action: PunishmentType.Timeout,
+						punishment: data2,
+						expire: new Date(Date.now() + durations.four),
+					});
 					break;
 				case 6:
 					const data3 = new punishmentModel({
@@ -250,40 +185,14 @@ export default new Command({
 						expire: punishmentExpiry,
 					});
 
-					const DMembed3 = client.util
-						.embed()
-						.setAuthor({
-							name: client.user.username,
-							iconURL: client.user.displayAvatarURL(),
-						})
-						.setColor(client.colors.moderation)
-						.setTitle(`You were banned from ${interaction.guild.name}`)
-						.addFields(
-							{
-								name: 'Punishment ID',
-								value: `${data3._id}`,
-								inline: true,
-							},
-							{
-								name: 'Reason',
-								value: reasons['six'],
-								inline: false,
-							}
-						);
-					const appealButton = client.util
-						.actionRow()
-						.addComponents(
-							client.util
-								.button()
-								.setURL(client.server.appeal)
-								.setStyle(ButtonStyle['Link'])
-								.setLabel('Appeal')
-						);
-
-					await member
-						.send({ embeds: [DMembed3], components: [appealButton] })
-						.catch(() => {});
-					await member.ban({ reason: reasons['six'] });
+					await sendModDM(member, {
+						action: PunishmentType.Ban,
+						punishment: data3,
+					});
+					await member.ban({
+						reason: reasons['six'],
+						deleteMessageDays: default_config.ban_delete_messages,
+					});
 					break;
 			}
 		});

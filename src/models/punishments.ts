@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { default_config } from '../json/moderation.json';
 
 const schema = new mongoose.Schema({
 	_id: String,
@@ -6,7 +7,7 @@ const schema = new mongoose.Schema({
 	type: String,
 	userId: String,
 	moderatorId: String,
-	reason: String,
+	reason: { type: String, default: default_config.reason },
 	date: Date,
 	expire: Date,
 });

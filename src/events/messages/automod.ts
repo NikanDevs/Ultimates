@@ -10,8 +10,8 @@ import { generateAutomodId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
-import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import ms from 'ms';
+import { sendModDM } from '../../utils/sendModDM';
 const bypassRoleId = ignore['bypass-roleId'];
 const categoryIgnores = ignore['categoryIds'];
 const channelIgnores = ignore['channelNames'];
@@ -85,8 +85,11 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['large-message'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
 
 		await createModLog({
@@ -125,9 +128,13 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['invites'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
+
 		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
@@ -160,9 +167,13 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['urls'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
+
 		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
@@ -199,9 +210,13 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['mass-mention'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
+
 		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
@@ -238,9 +253,13 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['capitals'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
+
 		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
@@ -277,9 +296,13 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['mass-emoji'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
+
 		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
@@ -316,8 +339,11 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['badwords'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
 
 		await createModLog({
@@ -361,9 +387,13 @@ export default new Event('messageCreate', async (message) => {
 		});
 		await data.save();
 
-		sendDM({
-			reason: reasons['spam'],
+		sendModDM(message.member, {
+			action: PunishmentType.Warn,
+			punishment: data,
+			expire: automodPunishmentExpiry,
+			automod: true,
 		});
+
 		await createModLog({
 			action: PunishmentType.Warn,
 			punishmentId: data._id,
@@ -374,43 +404,7 @@ export default new Event('messageCreate', async (message) => {
 		}).then(() => checkForAutoPunish(data));
 	}
 
-	// Interfaces
-	interface sendDMoptions {
-		reason: string;
-	}
-	interface muteDMoptions {
-		duration: number;
-		reason: string;
-	}
-
 	// Functions
-	async function sendDM(options: sendDMoptions) {
-		const DMembed = client.util
-			.embed()
-			.setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL() })
-			.setColor(client.colors.moderation)
-			.setTitle(`You were warned in ${message.guild.name}`)
-			.addFields(
-				{
-					name: 'Type',
-					value: 'Automod',
-					inline: true,
-				},
-				{
-					name: 'Expiry',
-					value: generateDiscordTimestamp(new Date()),
-					inline: true,
-				},
-				{
-					name: 'Reason',
-					value: options.reason,
-					inline: false,
-				}
-			);
-
-		(message.member as GuildMember).send({ embeds: [DMembed] }).catch;
-		() => {};
-	}
 	async function getsIgnored(type: types) {
 		if (
 			channelIgnores[type.toString()].includes(textChannel.name) ||
@@ -432,43 +426,12 @@ export default new Event('messageCreate', async (message) => {
 		});
 		const punishmentCount = punishmentFind.length;
 
-		async function muteDM(options: muteDMoptions) {
-			const DMembed = client.util
-				.embed()
-				.setAuthor({
-					name: client.user.username,
-					iconURL: client.user.displayAvatarURL(),
-				})
-				.setColor(client.colors.moderation)
-				.setTitle(`You were timed out in ${message.guild.name}`)
-				.addFields(
-					{
-						name: 'Type',
-						value: 'Automod',
-						inline: true,
-					},
-					{
-						name: 'Duration',
-						value: client.util.convertTime(options.duration / 1000),
-						inline: true,
-					},
-					{
-						name: 'Reason',
-						value: options.reason,
-						inline: false,
-					}
-				);
-
-			(message.member as GuildMember).send({ embeds: [DMembed] }).catch(() => {});
-		}
-
 		if (punishmentCount == 2) {
 			const timeoutDurationAt2 = ms(amounts.timeoutDurationAt2Warns);
 			await timeoutMember(message.member, {
 				reason: 'Reaching 2 automod warnings.',
 				duration: timeoutDurationAt2,
 			});
-			muteDM({ duration: timeoutDurationAt2, reason: 'Reaching 2 automod warnings' });
 			const data = new automodModel({
 				_id: generateAutomodId(),
 				case: await getModCase(),
@@ -479,6 +442,13 @@ export default new Event('messageCreate', async (message) => {
 				reason: 'Reaching 2 automod warnings.',
 			});
 			data.save();
+
+			sendModDM(message.member, {
+				action: PunishmentType.Timeout,
+				punishment: data,
+				expire: new Date(Date.now() + timeoutDurationAt2),
+				automod: true,
+			});
 
 			await createModLog({
 				action: PunishmentType.Timeout,
@@ -491,14 +461,14 @@ export default new Event('messageCreate', async (message) => {
 				expire: automodPunishmentExpiry,
 			});
 		} else if (punishmentCount > 2) {
-			const muteDurationAtmore2 = ms(amounts['timeoutDurationAt+2Warns']);
+			const timeoutDurationAtmore2 = ms(amounts['timeoutDurationAt+2Warns']);
 			await timeoutMember(message.member, {
 				reason: `Reaching ${punishmentCount} automod warnings.`,
-				duration: muteDurationAtmore2,
+				duration: timeoutDurationAtmore2,
 			});
 			const data = new automodModel({
 				_id: generateAutomodId(),
-				case: getModCase(),
+				case: await getModCase(),
 				type: PunishmentType.Timeout,
 				userId: message.author.id,
 				date: new Date(),
@@ -507,12 +477,19 @@ export default new Event('messageCreate', async (message) => {
 			});
 			data.save();
 
+			await sendModDM(message.member, {
+				action: PunishmentType.Timeout,
+				punishment: data,
+				expire: new Date(Date.now() + timeoutDurationAtmore2),
+				automod: true,
+			});
+
 			await createModLog({
 				action: PunishmentType.Timeout,
 				punishmentId: data._id,
 				user: message.author,
 				moderator: client.user,
-				duration: muteDurationAtmore2,
+				duration: timeoutDurationAtmore2,
 				reason: `Reaching ${punishmentCount} automod warnings.`,
 				referencedPunishment: warnData,
 				expire: automodPunishmentExpiry,
