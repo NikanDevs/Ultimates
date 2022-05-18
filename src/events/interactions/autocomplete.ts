@@ -2,7 +2,7 @@ import { client } from '../..';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Event } from '../../structures/Event';
-import { reasons, lengths } from '../../json/moderation.json';
+import { reasons } from '../../json/moderation.json';
 import { GuildMember } from 'discord.js';
 export const numbers = {
 	0: '⭐️',

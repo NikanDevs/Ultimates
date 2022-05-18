@@ -7,8 +7,10 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
+import { client } from '../..';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
+	if (newMember.guild.id !== client.server.id) return;
 	await oldMember.fetch().catch(() => {});
 	if (!oldMember.communicationDisabledUntil && newMember.communicationDisabledUntil) {
 		const auditLogs = await newMember.guild.fetchAuditLogs({
