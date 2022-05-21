@@ -406,15 +406,14 @@ export default new Command({
 				});
 
 			// Getting all the warnings
-			var warningsArray: string[] = [];
 			const findWarningsNormal = await punishmentModel.find({ userId: user.id });
 			const findWarningsAutomod = await automodModel.find({ userId: user.id });
 			let warnCounter = 0;
 
-			findWarningsNormal.forEach((data) => {
-				warnCounter = warnCounter + 1;
-				warningsArray.push(
-					[
+			const warnings = findWarningsNormal
+				.map((data) => {
+					warnCounter = warnCounter + 1;
+					return [
 						`\`${warnCounter}\` **${client.util.capitalize(
 							data.type
 						)}** | **ID: ${data._id}**`,
@@ -435,29 +434,28 @@ export default new Command({
 						`• **Reason:** ${data.reason}`,
 					]
 						.join('\n')
-						.replaceAll('\nLINE_BREAK', '')
+						.replaceAll('\nLINE_BREAK', '');
+				})
+				.concat(
+					findWarningsAutomod.map((data) => {
+						warnCounter = warnCounter + 1;
+						return [
+							`\`${warnCounter}\` **${client.util.capitalize(
+								data.type
+							)}** | Auto Moderation`,
+							`• **Date:** ${generateDiscordTimestamp(
+								data.date,
+								'Short Date/Time'
+							)}`,
+							data.type === 'WARN'
+								? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+								: 'LINE_BREAK',
+							`• **Reason:** ${data.reason}`,
+						]
+							.join('\n')
+							.replaceAll('\nLINE_BREAK', '');
+					})
 				);
-			});
-			findWarningsAutomod.forEach((data) => {
-				warnCounter = warnCounter + 1;
-				warningsArray.push(
-					[
-						`\`${warnCounter}\` **${client.util.capitalize(
-							data.type
-						)}** | Auto Moderation`,
-						`• **Date:** ${generateDiscordTimestamp(
-							data.date,
-							'Short Date/Time'
-						)}`,
-						data.type === 'WARN'
-							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
-							: 'LINE_BREAK',
-						`• **Reason:** ${data.reason}`,
-					]
-						.join('\n')
-						.replaceAll('\nLINE_BREAK', '')
-				);
-			});
 
 			const warningsEmbed = client.util
 				.embed()
@@ -466,7 +464,7 @@ export default new Command({
 				.setThumbnail(user.displayAvatarURL());
 
 			// Sending the results
-			if (warningsArray.length === 0)
+			if (warnings.length === 0)
 				return interaction.reply({
 					embeds: [
 						client.util.embed({
@@ -478,17 +476,17 @@ export default new Command({
 				});
 
 			await interaction.deferReply();
-			if (warningsArray.length <= 3) {
+			if (warnings.length <= 3) {
 				warningsEmbed.setDescription(
-					warningsArray.map((data) => data.toString()).join('\n\n')
+					warnings.map((data) => data.toString()).join('\n\n')
 				);
 				interaction.followUp({ embeds: [warningsEmbed] });
-			} else if (warningsArray.length > 3) {
-				const totalPages = Math.ceil(warningsArray.length / 3);
+			} else if (warnings.length > 3) {
+				const totalPages = Math.ceil(warnings.length / 3);
 				let currentSlice1 = 0;
 				let currentSlice2 = 3;
 				let currentPage = 1;
-				let sliced = warningsArray
+				let sliced = warnings
 					.map((data) => data.toString())
 					.slice(currentSlice1, currentSlice2);
 
@@ -516,7 +514,7 @@ export default new Command({
 							currentSlice1 = currentSlice1 - 3;
 							currentSlice2 = currentSlice2 - 3;
 							currentPage = currentPage - 1;
-							sliced = warningsArray
+							sliced = warnings
 								.map((data) => data.toString())
 								.slice(currentSlice1, currentSlice2);
 							warningsEmbed
@@ -534,7 +532,7 @@ export default new Command({
 							currentSlice1 = currentSlice1 + 3;
 							currentSlice2 = currentSlice2 + 3;
 							currentPage = currentPage + 1;
-							sliced = warningsArray
+							sliced = warnings
 								.map((data) => data.toString())
 								.slice(currentSlice1, currentSlice2);
 							warningsEmbed

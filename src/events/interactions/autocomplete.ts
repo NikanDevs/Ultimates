@@ -4,18 +4,6 @@ import { punishmentModel } from '../../models/punishments';
 import { Event } from '../../structures/Event';
 import { reasons } from '../../json/moderation.json';
 import { GuildMember } from 'discord.js';
-export const numbers = {
-	0: '⭐️',
-	1: '2',
-	2: '3',
-	3: '4',
-	4: '5',
-	5: '6',
-	6: '7',
-	7: '8',
-	8: '9',
-	9: '10',
-};
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction) return;
@@ -41,11 +29,9 @@ export default new Event('interactionCreate', async (interaction) => {
 			) {
 				if (punishmentFocus?.name !== 'id') return;
 
-				let warnChoices: string[];
-				const availableWarnings = [];
-				(await punishmentModel.find()).forEach((data) => {
-					availableWarnings.push(
-						[
+				let warnings: string[] = (await punishmentModel.find())
+					.map((data) => {
+						return [
 							`Manual | ${client.util.capitalize(data.type)}`,
 							`${
 								client.users.cache.get(data.userId) === undefined
@@ -53,26 +39,24 @@ export default new Event('interactionCreate', async (interaction) => {
 									: client.users.cache.get(data.userId).tag
 							}`,
 							`ID: ${data._id}`,
-						].join(' • ')
+						].join(' • ');
+					})
+					.concat(
+						(await automodModel.find()).map((data) => {
+							return [
+								`Automod | ${client.util.capitalize(data.type)}`,
+								`${
+									client.users.cache.get(data.userId) === undefined
+										? `${data.userId}`
+										: client.users.cache.get(data.userId).tag
+								}`,
+								`ID: ${data._id}`,
+								`${data.reason}`,
+							].join(' • ');
+						})
 					);
-				});
-				(await automodModel.find()).forEach((data) => {
-					availableWarnings.push(
-						[
-							`Automod | ${client.util.capitalize(data.type)}`,
-							`${
-								client.users.cache.get(data.userId) === undefined
-									? `${data.userId}`
-									: client.users.cache.get(data.userId).tag
-							}`,
-							`ID: ${data._id}`,
-							`${data.reason}`,
-						].join(' • ')
-					);
-				});
-				warnChoices = [...new Set(availableWarnings)];
 
-				const punishmentFiltered = warnChoices
+				warnings = warnings
 					.filter(
 						(choice) =>
 							(choice.split(' • ')[1].startsWith('Automod')
@@ -91,16 +75,16 @@ export default new Event('interactionCreate', async (interaction) => {
 								.find((user) => user.tag === choice.split(' • ')[1])
 								?.id?.startsWith(punishmentFocus.value as string)
 					)
-					.map((data, i) => `${numbers[i]} • ` + data)
+					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
 					.slice(0, 10);
 
-				if (punishmentFiltered.length === 0)
+				if (warnings.length === 0)
 					return interaction.respond([
 						{ name: 'No Punishments Found!', value: 'null' },
 					]);
 
 				await interaction.respond(
-					punishmentFiltered.map((choice: string) => ({
+					warnings.map((choice: string) => ({
 						name: client.util.splitText(choice, { splitCustom: 100 }),
 						value: choice.split(' • ')[1].startsWith('Automod')
 							? choice.split(' • ')[3].slice(4)
@@ -123,7 +107,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			const availableBannedMembers = [...new Set(mapBans)];
 			const filteredBannedMembers = availableBannedMembers
 				.filter((data) => data.startsWith(unbanFocus.value as string))
-				.map((data, i) => numbers[i] + ' • ' + data)
+				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
 				.slice(0, 10);
 
 			if (!filteredBannedMembers.length)
@@ -149,7 +133,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			const availableReasons = [...new Set(reasons[interaction.commandName])];
 			const filteredReasons = availableReasons
 				.filter((reason: string) => reason.startsWith(getReasonsFocus.value as string))
-				.map((data, i) => numbers[i] + ' • ' + data);
+				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data);
 
 			if (
 				!reasons[interaction.commandName].length &&
@@ -158,7 +142,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				return interaction.respond([
 					{
 						name:
-							numbers[0] +
+							'⭐️' +
 							' • ' +
 							'No inbuilt reasons were found, type a reason...',
 						value: 'No reason provided.',
@@ -168,7 +152,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			if (filteredReasons.length === 0)
 				return interaction.respond([
 					{
-						name: numbers[0] + ' • ' + getReasonsFocus.value.toString(),
+						name: '⭐️' + ' • ' + getReasonsFocus.value.toString(),
 						value: getReasonsFocus.value.toString(),
 					},
 				]);
