@@ -6,7 +6,9 @@ import { messageLogging } from '../../webhooks';
 const ignore = ignores.messageDelete;
 
 export default new Event('messageDelete', async (message: Message) => {
-	// Filtering the data
+	if (!message.author) return;
+	if (!message.content.length && !message.attachments.size) return;
+
 	const channel = message?.channel as TextChannel;
 	if (
 		!message?.guild ||
@@ -18,18 +20,19 @@ export default new Event('messageDelete', async (message: Message) => {
 	)
 		return;
 
-	// Creating the embed!
 	const logEmbed = client.util
 		.embed()
 		.setAuthor({
-			name: message.author?.tag,
-			iconURL: message.author?.displayAvatarURL(),
+			name: message.author.tag,
+			iconURL: message.author.displayAvatarURL(),
 		})
 		.setTitle('Message Deleted')
+		.setDescription(message.content || 'No content.')
 		.setColor(client.util.resolve.color('#b59190'))
+		.setFooter({ text: 'Message ID: ' + message.id })
 		.addFields(
 			{
-				name: 'User',
+				name: 'Mention',
 				value: `${message.author}`,
 				inline: true,
 			},
@@ -39,28 +42,13 @@ export default new Event('messageDelete', async (message: Message) => {
 				inline: true,
 			},
 			{
-				name: 'Sent At',
-				value: `<t:${~~(+message.createdAt / 1000)}:R>`,
+				name: 'Attachments',
+				value: message.attachments.size
+					? `${message.attachments.size} attachments`
+					: 'No attachments',
 				inline: true,
 			}
 		);
-
-	// If the message contains a content
-	if (message.content) {
-		logEmbed.setDescription(message.content);
-	}
-
-	// If the message contains attachments
-	if (message.attachments.size !== 0) {
-		const attachmentsMapped = message.attachments?.map((data) => {
-			return `• [${data.name}](${data.proxyURL})`;
-		});
-
-		logEmbed.addFields({
-			name: `Attachments [${message.attachments.size}]`,
-			value: attachmentsMapped.join('\n'),
-		});
-	}
 
 	messageLogging.send({ embeds: [logEmbed] });
 });

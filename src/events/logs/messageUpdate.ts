@@ -1,4 +1,4 @@
-import { ButtonStyle, GuildMember, TextChannel } from 'discord.js';
+import { GuildMember, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
@@ -6,6 +6,9 @@ import { messageLogging } from '../../webhooks';
 const ignore = ignores.MessageUpdate;
 
 export default new Event('messageUpdate', async (oldMessage, newMessage) => {
+	if (!oldMessage.author) return;
+	if (!oldMessage.content.length && !oldMessage.attachments.size) return;
+
 	const channel = newMessage?.channel as TextChannel;
 	const member = newMessage.member as GuildMember;
 
@@ -19,7 +22,6 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 	)
 		return;
 
-	// Creating the embed!
 	const logEmbed = client.util
 		.embed()
 		.setAuthor({
@@ -27,50 +29,25 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			iconURL: newMessage.author?.displayAvatarURL(),
 		})
 		.setTitle('Message Edited')
-		.setColor(client.util.resolve.color('#b59190'));
+		.setURL(newMessage.url)
+		.setColor(client.util.resolve.color('#b59190'))
+		.setFooter({ text: 'Message ID: ' + newMessage.id });
 
-	// If the old message contains a content
-	if (oldMessage.content) {
-		logEmbed.addFields({
-			name: 'Old Message',
-			value: `${client.util.splitText(oldMessage?.content, {
-				splitFor: 'Embed Field Value',
-			})}`,
-		});
-	}
-
-	// If the new message contains a content
-	if (newMessage.content) {
-		logEmbed.addFields({
-			name: 'New Message',
-			value: `${client.util.splitText(newMessage?.content, {
-				splitFor: 'Embed Field Value',
-			})}`,
-		});
-	}
-
-	// If the old message contains attachments
-	if (oldMessage.attachments.size !== 0) {
-		const attachmentsMapped = oldMessage.attachments?.map((data) => {
-			return `• [${data.name}](${data.proxyURL})`;
-		});
-
-		logEmbed.addFields({
-			name: `Old Attachments [${oldMessage.attachments.size}]`,
-			value: attachmentsMapped.join('\n'),
-		});
-	}
-
-	// If the new message contains attachments
-	if (newMessage.attachments.size !== 0) {
-		const attachmentsMapped = newMessage.attachments?.map((data) => {
-			return `• [${data.name}](${data.proxyURL})`;
-		});
-
-		logEmbed.addFields({
-			name: `New Attachments [${newMessage.attachments.size}]`,
-			value: attachmentsMapped.join('\n'),
-		});
+	if (oldMessage.content !== newMessage.content) {
+		logEmbed.addFields(
+			{
+				name: 'Old message ',
+				value: client.util.splitText(oldMessage?.content, {
+					splitFor: 'Embed Field Value',
+				}),
+			},
+			{
+				name: 'New content',
+				value: client.util.splitText(oldMessage?.content, {
+					splitFor: 'Embed Field Value',
+				}),
+			}
+		);
 	}
 
 	logEmbed.addFields(
@@ -91,18 +68,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		}
 	);
 
-	const jumpToMessage = client.util
-		.actionRow()
-		.addComponents(
-			client.util
-				.button()
-				.setLabel('Take me there!')
-				.setStyle(ButtonStyle['Link'])
-				.setURL(`${oldMessage.url}`)
-		);
-
 	messageLogging.send({
 		embeds: [logEmbed],
-		components: [jumpToMessage],
 	});
 });
