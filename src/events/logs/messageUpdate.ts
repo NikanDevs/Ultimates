@@ -43,7 +43,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			},
 			{
 				name: 'New content',
-				value: client.util.splitText(oldMessage?.content, {
+				value: client.util.splitText(newMessage?.content, {
 					splitFor: 'Embed Field Value',
 				}),
 			}
