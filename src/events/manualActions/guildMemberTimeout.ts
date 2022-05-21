@@ -9,6 +9,7 @@ import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { default_config } from '../../json/moderation.json';
 import { client } from '../..';
+import { sendModDM } from '../../utils/sendModDM';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (newMember.guild.id !== client.server.id) return;
@@ -39,6 +40,12 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			expire: new Date(warningExpiry.getTime() + duration),
 		});
 		await data_.save();
+
+		await sendModDM(newMember, {
+			action: PunishmentType.Timeout,
+			expire: new Date(duration),
+			punishment: data_,
+		});
 
 		await createModLog({
 			action: PunishmentType.Timeout,
