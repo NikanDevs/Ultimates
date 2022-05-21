@@ -1,4 +1,4 @@
-import { ComponentType, ContextMenuCommandInteraction, Message } from 'discord.js';
+import { ComponentType, Message } from 'discord.js';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -14,8 +14,8 @@ export default new Command({
 	type: 2,
 
 	excute: async ({ client, interaction }) => {
-		const Interaction = interaction as ContextMenuCommandInteraction;
-		const user = (await interaction.guild.members.fetch(Interaction.targetId)).user;
+		if (!interaction.isUserContextMenuCommand()) return;
+		const user = interaction.targetUser;
 
 		// Getting all the warnings
 		var warningsArray: string[] = [];
@@ -71,7 +71,7 @@ export default new Command({
 
 		// Sending the results
 		if (warningsArray.length === 0)
-			return Interaction.reply({
+			return interaction.reply({
 				embeds: [
 					client.util.embed({
 						description: `No punishments were found for **${user.tag}**`,
@@ -80,12 +80,12 @@ export default new Command({
 				],
 				ephemeral: true,
 			});
-		await Interaction.deferReply();
+		await interaction.deferReply();
 		if (warningsArray.length <= 3) {
 			warningsEmbed.setDescription(
 				warningsArray.map((data) => data.toString()).join('\n\n')
 			);
-			Interaction.followUp({ embeds: [warningsEmbed] });
+			interaction.followUp({ embeds: [warningsEmbed] });
 		} else if (warningsArray.length > 3) {
 			const totalPages = Math.ceil(warningsArray.length / 3);
 			let currentSlice1 = 0;
@@ -98,7 +98,7 @@ export default new Command({
 			warningsEmbed
 				.setDescription(sliced.join('\n\n'))
 				.setFooter({ text: `Page ${currentPage}/${totalPages}` });
-			var sentInteraction = (await Interaction.followUp({
+			var sentInteraction = (await interaction.followUp({
 				embeds: [warningsEmbed],
 				components: [client.util.build.paginator()],
 			})) as Message;
@@ -109,7 +109,7 @@ export default new Command({
 			});
 
 			collector.on('collect', (collected) => {
-				if (Interaction.user.id !== collected.user.id)
+				if (interaction.user.id !== collected.user.id)
 					return collected.reply(client.cc.cannotInteract);
 
 				switch (collected.customId) {
@@ -128,7 +128,7 @@ export default new Command({
 							)
 							.setFooter({ text: `Page ${currentPage}/${totalPages}` });
 
-						Interaction.editReply({ embeds: [warningsEmbed] });
+						interaction.editReply({ embeds: [warningsEmbed] });
 						collected.deferUpdate();
 						break;
 					case '2':
@@ -146,14 +146,14 @@ export default new Command({
 							)
 							.setFooter({ text: `Page ${currentPage}/${totalPages}` });
 
-						Interaction.editReply({ embeds: [warningsEmbed] });
+						interaction.editReply({ embeds: [warningsEmbed] });
 						collected.deferUpdate();
 						break;
 				}
 			});
 
 			collector.on('end', () => {
-				Interaction.editReply({ components: [] });
+				interaction.editReply({ components: [] });
 			});
 		}
 	},
