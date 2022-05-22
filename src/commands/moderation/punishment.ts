@@ -8,6 +8,7 @@ import { lengths } from '../../json/moderation.json';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { createModLog } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
+import ms from 'ms';
 
 export default new Command({
 	name: 'punishment',
@@ -65,6 +66,42 @@ export default new Command({
 					name: 'user-id',
 					description: 'The id of the user you want to view their punishments.',
 					required: false,
+					type: ApplicationCommandOptionType['String'],
+				},
+			],
+		},
+		{
+			name: 'update',
+			description: 'Update a punishment',
+			type: ApplicationCommandOptionType['Subcommand'],
+			options: [
+				{
+					name: 'id',
+					description: 'The id of the punishment you want to update.',
+					required: true,
+					type: ApplicationCommandOptionType['String'],
+					autocomplete: true,
+				},
+				{
+					name: 'value',
+					description: 'Select what part of the punishment you want to update.',
+					required: true,
+					type: ApplicationCommandOptionType['Number'],
+					choices: [
+						{
+							name: 'duration',
+							value: 1,
+						},
+						{
+							name: 'reason',
+							value: 2,
+						},
+					],
+				},
+				{
+					name: 'new-value',
+					description: 'The value you want this punishment to be updated to.',
+					required: true,
 					type: ApplicationCommandOptionType['String'],
 				},
 			],
@@ -551,6 +588,185 @@ export default new Command({
 					interaction.editReply({ components: [] });
 				});
 			}
+		} else if (getSubCommand === 'update') {
+			const value = options.getNumber('value');
+			const id = options.getString('id');
+			const newvalue = options.getString('new-value');
+			let punishment: any = null;
+
+			await interaction.deferReply({ ephemeral: true });
+			switch (id.length) {
+				case lengths['manual-id']:
+					punishment = await punishmentModel.findById(id).catch(() => {});
+					break;
+				case lengths['automod-id']:
+					punishment = await automodModel.findById(id).catch(() => {});
+					break;
+			}
+
+			if (!punishment || punishment === undefined)
+				return interaction.followUp({
+					embeds: [client.embeds.error('No punishment with that ID was found.')],
+					ephemeral: true,
+				});
+
+			switch (value) {
+				case 1:
+					if (
+						!(await interaction.guild.members.fetch(punishment.userId)) &&
+						PunishmentType.Timeout
+					)
+						return interaction.followUp({
+							embeds: [
+								client.embeds.error(
+									'The punished user is not in the server. I can not update the timeout.'
+								),
+							],
+						});
+
+					if (
+						punishment.type == PunishmentType.Timeout ||
+						punishment.type === PunishmentType.Softban
+					) {
+						if (ms(newvalue) === undefined)
+							return interaction.followUp({
+								embeds: [
+									client.embeds.error(
+										`The provided duration must be in ${
+											punishment.type === PunishmentType.Softban
+												? `1y, 8w, 1w, 1h, 1m`
+												: `1w, 1h, 1d, 1m`
+										} format.`
+									),
+								],
+								ephemeral: true,
+							});
+
+						if (
+							ms(newvalue) > 1000 * 60 * 60 * 24 * 27 ||
+							(ms(newvalue) < 10000 &&
+								punishment.type === PunishmentType.Timeout)
+						)
+							return interaction.followUp({
+								embeds: [
+									client.embeds.attention(
+										'The duration must be between 10 seconds and 27 days.'
+									),
+								],
+								ephemeral: true,
+							});
+
+						if (
+							ms(newvalue) > 1000 * 60 * 60 * 24 * 365 ||
+							(ms(newvalue) < 60000 &&
+								punishment.type === PunishmentType.Softban)
+						)
+							return interaction.followUp({
+								embeds: [
+									client.embeds.attention(
+										'The duration must be between 1 minute and 1 year.'
+									),
+								],
+								ephemeral: true,
+							});
+
+						const findDuration = await durationsModel.findOne({
+							case: punishment.case,
+						});
+
+						if (!findDuration)
+							return interaction.followUp({
+								embeds: [
+									client.embeds.error(
+										'The duration of this punishment has already ended.'
+									),
+								],
+								ephemeral: true,
+							});
+
+						if (ms(newvalue) === findDuration.duration)
+							return interaction.followUp({
+								embeds: [
+									client.embeds.attention(
+										'Try updating the duration to a value that is not the same as the current one.'
+									),
+								],
+							});
+
+						await durationsModel.findOneAndUpdate(
+							{
+								case: punishment.case,
+							},
+							{ $set: { date: new Date(), duration: ms(newvalue) } }
+						);
+
+						await (
+							await interaction.guild.members.fetch(punishment.userId)
+						).timeout(ms(newvalue), 'Punishment duration updated.');
+						await interaction.followUp({
+							embeds: [
+								client.embeds.success(
+									`Duration was updated to **${ms(ms(newvalue), {
+										long: true,
+									})}**.`
+								),
+							],
+						});
+					} else {
+						return interaction.followUp({
+							embeds: [
+								client.embeds.error(
+									'Only softbans and timeouts support durations.'
+								),
+							],
+							ephemeral: true,
+						});
+					}
+					break;
+				case 2:
+					if (punishment.reason === newvalue)
+						return interaction.reply({
+							embeds: [
+								client.embeds.attention(
+									'Try updating the reason to a value that is not the same as the current one.'
+								),
+							],
+						});
+
+					switch (id.length) {
+						case lengths['manual-id']:
+							punishment = await punishmentModel.findByIdAndUpdate(id, {
+								$set: { reason: newvalue },
+							});
+							break;
+						case lengths['automod-id']:
+							punishment = await automodModel.findByIdAndUpdate(id, {
+								$set: { reason: newvalue },
+							});
+							break;
+					}
+
+					await interaction.followUp({
+						embeds: [
+							client.embeds.success(`Reason was updated to **${newvalue}**`),
+						],
+					});
+					break;
+			}
+
+			const findDuration = await durationsModel.findOne({
+				case: punishment.case,
+			});
+
+			await createModLog({
+				action: punishment.type as PunishmentType,
+				user: await client.users.fetch(punishment.userId),
+				moderator: interaction.user,
+				reason: value === 2 ? newvalue : punishment.reason,
+				referencedPunishment: punishment,
+				duration: value === 1 ? ms(newvalue) : findDuration.duration,
+				update: value === 1 ? 'duration' : 'reason',
+			});
 		}
 	},
 });

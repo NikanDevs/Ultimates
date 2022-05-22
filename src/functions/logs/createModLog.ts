@@ -17,6 +17,7 @@ interface options {
 	referencedPunishment?: any;
 	expire?: Date;
 	revoke?: boolean;
+	update?: 'duration' | 'reason';
 }
 
 async function getUrlFromCase(tofindCase: string | number) {
@@ -37,18 +38,23 @@ export async function createModLog(options: options) {
 	}
 
 	const revoke: boolean = options.revoke ? options.revoke : false;
+	const update: boolean = options.update ? true : false;
 	const currentCase = await getModCase();
 	await addModCase();
 	const embed = client.util
 		.embed()
 		.setAuthor({
-			name: ` ${revoke ? 'Revoke' : client.util.capitalize(options.action)} | Case: #${
-				revoke ? options.referencedPunishment.case : currentCase
-			}`,
+			name: ` ${
+				revoke ? 'Revoke' : update ? 'Update' : client.util.capitalize(options.action)
+			} | Case: #${revoke ? options.referencedPunishment.case : currentCase}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setColor(
-			revoke ? Util.resolveColor('#b04d46') : Util.resolveColor(colors[options.action])
+			revoke
+				? Util.resolveColor('#b04d46')
+				: update
+				? client.colors.invisible
+				: Util.resolveColor(colors[options.action])
 		)
 		.setDescription(
 			[
@@ -59,10 +65,13 @@ export async function createModLog(options: options) {
 								options.referencedPunishment.case
 						  }](${await getUrlFromCase(options.referencedPunishment.case)})`
 				}\n`,
-				`• **Action:** ${client.util.capitalize(options.action)} ${
+				`• **Action:** ${client.util.capitalize(options.action)}`,
+				`${
 					options.duration
-						? `• ${client.util.convertTime(options.duration / 1000)}`
-						: ''
+						? `• **Duration${
+								options.update === 'duration' ? ' [U]' : ' '
+						  }:** ${client.util.convertTime(options.duration / 1000)}`
+						: 'LINE_BREAK'
 				}`,
 				`• **Member:** ${options.user.tag} • ${options.user.id}`,
 				`• **Moderator:** ${
@@ -71,15 +80,20 @@ export async function createModLog(options: options) {
 						: 'Automatic'
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason:** ${options.reason || default_config.reason}`,
-			].join('\n')
+				`• **Reason${options.update === 'reason' ? ' [U]' : ' '}: ** ${
+					options.reason || default_config.reason
+				}`,
+			]
+				.join('\n')
+				.replaceAll('\nLINE_BREAK', '')
 		);
 	var logMessage = await moderationLogging.send({ embeds: [embed] });
 
 	if (
 		options.action === PunishmentType.Unmute ||
 		options.action === PunishmentType.Unban ||
-		revoke
+		revoke ||
+		update
 	)
 		return;
 

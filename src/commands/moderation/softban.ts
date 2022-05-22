@@ -68,16 +68,16 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						'The provided duration must be in `1h, 1m, 1s` format.'
+						'The provided duration must be in `1y, 8w, 1w, 1h, 1m` format.'
 					),
 				],
 				ephemeral: true,
 			});
-		if (ms(duration) > 1000 * 60 * 60 * 24 * 365 || ms(duration) < 10000)
+		if (ms(duration) > 1000 * 60 * 60 * 24 * 365 || ms(duration) < 60000)
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
-						'The duration must be between 10 seconds and 1 year.'
+						'The duration must be between 1 minute and 1 year.'
 					),
 				],
 				ephemeral: true,
@@ -106,7 +106,8 @@ export default new Command({
 			case: await getModCase(),
 			type: PunishmentType.Softban,
 			userId: member.user.id,
-			endsAt: new Date(Date.now() + ms(duration)),
+			date: new Date(),
+			endsAt: ms(duration),
 		});
 		await durationData.save();
 

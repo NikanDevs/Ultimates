@@ -25,7 +25,8 @@ export default new Event('interactionCreate', async (interaction) => {
 
 			if (
 				interaction.options.getSubcommand() === 'search' ||
-				interaction.options.getSubcommand() === 'revoke'
+				interaction.options.getSubcommand() === 'revoke' ||
+				interaction.options.getSubcommand() === 'update'
 			) {
 				if (punishmentFocus?.name !== 'id') return;
 
@@ -76,7 +77,7 @@ export default new Event('interactionCreate', async (interaction) => {
 								?.id?.startsWith(punishmentFocus.value as string)
 					)
 					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
-					.slice(0, 10);
+					.slice(0, 25);
 
 				if (warnings.length === 0)
 					return interaction.respond([
@@ -108,7 +109,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			const filteredBannedMembers = availableBannedMembers
 				.filter((data) => data.startsWith(unbanFocus.value as string))
 				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
-				.slice(0, 10);
+				.slice(0, 25);
 
 			if (!filteredBannedMembers.length)
 				return interaction.respond([

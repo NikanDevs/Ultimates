@@ -76,7 +76,7 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						'The provided duration must be in `1h, 1m, 1s` format.'
+						'The provided duration must be in `1w, 1h, 1m` format.'
 					),
 				],
 				ephemeral: true,

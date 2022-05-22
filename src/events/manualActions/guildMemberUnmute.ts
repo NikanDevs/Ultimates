@@ -8,6 +8,7 @@ import { getModCase } from '../../functions/cases/modCase';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { createModLog } from '../../functions/logs/createModLog';
 import { client } from '../..';
+import { default_config } from '../../json/moderation.json';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (newMember.guild.id !== client.server.id) return;
@@ -35,7 +36,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: PunishmentType.Unmute,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
-			reason: reason,
+			reason: reason || default_config.reason,
 			date: new Date(),
 			expire: warningExpiry,
 		});

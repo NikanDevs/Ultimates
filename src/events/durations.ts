@@ -9,7 +9,9 @@ import { PunishmentType } from '../typings/PunishmentType';
 export default new Event('messageCreate', async (message) => {
 	// Unmutes
 	const findTimeouts = await durationsModel.find({ type: PunishmentType.Timeout });
-	const filterTimeout = findTimeouts?.filter((c) => Date.now() > (c.endsAt as Date).getTime());
+	const filterTimeout = findTimeouts?.filter(
+		(c) => Date.now() > (c?.date as Date)?.getTime() + c.duration
+	);
 	if (!filterTimeout) return;
 
 	filterTimeout.forEach(async (data) => {
@@ -32,7 +34,9 @@ export default new Event('messageCreate', async (message) => {
 
 	// Unbans
 	const findSoftbans = await durationsModel.find({ type: PunishmentType.Softban });
-	const filterSoftbans = findSoftbans?.filter((c) => Date.now() > (c.endsAt as Date).getTime());
+	const filterSoftbans = findSoftbans?.filter(
+		(c) => Date.now() > (c.date as Date).getTime() + c.duration
+	);
 	let reason = '~~Unbanned due to softban duration~~ Already unbanned.';
 	if (!filterTimeout) return;
 

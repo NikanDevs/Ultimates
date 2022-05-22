@@ -4,7 +4,8 @@ const schema = new mongoose.Schema({
 	case: Number,
 	type: String,
 	userId: String,
-	endsAt: Date,
+	date: Date,
+	duration: Number,
 });
 
 export const durationsModel = mongoose.model('durations', schema);
