@@ -132,7 +132,7 @@ export default new Event('interactionCreate', async (interaction) => {
 					inline: true,
 				},
 				{
-					name: 'Ley #2',
+					name: 'Key #2',
 					value: key2,
 					inline: true,
 				}
