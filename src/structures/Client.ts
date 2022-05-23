@@ -1,4 +1,12 @@
-import { Client, Collection, ClientEvents, Partials, Colors, Embed } from 'discord.js';
+import {
+	Client,
+	Collection,
+	ClientEvents,
+	Partials,
+	Colors,
+	Embed,
+	WebhookClient,
+} from 'discord.js';
 import { commandType } from '../typings/Command';
 import { glob } from 'glob';
 import { promisify } from 'util';
@@ -6,9 +14,15 @@ import { connect } from 'mongoose';
 import { Event } from './Event';
 import botConfig, { enabledModules as configEnabledModules } from '../json/config.json';
 import { clientUtil } from '../functions/client/clientUtil';
-import { errorHandler } from '../webhooks';
-import { clientCc, clientColors, clientEmbeds, clientServer } from '../functions/client/prototypes';
+import {
+	clientCc,
+	clientColors,
+	clientEmbeds,
+	clientServer,
+	databaseConfig,
+} from '../functions/client/prototypes';
 import { enabledModules as logsEnabledModules } from '../json/logs.json';
+import { configModel } from '../models/config';
 const globPromise = promisify(glob);
 
 export class Ultimates extends Client {
@@ -19,6 +33,13 @@ export class Ultimates extends Client {
 	colors = clientColors;
 	cc = clientCc;
 	server = clientServer;
+	webhooks = {
+		mod: null,
+		message: null,
+		modmail: null,
+		servergate: null,
+	};
+	databaseConfig = databaseConfig;
 
 	// Constructor
 	constructor() {
@@ -41,22 +62,22 @@ export class Ultimates extends Client {
 	}
 
 	/** Registers the modules, connects mongoDB and logs into the bot if called. */
-	born() {
-		// Registering
-		this.registerModules().then(() => console.log('Registered Modules.'));
-		this.login(process.env.DISCORD_TOKEN);
-
+	async born() {
 		// Connecting to mongoDB
 		const mongoDBConnection = process.env.MONGODB;
 		if (!mongoDBConnection) return;
-		connect(mongoDBConnection).then(() => console.log('Connected to MongoDB!'));
+		await connect(mongoDBConnection).then(() => console.log('Connected to MongoDB!'));
+		await this.updateWebhookData();
 
-		// Handler Errors And exit
-		this.handlerErrors();
+		this.registerModules().then(() => console.log('Registered Modules.'));
+
+		await this.login(process.env.DISCORD_TOKEN).then(() => {
+			this.handlerErrors();
+		});
 	}
 
 	async importFiles(filePath: string) {
-		return (await import(filePath))?.default;
+		return (await import(filePath as string))?.default;
 	}
 
 	/** Registers commands and events if called. */
@@ -119,11 +140,6 @@ export class Ultimates extends Client {
 
 	/** Handles process errors and exits if called. */
 	async handlerErrors() {
-		enum urls {
-			'unhandledRejection' = 'https://nodejs.org/api/process.html#event-unhandledrejection',
-			'uncaughtException' = 'https://nodejs.org/api/process.html#event-uncaughtexception',
-			'warning' = 'https://nodejs.org/api/process.html#event-warning',
-		}
 		enum betterTexts {
 			'unhandledRejection' = 'Unhandled Rejection',
 			'uncaughtException' = 'Uncaught Exception',
@@ -132,20 +148,6 @@ export class Ultimates extends Client {
 		type errors = 'unhandledRejection' | 'uncaughtException' | 'warning';
 
 		function sendError(type: errors, reason: Error) {
-			const embed = new Embed()
-				.setTitle(betterTexts[type])
-				.setURL(urls[type])
-				.setColor(Colors.Red)
-				.setDescription(
-					[
-						'**Reason:**',
-						`\`\`\`\n${
-							reason.stack.length <= 4080 ? reason.stack : reason
-						}\n\`\`\``,
-					].join('\n')
-				);
-
-			errorHandler.send({ embeds: [embed] });
 			return console.log(
 				['---------------' + betterTexts[type] + '---------------', reason.stack].join(
 					'\n'
@@ -171,5 +173,46 @@ export class Ultimates extends Client {
 		process.on('exit', () => {
 			this.destroy();
 		});
+	}
+
+	/** Takes webhook data from the database and updates them in the vars. */
+	async updateWebhookData() {
+		const data = await configModel.findById('logs');
+		if (!data) return;
+
+		function getWebhookInfo(url: string) {
+			if (!url) return [undefined];
+
+			const filtered = url.replaceAll('https://discord.com/api/webhooks/', '');
+			const returns: string[] = [];
+			returns.push(filtered.split('/')[0]);
+			returns.push(filtered.split('/')[1]);
+
+			return returns;
+		}
+
+		this.webhooks.mod = new WebhookClient({
+			id: getWebhookInfo(data.mod.webhook)[0],
+			token: getWebhookInfo(data.mod.webhook)[1],
+		});
+		this.webhooks.message = new WebhookClient({
+			id: getWebhookInfo(data.message.webhook)[0],
+			token: getWebhookInfo(data.message.webhook)[1],
+		});
+		this.webhooks.modmail = new WebhookClient({
+			id: getWebhookInfo(data.modmail.webhook)[0],
+			token: getWebhookInfo(data.modmail.webhook)[1],
+		});
+		this.webhooks.servergate = new WebhookClient({
+			id: getWebhookInfo(data.servergate.webhook)[0],
+			token: getWebhookInfo(data.servergate.webhook)[1],
+		});
+
+		this.databaseConfig.logsActive = {
+			mod: data.mod.active,
+			modmail: data.modmail.active,
+			message: data.message.active,
+			servergate: data.servergate.active,
+		};
 	}
 }

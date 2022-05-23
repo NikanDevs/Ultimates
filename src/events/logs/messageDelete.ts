@@ -2,10 +2,12 @@ import { Message, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
-import { messageLogging } from '../../webhooks';
+import { logActivity } from '../../functions/logs/checkActivity';
 const ignore = ignores.messageDelete;
 
 export default new Event('messageDelete', async (message: Message) => {
+	if (!logActivity('message')) return;
+
 	if (!message.author) return;
 	if (!message.content.length && !message.attachments.size) return;
 
@@ -50,5 +52,5 @@ export default new Event('messageDelete', async (message: Message) => {
 			}
 		);
 
-	messageLogging.send({ embeds: [logEmbed] });
+	client.webhooks.message.send({ embeds: [logEmbed] });
 });

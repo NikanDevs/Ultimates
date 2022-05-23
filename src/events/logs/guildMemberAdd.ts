@@ -1,10 +1,10 @@
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { leftMembersModel } from '../../models/leftMembers';
-import { joinAndLeaveLogging } from '../../webhooks';
+import { logActivity } from '../../functions/logs/checkActivity';
 
 export default new Event('guildMemberAdd', async (member) => {
-	// If the member if from another server.
+	if (!logActivity('servergate')) return;
 	if (member.guild.id !== client.server.id) return;
 
 	const embed = client.util
@@ -33,5 +33,5 @@ export default new Event('guildMemberAdd', async (member) => {
 	}
 
 	// Sending the member joined message.
-	joinAndLeaveLogging?.send({ embeds: [embed] });
+	client.webhooks.servergate?.send({ embeds: [embed] });
 });

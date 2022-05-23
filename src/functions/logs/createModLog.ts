@@ -3,9 +3,9 @@ import { client } from '../..';
 import { logsModel } from '../../models/logs';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { addModCase, getModCase } from '../cases/modCase';
-import { moderationLogging } from '../../webhooks';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { default_config } from '../../json/moderation.json';
+import { logActivity } from './checkActivity';
 
 interface options {
 	action: PunishmentType;
@@ -87,7 +87,7 @@ export async function createModLog(options: options) {
 				.join('\n')
 				.replaceAll('\nLINE_BREAK', '')
 		);
-	var logMessage = await moderationLogging.send({ embeds: [embed] });
+	if (logActivity('mod')) var logMessage = await client.webhooks.mod.send({ embeds: [embed] });
 
 	if (
 		options.action === PunishmentType.Unmute ||

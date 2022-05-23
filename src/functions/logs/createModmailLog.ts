@@ -1,10 +1,10 @@
-import { CommandInteraction, Message, TextChannel, User, Util } from 'discord.js';
+import { TextChannel, User, Util } from 'discord.js';
 import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
 import { addModmailCase } from '../cases/ModmailCase';
-import { modmailLogging } from '../../webhooks';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
+import { logActivity } from './checkActivity';
 
 interface ticketOptions {
 	type: 'DIRECT' | 'REQUEST';
@@ -75,7 +75,8 @@ export async function createModmailLog(options: options) {
 				.join('\n')
 				.replaceAll('LINE_BREAK\n', '')
 		);
-	var logMessage = await modmailLogging.send({ embeds: [embed] });
+	if (!logActivity('modmail'))
+		var logMessage = await client.webhooks.modmail.send({ embeds: [embed] });
 
 	if (options.action === ModmailActionType.Open) {
 		await addModmailCase();

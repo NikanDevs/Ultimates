@@ -2,10 +2,12 @@ import { GuildMember, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
-import { messageLogging } from '../../webhooks';
+import { logActivity } from '../../functions/logs/checkActivity';
 const ignore = ignores.MessageUpdate;
 
 export default new Event('messageUpdate', async (oldMessage, newMessage) => {
+	if (!logActivity('message')) return;
+
 	if (!oldMessage.author) return;
 	if (!oldMessage.content.length && !oldMessage.attachments.size) return;
 
@@ -68,7 +70,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		}
 	);
 
-	messageLogging.send({
+	client.webhooks.message.send({
 		embeds: [logEmbed],
 	});
 });

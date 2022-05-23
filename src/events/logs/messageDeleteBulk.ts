@@ -3,10 +3,12 @@ import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
 import { create } from 'sourcebin';
-import { messageLogging } from '../../webhooks';
+import { logActivity } from '../../functions/logs/checkActivity';
 const ignore = ignores.MessageDeleteBulk;
 
 export default new Event('messageDeleteBulk', async (messages) => {
+	if (!logActivity('message')) return;
+
 	const randomMessage = messages.random();
 	const channel = randomMessage?.channel as TextChannel;
 	if (
@@ -63,7 +65,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 	);
 
 	if (messages.size > 10) {
-		const webHookMsg = await messageLogging.send({
+		const webHookMsg = await client.webhooks.message.send({
 			content: 'Preparing the bulk message delete logs...',
 		});
 
@@ -94,12 +96,12 @@ export default new Event('messageDeleteBulk', async (messages) => {
 					.setURL(srcbin.url)
 			);
 
-		messageLogging.editMessage(webHookMsg.id, {
+		client.webhooks.message.editMessage(webHookMsg.id, {
 			embeds: [logEmbed],
 			components: [viewAllRow],
 			content: ' ',
 		});
 	} else {
-		messageLogging.send({ embeds: [logEmbed] });
+		client.webhooks.message.send({ embeds: [logEmbed] });
 	}
 });

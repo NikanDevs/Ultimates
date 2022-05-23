@@ -21,6 +21,15 @@ export const clientServer = {
 	verificationChannel: '912572618308210708',
 };
 
+export const databaseConfig = {
+	logsActive: {
+		mod: null,
+		message: null,
+		modmail: null,
+		servergate: null,
+	},
+};
+
 export const clientCc = {
 	cannotInteract: {
 		content: "You can't use this!",

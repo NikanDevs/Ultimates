@@ -2,10 +2,10 @@ import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { leftMembersModel } from '../../models/leftMembers';
 import { leftMemberExpiry } from '../../constants';
-import { joinAndLeaveLogging } from '../../webhooks';
+import { logActivity } from '../../functions/logs/checkActivity';
 
 export default new Event('guildMemberRemove', async (member) => {
-	// If the member if from another server.
+	if (!logActivity('servergate')) return;
 	if (member.guild.id !== client.server.id) return;
 
 	const roles = member.roles.cache
@@ -38,5 +38,5 @@ export default new Event('guildMemberRemove', async (member) => {
 	}
 
 	// Sending the left message
-	joinAndLeaveLogging?.send({ embeds: [embed] });
+	client.webhooks.servergate?.send({ embeds: [embed] });
 });
