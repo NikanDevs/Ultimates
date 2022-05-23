@@ -80,9 +80,12 @@ export async function createModmailLog(options: options) {
 
 	if (options.action === ModmailActionType.Open) {
 		await addModmailCase();
-		let findMessage = await (
-			client.channels.cache.get(logMessage.channel_id) as TextChannel
-		).messages.fetch(logMessage.id);
+
+		if (logActivity('modmail'))
+			var findMessage = await (
+				client.channels.cache.get(logMessage.channel_id) as TextChannel
+			).messages.fetch(logMessage.id);
+
 		await modmailModel.findByIdAndUpdate('substance', {
 			$push: {
 				openedTickets: {
@@ -94,7 +97,7 @@ export async function createModmailLog(options: options) {
 				},
 			},
 		});
-	} else if (options.action === ModmailActionType.BlacklistAdd) {
+	} else if (options.action === ModmailActionType.BlacklistAdd && logActivity('modmail')) {
 		let findMessage = await (
 			client.channels.cache.get(logMessage.channel_id) as TextChannel
 		).messages.fetch(logMessage.id);

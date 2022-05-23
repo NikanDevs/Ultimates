@@ -87,8 +87,9 @@ export async function createModLog(options: options) {
 				.join('\n')
 				.replaceAll('\nLINE_BREAK', '')
 		);
-	if (logActivity('mod')) var logMessage = await client.webhooks.mod.send({ embeds: [embed] });
+	if (!logActivity('mod')) return;
 
+	var logMessage = await client.webhooks.mod.send({ embeds: [embed] });
 	if (
 		options.action === PunishmentType.Unmute ||
 		options.action === PunishmentType.Unban ||
