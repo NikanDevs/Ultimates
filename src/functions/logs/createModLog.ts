@@ -40,7 +40,7 @@ export async function createModLog(options: options) {
 	const revoke: boolean = options.revoke ? options.revoke : false;
 	const update: boolean = options.update ? true : false;
 	const currentCase = await getModCase();
-	await addModCase();
+	if (logActivity('mod')) await addModCase();
 	const embed = client.util
 		.embed()
 		.setAuthor({
@@ -87,8 +87,8 @@ export async function createModLog(options: options) {
 				.join('\n')
 				.replaceAll('\nLINE_BREAK', '')
 		);
-	if (!logActivity('mod')) return;
 
+	if (!logActivity('mod')) return;
 	var logMessage = await client.webhooks.mod.send({ embeds: [embed] });
 	if (
 		options.action === PunishmentType.Unmute ||

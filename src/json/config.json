@@ -14,7 +14,6 @@
 	"enabledModules": {
 		"automod": true,
 		"modmail": true,
-		"verification": true,
-		"logs": true
+		"verification": true
 	}
 }
