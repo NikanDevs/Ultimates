@@ -1,11 +1,4 @@
 {
-	"enabledModules": {
-		"guildMemberAdd": true,
-		"guildMemberRemove": true,
-		"messageDelete": true,
-		"messageUpdate": true,
-		"messageDeleteBulk": true
-	},
 	"ignores": {
 		"messageDelete": {
 			"category": [

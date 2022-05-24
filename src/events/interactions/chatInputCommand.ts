@@ -11,9 +11,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 	if (interaction?.isChatInputCommand()) {
 		const member = interaction.member as GuildMember;
-		const command = client.commands
-			.filter((cmd) => cmd.directory !== 'developer')
-			.get(interaction.commandName);
+		const command = client.commands.get(interaction.commandName);
 
 		if (!command)
 			return interaction.reply({
@@ -24,6 +22,12 @@ export default new Event('interactionCreate', async (interaction) => {
 				],
 				ephemeral: true,
 			});
+
+		if (
+			!client.config.developers.includes(interaction.user.id) &&
+			command.directory === 'developer'
+		)
+			return;
 
 		// Permission Check
 		if (

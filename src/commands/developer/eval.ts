@@ -1,81 +1,67 @@
+import { ComponentType, TextInputStyle } from 'discord.js';
 import { Command } from '../../structures/Command';
-import { TextChannel, Util } from 'discord.js';
-import { inspect } from 'util';
-import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
 
 export default new Command({
 	name: 'eval',
-	description: 'Eval a typescript/javascript code directly into the bot!',
+	description: 'Eval a code directly into the bot!',
 	directory: 'developer',
-	aliases: ['e'],
+	cooldown: 3000,
+	permission: [],
 
-	excute: async ({ client, message, args }) => {
-		let code = args.join(' ');
-		if (!code)
-			return message.reply({
-				embeds: [client.embeds.error('Please enter a code to eval.')],
-			});
+	excute: async ({ client, interaction }) => {
+		const modal = client.util
+			.modal()
+			.setTitle('Evaluation')
+			.setCustomId('eval')
+			.addComponents(
+				{
+					type: ComponentType['ActionRow'],
+					components: [
+						{
+							type: ComponentType['TextInput'],
+							custom_id: 'eval',
+							label: 'Enter the code:',
+							style: TextInputStyle['Paragraph'],
+							required: true,
+							max_length: 4000,
+							min_length: 1,
+							placeholder: 'console.log("amazing!")',
+						},
+					],
+				},
+				{
+					type: ComponentType['ActionRow'],
+					components: [
+						{
+							type: ComponentType['TextInput'],
+							custom_id: 'eval-async',
+							label: 'Async',
+							style: TextInputStyle['Short'],
+							required: false,
+							max_length: 5,
+							min_length: 1,
+							placeholder: 'true - false',
+						},
+					],
+				},
+				{
+					type: ComponentType['ActionRow'],
+					components: [
+						{
+							type: ComponentType['TextInput'],
+							custom_id: 'eval-silent',
+							label: 'Silent',
+							style: TextInputStyle['Short'],
+							required: false,
+							max_length: 5,
+							min_length: 1,
+							placeholder: 'true - false',
+						},
+					],
+				}
+			);
 
-		function cleanOutput(str: string) {
-			if (typeof str !== 'string') str = inspect(str, { depth: 0 });
-			return str;
-		}
-
-		try {
-			let evaled = eval(code) as string;
-			evaled = cleanOutput(evaled);
-
-			switch (evaled) {
-				case 'Promise { <pending> }':
-					const sucessEmbed = client.util
-						.embed()
-						.setColor(client.colors.success)
-						.setDescription(
-							`**Evaluation succeded:**\n\`\`\`ts\n${client.util.splitText(
-								code,
-								{ splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 40 }
-							)}\n\`\`\``
-						);
-					message.reply({ embeds: [sucessEmbed] });
-					break;
-				default:
-					let resultEmbed = client.util
-						.embed()
-						.setColor(client.colors.success)
-						.setDescription(
-							`**Output:**\`\`\`ts\n${client.util.splitText(evaled, {
-								splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 30,
-							})}\n\`\`\``
-						);
-					if (evaled.length < EMBED_DESCRIPTION_MAX_LENGTH - 25)
-						return message.reply({ embeds: [resultEmbed] });
-
-					const [first, ...rest] = Util.splitMessage(evaled, {
-						maxLength: 1935,
-					});
-
-					await (message.channel as TextChannel).send({
-						content: `\`\`\`ts\n${first}\n\`\`\``,
-					});
-					rest.forEach(
-						async (result) =>
-							await (message.channel as TextChannel).send({
-								content: `\`\`\`ts\n${result}\n\`\`\``,
-							})
-					);
-					break;
-			}
-		} catch (error) {
-			const errorEmbed = client.util
-				.embed()
-				.setColor(client.colors.error)
-				.setDescription(
-					`**An error has occured**\n\`\`\`xl\n${client.util.splitText(
-						error?.message,
-						{ splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 40 }
-					)}\n\`\`\``
-				);
-			message.reply({ embeds: [errorEmbed] });
-		}
+		await interaction.showModal(modal);
 	},
 });
+

@@ -1,12 +1,4 @@
-import {
-	Client,
-	Collection,
-	ClientEvents,
-	Partials,
-	Colors,
-	Embed,
-	WebhookClient,
-} from 'discord.js';
+import { Client, Collection, ClientEvents, Partials, WebhookClient } from 'discord.js';
 import { commandType } from '../typings/Command';
 import { glob } from 'glob';
 import { promisify } from 'util';
@@ -21,7 +13,6 @@ import {
 	clientServer,
 	databaseConfig,
 } from '../functions/client/prototypes';
-import { enabledModules as logsEnabledModules } from '../json/logs.json';
 import { configModel } from '../models/config';
 const globPromise = promisify(glob);
 
@@ -105,33 +96,6 @@ export class Ultimates extends Client {
 			.filter((file) =>
 				!configEnabledModules.verification ? !file.includes('verify') : true
 			)
-			// loggings
-			.filter((file) =>
-				!logsEnabledModules.messageDelete && configEnabledModules.logs
-					? !file.includes('logs/messageDelete')
-					: true
-			)
-			.filter((file) =>
-				!logsEnabledModules.messageUpdate && configEnabledModules.logs
-					? !file.includes('logs/messageUpdate')
-					: true
-			)
-			.filter((file) =>
-				!logsEnabledModules.messageDeleteBulk && configEnabledModules.logs
-					? !file.includes('logs/messageDeleteBulk')
-					: true
-			)
-			.filter((file) =>
-				!logsEnabledModules.guildMemberAdd && configEnabledModules.logs
-					? !file.includes('logs/guildMemberAdd')
-					: true
-			)
-			.filter((file) =>
-				!logsEnabledModules.guildMemberRemove && configEnabledModules.logs
-					? !file.includes('logs/guildMemberRemove')
-					: true
-			)
-
 			.forEach(async (filePaths) => {
 				const event: Event<keyof ClientEvents> = await this.importFiles(filePaths);
 				this.on(event.event, event.run);

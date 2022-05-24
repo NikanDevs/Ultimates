@@ -4,6 +4,8 @@ import { Collection, GuildMember } from 'discord.js';
 const cooldown = new Collection();
 
 export default new Event('messageCreate', async (message) => {
+	return;
+	/** 
 	const member = message.member as GuildMember;
 	if (message.author.bot || !message.content?.toLowerCase().startsWith(client.config.prefix))
 		return;
@@ -50,4 +52,5 @@ export default new Event('messageCreate', async (message) => {
 	}
 
 	await command.excute({ client, message, args });
+	*/
 });

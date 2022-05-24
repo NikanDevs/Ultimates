@@ -16,6 +16,7 @@ let key1 = '';
 export default new Event('interactionCreate', async (interaction) => {
 	// --- Modal answers
 	if (interaction.isModalSubmit()) {
+		if (interaction.customId !== 'verify-' + interaction.user.id) return;
 		const getField = interaction.fields.getField('verify-' + interaction.user.id);
 		if (!getField) return;
 		const getValue = getField?.value;

@@ -15,7 +15,6 @@ const interactions: commandType[] = [];
 (async () => {
 	const slashFiles = await globPromise(`${process.cwd()}/src/commands/**/*{.ts,.js}`);
 	slashFiles
-		.filter((file) => !file.includes('developer'))
 		.filter((file) => (!enabledModules.modmail ? !file.includes('modmail') : true))
 		.forEach(async (filePaths) => {
 			const command: commandType = await importFile(filePaths);
