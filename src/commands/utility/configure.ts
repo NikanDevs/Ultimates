@@ -58,7 +58,7 @@ export default new Command({
 		if (subcommand === 'logs') {
 			const module = options.getString('module');
 			const channel = options.getChannel('channel') as TextChannel;
-			const active = options.getBoolean('active') || false;
+			const active = options.getBoolean('active');
 			let newWebhook: Webhook;
 
 			const data = await configModel.findById('logs');
@@ -95,7 +95,7 @@ export default new Command({
 				});
 			}
 
-			if (module) {
+			if (module && (channel || active !== null)) {
 				await configModel.findByIdAndUpdate(
 					{ _id: 'logs' },
 					{

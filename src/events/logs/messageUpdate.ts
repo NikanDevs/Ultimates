@@ -10,6 +10,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 
 	if (!oldMessage.author) return;
 	if (!oldMessage.content.length && !oldMessage.attachments.size) return;
+	if (oldMessage.content === newMessage.content) return;
 
 	const channel = newMessage?.channel as TextChannel;
 	const member = newMessage.member as GuildMember;
