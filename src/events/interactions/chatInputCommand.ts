@@ -1,7 +1,6 @@
 import { Event } from '../../structures/Event';
 import { client } from '../..';
 import { CommandInteractionOptionResolver, GuildMember, Collection } from 'discord.js';
-import { reportError } from '../../functions/reportError';
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
 const cooldown = new Collection();

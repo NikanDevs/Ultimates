@@ -6,7 +6,6 @@ import {
 	Collection,
 	ContextMenuCommandInteraction,
 } from 'discord.js';
-import { reportError } from '../../functions/reportError';
 const cooldown = new Collection();
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
