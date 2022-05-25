@@ -9,6 +9,8 @@ import {
 import { reportError } from '../../functions/reportError';
 const cooldown = new Collection();
 import { connection, ConnectionStates } from 'mongoose';
+import { logger } from '../../logger';
+import mongoose from 'mongoose';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction.inGuild()) return;
@@ -68,12 +70,16 @@ export default new Event('interactionCreate', async (interaction) => {
 				],
 				ephemeral: true,
 			});
-			return reportError(interaction, interaction.commandName, {
-				stack: `MongoDB connection was not found. Ready state: ${
-					connection.readyState
-				}\n\nStatus: ${ConnectionStates[connection.readyState]} `,
-				name: 'MongoDB connection was not found.',
-			} as Error);
+			return logger.warn({
+				source: `${interaction.commandName} context menu`,
+				reason: {
+					name: 'MongoDB',
+					message: 'Mongoose database is not connected properly',
+					stack: `Current ready state: ${
+						connection.readyState
+					}\nCurrent ready status: ${ConnectionStates[connection.readyState]}`,
+				},
+			});
 		}
 
 		await command
@@ -82,7 +88,12 @@ export default new Event('interactionCreate', async (interaction) => {
 				interaction: interaction as ContextMenuCommandInteraction,
 				options: interaction.options as CommandInteractionOptionResolver,
 			})
-			.catch((err: Error) => reportError(interaction, interaction.commandName, err));
+			.catch((err: Error) =>
+				logger.error({
+					source: `${interaction.commandName} context menu`,
+					reason: err,
+				})
+			);
 
 		if (
 			command.cooldown &&

@@ -14,6 +14,8 @@ import {
 	databaseConfig,
 } from '../functions/client/prototypes';
 import { configModel } from '../models/config';
+import { logger } from '../logger';
+import mongoose from 'mongoose';
 const globPromise = promisify(glob);
 
 export class Ultimates extends Client {
@@ -57,14 +59,17 @@ export class Ultimates extends Client {
 		// Connecting to mongoDB
 		const mongoDBConnection = process.env.MONGODB;
 		if (!mongoDBConnection) return;
-		await connect(mongoDBConnection).then(() => console.log('Connected to MongoDB!'));
+		await connect(mongoDBConnection).then(() =>
+			logger.info('MongoDB connected', { showDate: false })
+		);
 		await this.updateWebhookData();
 
-		this.registerModules().then(() => console.log('Registered Modules.'));
+		await this.registerModules();
 
 		await this.login(process.env.DISCORD_TOKEN).then(() => {
 			this.handlerErrors();
 		});
+		await mongoose.disconnect();
 	}
 
 	async importFiles(filePath: string) {
@@ -103,30 +108,21 @@ export class Ultimates extends Client {
 	}
 
 	/** Handles process errors and exits if called. */
-	async handlerErrors() {
+	handlerErrors() {
 		enum betterTexts {
 			'unhandledRejection' = 'Unhandled Rejection',
 			'uncaughtException' = 'Uncaught Exception',
 			'warning' = 'Warning',
 		}
-		type errors = 'unhandledRejection' | 'uncaughtException' | 'warning';
-
-		function sendError(type: errors, reason: Error) {
-			return console.log(
-				['---------------' + betterTexts[type] + '---------------', reason.stack].join(
-					'\n'
-				)
-			);
-		}
 
 		process.on('unhandledRejection', (reason: Error) => {
-			sendError('uncaughtException', reason);
+			logger.error({ source: betterTexts.unhandledRejection, reason: reason });
 		});
 		process.on('uncaughtException', (reason: Error) => {
-			sendError('uncaughtException', reason);
+			logger.error({ source: betterTexts.unhandledRejection, reason: reason });
 		});
 		process.on('warning', (reason: Error) => {
-			sendError('warning', reason);
+			logger.error({ source: betterTexts.warning, reason: reason });
 		});
 		process.on('disconnect', () => {
 			this.destroy();

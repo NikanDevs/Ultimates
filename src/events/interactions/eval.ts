@@ -1,14 +1,18 @@
 import { TextChannel, Util } from 'discord.js';
 import { inspect } from 'node:util';
-import { client } from '../..';
+import { client as C } from '../..';
 import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
+import { logger as L } from '../../logger';
 import { Event } from '../../structures/Event';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction.isModalSubmit()) return;
 	if (interaction.customId !== 'eval') return;
 
-	const code = interaction.fields.getField('eval').value;
+	const client = C;
+	const logger = L;
+
+	const code = interaction.fields.getTextInputValue('eval');
 	const async = interaction.fields.getField('eval-async').value
 		? JSON.parse(interaction.fields.getField('eval-async').value)
 		: false;
@@ -22,7 +26,7 @@ export default new Event('interactionCreate', async (interaction) => {
 	}
 
 	try {
-		let evaled = eval(async ? `(async () => {\n${code}\n})()` : code) as string;
+		let evaled = eval(async ? `(async () => {\n${code}\n})()` : code);
 		evaled = formatOutput(evaled);
 
 		switch (evaled) {

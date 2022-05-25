@@ -3,6 +3,7 @@ import { client } from '../..';
 import { CommandInteractionOptionResolver, GuildMember, Collection } from 'discord.js';
 import { reportError } from '../../functions/reportError';
 import { connection, ConnectionStates } from 'mongoose';
+import { logger } from '../../logger';
 const cooldown = new Collection();
 
 export default new Event('interactionCreate', async (interaction) => {
@@ -69,12 +70,16 @@ export default new Event('interactionCreate', async (interaction) => {
 				],
 				ephemeral: true,
 			});
-			return reportError(interaction, interaction.commandName, {
-				stack: `MongoDB connection was not found. Ready state ${
-					connection.readyState
-				}\n\nStatus: ${ConnectionStates[connection.readyState]} `,
-				name: 'MongoDB connection was not found.',
-			} as Error);
+			return logger.warn({
+				source: `/${interaction.commandName} command`,
+				reason: {
+					name: 'MongoDB',
+					message: 'Mongoose database is not connected properly',
+					stack: `Current ready state: ${
+						connection.readyState
+					}\nCurrent ready status: ${ConnectionStates[connection.readyState]}`,
+				},
+			});
 		}
 
 		await command
@@ -83,7 +88,12 @@ export default new Event('interactionCreate', async (interaction) => {
 				interaction: interaction,
 				options: interaction.options as CommandInteractionOptionResolver,
 			})
-			.catch((err: Error) => reportError(interaction, interaction.commandName, err));
+			.catch((err: Error) =>
+				logger.error({
+					source: `/${interaction.commandName} command`,
+					reason: err,
+				})
+			);
 
 		if (
 			command.cooldown &&
