@@ -69,7 +69,6 @@ export class Ultimates extends Client {
 		await this.login(process.env.DISCORD_TOKEN).then(() => {
 			this.handlerErrors();
 		});
-		await mongoose.disconnect();
 	}
 
 	async importFiles(filePath: string) {
