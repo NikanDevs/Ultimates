@@ -19,7 +19,7 @@ export default new Command({
 			.setColor(client.cc.ultimates)
 			.addFields(
 				{
-					name: `${pingEmoji} Message`,
+					name: `${pingEmoji} Interaction`,
 					value: `• \`${Date.now() - interaction.createdTimestamp}ms\``,
 					inline: true,
 				},
