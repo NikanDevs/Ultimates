@@ -33,7 +33,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			case 'Promise { <pending> }':
 				const sucessEmbed = client.util
 					.embed()
-					.setColor(client.colors.success)
+					.setColor(client.cc.successC)
 					.setDescription(
 						`**Evaluation succeded:**\n\`\`\`ts\n${client.util.splitText(code, {
 							splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 40,
@@ -44,7 +44,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			default:
 				let resultEmbed = client.util
 					.embed()
-					.setColor(client.colors.success)
+					.setColor(client.cc.successC)
 					.setDescription(
 						`**Output:**\`\`\`ts\n${client.util.splitText(evaled, {
 							splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 30,
@@ -72,7 +72,7 @@ export default new Event('interactionCreate', async (interaction) => {
 	} catch (error) {
 		const errorEmbed = client.util
 			.embed()
-			.setColor(client.colors.error)
+			.setColor(client.cc.errorC)
 			.setDescription(
 				`**An error has occured**\n\`\`\`xl\n${client.util.splitText(error?.message, {
 					splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 40,

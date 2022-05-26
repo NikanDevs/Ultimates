@@ -122,7 +122,7 @@ export default new Command({
 			const embed = client.util
 				.embed()
 				.setTitle('Logging Configuration')
-				.setColor(client.colors.ultimates)
+				.setColor(client.cc.ultimates)
 				.addFields(
 					await formatLogField('mod'),
 					await formatLogField('message'),

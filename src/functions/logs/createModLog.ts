@@ -53,7 +53,7 @@ export async function createModLog(options: options) {
 			revoke
 				? Util.resolveColor('#b04d46')
 				: update
-				? client.colors.invisible
+				? client.cc.invisible
 				: Util.resolveColor(colors[options.action])
 		)
 		.setDescription(

@@ -36,7 +36,7 @@ exports.default = new Command_1.Command({
         const warningsEmbed = client.util
             .embed()
             .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-            .setColor(client.colors.invisible)
+            .setColor(client.cc.invisible)
             .setThumbnail(user.displayAvatarURL());
         // Finding the warnings [option]
         const optionChoice = options.getNumber('type');
@@ -116,7 +116,7 @@ exports.default = new Command_1.Command({
                 embeds: [
                     client.util.embed({
                         description: `No ${optionChoice ? (optionChoice === 1 ? 'manual ' : 'automod ') : ''}warnings were found for you, you're clean!`,
-                        color: client.colors.invisible,
+                        color: client.cc.invisible,
                     }),
                 ],
                 ephemeral: true,
@@ -147,7 +147,10 @@ exports.default = new Command_1.Command({
             });
             collector.on('collect', (collected) => {
                 if (interaction.user.id !== collected.user.id)
-                    return collected.reply(client.cc.cannotInteract);
+                    return collected.reply({
+                        content: 'You can not use this.',
+                        ephemeral: true,
+                    });
                 switch (collected.customId) {
                     case '1':
                         if (currentPage === 1)

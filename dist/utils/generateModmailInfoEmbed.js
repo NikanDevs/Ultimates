@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateModmailInfoEmbed = void 0;
 const __1 = require("..");
+const config_json_1 = require("../json/config.json");
 async function generateModmailInfoEmbed(user) {
-    const guild = __1.client.guilds.cache.get(__1.client.server.id) ||
-        (await __1.client.guilds.fetch(__1.client.server.id));
+    const guild = __1.client.guilds.cache.get(config_json_1.guild.id) ||
+        (await __1.client.guilds.fetch(config_json_1.guild.id));
     const guildMember = (await guild.members.fetch(user.id));
     return __1.client.util
         .embed()
@@ -12,7 +13,7 @@ async function generateModmailInfoEmbed(user) {
         name: user.tag,
         iconURL: user.displayAvatarURL(),
     })
-        .setColor(__1.client.colors.ultimates)
+        .setColor(__1.client.cc.ultimates)
         .setDescription(`${user} • ID: ${user.id}`)
         .setThumbnail(user.displayAvatarURL())
         .addFields({

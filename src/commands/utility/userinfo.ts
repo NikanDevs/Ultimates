@@ -130,7 +130,7 @@ export default new Command({
 			.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
 			.setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
 			.setThumbnail(user.displayAvatarURL())
-			.setColor(client.colors.invisible)
+			.setColor(client.cc.invisible)
 			.addFields(
 				{
 					name: 'Account Information',
@@ -142,7 +142,7 @@ export default new Command({
 							+user.createdAt / 1000
 						)}:R>`,
 						`• **Bot:** ${
-							user?.bot ? `${client.cc.success}` : `${client.cc.error}`
+							user?.bot ? `${client.cc.successC}` : `${client.cc.errorC}`
 						}`,
 					].join('\n'),
 				},
@@ -151,8 +151,8 @@ export default new Command({
 					value: [
 						`• **Animated:** ${
 							user.displayAvatarURL().endsWith('.gif')
-								? `${client.cc.success}`
-								: `${client.cc.error}`
+								? `${client.cc.successC}`
+								: `${client.cc.errorC}`
 						}`,
 						`• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
 					].join('\n'),
@@ -167,8 +167,8 @@ export default new Command({
 				value: [
 					`• **Animated:** ${
 						user.bannerURL().endsWith('.gif')
-							? `${client.cc.success}`
-							: `${client.cc.error}`
+							? `${client.cc.successC}`
+							: `${client.cc.errorC}`
 					}`,
 					`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
 				].join('\n'),
@@ -278,7 +278,10 @@ export default new Command({
 			// Whenever the collector is triggered
 			userinfoCollector.on('collect', async (collected) => {
 				if (collected.user.id !== interaction.user.id)
-					return collected.reply(client.cc.cannotInteract);
+					return collected.reply({
+						content: 'You can not use this.',
+						ephemeral: true,
+					});
 
 				switch (collected.customId) {
 					case '1':
@@ -321,7 +324,7 @@ export default new Command({
 								[`**ID:** ${user.id}`, user.toString()].join(' • ')
 							)
 							.setThumbnail(user.displayAvatarURL())
-							.setColor(client.colors.invisible)
+							.setColor(client.cc.invisible)
 							.addFields({
 								name: `Information in ${interaction.guild.name}`,
 								value: [
@@ -335,8 +338,8 @@ export default new Command({
 									}`,
 									`• **Booster:** ${
 										member.premiumSinceTimestamp
-											? `${client.cc.success}`
-											: `${client.cc.error}`
+											? `${client.cc.successC}`
+											: `${client.cc.errorC}`
 									}`,
 									`• **Boosting Since:** ${
 										member.premiumSinceTimestamp
@@ -357,8 +360,8 @@ export default new Command({
 								value: [
 									`• **Animated:** ${
 										member.avatarURL().endsWith('.gif')
-											? `${client.cc.success}`
-											: `${client.cc.error}`
+											? `${client.cc.successC}`
+											: `${client.cc.errorC}`
 									}`,
 									`• **Formats:** ${UrlTypeCheck(
 										member.avatarURL(),
@@ -385,7 +388,7 @@ export default new Command({
 								iconURL: user.displayAvatarURL(),
 							})
 							.setThumbnail(user.displayAvatarURL())
-							.setColor(client.colors.invisible)
+							.setColor(client.cc.invisible)
 							.setDescription(
 								[
 									`${user} • ID: ${user?.id}\n`,

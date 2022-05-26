@@ -15,6 +15,7 @@ const createModLog_1 = require("../../functions/logs/createModLog");
 const timeoutMember_1 = require("../../utils/timeoutMember");
 const ms_1 = tslib_1.__importDefault(require("ms"));
 const sendModDM_1 = require("../../utils/sendModDM");
+const config_json_1 = require("../../json/config.json");
 const bypassRoleId = automod_json_1.ignore['bypass-roleId'];
 const categoryIgnores = automod_json_1.ignore['categoryIds'];
 const channelIgnores = automod_json_1.ignore['channelNames'];
@@ -25,7 +26,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
     const textChannel = message.channel;
     // Main Reqs
     if (!message.guild ||
-        message.guildId !== __1.client.server.id ||
+        message.guildId !== config_json_1.guild.id ||
         message.author.bot ||
         !message.content ||
         guildMember.roles.cache.has(bypassRoleId))

@@ -12,6 +12,7 @@ import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import ms from 'ms';
 import { sendModDM } from '../../utils/sendModDM';
+import { guild as guildConfig } from '../../json/config.json';
 const bypassRoleId = ignore['bypass-roleId'];
 const categoryIgnores = ignore['categoryIds'];
 const channelIgnores = ignore['channelNames'];
@@ -25,7 +26,7 @@ export default new Event('messageCreate', async (message) => {
 	// Main Reqs
 	if (
 		!message.guild ||
-		message.guildId !== client.server.id ||
+		message.guildId !== guildConfig.id ||
 		message.author.bot ||
 		!message.content ||
 		guildMember.roles.cache.has(bypassRoleId)

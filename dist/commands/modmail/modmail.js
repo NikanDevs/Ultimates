@@ -9,6 +9,7 @@ const modmail_1 = require("../../models/modmail");
 const Command_1 = require("../../structures/Command");
 const Modmail_1 = require("../../typings/Modmail");
 const generateModmailInfoEmbed_1 = require("../../utils/generateModmailInfoEmbed");
+const config_json_1 = require("../../json/config.json");
 exports.default = new Command_1.Command({
     name: 'modmail',
     description: 'Actions on modmail.',
@@ -66,12 +67,12 @@ exports.default = new Command_1.Command({
     ],
     excute: async ({ client, interaction, options }) => {
         const subCommands = options.getSubcommand();
-        const guild = client.guilds.cache.get(client.server.id) ||
-            (await client.guilds.fetch(client.server.id));
+        const guild = client.guilds.cache.get(config_json_1.guild.id) ||
+            (await client.guilds.fetch(config_json_1.guild.id));
         if (subCommands === 'close') {
             const currentTextChannel = interaction.channel;
-            if (currentTextChannel.guildId !== client.server.id ||
-                currentTextChannel.parentId !== messageCreate_1.categoryId ||
+            if (currentTextChannel.guildId !== config_json_1.guild.id ||
+                currentTextChannel.parentId !== config_json_1.guild.modmailCategoryId ||
                 currentTextChannel.id === '885266382235795477' ||
                 currentTextChannel.id === '880538350740725850')
                 return interaction.reply({
@@ -229,8 +230,8 @@ exports.default = new Command_1.Command({
                 });
             // Checking already exists
             const guildCategory = client.guilds.cache
-                .get(client.server.id)
-                .channels.cache.get(messageCreate_1.categoryId);
+                .get(config_json_1.guild.id)
+                .channels.cache.get(config_json_1.guild.modmailCategoryId);
             const findExisting = guildCategory.children.cache.find(
             /* child? sus af */ (child) => child.topic?.slice(child.topic?.length - client.user.id.length) === user.id);
             if (findExisting)
@@ -248,7 +249,7 @@ exports.default = new Command_1.Command({
                     embeds: [
                         client.util.embed({
                             description: `${user.user.tag} is blacklisted from opening modmails.`,
-                            color: client.colors.error,
+                            color: client.cc.errorC,
                         }),
                     ],
                     ephemeral: true,
@@ -287,13 +288,13 @@ exports.default = new Command_1.Command({
                             embeds: [
                                 client.util.embed({
                                     description: "Please wait while we're trying to set this ticket up...",
-                                    color: client.colors.wait,
+                                    color: client.cc.attentionC,
                                 }),
                             ],
                         });
                         const threadChannel = await guild.channels.create(user.user.username, {
                             type: discord_js_1.ChannelType.GuildText,
-                            parent: messageCreate_1.categoryId,
+                            parent: config_json_1.guild.modmailCategoryId,
                             topic: `A tunnel to contact **${user.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${user.id}`,
                             reason: `Direct modmail thread opened.`,
                         });

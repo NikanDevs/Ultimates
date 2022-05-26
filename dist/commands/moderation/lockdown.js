@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const lockdowns_1 = require("../../models/lockdowns");
 const Command_1 = require("../../structures/Command");
+const config_json_1 = require("../../json/config.json");
 const messageIdsArray = [];
 let messageId;
 exports.default = new Command_1.Command({
@@ -56,14 +57,14 @@ exports.default = new Command_1.Command({
             const channel = (options.getChannel('channel') ||
                 interaction.channel);
             const alreadyLocked = channel
-                .permissionsFor(client.config.memberRoleId)
+                .permissionsFor(config_json_1.guild.memberRoleId)
                 .toArray()
                 .includes('SendMessages' || 'Connect')
                 ? false
                 : true;
             const embed = client.util
                 .embed()
-                .setColor(!alreadyLocked ? client.colors.moderation : client.colors.invisible)
+                .setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
                 .setAuthor({
                 name: 'Channel ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
                 iconURL: client.user.displayAvatarURL(),
@@ -78,7 +79,7 @@ exports.default = new Command_1.Command({
                 });
             switch (channel.type) {
                 case discord_js_1.ChannelType.GuildText:
-                    await channel.permissionOverwrites.edit(client.config.memberRoleId, {
+                    await channel.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
                         SendMessages: alreadyLocked ? null : false,
                         SendMessagesInThreads: alreadyLocked ? null : false,
                         CreatePrivateThreads: alreadyLocked ? null : false,
@@ -94,12 +95,12 @@ exports.default = new Command_1.Command({
                 case discord_js_1.ChannelType.GuildVoice:
                 case discord_js_1.ChannelType.GuildStageVoice:
                     if (!alreadyLocked) {
-                        await channel.permissionOverwrites.edit(client.config.memberRoleId, {
+                        await channel.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
                             Connect: false,
                         });
                     }
                     else if (alreadyLocked) {
-                        await channel.permissionOverwrites.edit(client.config.memberRoleId, {
+                        await channel.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
                             SendMessages: true,
                         });
                     }
@@ -143,9 +144,9 @@ exports.default = new Command_1.Command({
         }
         else if (getSubCommand === 'server') {
             await interaction.deferReply();
-            const generalChannel = (await interaction.guild.channels.fetch(client.config.generalChannelId));
+            const generalChannel = (await interaction.guild.channels.fetch(config_json_1.guild.generalChannelId));
             const alreadyLocked = generalChannel
-                .permissionsFor(client.config.memberRoleId)
+                .permissionsFor(config_json_1.guild.memberRoleId)
                 .toArray()
                 .includes('SendMessages')
                 ? false
@@ -155,7 +156,7 @@ exports.default = new Command_1.Command({
                 ch.type === discord_js_1.ChannelType.GuildVoice ||
                 ch.type === discord_js_1.ChannelType.GuildStageVoice)
                 .filter((ch) => ch
-                .permissionsFor(client.config.memberRoleId)
+                .permissionsFor(config_json_1.guild.memberRoleId)
                 .toArray()
                 .includes('ViewChannel'))
                 .filter((ch) => !alreadyLocked
@@ -167,7 +168,7 @@ exports.default = new Command_1.Command({
                 .forEach(async (ch) => {
                 switch (ch.type) {
                     case discord_js_1.ChannelType.GuildText:
-                        await ch.permissionOverwrites.edit(client.config.memberRoleId, {
+                        await ch.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
                             SendMessages: alreadyLocked ? null : false,
                             SendMessagesInThreads: alreadyLocked ? null : false,
                             CreatePrivateThreads: alreadyLocked ? null : false,
@@ -178,7 +179,7 @@ exports.default = new Command_1.Command({
                         break;
                     case discord_js_1.ChannelType.GuildVoice:
                     case discord_js_1.ChannelType.GuildStageVoice:
-                        await ch.permissionOverwrites.edit(client.config.memberRoleId, {
+                        await ch.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
                             Connect: alreadyLocked ? null : false,
                         });
                         break;
@@ -186,7 +187,7 @@ exports.default = new Command_1.Command({
             });
             const embed = client.util
                 .embed()
-                .setColor(!alreadyLocked ? client.colors.moderation : client.colors.invisible)
+                .setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
                 .setAuthor({
                 name: 'Server ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
                 iconURL: client.user.displayAvatarURL(),

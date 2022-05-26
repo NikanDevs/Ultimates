@@ -67,7 +67,7 @@ export default new Command({
 		const warningsEmbed = client.util
 			.embed()
 			.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-			.setColor(client.colors.invisible)
+			.setColor(client.cc.invisible)
 			.setThumbnail(user.displayAvatarURL());
 
 		// Sending the results
@@ -76,7 +76,7 @@ export default new Command({
 				embeds: [
 					client.util.embed({
 						description: `No punishments were found for **${user.tag}**`,
-						color: client.colors.invisible,
+						color: client.cc.invisible,
 					}),
 				],
 				ephemeral: true,
@@ -109,7 +109,10 @@ export default new Command({
 
 			collector.on('collect', (collected) => {
 				if (interaction.user.id !== collected.user.id)
-					return collected.reply(client.cc.cannotInteract);
+					return collected.reply({
+						content: 'You can not use this.',
+						ephemeral: true,
+					});
 
 				switch (collected.customId) {
 					case '1':

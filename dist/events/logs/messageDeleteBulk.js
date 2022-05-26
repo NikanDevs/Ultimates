@@ -6,6 +6,7 @@ const Event_1 = require("../../structures/Event");
 const logs_json_1 = require("../../json/logs.json");
 const sourcebin_1 = require("sourcebin");
 const checkActivity_1 = require("../../functions/logs/checkActivity");
+const config_json_1 = require("../../json/config.json");
 const ignore = logs_json_1.ignores.MessageDeleteBulk;
 exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
     if (!(0, checkActivity_1.logActivity)('message'))
@@ -13,7 +14,7 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
     const randomMessage = messages.random();
     const channel = randomMessage?.channel;
     if (!randomMessage?.guild ||
-        randomMessage?.guildId !== __1.client.server.id ||
+        randomMessage?.guildId !== config_json_1.guild.id ||
         ignore.category.includes(channel?.parentId) ||
         ignore.channel.includes(channel?.id) ||
         ignore.roles.some((role) => randomMessage?.member?.roles?.cache.has(role)))

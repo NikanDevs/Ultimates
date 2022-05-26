@@ -8,9 +8,10 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { default_config } from '../../json/moderation.json';
+import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildBanRemove', async (ban) => {
-	if (ban.guild.id !== client.server.id) return;
+	if (ban.guild.id !== guildConfig.id) return;
 
 	const auditLogs = await ban.guild.fetchAuditLogs({
 		limit: 10,

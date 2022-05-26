@@ -1,10 +1,11 @@
 import { Guild, GuildMember, User } from 'discord.js';
 import { client } from '..';
+import { guild as guildConfig } from '../json/config.json';
 
 export async function generateModmailInfoEmbed(user: User) {
 	const guild =
-		client.guilds.cache.get(client.server.id) ||
-		((await client.guilds.fetch(client.server.id)) as Guild);
+		client.guilds.cache.get(guildConfig.id) ||
+		((await client.guilds.fetch(guildConfig.id)) as Guild);
 	const guildMember = (await guild.members.fetch(user.id)) as GuildMember;
 
 	return client.util
@@ -13,7 +14,7 @@ export async function generateModmailInfoEmbed(user: User) {
 			name: user.tag,
 			iconURL: user.displayAvatarURL(),
 		})
-		.setColor(client.colors.ultimates)
+		.setColor(client.cc.ultimates)
 		.setDescription(`${user} • ID: ${user.id}`)
 		.setThumbnail(user.displayAvatarURL())
 		.addFields(

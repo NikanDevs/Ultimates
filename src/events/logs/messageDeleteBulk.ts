@@ -4,6 +4,7 @@ import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
 import { create } from 'sourcebin';
 import { logActivity } from '../../functions/logs/checkActivity';
+import { guild as guildConfig } from '../../json/config.json';
 const ignore = ignores.MessageDeleteBulk;
 
 export default new Event('messageDeleteBulk', async (messages) => {
@@ -13,7 +14,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 	const channel = randomMessage?.channel as TextChannel;
 	if (
 		!randomMessage?.guild ||
-		randomMessage?.guildId !== client.server.id ||
+		randomMessage?.guildId !== guildConfig.id ||
 		ignore.category.includes(channel?.parentId) ||
 		ignore.channel.includes(channel?.id) ||
 		ignore.roles.some((role) => randomMessage?.member?.roles?.cache.has(role))

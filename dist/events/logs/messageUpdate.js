@@ -4,6 +4,7 @@ const __1 = require("../..");
 const Event_1 = require("../../structures/Event");
 const logs_json_1 = require("../../json/logs.json");
 const checkActivity_1 = require("../../functions/logs/checkActivity");
+const config_json_1 = require("../../json/config.json");
 const ignore = logs_json_1.ignores.MessageUpdate;
 exports.default = new Event_1.Event('messageUpdate', async (oldMessage, newMessage) => {
     if (!(0, checkActivity_1.logActivity)('message'))
@@ -17,7 +18,7 @@ exports.default = new Event_1.Event('messageUpdate', async (oldMessage, newMessa
     const channel = newMessage?.channel;
     const member = newMessage.member;
     if (!newMessage?.guild ||
-        newMessage?.guildId !== __1.client.server.id ||
+        newMessage?.guildId !== config_json_1.guild.id ||
         newMessage.author?.bot ||
         ignore.category.includes(channel?.parentId) ||
         ignore.channel.includes(channel?.id) ||

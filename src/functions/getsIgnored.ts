@@ -1,4 +1,5 @@
 import { CommandInteraction, GuildMember } from 'discord.js';
+import { developers, ownerId } from '../json/config.json';
 import { client } from '..';
 
 export function getsIgnored(interaction: CommandInteraction, member: GuildMember) {
@@ -13,7 +14,7 @@ export function getsIgnored(interaction: CommandInteraction, member: GuildMember
 	} else if (
 		member?.roles.highest.position >=
 			(interaction.member as GuildMember).roles?.highest.position ||
-		member.id === client.config.owner ||
+		member.id === ownerId ||
 		member.user.bot
 	) {
 		interaction.reply({

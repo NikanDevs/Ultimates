@@ -7,11 +7,11 @@ import { durationsModel } from '../../models/durations';
 import { getModCase } from '../../functions/cases/modCase';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { createModLog } from '../../functions/logs/createModLog';
-import { client } from '../..';
 import { default_config } from '../../json/moderation.json';
+import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
-	if (newMember.guild.id !== client.server.id) return;
+	if (newMember.guild.id !== guildConfig.id) return;
 	await oldMember.fetch().catch(() => {});
 	if (oldMember.communicationDisabledUntil && !newMember.communicationDisabledUntil) {
 		const auditLogs = await newMember.guild.fetchAuditLogs({

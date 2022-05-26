@@ -115,7 +115,7 @@ exports.default = new Command_1.Command({
             const embed = client.util
                 .embed()
                 .setTitle('Logging Configuration')
-                .setColor(client.colors.ultimates)
+                .setColor(client.cc.ultimates)
                 .addFields(await formatLogField('mod'), await formatLogField('message'), await formatLogField('modmail'), await formatLogField('servergate'));
             await interaction.followUp({ embeds: [embed] });
         }

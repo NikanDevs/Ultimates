@@ -4,35 +4,25 @@ import { glob } from 'glob';
 import { promisify } from 'util';
 import { connect } from 'mongoose';
 import { Event } from './Event';
-import botConfig, { enabledModules as configEnabledModules } from '../json/config.json';
+import { enabledModules as configEnabledModules } from '../json/config.json';
 import { clientUtil } from '../functions/client/clientUtil';
-import {
-	clientCc,
-	clientColors,
-	clientEmbeds,
-	clientServer,
-	databaseConfig,
-} from '../functions/client/prototypes';
+import { cc, clientEmbeds, clientConfig } from '../functions/client/properties';
 import { configModel } from '../models/config';
 import { logger } from '../logger';
-import mongoose from 'mongoose';
 const globPromise = promisify(glob);
 
 export class Ultimates extends Client {
 	commands = new Collection() as Collection<string, commandType>;
-	config = botConfig;
 	util = new clientUtil();
 	embeds = clientEmbeds;
-	colors = clientColors;
-	cc = clientCc;
-	server = clientServer;
+	cc = cc;
 	webhooks = {
 		mod: null,
 		message: null,
 		modmail: null,
 		servergate: null,
 	};
-	databaseConfig = databaseConfig;
+	config = clientConfig;
 
 	// Constructor
 	constructor() {
@@ -167,7 +157,7 @@ export class Ultimates extends Client {
 			token: getWebhookInfo(data.servergate.webhook)[1],
 		});
 
-		this.databaseConfig.logsActive = {
+		this.config.logsActive = {
 			mod: data.mod.active,
 			modmail: data.modmail.active,
 			message: data.message.active,

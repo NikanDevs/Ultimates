@@ -6,6 +6,7 @@ const __1 = require("..");
 const PunishmentType_1 = require("../typings/PunishmentType");
 const generateDiscordTimestamp_1 = require("./generateDiscordTimestamp");
 const moderation_json_1 = require("../json/moderation.json");
+const config_json_1 = require("../json/config.json");
 async function sendModDM(member, options) {
     let pastForm;
     (function (pastForm) {
@@ -33,7 +34,7 @@ async function sendModDM(member, options) {
         iconURL: __1.client.user.displayAvatarURL(),
     })
         .setTitle(`You were ${pastForm[options.action]} ${suffix[options.action]} ` + member.guild.name)
-        .setColor(__1.client.colors.invisible)
+        .setColor(__1.client.cc.invisible)
         .addFields(automod
         ? {
             name: 'Type',
@@ -61,12 +62,12 @@ async function sendModDM(member, options) {
         .actionRow()
         .addComponents(__1.client.util
         .button()
-        .setURL(__1.client.server.appeal)
+        .setURL(config_json_1.guild.appealLink)
         .setStyle(discord_js_1.ButtonStyle['Link'])
         .setLabel('Appeal'));
     let appealComponent = [];
-    if (options.action === PunishmentType_1.PunishmentType.Ban ||
-        (options.action === PunishmentType_1.PunishmentType.Softban && __1.client.server.appeal?.length))
+    if ((options.action === PunishmentType_1.PunishmentType.Ban || options.action === PunishmentType_1.PunishmentType.Softban) &&
+        config_json_1.guild.appealLink?.length !== undefined)
         appealComponent = [appealButton];
     await member.send({ embeds: [embed], components: appealComponent }).catch(() => { });
 }

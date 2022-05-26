@@ -3,10 +3,11 @@ import { Event } from '../../structures/Event';
 import { leftMembersModel } from '../../models/leftMembers';
 import { leftMemberExpiry } from '../../constants';
 import { logActivity } from '../../functions/logs/checkActivity';
+import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (!logActivity('servergate')) return;
-	if (member.guild.id !== client.server.id) return;
+	if (member.guild.id !== guildConfig.id) return;
 
 	const roles = member.roles.cache
 		.filter((r) => r.id !== member.guild.id)

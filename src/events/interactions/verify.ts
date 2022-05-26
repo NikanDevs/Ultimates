@@ -9,7 +9,7 @@ import {
 import { client } from '../..';
 import { verificationCollection } from '../../constants';
 import { Event } from '../../structures/Event';
-const memberRoleId = client.config.memberRoleId;
+import { guild as guildConfig } from '../../json/config.json';
 const characters = '0123456789';
 let key1 = '';
 
@@ -24,10 +24,10 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (getValue.toString() === verificationCollection.get('modal-' + interaction.user.id)) {
 			const verifedEmbed = client.util
 				.embed()
-				.setColor(client.colors.success)
+				.setColor(client.cc.successC)
 				.setDescription('Congrats! You were verified in the server.');
 
-			(interaction.member as GuildMember).roles.add(memberRoleId);
+			(interaction.member as GuildMember).roles.add(guildConfig.memberRoleId);
 
 			interaction.reply({ embeds: [verifedEmbed], ephemeral: true });
 			verificationCollection.delete('cooldown-' + interaction.user.id);
@@ -37,7 +37,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		) {
 			const deniedEmbed = client.util
 				.embed()
-				.setColor(client.colors.error)
+				.setColor(client.cc.errorC)
 				.setDescription(
 					"Whoops, your answer wasn't correct. Try again to get verified."
 				);
@@ -50,12 +50,12 @@ export default new Event('interactionCreate', async (interaction) => {
 	// Verify Button
 	if (!interaction.isButton()) return;
 	if ((interaction as ButtonInteraction).customId !== 'verify') return;
-	if (!interaction.guild.roles.cache.get(memberRoleId))
+	if (!interaction.guild.roles.cache.get(guildConfig.memberRoleId))
 		return interaction.reply({
 			content: "Member role wasn't found, please contact a staff member!",
 			ephemeral: true,
 		});
-	if ((interaction.member as GuildMember).roles.cache.has(memberRoleId))
+	if ((interaction.member as GuildMember).roles.cache.has(guildConfig.memberRoleId))
 		return interaction.reply({
 			content: "You're already verified into the server!",
 			ephemeral: true,
@@ -75,7 +75,7 @@ export default new Event('interactionCreate', async (interaction) => {
 							~~(+cooldownRemaining / 1000)
 						)}** before trying to verify again.`
 					)
-					.setColor(client.colors.wait),
+					.setColor(client.cc.attentionC),
 			],
 			ephemeral: true,
 		});
@@ -138,7 +138,7 @@ export default new Event('interactionCreate', async (interaction) => {
 					inline: true,
 				}
 			)
-			.setColor(client.colors.invisible);
+			.setColor(client.cc.invisible);
 
 		const buttonComponent = client.util
 			.actionRow()
@@ -178,16 +178,16 @@ export default new Event('interactionCreate', async (interaction) => {
 			) {
 				const verifedEmbed = client.util
 					.embed()
-					.setColor(client.colors.success)
+					.setColor(client.cc.successC)
 					.setDescription('Congrats! You were verified in the server.');
 
-				if (!interaction.guild.roles.cache.get(memberRoleId)) return;
-				(interaction.member as GuildMember).roles.add(memberRoleId);
+				if (!interaction.guild.roles.cache.get(guildConfig.memberRoleId)) return;
+				(interaction.member as GuildMember).roles.add(guildConfig.memberRoleId);
 				interaction.editReply({ embeds: [verifedEmbed], components: [] });
 			} else {
 				const deniedEmbed = client.util
 					.embed()
-					.setColor(client.colors.error)
+					.setColor(client.cc.errorC)
 					.setDescription(
 						"Whoops, your answer wasn't correct. Try again to get verified."
 					);
@@ -201,7 +201,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 			const timedOut = client.util
 				.embed()
-				.setColor(client.colors.error)
+				.setColor(client.cc.errorC)
 				.setDescription('Verification timed out, try again to verify yourself.');
 
 			interaction.editReply({ embeds: [timedOut], components: [] });

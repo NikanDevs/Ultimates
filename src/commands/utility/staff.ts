@@ -52,7 +52,7 @@ export default new Command({
 		const embed = client.util
 			.embed()
 			.setAuthor({ name: 'Staff members', iconURL: client.user.displayAvatarURL() })
-			.setColor(client.colors.ultimates)
+			.setColor(client.cc.ultimates)
 			.setDescription(
 				staff
 					.map(

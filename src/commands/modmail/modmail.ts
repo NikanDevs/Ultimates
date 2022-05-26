@@ -1,22 +1,21 @@
 import {
 	ChannelType,
 	GuildMember,
-	Message,
 	TextChannel,
 	User,
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
-	ComponentType,
 	CategoryChannel,
 } from 'discord.js';
 import { create } from 'sourcebin';
-import { categoryId, modmailCooldown } from '../../events/modmail/messageCreate';
+import { modmailCooldown } from '../../events/modmail/messageCreate';
 import { getModmailCase } from '../../functions/cases/ModmailCase';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { modmailModel } from '../../models/modmail';
 import { Command } from '../../structures/Command';
 import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
+import { guild as guildConfig } from '../../json/config.json';
 
 export default new Command({
 	name: 'modmail',
@@ -77,15 +76,15 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const subCommands = options.getSubcommand();
 		const guild =
-			client.guilds.cache.get(client.server.id) ||
-			(await client.guilds.fetch(client.server.id));
+			client.guilds.cache.get(guildConfig.id) ||
+			(await client.guilds.fetch(guildConfig.id));
 
 		if (subCommands === 'close') {
 			const currentTextChannel = interaction.channel as TextChannel;
 
 			if (
-				currentTextChannel.guildId !== client.server.id ||
-				currentTextChannel.parentId !== categoryId ||
+				currentTextChannel.guildId !== guildConfig.id ||
+				currentTextChannel.parentId !== guildConfig.modmailCategoryId ||
 				currentTextChannel.id === '885266382235795477' ||
 				currentTextChannel.id === '880538350740725850'
 			)
@@ -284,8 +283,8 @@ export default new Command({
 
 			// Checking already exists
 			const guildCategory = client.guilds.cache
-				.get(client.server.id)
-				.channels.cache.get(categoryId) as CategoryChannel;
+				.get(guildConfig.id)
+				.channels.cache.get(guildConfig.modmailCategoryId) as CategoryChannel;
 			const findExisting = guildCategory.children.cache.find(
 				/* child? sus af */ (child: TextChannel) =>
 					child.topic?.slice(child.topic?.length - client.user.id.length) === user.id
@@ -309,7 +308,7 @@ export default new Command({
 					embeds: [
 						client.util.embed({
 							description: `${user.user.tag} is blacklisted from opening modmails.`,
-							color: client.colors.error,
+							color: client.cc.errorC,
 						}),
 					],
 					ephemeral: true,
@@ -356,7 +355,7 @@ export default new Command({
 									client.util.embed({
 										description:
 											"Please wait while we're trying to set this ticket up...",
-										color: client.colors.wait,
+										color: client.cc.attentionC,
 									}),
 								],
 							});
@@ -365,7 +364,7 @@ export default new Command({
 								user.user.username,
 								{
 									type: ChannelType.GuildText,
-									parent: categoryId,
+									parent: guildConfig.modmailCategoryId,
 									topic: `A tunnel to contact **${user.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${user.id}`,
 									reason: `Direct modmail thread opened.`,
 								}

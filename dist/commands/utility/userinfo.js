@@ -123,7 +123,7 @@ exports.default = new Command_1.Command({
             .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
             .setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
             .setThumbnail(user.displayAvatarURL())
-            .setColor(client.colors.invisible)
+            .setColor(client.cc.invisible)
             .addFields({
             name: 'Account Information',
             value: [
@@ -131,14 +131,14 @@ exports.default = new Command_1.Command({
                 `• **Username:** ${user.username}`,
                 `• **Discriminator:** #${user.discriminator}`,
                 `• **Registered:** <t:${~~(+user.createdAt / 1000)}:f> | <t:${~~(+user.createdAt / 1000)}:R>`,
-                `• **Bot:** ${user?.bot ? `${client.cc.success}` : `${client.cc.error}`}`,
+                `• **Bot:** ${user?.bot ? `${client.cc.successC}` : `${client.cc.errorC}`}`,
             ].join('\n'),
         }, {
             name: 'Avatar',
             value: [
                 `• **Animated:** ${user.displayAvatarURL().endsWith('.gif')
-                    ? `${client.cc.success}`
-                    : `${client.cc.error}`}`,
+                    ? `${client.cc.successC}`
+                    : `${client.cc.errorC}`}`,
                 `• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
             ].join('\n'),
             inline: true,
@@ -149,8 +149,8 @@ exports.default = new Command_1.Command({
                 name: 'Banner',
                 value: [
                     `• **Animated:** ${user.bannerURL().endsWith('.gif')
-                        ? `${client.cc.success}`
-                        : `${client.cc.error}`}`,
+                        ? `${client.cc.successC}`
+                        : `${client.cc.errorC}`}`,
                     `• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
                 ].join('\n'),
                 inline: true,
@@ -233,7 +233,10 @@ exports.default = new Command_1.Command({
             // Whenever the collector is triggered
             userinfoCollector.on('collect', async (collected) => {
                 if (collected.user.id !== interaction.user.id)
-                    return collected.reply(client.cc.cannotInteract);
+                    return collected.reply({
+                        content: 'You can not use this.',
+                        ephemeral: true,
+                    });
                 switch (collected.customId) {
                     case '1':
                         interaction.editReply({
@@ -270,7 +273,7 @@ exports.default = new Command_1.Command({
                         })
                             .setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
                             .setThumbnail(user.displayAvatarURL())
-                            .setColor(client.colors.invisible)
+                            .setColor(client.cc.invisible)
                             .addFields({
                             name: `Information in ${interaction.guild.name}`,
                             value: [
@@ -279,8 +282,8 @@ exports.default = new Command_1.Command({
                                     ? 'No Nickname'
                                     : `${member.displayName}`}`,
                                 `• **Booster:** ${member.premiumSinceTimestamp
-                                    ? `${client.cc.success}`
-                                    : `${client.cc.error}`}`,
+                                    ? `${client.cc.successC}`
+                                    : `${client.cc.errorC}`}`,
                                 `• **Boosting Since:** ${member.premiumSinceTimestamp
                                     ? `<t:${~~(member.premiumSinceTimestamp / 1000)}:f> | <t:${~~(member.premiumSinceTimestamp / 1000)}:R>`
                                     : 'Not boosting the server!'}`,
@@ -292,8 +295,8 @@ exports.default = new Command_1.Command({
                                 name: 'Server Avatar',
                                 value: [
                                     `• **Animated:** ${member.avatarURL().endsWith('.gif')
-                                        ? `${client.cc.success}`
-                                        : `${client.cc.error}`}`,
+                                        ? `${client.cc.successC}`
+                                        : `${client.cc.errorC}`}`,
                                     `• **Formats:** ${UrlTypeCheck(member.avatarURL(), 'Avatar')}`,
                                 ].join('\n'),
                             });
@@ -314,7 +317,7 @@ exports.default = new Command_1.Command({
                             iconURL: user.displayAvatarURL(),
                         })
                             .setThumbnail(user.displayAvatarURL())
-                            .setColor(client.colors.invisible)
+                            .setColor(client.cc.invisible)
                             .setDescription([
                             `${user} • ID: ${user?.id}\n`,
                             `**Roles [${mappedRoles.size}]**`,

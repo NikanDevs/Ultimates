@@ -8,6 +8,7 @@ import {
 } from 'discord.js';
 import { lockdownsModel } from '../../models/lockdowns';
 import { Command } from '../../structures/Command';
+import { guild as guildConfig } from '../../json/config.json';
 interface messageIdInterface {
 	channelId: Snowflake;
 	messageId: Snowflake | null;
@@ -68,7 +69,7 @@ export default new Command({
 			const channel = (options.getChannel('channel') ||
 				interaction.channel) as GuildChannel;
 			const alreadyLocked = channel
-				.permissionsFor(client.config.memberRoleId)
+				.permissionsFor(guildConfig.memberRoleId)
 				.toArray()
 				.includes('SendMessages' || 'Connect')
 				? false
@@ -76,7 +77,7 @@ export default new Command({
 
 			const embed = client.util
 				.embed()
-				.setColor(!alreadyLocked ? client.colors.moderation : client.colors.invisible)
+				.setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
 				.setAuthor({
 					name: 'Channel ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
 					iconURL: client.user.displayAvatarURL(),
@@ -95,7 +96,7 @@ export default new Command({
 
 			switch (channel.type) {
 				case ChannelType.GuildText:
-					await channel.permissionOverwrites.edit(client.config.memberRoleId, {
+					await channel.permissionOverwrites.edit(guildConfig.memberRoleId, {
 						SendMessages: alreadyLocked ? null : false,
 						SendMessagesInThreads: alreadyLocked ? null : false,
 						CreatePrivateThreads: alreadyLocked ? null : false,
@@ -112,11 +113,11 @@ export default new Command({
 				case ChannelType.GuildVoice:
 				case ChannelType.GuildStageVoice:
 					if (!alreadyLocked) {
-						await channel.permissionOverwrites.edit(client.config.memberRoleId, {
+						await channel.permissionOverwrites.edit(guildConfig.memberRoleId, {
 							Connect: false,
 						});
 					} else if (alreadyLocked) {
-						await channel.permissionOverwrites.edit(client.config.memberRoleId, {
+						await channel.permissionOverwrites.edit(guildConfig.memberRoleId, {
 							SendMessages: true,
 						});
 					}
@@ -166,10 +167,10 @@ export default new Command({
 		} else if (getSubCommand === 'server') {
 			await interaction.deferReply();
 			const generalChannel = (await interaction.guild.channels.fetch(
-				client.config.generalChannelId
+				guildConfig.generalChannelId
 			)) as TextChannel;
 			const alreadyLocked = generalChannel
-				.permissionsFor(client.config.memberRoleId)
+				.permissionsFor(guildConfig.memberRoleId)
 				.toArray()
 				.includes('SendMessages')
 				? false
@@ -184,7 +185,7 @@ export default new Command({
 				)
 				.filter((ch) =>
 					ch
-						.permissionsFor(client.config.memberRoleId)
+						.permissionsFor(guildConfig.memberRoleId)
 						.toArray()
 						.includes('ViewChannel')
 				)
@@ -199,7 +200,7 @@ export default new Command({
 				.forEach(async (ch) => {
 					switch (ch.type) {
 						case ChannelType.GuildText:
-							await ch.permissionOverwrites.edit(client.config.memberRoleId, {
+							await ch.permissionOverwrites.edit(guildConfig.memberRoleId, {
 								SendMessages: alreadyLocked ? null : false,
 								SendMessagesInThreads: alreadyLocked ? null : false,
 								CreatePrivateThreads: alreadyLocked ? null : false,
@@ -210,7 +211,7 @@ export default new Command({
 							break;
 						case ChannelType.GuildVoice:
 						case ChannelType.GuildStageVoice:
-							await ch.permissionOverwrites.edit(client.config.memberRoleId, {
+							await ch.permissionOverwrites.edit(guildConfig.memberRoleId, {
 								Connect: alreadyLocked ? null : false,
 							});
 							break;
@@ -219,7 +220,7 @@ export default new Command({
 
 			const embed = client.util
 				.embed()
-				.setColor(!alreadyLocked ? client.colors.moderation : client.colors.invisible)
+				.setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
 				.setAuthor({
 					name: 'Server ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
 					iconURL: client.user.displayAvatarURL(),

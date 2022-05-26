@@ -9,7 +9,7 @@ import {
 const cooldown = new Collection();
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
-import mongoose from 'mongoose';
+import { developers, ownerId } from '../../json/config.json';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction.inGuild()) return;
@@ -34,7 +34,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		// Permission Check
 		if (
 			command.permission?.some((perm) => !member.permissions.has(perm)) &&
-			interaction.user.id !== client.config.owner
+			interaction.user.id !== ownerId
 		)
 			return interaction.reply({
 				embeds: [
@@ -50,7 +50,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			)}`;
 			const cooldownEmbed = client.util
 				.embed()
-				.setColor(client.colors.error)
+				.setColor(client.cc.errorC)
 				.setDescription(
 					`You need to wait \`${client.util.convertTime(
 						~~(+cooldownRemaining / 1000)
@@ -96,8 +96,8 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		if (
 			command.cooldown &&
-			!client.config.developers.includes(interaction.user.id) &&
-			client.config.owner !== interaction.user.id
+			!developers.includes(interaction.user.id) &&
+			ownerId !== interaction.user.id
 		) {
 			cooldown.set(`${command.name}${interaction.user.id}`, Date.now() + command.cooldown);
 			setTimeout(() => {

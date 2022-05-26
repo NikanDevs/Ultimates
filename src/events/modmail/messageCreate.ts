@@ -7,8 +7,7 @@ import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { ModmailActionType } from '../../typings/Modmail';
 import { getModmailCase } from '../../functions/cases/ModmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
-export const serverId = client.server.id;
-export const categoryId = '948232668611506248';
+import { guild as guildConfig } from '../../json/config.json';
 export const modmailCooldown: Collection<string, number> = new Collection();
 let confirmationExists: boolean = false;
 let canDM: boolean = true;
@@ -16,25 +15,16 @@ let canSend: boolean = true;
 
 export default new Event('messageCreate', async (message) => {
 	const guild =
-		client.guilds.cache.get(serverId) || ((await client.guilds.fetch(serverId)) as Guild);
+		client.guilds.cache.get(guildConfig.id) ||
+		((await client.guilds.fetch(guildConfig.id)) as Guild);
 
 	if (!message?.guild && message.channel.type === ChannelType.DM && !message.author?.bot) {
-		// Checking for member role
-		if (
-			client.config.memberRoleId?.length &&
-			guild.members?.cache
-				.get(message.author.id)
-				?.roles?.cache.get(client.config.memberRoleId)
-		)
-			return;
-
 		// Checking for blacklist
 		const data = await modmailModel.findById(message.author.id);
 		const blacklistedEmbed = client.util
 			.embed()
 			.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 			.setTitle('Blacklisted from using modmail')
-			.setURL(`${client.server.invite}`)
 			.setDescription(
 				[
 					'Sorry, but looks like you were blacklisted from using the modmail.',
@@ -42,7 +32,7 @@ export default new Event('messageCreate', async (message) => {
 				].join('\n')
 			)
 			.addFields({ name: 'Reason', value: `${data?.reason}` })
-			.setColor(client.colors.error);
+			.setColor(client.cc.errorC);
 
 		if (data)
 			return (message.channel as DMChannel)?.send({
@@ -71,7 +61,8 @@ export default new Event('messageCreate', async (message) => {
 		const openedThread = guild.channels.cache
 			.filter(
 				(channel) =>
-					channel.parentId === categoryId && channel.type === ChannelType.GuildText
+					channel.parentId === guildConfig.modmailCategoryId &&
+					channel.type === ChannelType.GuildText
 			)
 			.find((channel: TextChannel) =>
 				channel?.topic?.endsWith(message.author.id)
@@ -97,7 +88,7 @@ export default new Event('messageCreate', async (message) => {
 					url: `https://discord.com/users/${message.author.id}`,
 				})
 				.setImage(message.attachments?.first()?.proxyURL)
-				.setColor(client.colors.ultimates);
+				.setColor(client.cc.ultimates);
 
 			if (message.content) toSendEmbed.setDescription(message.content);
 			finalEmbeds.push(toSendEmbed);
@@ -127,11 +118,11 @@ export default new Event('messageCreate', async (message) => {
 				.then(async () => {
 					switch (canSend) {
 						case true:
-							await message.react(client.cc.success);
+							await message.react(client.cc.successE);
 							break;
 
 						case false:
-							await message.react(client.cc.error);
+							await message.react(client.cc.errorE);
 							await message.reply({
 								content: 'Something went wrong while trying to send your message, try again!',
 							});
@@ -144,7 +135,7 @@ export default new Event('messageCreate', async (message) => {
 				.embed()
 				.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 				.setTitle('Are you sure that you want to create a ticket?')
-				.setColor(client.colors.ultimates)
+				.setColor(client.cc.ultimates)
 				.setDescription(
 					[
 						`Confirming this message creates a tunnel between you and **${guild.name}** staff members.`,
@@ -187,7 +178,7 @@ export default new Event('messageCreate', async (message) => {
 							message.author.username,
 							{
 								type: ChannelType.GuildText,
-								parent: categoryId,
+								parent: guildConfig.modmailCategoryId,
 								topic: `A tunnel to contact **${message.author.username}**, they requested this ticket to be opened through DMs. | ID: ${message.author.id}`,
 								reason: `Modmail ticket open request.`,
 							}
@@ -217,7 +208,7 @@ export default new Event('messageCreate', async (message) => {
 								[
 									'The ticket you requested has been created.',
 									'Please consider asking your question and wait for a staff member to respond.',
-									`\n• If your message wasn't reacted with ${client.cc.success}, it was not sent.`,
+									`\n• If your message wasn't reacted with ${client.cc.successC}, it was not sent.`,
 								].join('\n')
 							);
 						msg?.delete();
@@ -237,7 +228,7 @@ export default new Event('messageCreate', async (message) => {
 		message?.guild &&
 		message.channel.type === ChannelType.GuildText &&
 		!message.author?.bot &&
-		message.channel.parentId === categoryId
+		message.channel.parentId === guildConfig.modmailCategoryId
 	) {
 		const channelTopic = (message.channel as TextChannel).topic;
 		const usersThread = guild.members.cache.find(
@@ -257,7 +248,7 @@ export default new Event('messageCreate', async (message) => {
 				iconURL: 'https://cdn.discordapp.com/attachments/870637449158742057/909825851225427978/staff-icon.png',
 			})
 			.setImage(message.attachments?.first()?.proxyURL)
-			.setColor(client.colors.ultimates);
+			.setColor(client.cc.ultimates);
 
 		if (message.content) toSendEmbed.setDescription(message.content);
 
@@ -288,11 +279,11 @@ export default new Event('messageCreate', async (message) => {
 			.then(async () => {
 				switch (canDM) {
 					case true:
-						await message.react(client.cc.success);
+						await message.react(client.cc.errorE);
 						break;
 
 					case false:
-						await message.react(client.cc.error);
+						await message.react(client.cc.errorE);
 						await message.reply({
 							content: "I wasn't able to DM the user.",
 						});

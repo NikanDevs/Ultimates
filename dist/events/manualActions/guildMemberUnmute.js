@@ -9,10 +9,10 @@ const durations_1 = require("../../models/durations");
 const modCase_1 = require("../../functions/cases/modCase");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const createModLog_1 = require("../../functions/logs/createModLog");
-const __1 = require("../..");
 const moderation_json_1 = require("../../json/moderation.json");
+const config_json_1 = require("../../json/config.json");
 exports.default = new Event_1.Event('guildMemberUpdate', async (oldMember, newMember) => {
-    if (newMember.guild.id !== __1.client.server.id)
+    if (newMember.guild.id !== config_json_1.guild.id)
         return;
     await oldMember.fetch().catch(() => { });
     if (oldMember.communicationDisabledUntil && !newMember.communicationDisabledUntil) {

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getsIgnored = void 0;
+const config_json_1 = require("../json/config.json");
 const __1 = require("..");
 function getsIgnored(interaction, member) {
     if (member.roles.highest.position >= interaction.guild.me.roles?.highest.position) {
@@ -14,7 +15,7 @@ function getsIgnored(interaction, member) {
     }
     else if (member?.roles.highest.position >=
         interaction.member.roles?.highest.position ||
-        member.id === __1.client.config.owner ||
+        member.id === config_json_1.ownerId ||
         member.user.bot) {
         interaction.reply({
             embeds: [

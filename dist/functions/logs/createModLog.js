@@ -38,7 +38,7 @@ async function createModLog(options) {
         .setColor(revoke
         ? discord_js_1.Util.resolveColor('#b04d46')
         : update
-            ? __1.client.colors.invisible
+            ? __1.client.cc.invisible
             : discord_js_1.Util.resolveColor(colors[options.action]))
         .setDescription([
         `${!options.referencedPunishment

@@ -3,6 +3,7 @@ import { client } from '..';
 import { PunishmentType } from '../typings/PunishmentType';
 import { generateDiscordTimestamp } from './generateDiscordTimestamp';
 import { default_config } from '../json/moderation.json';
+import { guild as guildConfig } from '../json/config.json';
 
 interface options {
 	action: PunishmentType;
@@ -39,7 +40,7 @@ export async function sendModDM(member: GuildMember, options: options) {
 		.setTitle(
 			`You were ${pastForm[options.action]} ${suffix[options.action]} ` + member.guild.name
 		)
-		.setColor(client.colors.invisible)
+		.setColor(client.cc.invisible)
 		.addFields(
 			automod
 				? {
@@ -75,16 +76,17 @@ export async function sendModDM(member: GuildMember, options: options) {
 		.addComponents(
 			client.util
 				.button()
-				.setURL(client.server.appeal)
+				.setURL(guildConfig.appealLink)
 				.setStyle(ButtonStyle['Link'])
 				.setLabel('Appeal')
 		);
 	let appealComponent: ActionRow<MessageActionRowComponent>[] = [];
 	if (
-		options.action === PunishmentType.Ban ||
-		(options.action === PunishmentType.Softban && client.server.appeal?.length)
+		(options.action === PunishmentType.Ban || options.action === PunishmentType.Softban) &&
+		guildConfig.appealLink?.length !== undefined
 	)
 		appealComponent = [appealButton];
+
 	await member.send({ embeds: [embed], components: appealComponent }).catch(() => {});
 }
 

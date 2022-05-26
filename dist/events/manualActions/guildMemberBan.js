@@ -4,14 +4,14 @@ const Event_1 = require("../../structures/Event");
 const v9_1 = require("discord-api-types/v9");
 const punishments_1 = require("../../models/punishments");
 const PunishmentType_1 = require("../../typings/PunishmentType");
-const __1 = require("../..");
 const constants_1 = require("../../constants");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const modCase_1 = require("../../functions/cases/modCase");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const moderation_json_1 = require("../../json/moderation.json");
+const config_json_1 = require("../../json/config.json");
 exports.default = new Event_1.Event('guildBanAdd', async (ban) => {
-    if (ban.guild.id !== __1.client.server.id)
+    if (ban.guild.id !== config_json_1.guild.id)
         return;
     const auditLogs = await ban.guild.fetchAuditLogs({
         limit: 10,

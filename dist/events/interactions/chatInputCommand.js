@@ -5,6 +5,7 @@ const __1 = require("../..");
 const discord_js_1 = require("discord.js");
 const mongoose_1 = require("mongoose");
 const logger_1 = require("../../logger");
+const config_json_1 = require("../../json/config.json");
 const cooldown = new discord_js_1.Collection();
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
     if (!interaction.inGuild())
@@ -21,12 +22,11 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
                 ],
                 ephemeral: true,
             });
-        if (!__1.client.config.developers.includes(interaction.user.id) &&
-            command.directory === 'developer')
+        if (!config_json_1.developers.includes(interaction.user.id) && command.directory === 'developer')
             return;
         // Permission Check
         if (command.permission?.some((perm) => !member.permissions.has(perm)) &&
-            interaction.user.id !== __1.client.config.owner)
+            interaction.user.id !== config_json_1.ownerId)
             return interaction.reply({
                 embeds: [
                     __1.client.embeds.attention("You don't have permissions to use this context menu."),
@@ -38,7 +38,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             const cooldownRemaining = `${~~(+cooldown.get(`${command.name}${interaction.user.id}`) - +Date.now())}`;
             const cooldownEmbed = __1.client.util
                 .embed()
-                .setColor(__1.client.colors.error)
+                .setColor(__1.client.cc.errorC)
                 .setDescription(`You need to wait \`${__1.client.util.convertTime(~~(+cooldownRemaining / 1000))}\` to use this context menu.`);
             return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
         }
@@ -69,8 +69,8 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             reason: err,
         }));
         if (command.cooldown &&
-            !__1.client.config.developers.includes(interaction.user.id) &&
-            __1.client.config.owner !== interaction.user.id) {
+            !config_json_1.developers.includes(interaction.user.id) &&
+            config_json_1.ownerId !== interaction.user.id) {
             cooldown.set(`${command.name}${interaction.user.id}`, Date.now() + command.cooldown);
             setTimeout(() => {
                 cooldown.delete(`${command.name}${interaction.user.id}`);

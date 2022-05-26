@@ -4,10 +4,11 @@ const __1 = require("../..");
 const Event_1 = require("../../structures/Event");
 const leftMembers_1 = require("../../models/leftMembers");
 const checkActivity_1 = require("../../functions/logs/checkActivity");
+const config_json_1 = require("../../json/config.json");
 exports.default = new Event_1.Event('guildMemberAdd', async (member) => {
     if (!(0, checkActivity_1.logActivity)('servergate'))
         return;
-    if (member.guild.id !== __1.client.server.id)
+    if (member.guild.id !== config_json_1.guild.id)
         return;
     const embed = __1.client.util
         .embed()

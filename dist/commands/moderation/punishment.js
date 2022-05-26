@@ -239,7 +239,7 @@ exports.default = new Command_1.Command({
         else if (getSubCommand === 'search') {
             let doesExist = true;
             const warnId = options.getString('id');
-            const baseEmbed = client.util.embed().setColor(client.colors.invisible);
+            const baseEmbed = client.util.embed().setColor(client.cc.invisible);
             switch (warnId.length) {
                 case moderation_json_1.lengths['automod-id']:
                     await automod_1.automodModel
@@ -422,7 +422,7 @@ exports.default = new Command_1.Command({
             const warningsEmbed = client.util
                 .embed()
                 .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-                .setColor(client.colors.invisible)
+                .setColor(client.cc.invisible)
                 .setThumbnail(user.displayAvatarURL());
             // Sending the results
             if (warnings.length === 0)
@@ -430,7 +430,7 @@ exports.default = new Command_1.Command({
                     embeds: [
                         client.util.embed({
                             description: `No punishments were found for **${user.tag}**`,
-                            color: client.colors.invisible,
+                            color: client.cc.invisible,
                         }),
                     ],
                     ephemeral: true,
@@ -461,7 +461,10 @@ exports.default = new Command_1.Command({
                 });
                 collector.on('collect', (collected) => {
                     if (interaction.user.id !== collected.user.id)
-                        return collected.reply(client.cc.cannotInteract);
+                        return collected.reply({
+                            content: 'You can not use this.',
+                            ephemeral: true,
+                        });
                     switch (collected.customId) {
                         case '1':
                             if (currentPage === 1)

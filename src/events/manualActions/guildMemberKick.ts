@@ -2,15 +2,15 @@ import { Event } from '../../structures/Event';
 import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
 import { PunishmentType } from '../../typings/PunishmentType';
-import { client } from '../..';
 import { punishmentExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { default_config } from '../../json/moderation.json';
+import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildMemberRemove', async (member) => {
-	if (member.guild.id !== client.server.id) return;
+	if (member.guild.id !== guildConfig.id) return;
 	if (await member.guild.bans.fetch(member.user).catch(() => {})) return;
 
 	const auditLogs = await member.guild.fetchAuditLogs({

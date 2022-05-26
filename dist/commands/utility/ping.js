@@ -16,7 +16,7 @@ exports.default = new Command_1.Command({
             name: client.user.username,
             iconURL: client.user.displayAvatarURL(),
         })
-            .setColor(client.colors.ultimates)
+            .setColor(client.cc.ultimates)
             .addFields({
             name: `${pingEmoji} Message`,
             value: `• \`${Date.now() - interaction.createdTimestamp}ms\``,

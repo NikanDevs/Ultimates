@@ -43,7 +43,7 @@ exports.default = new Command_1.Command({
         const embed = client.util
             .embed()
             .setAuthor({ name: 'Staff members', iconURL: client.user.displayAvatarURL() })
-            .setColor(client.colors.ultimates)
+            .setColor(client.cc.ultimates)
             .setDescription(staff
             .map((staff) => `${statuses[staff.presence?.status]} • ${staff} - ${guessRole(staff)}`)
             .join('\n'));

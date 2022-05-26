@@ -8,11 +8,11 @@ import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { default_config } from '../../json/moderation.json';
-import { client } from '../..';
 import { sendModDM } from '../../utils/sendModDM';
+import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
-	if (newMember.guild.id !== client.server.id) return;
+	if (newMember.guild.id !== guildConfig.id) return;
 	await oldMember.fetch().catch(() => {});
 	if (!oldMember.communicationDisabledUntil && newMember.communicationDisabledUntil) {
 		const auditLogs = await newMember.guild.fetchAuditLogs({
