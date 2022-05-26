@@ -1,0 +1,34 @@
+{
+    "lengths": {
+        "automod-id": 6,
+        "manual-id": 18,
+        "moderated-nickname": 5
+    },
+    "auto_mute": {
+        "2": "2h",
+        "4": "6h"
+    },
+    "default_config": {
+        "timeout_duration": "6h",
+        "softban_duration": "90d",
+        "ban_delete_messages": 0,
+        "reason": "No reason was provided."
+    },
+    "reasons": {
+        "warn": [
+            "Spamming after verbal warnings.",
+            "Disrespecting other members.",
+            "Bypassing the filtered words in the server.",
+            "Sending content that includes gore or nsfw.",
+            "Mini Moderating after verbal warnings.",
+            "Keeps begging after several warnings.",
+            "Pinging moderators and staff for no specific reason.",
+            "Talking in other languages after verbal warnings."
+        ],
+        "timeout": [],
+        "ban": [],
+        "kick": [],
+        "unban": [],
+        "softban": []
+    }
+}
