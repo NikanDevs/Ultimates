@@ -1,21 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const userinfo_1 = require("../../interactions/utility/userinfo");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
-    name: 'userinfo',
-    description: 'Shows information for a user.',
-    directory: 'utility',
-    cooldown: 3000,
-    permission: ['ManageMessages'],
-    options: [
-        {
-            name: 'user',
-            description: 'The user you wish to see information for.',
-            type: discord_js_1.ApplicationCommandOptionType.User,
-            required: false,
-        },
-    ],
+    interaction: userinfo_1.userinfoCommand,
     excute: async ({ client, interaction, options }) => {
         // User
         let member = interaction.options.getMember('user');

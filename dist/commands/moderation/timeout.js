@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const discord_js_1 = require("discord.js");
 const Command_1 = require("../../structures/Command");
 const ms_1 = tslib_1.__importDefault(require("ms"));
 const punishments_1 = require("../../models/punishments");
@@ -15,33 +14,9 @@ const timeoutMember_1 = require("../../utils/timeoutMember");
 const getsIgnored_1 = require("../../functions/getsIgnored");
 const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
+const timeout_1 = require("../../interactions/moderation/timeout");
 exports.default = new Command_1.Command({
-    name: 'timeout',
-    description: 'Times out a member in the server.',
-    directory: 'moderation',
-    cooldown: 3000,
-    permission: ['ModerateMembers'],
-    options: [
-        {
-            name: 'member',
-            description: 'The member you wish to timeout.',
-            type: discord_js_1.ApplicationCommandOptionType['User'],
-            required: true,
-        },
-        {
-            name: 'duration',
-            description: 'The duration of this timeout.',
-            type: discord_js_1.ApplicationCommandOptionType['String'],
-            required: false,
-        },
-        {
-            name: 'reason',
-            description: 'The reason of this timeout.',
-            type: discord_js_1.ApplicationCommandOptionType['String'],
-            required: false,
-            autocomplete: true,
-        },
-    ],
+    interaction: timeout_1.timeoutCommand,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const duration = options.getString('duration') || moderation_json_1.default_config.timeout_duration;

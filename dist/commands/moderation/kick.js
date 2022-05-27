@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const modCase_1 = require("../../functions/cases/modCase");
 const constants_1 = require("../../constants");
 const getsIgnored_1 = require("../../functions/getsIgnored");
@@ -11,27 +10,9 @@ const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const sendModDM_1 = require("../../utils/sendModDM");
 const moderation_json_1 = require("../../json/moderation.json");
+const kick_1 = require("../../interactions/moderation/kick");
 exports.default = new Command_1.Command({
-    name: 'kick',
-    description: 'Kicks a member from the server.',
-    directory: 'moderation',
-    cooldown: 300,
-    permission: ['KickMembers'],
-    options: [
-        {
-            name: 'member',
-            description: 'The member you wish to kick.',
-            type: discord_js_1.ApplicationCommandOptionType.User,
-            required: true,
-        },
-        {
-            name: 'reason',
-            description: 'The reason of this kick.',
-            type: discord_js_1.ApplicationCommandOptionType.String,
-            required: false,
-            autocomplete: true,
-        },
-    ],
+    interaction: kick_1.kickCommand,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;

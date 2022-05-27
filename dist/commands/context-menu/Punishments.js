@@ -1,18 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const Punishments_1 = require("../../interactions/context-menu/Punishments");
 const automod_1 = require("../../models/automod");
 const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
 exports.default = new Command_1.Command({
-    name: 'Punishments',
-    description: 'Shows the punishments for a user.',
-    directory: 'moderation',
-    cooldown: 5000,
-    permission: ['ManageMessages'],
-    type: 2,
+    interaction: Punishments_1.punishmentsContextmenu,
     excute: async ({ client, interaction }) => {
         if (!interaction.isUserContextMenuCommand())
             return;

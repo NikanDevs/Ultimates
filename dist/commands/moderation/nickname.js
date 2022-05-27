@@ -1,29 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const Command_1 = require("../../structures/Command");
 const moderation_json_1 = require("../../json/moderation.json");
 const getsIgnored_1 = require("../../functions/getsIgnored");
+const nickname_1 = require("../../interactions/moderation/nickname");
 exports.default = new Command_1.Command({
-    name: 'nickname',
-    description: "Changes, moderates or reset a member's nickname.",
-    directory: 'moderation',
-    cooldown: 3000,
-    permission: ['ManageNicknames'],
-    options: [
-        {
-            name: 'member',
-            description: 'The member you wish to edit their nickname.',
-            type: discord_js_1.ApplicationCommandOptionType['User'],
-            required: true,
-        },
-        {
-            name: 'nickname',
-            description: 'The new nickname you wish to set for the member.',
-            type: discord_js_1.ApplicationCommandOptionType['String'],
-            required: false,
-        },
-    ],
+    interaction: nickname_1.nicknameCommand,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const newNick = options.getString('nickname');

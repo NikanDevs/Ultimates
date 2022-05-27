@@ -15,7 +15,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
     if (interaction?.isContextMenuCommand()) {
         const member = interaction.member;
         const command = __1.client.commands
-            .filter((cmd) => cmd.directory !== 'developer')
+            .filter((cmd) => cmd.interaction.directory !== 'developer')
             .get(interaction.commandName);
         if (!command)
             return interaction.reply({
@@ -25,24 +25,24 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
                 ephemeral: true,
             });
         // Permission Check
-        if (command.permission?.some((perm) => !member.permissions.has(perm)) &&
+        if (command.interaction.permission?.some((perm) => !member.permissions.has(perm)) &&
             interaction.user.id !== config_json_1.ownerId)
             return interaction.reply({
                 embeds: [
-                    __1.client.embeds.attention("You don't have permissions to run this command."),
+                    __1.client.embeds.attention("You don't have permissions to run this command.interaction."),
                 ],
                 ephemeral: true,
             });
         // Cooldowns
-        if (cooldown.has(`${command.name}${interaction.user.id}`)) {
-            const cooldownRemaining = `${~~(+cooldown.get(`${command.name}${interaction.user.id}`) - +Date.now())}`;
+        if (cooldown.has(`${command.interaction.name}${interaction.user.id}`)) {
+            const cooldownRemaining = `${~~(+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now())}`;
             const cooldownEmbed = __1.client.util
                 .embed()
                 .setColor(__1.client.cc.errorC)
                 .setDescription(`You need to wait \`${__1.client.util.convertTime(~~(+cooldownRemaining / 1000))}\` to use this command again.`);
             return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
         }
-        if (command.directory !== 'developer' && mongoose_1.connection.readyState !== 1) {
+        if (command.interaction.directory !== 'developer' && mongoose_1.connection.readyState !== 1) {
             interaction.reply({
                 embeds: [
                     __1.client.embeds.attention('MongoDB is not connected properly, please contact a developer.'),
@@ -68,13 +68,13 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             source: `${interaction.commandName} context menu`,
             reason: err,
         }));
-        if (command.cooldown &&
+        if (command.interaction.cooldown &&
             !config_json_1.developers.includes(interaction.user.id) &&
             config_json_1.ownerId !== interaction.user.id) {
-            cooldown.set(`${command.name}${interaction.user.id}`, Date.now() + command.cooldown);
+            cooldown.set(`${command.interaction.name}${interaction.user.id}`, Date.now() + command.interaction.cooldown);
             setTimeout(() => {
-                cooldown.delete(`${command.name}${interaction.user.id}`);
-            }, command.cooldown);
+                cooldown.delete(`${command.interaction.name}${interaction.user.id}`);
+            }, command.interaction.cooldown);
         }
     }
 });

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const modCase_1 = require("../../functions/cases/modCase");
 const constants_1 = require("../../constants");
 const createModLog_1 = require("../../functions/logs/createModLog");
@@ -9,28 +8,9 @@ const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const moderation_json_1 = require("../../json/moderation.json");
+const unban_1 = require("../../interactions/moderation/unban");
 exports.default = new Command_1.Command({
-    name: 'unban',
-    description: 'Unbans a user that was previously banned.',
-    directory: 'moderation',
-    cooldown: 3000,
-    permission: ['BanMembers'],
-    options: [
-        {
-            name: 'user-id',
-            description: 'The user you wish to unban.',
-            type: discord_js_1.ApplicationCommandOptionType.String,
-            required: true,
-            autocomplete: true,
-        },
-        {
-            name: 'reason',
-            description: 'The reason of the unban.',
-            type: discord_js_1.ApplicationCommandOptionType.String,
-            required: false,
-            autocomplete: true,
-        },
-    ],
+    interaction: unban_1.unbanCommand,
     excute: async ({ client, interaction, options }) => {
         const userId = options.getString('user-id');
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;

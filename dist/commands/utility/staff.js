@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const staff_1 = require("../../interactions/utility/staff");
 const Command_1 = require("../../structures/Command");
 const staffPermissions = [
     'ManageMessages',
@@ -21,12 +22,7 @@ var statusPriorities;
     statusPriorities[statusPriorities["undefined"] = 4] = "undefined";
 })(statusPriorities || (statusPriorities = {}));
 exports.default = new Command_1.Command({
-    name: 'staff',
-    description: 'Displays a list of available staff members for this server.',
-    directory: 'utility',
-    cooldown: 5000,
-    permission: [],
-    available: true,
+    interaction: staff_1.staffCommand,
     excute: async ({ client, interaction }) => {
         await interaction.deferReply({ ephemeral: false });
         const members = await interaction.guild.members.fetch({ force: true });

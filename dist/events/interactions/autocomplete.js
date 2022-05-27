@@ -12,8 +12,8 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         return;
     // Checking for the member's permissions
     const getPermissions = __1.client.commands
-        .filter((cmd) => cmd.directory !== 'developer')
-        .get(interaction.commandName)?.permission;
+        .filter((cmd) => cmd.interaction.directory !== 'developer')
+        .get(interaction.commandName)?.interaction.permission;
     if (!getPermissions.some((perm) => interaction.member.permissions.has(perm)))
         return await interaction.respond([
             { name: "You don't have permissions to intract with this.", value: 'NO_PERM' },

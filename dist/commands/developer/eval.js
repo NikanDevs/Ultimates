@@ -1,13 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const eval_1 = require("../../interactions/developer/eval");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
-    name: 'eval',
-    description: 'Eval a code directly into the bot!',
-    directory: 'developer',
-    cooldown: 3000,
-    permission: [],
+    interaction: eval_1.evalCommand,
     excute: async ({ client, interaction }) => {
         const modal = client.util
             .modal()

@@ -1,36 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const warnings_1 = require("../../interactions/moderation/warnings");
 const automod_1 = require("../../models/automod");
 const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
 exports.default = new Command_1.Command({
-    name: 'warnings',
-    description: 'View your active punishments in the server.',
-    directory: 'moderation',
-    cooldown: 5000,
-    permission: [],
-    available: true,
-    options: [
-        {
-            name: 'type',
-            description: 'Choose if you want to view your automod or manual warnings.',
-            type: discord_js_1.ApplicationCommandOptionType['Number'],
-            required: false,
-            choices: [
-                {
-                    name: 'Manual warnings',
-                    value: 1,
-                },
-                {
-                    name: 'Auto moderation warnings',
-                    value: 2,
-                },
-            ],
-        },
-    ],
+    interaction: warnings_1.warningsCommand,
     excute: async ({ client, interaction, options }) => {
         const user = interaction.user;
         const warningsEmbed = client.util

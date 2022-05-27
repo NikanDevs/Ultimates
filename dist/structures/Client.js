@@ -92,9 +92,8 @@ class Ultimates extends discord_js_1.Client {
             .filter((file) => (!config_json_1.enabledModules.modmail ? !file.includes('modmail') : true))
             .forEach(async (filePaths) => {
             const command = await this.importFiles(filePaths);
-            if (!command.name)
-                return;
-            this.commands.set(command.name, command);
+            console.log(command);
+            this.commands.set(command.interaction.name, command);
         });
         const eventFiles = (await globPromise(`${__dirname}/../events/**/*{.ts,.js}`)) ||
             (await globPromise(`${__dirname}/../events/**{.ts,.js}`));

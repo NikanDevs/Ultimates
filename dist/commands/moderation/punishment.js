@@ -12,97 +12,9 @@ const PunishmentType_1 = require("../../typings/PunishmentType");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
 const ms_1 = tslib_1.__importDefault(require("ms"));
+const punishment_1 = require("../../interactions/moderation/punishment");
 exports.default = new Command_1.Command({
-    name: 'punishment',
-    description: 'Punishment command subcommands.',
-    directory: 'moderation',
-    cooldown: 3000,
-    permission: ['ManageMessages'],
-    options: [
-        {
-            name: 'revoke',
-            description: 'Revokes a punishment.',
-            type: discord_js_1.ApplicationCommandOptionType['Subcommand'],
-            options: [
-                {
-                    name: 'id',
-                    description: 'The Id of the punishment you wish to revoke.',
-                    required: true,
-                    type: discord_js_1.ApplicationCommandOptionType.String,
-                    autocomplete: true,
-                },
-                {
-                    name: 'reason',
-                    description: "The reason that you're revoking",
-                    required: false,
-                    type: discord_js_1.ApplicationCommandOptionType.String,
-                },
-            ],
-        },
-        {
-            name: 'search',
-            description: 'Search for a punishment.',
-            type: discord_js_1.ApplicationCommandOptionType['Subcommand'],
-            options: [
-                {
-                    name: 'id',
-                    description: 'The Id of the punishment you wish to find.',
-                    required: true,
-                    type: discord_js_1.ApplicationCommandOptionType.String,
-                    autocomplete: true,
-                },
-            ],
-        },
-        {
-            name: 'view',
-            description: 'View all the punishments recorded for a user.',
-            type: discord_js_1.ApplicationCommandOptionType['Subcommand'],
-            options: [
-                {
-                    name: 'user',
-                    description: 'The user you want to view their punishments.',
-                    required: true,
-                    type: discord_js_1.ApplicationCommandOptionType.User,
-                },
-            ],
-        },
-        {
-            name: 'update',
-            description: 'Update a punishment',
-            type: discord_js_1.ApplicationCommandOptionType.Subcommand,
-            options: [
-                {
-                    name: 'id',
-                    description: 'The id of the punishment you want to update.',
-                    required: true,
-                    type: discord_js_1.ApplicationCommandOptionType.String,
-                    autocomplete: true,
-                },
-                {
-                    name: 'value',
-                    description: 'Select what part of the punishment you want to update.',
-                    required: true,
-                    type: discord_js_1.ApplicationCommandOptionType['Number'],
-                    choices: [
-                        {
-                            name: 'duration',
-                            value: 1,
-                        },
-                        {
-                            name: 'reason',
-                            value: 2,
-                        },
-                    ],
-                },
-                {
-                    name: 'new-value',
-                    description: 'The value you want this punishment to be updated to.',
-                    required: true,
-                    type: discord_js_1.ApplicationCommandOptionType.String,
-                },
-            ],
-        },
-    ],
+    interaction: punishment_1.punishmentCommand,
     excute: async ({ client, interaction, options }) => {
         const getSubCommand = options.getSubcommand();
         if (getSubCommand === 'revoke') {

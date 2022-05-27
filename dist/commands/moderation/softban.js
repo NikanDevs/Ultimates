@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const discord_js_1 = require("discord.js");
 const modCase_1 = require("../../functions/cases/modCase");
 const constants_1 = require("../../constants");
 const getsIgnored_1 = require("../../functions/getsIgnored");
@@ -14,49 +13,9 @@ const ms_1 = tslib_1.__importDefault(require("ms"));
 const durations_1 = require("../../models/durations");
 const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
+const softban_1 = require("../../interactions/moderation/softban");
 exports.default = new Command_1.Command({
-    name: 'softban',
-    description: 'Softbans a member from the server.',
-    directory: 'moderation',
-    cooldown: 3000,
-    permission: ['BanMembers'],
-    options: [
-        {
-            name: 'user',
-            description: 'The user you wish to softban.',
-            type: discord_js_1.ApplicationCommandOptionType.User,
-            required: true,
-        },
-        {
-            name: 'duration',
-            description: 'The duration you want the member to be banned for.',
-            type: discord_js_1.ApplicationCommandOptionType.String,
-            required: false,
-        },
-        {
-            name: 'delete_messages',
-            description: 'The amount of days to delete messages for.',
-            type: discord_js_1.ApplicationCommandOptionType.Number,
-            required: false,
-            choices: [
-                { name: "Don't delete any", value: 0 },
-                { name: 'Previous 24 hours', value: 1 },
-                { name: 'Previous 48 hours', value: 2 },
-                { name: 'Previous 3 days', value: 3 },
-                { name: 'Previous 4 days', value: 4 },
-                { name: 'Previous 5 days', value: 5 },
-                { name: 'Previous 6 days', value: 6 },
-                { name: 'Previous 7 days', value: 7 },
-            ],
-        },
-        {
-            name: 'reason',
-            description: 'The reason of the softban.',
-            type: discord_js_1.ApplicationCommandOptionType.String,
-            required: false,
-            autocomplete: true,
-        },
-    ],
+    interaction: softban_1.softbanCommand,
     excute: async ({ client, interaction, options }) => {
         const user = options.getUser('user');
         const member = options.getMember('user');

@@ -1,35 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const getsIgnored_1 = require("../../functions/getsIgnored");
+const role_1 = require("../../interactions/moderation/role");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
-    name: 'role',
-    description: 'Role subcommand.',
-    directory: 'moderation',
-    cooldown: 3000,
-    permission: ['ManageRoles'],
-    options: [
-        {
-            name: 'edit',
-            description: 'Adds or removes a role based on its current status.',
-            type: discord_js_1.ApplicationCommandOptionType.Subcommand,
-            options: [
-                {
-                    name: 'member',
-                    description: 'The member you wish to take action on.',
-                    type: discord_js_1.ApplicationCommandOptionType.User,
-                    required: true,
-                },
-                {
-                    name: 'role',
-                    description: 'The role you wish to add or remove.',
-                    type: discord_js_1.ApplicationCommandOptionType.Role,
-                    required: true,
-                },
-            ],
-        },
-    ],
+    interaction: role_1.roleCommand,
     excute: async ({ client, interaction, options }) => {
         const getSubCommand = options.getSubcommand();
         if (getSubCommand === 'edit') {
