@@ -142,7 +142,7 @@ exports.default = new Command_1.Command({
                             action: PunishmentType_1.PunishmentType.Unmute,
                             user: fetchUser,
                             moderator: interaction.user,
-                            reason: '[Revoke]: ' + reason,
+                            reason: reason,
                             referencedPunishment: data,
                         }).then(async () => {
                             await durations_1.durationsModel.findOneAndDelete({
@@ -190,7 +190,7 @@ exports.default = new Command_1.Command({
                             action: PunishmentType_1.PunishmentType.Unban,
                             user: fetchUser,
                             moderator: interaction.user,
-                            reason: '[Revoke]: ' + reason,
+                            reason: reason,
                             referencedPunishment: data,
                         }).then(async () => {
                             await logs_1.logsModel.findByIdAndDelete(data.case);
