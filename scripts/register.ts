@@ -5,6 +5,7 @@ import glob from 'glob';
 import { promisify } from 'util';
 import { interactionType } from '../src/typings/Command';
 import { enabledModules, guild as guildConfig, clientId } from '../src/json/config.json';
+import { logger } from '../src/logger';
 const globPromise = promisify(glob);
 require('dotenv').config();
 
@@ -33,7 +34,7 @@ const interactions: interactionType[] = [];
 		await rest.put(Routes.applicationGuildCommands(clientId, guildConfig.id), {
 			body: commands,
 		});
-		console.log('Registered Interactions!');
+		logger.info('Register interactions', { showDate: false });
 	}, 5000);
 })();
 
