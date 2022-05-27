@@ -1,29 +1,11 @@
-import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { lengths } from '../../json/moderation.json';
 import { getsIgnored } from '../../functions/getsIgnored';
+import { nicknameCommand } from '../../interactions/moderation/nickname';
 
 export default new Command({
-	name: 'nickname',
-	description: "Changes, moderates or reset a member's nickname.",
-	directory: 'moderation',
-	cooldown: 3000,
-	permission: ['ManageNicknames'],
-	options: [
-		{
-			name: 'member',
-			description: 'The member you wish to edit their nickname.',
-			type: ApplicationCommandOptionType['User'],
-			required: true,
-		},
-		{
-			name: 'nickname',
-			description: 'The new nickname you wish to set for the member.',
-			type: ApplicationCommandOptionType['String'],
-			required: false,
-		},
-	],
-
+	interaction: nicknameCommand,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const newNick = options.getString('nickname');

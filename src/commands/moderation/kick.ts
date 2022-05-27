@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
@@ -9,29 +9,10 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
 import { default_config } from '../../json/moderation.json';
+import { kickCommand } from '../../interactions/moderation/kick';
 
 export default new Command({
-	name: 'kick',
-	description: 'Kicks a member from the server.',
-	directory: 'moderation',
-	cooldown: 300,
-	permission: ['KickMembers'],
-	options: [
-		{
-			name: 'member',
-			description: 'The member you wish to kick.',
-			type: ApplicationCommandOptionType.User,
-			required: true,
-		},
-		{
-			name: 'reason',
-			description: 'The reason of this kick.',
-			type: ApplicationCommandOptionType.String,
-			required: false,
-			autocomplete: true,
-		},
-	],
-
+	interaction: kickCommand,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason = options.getString('reason') || default_config.reason;

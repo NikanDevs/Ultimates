@@ -1,13 +1,9 @@
 import { ComponentType, TextInputStyle } from 'discord.js';
+import { evalCommand } from '../../interactions/developer/eval';
 import { Command } from '../../structures/Command';
 
 export default new Command({
-	name: 'eval',
-	description: 'Eval a code directly into the bot!',
-	directory: 'developer',
-	cooldown: 3000,
-	permission: [],
-
+	interaction: evalCommand,
 	excute: async ({ client, interaction }) => {
 		const modal = client.util
 			.modal()

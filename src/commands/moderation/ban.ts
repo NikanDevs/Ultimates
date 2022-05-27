@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
@@ -9,45 +9,10 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
+import { banCommand } from '../../interactions/moderation/ban';
 
 export default new Command({
-	name: 'ban',
-	description: 'Bans a member from the server.',
-	directory: 'moderation',
-	cooldown: 3000,
-	permission: ['BanMembers'],
-	options: [
-		{
-			name: 'user',
-			description: 'The user you wish to ban.',
-			type: ApplicationCommandOptionType.User,
-			required: true,
-		},
-		{
-			name: 'delete_messages',
-			description: 'The amount of days to delete messages for.',
-			type: ApplicationCommandOptionType.Number,
-			required: false,
-			choices: [
-				{ name: "Don't delete any", value: 0 },
-				{ name: 'Previous 24 hours', value: 1 },
-				{ name: 'Previous 48 hours', value: 2 },
-				{ name: 'Previous 3 days', value: 3 },
-				{ name: 'Previous 4 days', value: 4 },
-				{ name: 'Previous 5 days', value: 5 },
-				{ name: 'Previous 6 days', value: 6 },
-				{ name: 'Previous 7 days', value: 7 },
-			],
-		},
-		{
-			name: 'reason',
-			description: 'The reason of the ban.',
-			type: ApplicationCommandOptionType.String,
-			required: false,
-			autocomplete: true,
-		},
-	],
-
+	interaction: banCommand,
 	excute: async ({ client, interaction, options }) => {
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;

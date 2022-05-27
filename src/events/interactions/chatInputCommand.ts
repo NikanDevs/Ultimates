@@ -24,12 +24,15 @@ export default new Event('interactionCreate', async (interaction) => {
 				ephemeral: true,
 			});
 
-		if (!developers.includes(interaction.user.id) && command.directory === 'developer')
+		if (
+			!developers.includes(interaction.user.id) &&
+			command.interaction.directory === 'developer'
+		)
 			return;
 
 		// Permission Check
 		if (
-			command.permission?.some((perm) => !member.permissions.has(perm)) &&
+			command.interaction.permission?.some((perm) => !member.permissions.has(perm)) &&
 			interaction.user.id !== ownerId
 		)
 			return interaction.reply({
@@ -42,9 +45,9 @@ export default new Event('interactionCreate', async (interaction) => {
 			});
 
 		// Cooldowns
-		if (cooldown.has(`${command.name}${interaction.user.id}`)) {
+		if (cooldown.has(`${command.interaction.name}${interaction.user.id}`)) {
 			const cooldownRemaining = `${~~(
-				+cooldown.get(`${command.name}${interaction.user.id}`) - +Date.now()
+				+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now()
 			)}`;
 			const cooldownEmbed = client.util
 				.embed()
@@ -58,7 +61,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
 		}
 
-		if (command.directory !== 'developer' && connection.readyState !== 1) {
+		if (command.interaction.directory !== 'developer' && connection.readyState !== 1) {
 			interaction.reply({
 				embeds: [
 					client.embeds.attention(
@@ -93,14 +96,17 @@ export default new Event('interactionCreate', async (interaction) => {
 			);
 
 		if (
-			command.cooldown &&
+			command.interaction.cooldown &&
 			!developers.includes(interaction.user.id) &&
 			ownerId !== interaction.user.id
 		) {
-			cooldown.set(`${command.name}${interaction.user.id}`, Date.now() + command.cooldown);
+			cooldown.set(
+				`${command.interaction.name}${interaction.user.id}`,
+				Date.now() + command.interaction.cooldown
+			);
 			setTimeout(() => {
-				cooldown.delete(`${command.name}${interaction.user.id}`);
-			}, command.cooldown);
+				cooldown.delete(`${command.interaction.name}${interaction.user.id}`);
+			}, command.interaction.cooldown);
 		}
 	}
 });

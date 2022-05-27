@@ -1,13 +1,8 @@
+import { pingCommand } from '../../interactions/utility/ping';
 import { Command } from '../../structures/Command';
 
 export default new Command({
-	name: 'ping',
-	description: "Check the bot's health.",
-	directory: 'utility',
-	cooldown: 5000,
-	permission: [],
-	available: true,
-
+	interaction: pingCommand,
 	excute: async ({ client, interaction }) => {
 		const pingEmoji = client.emojis.cache.get('894097855759912970');
 		const embed = client.util

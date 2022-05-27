@@ -11,8 +11,8 @@ export default new Event('interactionCreate', async (interaction) => {
 
 	// Checking for the member's permissions
 	const getPermissions = client.commands
-		.filter((cmd) => cmd.directory !== 'developer')
-		.get(interaction.commandName)?.permission;
+		.filter((cmd) => cmd.interaction.directory !== 'developer')
+		.get(interaction.commandName)?.interaction.permission;
 	if (!getPermissions.some((perm) => (interaction.member as GuildMember).permissions.has(perm)))
 		return await interaction.respond([
 			{ name: "You don't have permissions to intract with this.", value: 'NO_PERM' },

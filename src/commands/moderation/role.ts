@@ -1,35 +1,10 @@
-import { ApplicationCommandOptionType, GuildMember, PermissionResolvable, Role } from 'discord.js';
+import { GuildMember, PermissionResolvable, Role } from 'discord.js';
 import { getsIgnored } from '../../functions/getsIgnored';
+import { roleCommand } from '../../interactions/moderation/role';
 import { Command } from '../../structures/Command';
 
 export default new Command({
-	name: 'role',
-	description: 'Role subcommand.',
-	directory: 'moderation',
-	cooldown: 3000,
-	permission: ['ManageRoles'],
-	options: [
-		{
-			name: 'edit',
-			description: 'Adds or removes a role based on its current status.',
-			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'member',
-					description: 'The member you wish to take action on.',
-					type: ApplicationCommandOptionType.User,
-					required: true,
-				},
-				{
-					name: 'role',
-					description: 'The role you wish to add or remove.',
-					type: ApplicationCommandOptionType.Role,
-					required: true,
-				},
-			],
-		},
-	],
-
+	interaction: roleCommand,
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand();
 

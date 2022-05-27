@@ -1,4 +1,5 @@
 import { ComponentType, Message } from 'discord.js';
+import { punishmentsContextmenu } from '../../interactions/context-menu/Punishments';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -6,13 +7,7 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
-	name: 'Punishments',
-	description: 'Shows the punishments for a user.',
-	directory: 'moderation',
-	cooldown: 5000,
-	permission: ['ManageMessages'],
-	type: 2,
-
+	interaction: punishmentsContextmenu,
 	excute: async ({ client, interaction }) => {
 		if (!interaction.isUserContextMenuCommand()) return;
 		const user = interaction.targetUser;

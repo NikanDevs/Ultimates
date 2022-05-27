@@ -5,30 +5,12 @@ import {
 	Message,
 	TextChannel,
 } from 'discord.js';
+import { purgeCommand } from '../../interactions/moderation/purge';
 import { Command } from '../../structures/Command';
 const fifteenDays = 1000 * 60 * 60 * 24 * 15;
 
 export default new Command({
-	name: 'purge',
-	description: 'Clears out messages from the current channel.',
-	directory: 'moderation',
-	cooldown: 5000,
-	permission: ['ManageMessages'],
-	options: [
-		{
-			name: 'amount',
-			description: 'The number of messages you wish to clear.',
-			type: ApplicationCommandOptionType['Integer'],
-			required: true,
-		},
-		{
-			name: 'user',
-			description: 'Clears out the messages from a user only.',
-			type: ApplicationCommandOptionType['User'],
-			required: false,
-		},
-	],
-
+	interaction: purgeCommand,
 	excute: async ({ client, interaction, options }) => {
 		let amount = options.getInteger('amount');
 		const member = options.getMember('user') as GuildMember;

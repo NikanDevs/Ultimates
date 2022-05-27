@@ -11,6 +11,7 @@ import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { default_config, auto_mute } from '../../json/moderation.json';
 import ms from 'ms';
+import { warnCommand } from '../../interactions/moderation/warn';
 enum reasons {
 	'two' = 'Reaching 2 manual warnings.',
 	'four' = 'Reaching 4 manual warnings.',
@@ -22,27 +23,7 @@ enum durations {
 }
 
 export default new Command({
-	name: 'warn',
-	description: 'Warns a member.',
-	directory: 'moderation',
-	cooldown: 3000,
-	permission: ['ManageMessages'],
-	options: [
-		{
-			name: 'member',
-			description: 'The member you wish to warn.',
-			type: ApplicationCommandOptionType['User'],
-			required: true,
-		},
-		{
-			name: 'reason',
-			description: 'The reason for your warning.',
-			type: ApplicationCommandOptionType['String'],
-			required: true,
-			autocomplete: true,
-		},
-	],
-
+	interaction: warnCommand,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason = options.getString('reason') || default_config.reason;

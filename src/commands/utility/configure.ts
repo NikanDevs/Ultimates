@@ -1,5 +1,6 @@
-import { ApplicationCommandOptionType, ChannelType, TextChannel, Webhook } from 'discord.js';
+import { TextChannel, Webhook } from 'discord.js';
 import { WEBHOOK_NAMES } from '../../constants';
+import { configureCommand } from '../../interactions/utility/configure';
 import { configModel } from '../../models/config';
 import { Command } from '../../structures/Command';
 enum logsNames {
@@ -11,46 +12,7 @@ enum logsNames {
 }
 
 export default new Command({
-	name: 'configure',
-	description: 'Configure different modules of the bot.',
-	directory: 'utility',
-	cooldown: 5000,
-	permission: ['Administrator'],
-	options: [
-		{
-			name: 'logs',
-			description: 'Configure the settings of the logging system.',
-			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'module',
-					description: 'The log module you want to configure.',
-					type: ApplicationCommandOptionType.String,
-					required: false,
-					choices: [
-						{ name: 'Moderation', value: 'mod' },
-						{ name: 'Message', value: 'message' },
-						{ name: 'Modmail', value: 'modmail' },
-						{ name: 'Joins & Leaves', value: 'servergate' },
-					],
-				},
-				{
-					name: 'channel',
-					description: 'The channel you want the module to be posting on.',
-					type: ApplicationCommandOptionType.Channel,
-					channel_types: [ChannelType.GuildText],
-					required: false,
-				},
-				{
-					name: 'active',
-					description: 'The channel you want the module to be active on.',
-					type: ApplicationCommandOptionType.Boolean,
-					required: false,
-				},
-			],
-		},
-	],
-
+	interaction: configureCommand,
 	excute: async ({ client, interaction, options }) => {
 		const subcommand = options.getSubcommand();
 		await interaction.deferReply({ ephemeral: false });

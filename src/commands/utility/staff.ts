@@ -1,4 +1,5 @@
 import { GuildMember, PermissionResolvable } from 'discord.js';
+import { staffCommand } from '../../interactions/utility/staff';
 import { Command } from '../../structures/Command';
 const staffPermissions: PermissionResolvable = [
 	'ManageMessages',
@@ -20,13 +21,7 @@ enum statusPriorities {
 }
 
 export default new Command({
-	name: 'staff',
-	description: 'Displays a list of available staff members for this server.',
-	directory: 'utility',
-	cooldown: 5000,
-	permission: [],
-	available: true,
-
+	interaction: staffCommand,
 	excute: async ({ client, interaction }) => {
 		await interaction.deferReply({ ephemeral: false });
 		const members = await interaction.guild.members.fetch({ force: true });

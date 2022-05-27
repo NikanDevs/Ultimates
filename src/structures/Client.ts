@@ -1,5 +1,5 @@
 import { Client, Collection, ClientEvents, Partials, WebhookClient, Webhook } from 'discord.js';
-import { commandType } from '../typings/Command';
+import { interactionType } from '../typings/Command';
 import { glob } from 'glob';
 import { promisify } from 'util';
 import { connect } from 'mongoose';
@@ -14,7 +14,7 @@ import { modmailModel } from '../models/modmail';
 const globPromise = promisify(glob);
 
 export class Ultimates extends Client {
-	commands = new Collection() as Collection<string, commandType>;
+	commands = new Collection() as Collection<string, interactionType>;
 	util = new clientUtil();
 	embeds = clientEmbeds;
 	cc = cc;
@@ -75,10 +75,10 @@ export class Ultimates extends Client {
 		slashFiles
 			.filter((file) => (!configEnabledModules.modmail ? !file.includes('modmail') : true))
 			.forEach(async (filePaths) => {
-				const command: commandType = await this.importFiles(filePaths);
-				if (!command.name) return;
+				const command: interactionType = await this.importFiles(filePaths);
+				console.log(command);
 
-				this.commands.set(command.name, command);
+				this.commands.set(command.interaction.name, command);
 			});
 
 		const eventFiles =

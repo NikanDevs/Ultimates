@@ -1,4 +1,3 @@
-import { ApplicationCommandOptionType } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -7,30 +6,10 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { default_config } from '../../json/moderation.json';
+import { unbanCommand } from '../../interactions/moderation/unban';
 
 export default new Command({
-	name: 'unban',
-	description: 'Unbans a user that was previously banned.',
-	directory: 'moderation',
-	cooldown: 3000,
-	permission: ['BanMembers'],
-	options: [
-		{
-			name: 'user-id',
-			description: 'The user you wish to unban.',
-			type: ApplicationCommandOptionType.String,
-			required: true,
-			autocomplete: true,
-		},
-		{
-			name: 'reason',
-			description: 'The reason of the unban.',
-			type: ApplicationCommandOptionType.String,
-			required: false,
-			autocomplete: true,
-		},
-	],
-
+	interaction: unbanCommand,
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user-id');
 		const reason = options.getString('reason') || default_config.reason;

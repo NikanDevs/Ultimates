@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import ms from 'ms';
 import { punishmentModel } from '../../models/punishments';
@@ -12,35 +12,10 @@ import { timeoutMember } from '../../utils/timeoutMember';
 import { getsIgnored } from '../../functions/getsIgnored';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
+import { timeoutCommand } from '../../interactions/moderation/timeout';
 
 export default new Command({
-	name: 'timeout',
-	description: 'Times out a member in the server.',
-	directory: 'moderation',
-	cooldown: 3000,
-	permission: ['ModerateMembers'],
-	options: [
-		{
-			name: 'member',
-			description: 'The member you wish to timeout.',
-			type: ApplicationCommandOptionType['User'],
-			required: true,
-		},
-		{
-			name: 'duration',
-			description: 'The duration of this timeout.',
-			type: ApplicationCommandOptionType['String'],
-			required: false,
-		},
-		{
-			name: 'reason',
-			description: 'The reason of this timeout.',
-			type: ApplicationCommandOptionType['String'],
-			required: false,
-			autocomplete: true,
-		},
-	],
-
+	interaction: timeoutCommand,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const duration = options.getString('duration') || default_config.timeout_duration;

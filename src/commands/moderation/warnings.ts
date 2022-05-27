@@ -1,4 +1,5 @@
-import { ApplicationCommandOptionType, ComponentType, Message, User } from 'discord.js';
+import { ComponentType, Message, User } from 'discord.js';
+import { warningsCommand } from '../../interactions/moderation/warnings';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -6,31 +7,7 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
-	name: 'warnings',
-	description: 'View your active punishments in the server.',
-	directory: 'moderation',
-	cooldown: 5000,
-	permission: [],
-	available: true,
-	options: [
-		{
-			name: 'type',
-			description: 'Choose if you want to view your automod or manual warnings.',
-			type: ApplicationCommandOptionType['Number'],
-			required: false,
-			choices: [
-				{
-					name: 'Manual warnings',
-					value: 1,
-				},
-				{
-					name: 'Auto moderation warnings',
-					value: 2,
-				},
-			],
-		},
-	],
-
+	interaction: warningsCommand,
 	excute: async ({ client, interaction, options }) => {
 		const user = interaction.user as User;
 		const warningsEmbed = client.util
