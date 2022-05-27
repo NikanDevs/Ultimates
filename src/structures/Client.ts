@@ -76,7 +76,6 @@ export class Ultimates extends Client {
 			.filter((file) => (!configEnabledModules.modmail ? !file.includes('modmail') : true))
 			.forEach(async (filePaths) => {
 				const command: interactionType = await this.importFiles(filePaths);
-				console.log(command);
 
 				this.commands.set(command.interaction.name, command);
 			});
