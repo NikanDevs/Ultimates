@@ -1,11 +1,4 @@
 {
-	"webhooks": {
-		"error-handler": "https://discord.com/api/webhooks/968265399944745010/_DAzlBa41XtianrO9AqZ0Rw-nuvhhR3Xyj3pIFjmqM_udy179kh3wF6yts1daJfo6TmJ",
-		"mod-logs": "https://discord.com/api/webhooks/968265402914312362/xqkPfCTNhCtustW3B4H3Tg-bcx7mAJ_Jb9_HzU69c6NLwM7XnockUQpruiSOLXXJrlfr",
-		"message-logs": "https://discord.com/api/webhooks/968265405955207188/Lnfw2SUFpmhmoTK8cLipSmpFnaHrErZTPzaYXXnKv5T-H2vcFxnpRZDeBoejTE90DyV-",
-		"modmail": "https://discord.com/api/webhooks/968265411583950918/Ed1y8igS4qgJgmARcnnnCU1QWdJvJT1LSgCfngl5xfGxcPJLZ4bZXLKEZ7pP7zwNecmF",
-		"server-gate": "https://discord.com/api/webhooks/968265415845376000/-7s_6W_ej2WoXLEHSbd6kq8IKVlD4ZhaXcS_X2Q_80p9cBijc6JyjMKGw6ZeDhQUNHeN"
-	},
 	"emojis": {
 		"sucess": "<:success:956885073767071775> ",
 		"error": "<:error:956884186751438868> ",
