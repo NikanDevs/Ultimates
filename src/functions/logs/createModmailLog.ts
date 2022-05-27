@@ -2,7 +2,7 @@ import { TextChannel, User, Util } from 'discord.js';
 import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
-import { addModmailCase } from '../cases/ModmailCase';
+import { addModmailTicket } from '../cases/ModmailCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
 
@@ -75,11 +75,11 @@ export async function createModmailLog(options: options) {
 				.join('\n')
 				.replaceAll('LINE_BREAK\n', '')
 		);
-	if (!logActivity('modmail'))
+	if (logActivity('modmail'))
 		var logMessage = await client.webhooks.modmail.send({ embeds: [embed] });
 
 	if (options.action === ModmailActionType.Open) {
-		await addModmailCase();
+		await addModmailTicket();
 
 		if (logActivity('modmail'))
 			var findMessage = await (
@@ -92,7 +92,7 @@ export async function createModmailLog(options: options) {
 					id: options.ticketId,
 					userId: options.user.id,
 					type: ticket.type.toUpperCase(),
-					url: findMessage.url,
+					url: findMessage?.url,
 					createdAt: ticket.channel.createdAt,
 				},
 			},
@@ -101,6 +101,7 @@ export async function createModmailLog(options: options) {
 		let findMessage = await (
 			client.channels.cache.get(logMessage.channel_id) as TextChannel
 		).messages.fetch(logMessage.id);
+
 		await modmailModel.findByIdAndUpdate(options.user.id, { $set: { url: findMessage.url } });
 	} else if (options.action === ModmailActionType.Close) {
 		const openedTickets: [] = (await modmailModel.findById('substance')).openedTickets;

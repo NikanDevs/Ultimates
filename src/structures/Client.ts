@@ -1,4 +1,4 @@
-import { Client, Collection, ClientEvents, Partials, WebhookClient } from 'discord.js';
+import { Client, Collection, ClientEvents, Partials, WebhookClient, Webhook } from 'discord.js';
 import { commandType } from '../typings/Command';
 import { glob } from 'glob';
 import { promisify } from 'util';
@@ -9,6 +9,8 @@ import { clientUtil } from '../functions/client/clientUtil';
 import { cc, clientEmbeds, clientConfig } from '../functions/client/properties';
 import { configModel } from '../models/config';
 import { logger } from '../logger';
+import { logsModel } from '../models/logs';
+import { modmailModel } from '../models/modmail';
 const globPromise = promisify(glob);
 
 export class Ultimates extends Client {
@@ -17,10 +19,10 @@ export class Ultimates extends Client {
 	embeds = clientEmbeds;
 	cc = cc;
 	webhooks = {
-		mod: null,
-		message: null,
-		modmail: null,
-		servergate: null,
+		mod: null as WebhookClient,
+		message: null as WebhookClient,
+		modmail: null as WebhookClient,
+		servergate: null as WebhookClient,
 	};
 	config = clientConfig;
 
@@ -53,6 +55,7 @@ export class Ultimates extends Client {
 			logger.info('MongoDB connected', { showDate: false })
 		);
 		await this.updateWebhookData();
+		await this.checkSubstance();
 
 		await this.registerModules();
 
@@ -163,5 +166,28 @@ export class Ultimates extends Client {
 			message: data.message.active,
 			servergate: data.servergate.active,
 		};
+	}
+
+	async checkSubstance() {
+		const logs = await logsModel.findById('substance');
+		const modmail = await modmailModel.findById('substance');
+
+		if (!logs) {
+			const data = new logsModel({
+				_id: 'substance',
+				currentCase: 1,
+			});
+			await data.save();
+			logger.info('Set logs substance data', { showDate: false });
+		}
+		if (!modmail) {
+			const data = new modmailModel({
+				_id: 'substance',
+				currentTicket: 1,
+				openedTickets: [],
+			});
+			await data.save();
+			logger.info('Set modmail substance data', { showDate: false });
+		}
 	}
 }

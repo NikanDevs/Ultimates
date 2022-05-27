@@ -159,7 +159,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                                 type: 'REQUEST',
                                 channel: threadChannel,
                             },
-                            ticketId: await (0, ModmailCase_1.getModmailCase)(),
+                            ticketId: await (0, ModmailCase_1.getModmailTicket)(),
                         });
                         // Thread Created
                         const createdEmbed = __1.client.util
@@ -230,7 +230,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             .then(async () => {
             switch (canDM) {
                 case true:
-                    await message.react(__1.client.cc.errorE);
+                    await message.react(__1.client.cc.successE);
                     break;
                 case false:
                     await message.react(__1.client.cc.errorE);

@@ -4,7 +4,7 @@ import { ApplicationCommandDataResolvable } from 'discord.js';
 import glob from 'glob';
 import { promisify } from 'util';
 import { commandType } from '../src/typings/Command';
-import { enabledModules, guildId, clientId } from '../src/json/config.json';
+import { enabledModules, guild as guildConfig, clientId } from '../src/json/config.json';
 const globPromise = promisify(glob);
 require('dotenv').config();
 
@@ -30,7 +30,7 @@ const interactions: commandType[] = [];
 		});
 
 	setTimeout(async () => {
-		await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+		await rest.put(Routes.applicationGuildCommands(clientId, guildConfig.id), {
 			body: commands,
 		});
 		console.log('Registered Interactions!');

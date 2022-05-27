@@ -33,6 +33,8 @@ const clientUtil_1 = require("../functions/client/clientUtil");
 const properties_1 = require("../functions/client/properties");
 const config_1 = require("../models/config");
 const logger_1 = require("../logger");
+const logs_1 = require("../models/logs");
+const modmail_1 = require("../models/modmail");
 const globPromise = (0, util_1.promisify)(glob_1.glob);
 class Ultimates extends discord_js_1.Client {
     commands = new discord_js_1.Collection();
@@ -73,6 +75,7 @@ class Ultimates extends discord_js_1.Client {
             return;
         await (0, mongoose_1.connect)(mongoDBConnection).then(() => logger_1.logger.info('MongoDB connected', { showDate: false }));
         await this.updateWebhookData();
+        await this.checkSubstance();
         await this.registerModules();
         await this.login(process.env.DISCORD_TOKEN).then(() => {
             this.handlerErrors();
@@ -170,6 +173,27 @@ class Ultimates extends discord_js_1.Client {
             message: data.message.active,
             servergate: data.servergate.active,
         };
+    }
+    async checkSubstance() {
+        const logs = await logs_1.logsModel.findById('substance');
+        const modmail = await modmail_1.modmailModel.findById('substance');
+        if (!logs) {
+            const data = new logs_1.logsModel({
+                _id: 'substance',
+                currentCase: 1,
+            });
+            await data.save();
+            logger_1.logger.info('Set logs substance data', { showDate: false });
+        }
+        if (!modmail) {
+            const data = new modmail_1.modmailModel({
+                _id: 'substance',
+                currentTicket: 1,
+                openedTickets: [],
+            });
+            await data.save();
+            logger_1.logger.info('Set modmail substance data', { showDate: false });
+        }
     }
 }
 exports.Ultimates = Ultimates;

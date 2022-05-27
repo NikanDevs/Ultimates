@@ -51,16 +51,13 @@ exports.default = new Command_1.Command({
                     name: 'user',
                     description: 'The user you wish to take action on.',
                     type: discord_js_1.ApplicationCommandOptionType.User,
-                },
-                {
-                    name: 'user-id',
-                    description: 'The Id of the user you wish to take action on.',
-                    type: discord_js_1.ApplicationCommandOptionType.String,
+                    required: true,
                 },
                 {
                     name: 'reason',
                     description: 'The reason of the action.',
                     type: discord_js_1.ApplicationCommandOptionType.String,
+                    required: false,
                 },
             ],
         },
@@ -154,26 +151,7 @@ exports.default = new Command_1.Command({
         }
         else if (subCommands === 'blacklist') {
             // Final user
-            let user;
-            let member = interaction.options.getMember('user');
-            if (member)
-                user = interaction.options.getUser('user');
-            if (!member)
-                user = (await client.users
-                    .fetch(options.getString('user-id'))
-                    .catch(() => { }));
-            if (!options.getString('user-id') && !options.getUser('user'))
-                return interaction.reply({
-                    embeds: [
-                        client.embeds.attention('You have to enter a user or a user Id.'),
-                    ],
-                    ephemeral: true,
-                });
-            if (!user || user === undefined)
-                return interaction.reply({
-                    embeds: [client.embeds.error("A user with that ID wasn't found.")],
-                    ephemeral: true,
-                });
+            let user = options.getUser('user');
             const findData = await modmail_1.modmailModel.findById(user.id);
             if (!findData && !options.getString('reason'))
                 return interaction.reply({
@@ -214,14 +192,20 @@ exports.default = new Command_1.Command({
                     user: user,
                     moderator: interaction.user,
                     reason: options.getString('reason'),
+                    referencedCaseUrl: findData.url,
                 });
             }
         }
         else if (subCommands === 'open') {
-            const user = options.getMember('user');
+            const member = options.getMember('user');
+            if (!member)
+                return interaction.reply({
+                    embeds: [client.embeds.error("I couldn't find this user in the server.")],
+                    ephemeral: true,
+                });
             let canOpen = true;
             // Checking bot
-            if (user.user.bot)
+            if (member.user.bot)
                 return interaction.reply({
                     embeds: [
                         client.embeds.attention("You can't open modmail threads for bots."),
@@ -233,7 +217,8 @@ exports.default = new Command_1.Command({
                 .get(config_json_1.guild.id)
                 .channels.cache.get(config_json_1.guild.modmailCategoryId);
             const findExisting = guildCategory.children.cache.find(
-            /* child? sus af */ (child) => child.topic?.slice(child.topic?.length - client.user.id.length) === user.id);
+            /* child? sus af */ (child) => child.topic?.slice(child.topic?.length - client.user.id.length) ===
+                member.id);
             if (findExisting)
                 return interaction.reply({
                     embeds: [
@@ -243,12 +228,12 @@ exports.default = new Command_1.Command({
                     ephemeral: true,
                 });
             // Checking blacklist
-            const data = await modmail_1.modmailModel.findById(user.id);
+            const data = await modmail_1.modmailModel.findById(member.id);
             if (data)
                 return interaction.reply({
                     embeds: [
                         client.util.embed({
-                            description: `${user.user.tag} is blacklisted from opening modmails.`,
+                            description: `${member.user.tag} is blacklisted from opening modmails.`,
                             color: client.cc.errorC,
                         }),
                     ],
@@ -261,14 +246,14 @@ exports.default = new Command_1.Command({
                 .setColor(client.util.resolve.color('Yellow'))
                 .setDescription([
                 '**A wild ticket has appeared!**',
-                `You've received a direct modmail from a staff member in **${guild.name}**. If you're wondering of how this ticket got opened, be patient until the moderator contact from through this ticket.`,
+                `You've received a direct modmail from a staff member in ${guild.name}. If you're wondering of how this ticket got opened, be patient until the moderator contact from through this ticket.`,
             ].join('\n'));
             if (options?.getString('reason'))
                 openedModmailEmbed.addFields({
                     name: 'Reason',
                     value: options?.getString('reason'),
                 });
-            user.user
+            member.user
                 .send({ embeds: [openedModmailEmbed] })
                 .catch(() => {
                 canOpen = false;
@@ -292,17 +277,17 @@ exports.default = new Command_1.Command({
                                 }),
                             ],
                         });
-                        const threadChannel = await guild.channels.create(user.user.username, {
+                        const threadChannel = await guild.channels.create(member.user.username, {
                             type: discord_js_1.ChannelType.GuildText,
                             parent: config_json_1.guild.modmailCategoryId,
-                            topic: `A tunnel to contact **${user.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${user.id}`,
+                            topic: `A tunnel to contact **${member.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${member.id}`,
                             reason: `Direct modmail thread opened.`,
                         });
                         await threadChannel.send({
-                            embeds: [await (0, generateModmailInfoEmbed_1.generateModmailInfoEmbed)(user.user)],
+                            embeds: [await (0, generateModmailInfoEmbed_1.generateModmailInfoEmbed)(member.user)],
                         });
                         // Deleting any cooldowns from past
-                        messageCreate_1.modmailCooldown.delete(`open_${user.user.id}`);
+                        messageCreate_1.modmailCooldown.delete(`open_${member.user.id}`);
                         await interaction.editReply({
                             embeds: [
                                 client.embeds.success(`Thread was created at ${threadChannel}`),
@@ -310,8 +295,8 @@ exports.default = new Command_1.Command({
                         });
                         (0, createModmailLog_1.createModmailLog)({
                             action: Modmail_1.ModmailActionType.Open,
-                            ticketId: await (0, ModmailCase_1.getModmailCase)(),
-                            user: user.user,
+                            ticketId: await (0, ModmailCase_1.getModmailTicket)(),
+                            user: member.user,
                             moderator: interaction.user,
                             ticket: { type: 'DIRECT', channel: threadChannel },
                             reason: options.getString('reason'),

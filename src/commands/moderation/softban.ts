@@ -20,8 +20,8 @@ export default new Command({
 	permission: ['BanMembers'],
 	options: [
 		{
-			name: 'member',
-			description: 'The member you wish to softban.',
+			name: 'user',
+			description: 'The user you wish to softban.',
 			type: ApplicationCommandOptionType.User,
 			required: true,
 		},
@@ -57,13 +57,14 @@ export default new Command({
 	],
 
 	excute: async ({ client, interaction, options }) => {
-		const member = options.getMember('member') as GuildMember;
+		const user = options.getUser('user');
+		const member = options.getMember('user') as GuildMember;
 		const reason = options.getString('reason') || default_config.reason;
 		const delete_messages =
 			options.getNumber('delete_messages') || default_config.ban_delete_messages;
 		const duration = options.getString('duration') || default_config.softban_duration;
 
-		if (getsIgnored(interaction, member)) return;
+		if (member) if (getsIgnored(interaction, member)) return;
 		if (ms(duration) === undefined)
 			return interaction.reply({
 				embeds: [
@@ -87,7 +88,7 @@ export default new Command({
 			_id: generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Softban,
-			userId: member.id,
+			userId: user.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
 			date: new Date(),
@@ -95,17 +96,21 @@ export default new Command({
 		});
 		await data.save();
 
-		await sendModDM(member, {
-			action: PunishmentType.Softban,
-			punishment: data,
-			expire: new Date(ms(duration)),
+		if (member)
+			await sendModDM(member, {
+				action: PunishmentType.Softban,
+				punishment: data,
+				expire: new Date(ms(duration)),
+			});
+		await interaction.guild.members.ban(user, {
+			deleteMessageDays: delete_messages,
+			reason: reason,
 		});
-		await member.ban({ reason: reason, deleteMessageDays: delete_messages });
 
 		const durationData = new durationsModel({
 			case: await getModCase(),
 			type: PunishmentType.Softban,
-			userId: member.user.id,
+			userId: user.id,
 			date: new Date(),
 			endsAt: ms(duration),
 		});
@@ -113,7 +118,7 @@ export default new Command({
 
 		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(member.user, {
+				client.embeds.moderation(member ? user : user.tag, {
 					action: PunishmentType.Softban,
 					id: data._id,
 				}),
@@ -124,7 +129,7 @@ export default new Command({
 		await createModLog({
 			action: PunishmentType.Softban,
 			punishmentId: data._id,
-			user: member.user,
+			user: user,
 			duration: ms(duration),
 			moderator: interaction.user,
 			reason: reason,

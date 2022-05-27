@@ -28,14 +28,14 @@ exports.default = new Command_1.Command({
                     name: 'id',
                     description: 'The Id of the punishment you wish to revoke.',
                     required: true,
-                    type: discord_js_1.ApplicationCommandOptionType['String'],
+                    type: discord_js_1.ApplicationCommandOptionType.String,
                     autocomplete: true,
                 },
                 {
                     name: 'reason',
                     description: "The reason that you're revoking",
                     required: false,
-                    type: discord_js_1.ApplicationCommandOptionType['String'],
+                    type: discord_js_1.ApplicationCommandOptionType.String,
                 },
             ],
         },
@@ -48,7 +48,7 @@ exports.default = new Command_1.Command({
                     name: 'id',
                     description: 'The Id of the punishment you wish to find.',
                     required: true,
-                    type: discord_js_1.ApplicationCommandOptionType['String'],
+                    type: discord_js_1.ApplicationCommandOptionType.String,
                     autocomplete: true,
                 },
             ],
@@ -61,27 +61,21 @@ exports.default = new Command_1.Command({
                 {
                     name: 'user',
                     description: 'The user you want to view their punishments.',
-                    required: false,
-                    type: discord_js_1.ApplicationCommandOptionType['User'],
-                },
-                {
-                    name: 'user-id',
-                    description: 'The id of the user you want to view their punishments.',
-                    required: false,
-                    type: discord_js_1.ApplicationCommandOptionType['String'],
+                    required: true,
+                    type: discord_js_1.ApplicationCommandOptionType.User,
                 },
             ],
         },
         {
             name: 'update',
             description: 'Update a punishment',
-            type: discord_js_1.ApplicationCommandOptionType['Subcommand'],
+            type: discord_js_1.ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: 'id',
                     description: 'The id of the punishment you want to update.',
                     required: true,
-                    type: discord_js_1.ApplicationCommandOptionType['String'],
+                    type: discord_js_1.ApplicationCommandOptionType.String,
                     autocomplete: true,
                 },
                 {
@@ -104,7 +98,7 @@ exports.default = new Command_1.Command({
                     name: 'new-value',
                     description: 'The value you want this punishment to be updated to.',
                     required: true,
-                    type: discord_js_1.ApplicationCommandOptionType['String'],
+                    type: discord_js_1.ApplicationCommandOptionType.String,
                 },
             ],
         },
@@ -365,24 +359,7 @@ exports.default = new Command_1.Command({
         }
         else if (getSubCommand === 'view') {
             // Catching the proper user
-            let user;
-            let member = options.getMember('user');
-            if (member)
-                user = options.getUser('user');
-            if (!interaction.options.getMember('user') && !options.getString('user-id')) {
-                (member = interaction.member), (user = interaction.user);
-            }
-            if (!member)
-                user = (await client.users
-                    .fetch(options.getString('user-id'))
-                    .catch(() => { }));
-            if (user === null || user === undefined)
-                return interaction.reply({
-                    embeds: [
-                        client.embeds.error("I wasn't able to find a user with that ID."),
-                    ],
-                    ephemeral: true,
-                });
+            const user = options.getUser('user');
             // Getting all the warnings
             const findWarningsNormal = await punishments_1.punishmentModel.find({ userId: user.id });
             const findWarningsAutomod = await automod_1.automodModel.find({ userId: user.id });

@@ -5,7 +5,7 @@ import { Event } from '../../structures/Event';
 import { badwords } from '../../json/automod.json';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { ModmailActionType } from '../../typings/Modmail';
-import { getModmailCase } from '../../functions/cases/ModmailCase';
+import { getModmailTicket } from '../../functions/cases/ModmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { guild as guildConfig } from '../../json/config.json';
 export const modmailCooldown: Collection<string, number> = new Collection();
@@ -195,7 +195,7 @@ export default new Event('messageCreate', async (message) => {
 								type: 'REQUEST',
 								channel: threadChannel,
 							},
-							ticketId: await getModmailCase(),
+							ticketId: await getModmailTicket(),
 						});
 
 						// Thread Created
@@ -279,7 +279,7 @@ export default new Event('messageCreate', async (message) => {
 			.then(async () => {
 				switch (canDM) {
 					case true:
-						await message.react(client.cc.errorE);
+						await message.react(client.cc.successE);
 						break;
 
 					case false:

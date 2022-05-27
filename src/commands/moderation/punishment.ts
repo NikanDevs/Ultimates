@@ -26,14 +26,14 @@ export default new Command({
 					name: 'id',
 					description: 'The Id of the punishment you wish to revoke.',
 					required: true,
-					type: ApplicationCommandOptionType['String'],
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 				},
 				{
 					name: 'reason',
 					description: "The reason that you're revoking",
 					required: false,
-					type: ApplicationCommandOptionType['String'],
+					type: ApplicationCommandOptionType.String,
 				},
 			],
 		},
@@ -46,7 +46,7 @@ export default new Command({
 					name: 'id',
 					description: 'The Id of the punishment you wish to find.',
 					required: true,
-					type: ApplicationCommandOptionType['String'],
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 				},
 			],
@@ -59,27 +59,21 @@ export default new Command({
 				{
 					name: 'user',
 					description: 'The user you want to view their punishments.',
-					required: false,
-					type: ApplicationCommandOptionType['User'],
-				},
-				{
-					name: 'user-id',
-					description: 'The id of the user you want to view their punishments.',
-					required: false,
-					type: ApplicationCommandOptionType['String'],
+					required: true,
+					type: ApplicationCommandOptionType.User,
 				},
 			],
 		},
 		{
 			name: 'update',
 			description: 'Update a punishment',
-			type: ApplicationCommandOptionType['Subcommand'],
+			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'id',
 					description: 'The id of the punishment you want to update.',
 					required: true,
-					type: ApplicationCommandOptionType['String'],
+					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 				},
 				{
@@ -102,7 +96,7 @@ export default new Command({
 					name: 'new-value',
 					description: 'The value you want this punishment to be updated to.',
 					required: true,
-					type: ApplicationCommandOptionType['String'],
+					type: ApplicationCommandOptionType.String,
 				},
 			],
 		},
@@ -424,23 +418,7 @@ export default new Command({
 			interaction.reply({ embeds: [baseEmbed] });
 		} else if (getSubCommand === 'view') {
 			// Catching the proper user
-			let user: User;
-			let member = options.getMember('user');
-			if (member) user = options.getUser('user');
-			if (!interaction.options.getMember('user') && !options.getString('user-id')) {
-				(member = interaction.member), (user = interaction.user);
-			}
-			if (!member)
-				user = (await client.users
-					.fetch(options.getString('user-id'))
-					.catch(() => {})) as User;
-			if (user === null || user === undefined)
-				return interaction.reply({
-					embeds: [
-						client.embeds.error("I wasn't able to find a user with that ID."),
-					],
-					ephemeral: true,
-				});
+			const user = options.getUser('user');
 
 			// Getting all the warnings
 			const findWarningsNormal = await punishmentModel.find({ userId: user.id });

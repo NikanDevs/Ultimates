@@ -53,10 +53,10 @@ async function createModmailLog(options) {
     ]
         .join('\n')
         .replaceAll('LINE_BREAK\n', ''));
-    if (!(0, checkActivity_1.logActivity)('modmail'))
+    if ((0, checkActivity_1.logActivity)('modmail'))
         var logMessage = await __1.client.webhooks.modmail.send({ embeds: [embed] });
     if (options.action === Modmail_1.ModmailActionType.Open) {
-        await (0, ModmailCase_1.addModmailCase)();
+        await (0, ModmailCase_1.addModmailTicket)();
         if ((0, checkActivity_1.logActivity)('modmail'))
             var findMessage = await __1.client.channels.cache.get(logMessage.channel_id).messages.fetch(logMessage.id);
         await modmail_1.modmailModel.findByIdAndUpdate('substance', {
@@ -65,7 +65,7 @@ async function createModmailLog(options) {
                     id: options.ticketId,
                     userId: options.user.id,
                     type: ticket.type.toUpperCase(),
-                    url: findMessage.url,
+                    url: findMessage?.url,
                     createdAt: ticket.channel.createdAt,
                 },
             },

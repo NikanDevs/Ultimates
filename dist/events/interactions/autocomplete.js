@@ -90,7 +90,8 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             });
             const availableBannedMembers = [...new Set(mapBans)];
             const filteredBannedMembers = availableBannedMembers
-                .filter((data) => data.startsWith(unbanFocus.value))
+                .filter((data) => data.split(' • ')[0].startsWith(unbanFocus.value) ||
+                data.split(' • ')[1].startsWith(unbanFocus.value))
                 .map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
                 .slice(0, 25);
             if (!filteredBannedMembers.length)

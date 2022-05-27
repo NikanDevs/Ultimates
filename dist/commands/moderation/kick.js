@@ -21,13 +21,13 @@ exports.default = new Command_1.Command({
         {
             name: 'member',
             description: 'The member you wish to kick.',
-            type: discord_js_1.ApplicationCommandOptionType['User'],
+            type: discord_js_1.ApplicationCommandOptionType.User,
             required: true,
         },
         {
             name: 'reason',
             description: 'The reason of this kick.',
-            type: discord_js_1.ApplicationCommandOptionType['String'],
+            type: discord_js_1.ApplicationCommandOptionType.String,
             required: false,
             autocomplete: true,
         },

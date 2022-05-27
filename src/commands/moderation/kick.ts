@@ -20,13 +20,13 @@ export default new Command({
 		{
 			name: 'member',
 			description: 'The member you wish to kick.',
-			type: ApplicationCommandOptionType['User'],
+			type: ApplicationCommandOptionType.User,
 			required: true,
 		},
 		{
 			name: 'reason',
 			description: 'The reason of this kick.',
-			type: ApplicationCommandOptionType['String'],
+			type: ApplicationCommandOptionType.String,
 			required: false,
 			autocomplete: true,
 		},

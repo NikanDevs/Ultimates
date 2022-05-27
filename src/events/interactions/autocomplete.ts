@@ -107,7 +107,11 @@ export default new Event('interactionCreate', async (interaction) => {
 			});
 			const availableBannedMembers = [...new Set(mapBans)];
 			const filteredBannedMembers = availableBannedMembers
-				.filter((data) => data.startsWith(unbanFocus.value as string))
+				.filter(
+					(data) =>
+						data.split(' • ')[0].startsWith(unbanFocus.value as string) ||
+						data.split(' • ')[1].startsWith(unbanFocus.value as string)
+				)
 				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
 				.slice(0, 25);
 

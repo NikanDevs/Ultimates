@@ -17,38 +17,21 @@ export default new Command({
 	permission: ['ManageMessages'],
 	options: [
 		{
-			name: 'member',
-			description: 'The member you wish to see information for.',
+			name: 'user',
+			description: 'The user you wish to see information for.',
 			type: ApplicationCommandOptionType.User,
-			required: false,
-		},
-		{
-			name: 'user-id',
-			description: 'The id of the user you wish to see information for.',
-			type: ApplicationCommandOptionType.String,
 			required: false,
 		},
 	],
 
 	excute: async ({ client, interaction, options }) => {
 		// User
-		let user: User;
-		let member = interaction.options.getMember('member') as GuildMember;
-		if (member) user = interaction.options.getUser('member');
-		if (!member) {
-			user = (await client.users
-				.fetch(options.getString('user-id'), { force: true })
-				.catch(() => {})) as User;
-		}
-		if (!options.getMember('member') && !options.getString('user-id')) {
+		let member = interaction.options.getMember('user') as GuildMember;
+		let user = interaction.options.getUser('user');
+		if (!options.getUser('user')) {
 			member = interaction.member as GuildMember;
 			user = interaction.user as User;
 		}
-		if (user === null || user === undefined)
-			return interaction.reply({
-				embeds: [client.embeds.error("That user doesn't exist.")],
-				ephemeral: true,
-			});
 
 		// Functions
 		const UrlTypeCheck = function (avatarURL: string, type: 'Avatar' | 'Banner') {
@@ -142,7 +125,7 @@ export default new Command({
 							+user.createdAt / 1000
 						)}:R>`,
 						`• **Bot:** ${
-							user?.bot ? `${client.cc.successC}` : `${client.cc.errorC}`
+							user?.bot ? `${client.cc.successE}` : `${client.cc.errorE}`
 						}`,
 					].join('\n'),
 				},
@@ -151,8 +134,8 @@ export default new Command({
 					value: [
 						`• **Animated:** ${
 							user.displayAvatarURL().endsWith('.gif')
-								? `${client.cc.successC}`
-								: `${client.cc.errorC}`
+								? `${client.cc.successE}`
+								: `${client.cc.errorE}`
 						}`,
 						`• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
 					].join('\n'),
@@ -167,8 +150,8 @@ export default new Command({
 				value: [
 					`• **Animated:** ${
 						user.bannerURL().endsWith('.gif')
-							? `${client.cc.successC}`
-							: `${client.cc.errorC}`
+							? `${client.cc.successE}`
+							: `${client.cc.errorE}`
 					}`,
 					`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
 				].join('\n'),
@@ -338,8 +321,8 @@ export default new Command({
 									}`,
 									`• **Booster:** ${
 										member.premiumSinceTimestamp
-											? `${client.cc.successC}`
-											: `${client.cc.errorC}`
+											? `${client.cc.successE}`
+											: `${client.cc.errorE}`
 									}`,
 									`• **Boosting Since:** ${
 										member.premiumSinceTimestamp
@@ -360,8 +343,8 @@ export default new Command({
 								value: [
 									`• **Animated:** ${
 										member.avatarURL().endsWith('.gif')
-											? `${client.cc.successC}`
-											: `${client.cc.errorC}`
+											? `${client.cc.successE}`
+											: `${client.cc.errorE}`
 									}`,
 									`• **Formats:** ${UrlTypeCheck(
 										member.avatarURL(),

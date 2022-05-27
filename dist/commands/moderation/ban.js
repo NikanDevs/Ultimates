@@ -19,8 +19,8 @@ exports.default = new Command_1.Command({
     permission: ['BanMembers'],
     options: [
         {
-            name: 'member',
-            description: 'The member you wish to ban.',
+            name: 'user',
+            description: 'The user you wish to ban.',
             type: discord_js_1.ApplicationCommandOptionType.User,
             required: true,
         },
@@ -49,30 +49,36 @@ exports.default = new Command_1.Command({
         },
     ],
     excute: async ({ client, interaction, options }) => {
-        const member = options.getMember('member');
+        const user = options.getUser('user');
+        const member = options.getMember('user');
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;
         const delete_messages = options.getNumber('delete_messages') || moderation_json_1.default_config.ban_delete_messages;
-        if ((0, getsIgnored_1.getsIgnored)(interaction, member))
-            return;
+        if (member)
+            if ((0, getsIgnored_1.getsIgnored)(interaction, member))
+                return;
         const data = new punishments_1.punishmentModel({
             _id: (0, generatePunishmentId_1.generateManualId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Ban,
-            userId: member.id,
+            userId: user.id,
             moderatorId: interaction.user.id,
             reason: reason,
             date: new Date(),
             expire: constants_1.punishmentExpiry,
         });
         await data.save();
-        await (0, sendModDM_1.sendModDM)(member, {
-            action: PunishmentType_1.PunishmentType.Ban,
-            punishment: data,
+        if (member)
+            await (0, sendModDM_1.sendModDM)(member, {
+                action: PunishmentType_1.PunishmentType.Ban,
+                punishment: data,
+            });
+        await interaction.guild.members.ban(user, {
+            deleteMessageDays: delete_messages,
+            reason: reason,
         });
-        await member.ban({ reason: reason, deleteMessageDays: delete_messages });
         await interaction.reply({
             embeds: [
-                client.embeds.moderation(member.user, {
+                client.embeds.moderation(member ? user : user.tag, {
                     action: PunishmentType_1.PunishmentType.Ban,
                     id: data._id,
                 }),
@@ -82,7 +88,7 @@ exports.default = new Command_1.Command({
         await (0, createModLog_1.createModLog)({
             action: PunishmentType_1.PunishmentType.Ban,
             punishmentId: data._id,
-            user: member.user,
+            user: user,
             moderator: interaction.user,
             reason: reason,
             expire: constants_1.punishmentExpiry,
