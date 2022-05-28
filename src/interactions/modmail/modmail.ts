@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const modmailCommand = {
 	name: 'modmail',
@@ -51,5 +52,5 @@ export const modmailCommand = {
 			],
 		},
 	],
-} as const;
+} as interactionOptions;
 

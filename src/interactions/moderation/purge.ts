@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const purgeCommand = {
 	name: 'purge',
@@ -20,5 +21,5 @@ export const purgeCommand = {
 			required: false,
 		},
 	],
-} as const;
+} as interactionOptions;
 

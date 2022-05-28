@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const nicknameCommand = {
 	name: 'nickname',
@@ -20,5 +21,5 @@ export const nicknameCommand = {
 			required: false,
 		},
 	],
-} as const;
+} as interactionOptions;
 

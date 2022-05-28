@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const punishmentCommand = {
 	name: 'punishment',
@@ -91,5 +92,5 @@ export const punishmentCommand = {
 			],
 		},
 	],
-} as const;
+} as interactionOptions;
 

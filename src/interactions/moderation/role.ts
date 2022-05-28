@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const roleCommand = {
 	name: 'role',
@@ -27,5 +28,5 @@ export const roleCommand = {
 			],
 		},
 	],
-} as const;
+} as interactionOptions;
 

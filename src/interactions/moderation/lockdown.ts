@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const lockdownCommand = {
 	name: 'lockdown',
@@ -45,5 +46,5 @@ export const lockdownCommand = {
 			],
 		},
 	],
-} as const;
+} as interactionOptions;
 

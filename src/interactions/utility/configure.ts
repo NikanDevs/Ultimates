@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const configureCommand = {
 	name: 'configure',
@@ -40,5 +41,5 @@ export const configureCommand = {
 			],
 		},
 	],
-} as const;
+} as interactionOptions;
 

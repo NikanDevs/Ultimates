@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const softbanCommand = {
 	name: 'softban',
@@ -43,5 +44,5 @@ export const softbanCommand = {
 			autocomplete: true,
 		},
 	],
-} as const;
+} as interactionOptions;
 

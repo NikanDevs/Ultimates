@@ -1,3 +1,5 @@
+import { interactionOptions } from '../../typings/Command';
+
 export const staffCommand = {
 	name: 'staff',
 	description: 'Displays a list of available staff members for this server.',
@@ -5,5 +7,5 @@ export const staffCommand = {
 	cooldown: 5000,
 	permission: [],
 	available: true,
-} as const;
+} as interactionOptions;
 

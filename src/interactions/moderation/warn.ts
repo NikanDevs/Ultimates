@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const warnCommand = {
 	name: 'warn',
@@ -21,5 +22,5 @@ export const warnCommand = {
 			autocomplete: true,
 		},
 	],
-} as const;
+} as interactionOptions;
 

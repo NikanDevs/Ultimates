@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const kickCommand = {
 	name: 'kick',
@@ -21,5 +22,5 @@ export const kickCommand = {
 			autocomplete: true,
 		},
 	],
-} as const;
+} as interactionOptions;
 

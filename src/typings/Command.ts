@@ -27,6 +27,6 @@ export type interactionOptions = {
 } & ChatInputApplicationCommandData;
 
 export type interactionType = {
-	interaction: any;
+	interaction: interactionOptions;
 	excute: excuteFunction;
 };

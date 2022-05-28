@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { interactionOptions } from '../../typings/Command';
 
 export const warningsCommand = {
 	name: 'warnings',
@@ -25,5 +26,5 @@ export const warningsCommand = {
 			],
 		},
 	],
-} as const;
+} as interactionOptions;
 
