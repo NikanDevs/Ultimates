@@ -3,20 +3,20 @@ import { interactionOptions } from '../../typings/Command';
 
 export const warnCommand = {
 	name: 'warn',
-	description: 'Warns a member.',
+	description: 'Warn a member',
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ManageMessages'],
 	options: [
 		{
 			name: 'member',
-			description: 'The member you wish to warn.',
+			description: 'The member you want to warn',
 			type: ApplicationCommandOptionType.User,
 			required: true,
 		},
 		{
 			name: 'reason',
-			description: 'The reason for your warning.',
+			description: 'The reason for this warning',
 			type: ApplicationCommandOptionType.String,
 			required: true,
 			autocomplete: true,

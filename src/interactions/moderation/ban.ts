@@ -3,20 +3,20 @@ import { interactionOptions } from '../../typings/Command';
 
 export const banCommand = {
 	name: 'ban',
-	description: 'Bans a member from the server.',
+	description: 'Bans a user and they will be not able to join this server anymore',
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['BanMembers'],
 	options: [
 		{
 			name: 'user',
-			description: 'The user you wish to ban.',
+			description: 'The user you want to ban',
 			type: ApplicationCommandOptionType.User,
 			required: true,
 		},
 		{
 			name: 'delete_messages',
-			description: 'The amount of days to delete messages for.',
+			description: 'The amount of days to delete messages for',
 			type: ApplicationCommandOptionType.Number,
 			required: false,
 			choices: [
@@ -32,7 +32,7 @@ export const banCommand = {
 		},
 		{
 			name: 'reason',
-			description: 'The reason of the ban.',
+			description: 'The reason of this action',
 			type: ApplicationCommandOptionType.String,
 			required: false,
 			autocomplete: true,

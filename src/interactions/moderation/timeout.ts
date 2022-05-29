@@ -3,26 +3,26 @@ import { interactionOptions } from '../../typings/Command';
 
 export const timeoutCommand = {
 	name: 'timeout',
-	description: 'Times out a member in the server.',
+	description: 'Time a member out and disallow them from any activity in the server',
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ModerateMembers'],
 	options: [
 		{
 			name: 'member',
-			description: 'The member you wish to timeout.',
+			description: 'The member you want to timeout',
 			type: ApplicationCommandOptionType.User,
 			required: true,
 		},
 		{
 			name: 'duration',
-			description: 'The duration of this timeout.',
+			description: 'The duration of this timeout',
 			type: ApplicationCommandOptionType.String,
 			required: false,
 		},
 		{
 			name: 'reason',
-			description: 'The reason of this timeout.',
+			description: 'The reason of this timeout',
 			type: ApplicationCommandOptionType.String,
 			required: false,
 			autocomplete: true,

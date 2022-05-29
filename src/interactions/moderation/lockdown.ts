@@ -3,19 +3,19 @@ import { interactionOptions } from '../../typings/Command';
 
 export const lockdownCommand = {
 	name: 'lockdown',
-	description: 'Lockdown sub command.',
+	description: 'Lock the server or a specific channel down',
 	directory: 'moderation',
 	cooldown: 20000,
 	permission: ['ManageMessages'],
 	options: [
 		{
 			name: 'channel',
-			description: 'Locks or unlocks a channel based on its current status.',
+			description: 'Lock or unlock a channel based on its current status',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'channel',
-					description: 'The channel you wish to take action on.',
+					description: 'The channel you want to take action on',
 					type: ApplicationCommandOptionType.Channel,
 					required: false,
 					channel_types: [
@@ -26,7 +26,7 @@ export const lockdownCommand = {
 				},
 				{
 					name: 'reason',
-					description: 'The reason of this action.',
+					description: 'The reason of this action',
 					type: ApplicationCommandOptionType.String,
 					required: false,
 				},
@@ -34,12 +34,12 @@ export const lockdownCommand = {
 		},
 		{
 			name: 'server',
-			description: 'Locks or unlocks the server based on its current status.',
+			description: 'Lock or unlock the server based on its current status',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'reason',
-					description: 'The reason of this action.',
+					description: 'The reason of this action',
 					type: ApplicationCommandOptionType.String,
 					required: false,
 				},

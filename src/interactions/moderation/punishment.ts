@@ -3,26 +3,26 @@ import { interactionOptions } from '../../typings/Command';
 
 export const punishmentCommand = {
 	name: 'punishment',
-	description: 'Punishment command subcommands.',
+	description: 'Take an action on an existing punishment',
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ManageMessages'],
 	options: [
 		{
 			name: 'revoke',
-			description: 'Revokes a punishment.',
+			description: 'Revoke a punishment whether can be active or not',
 			type: ApplicationCommandOptionType['Subcommand'],
 			options: [
 				{
 					name: 'id',
-					description: 'The Id of the punishment you wish to revoke.',
+					description: 'The id of the punishment',
 					required: true,
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 				},
 				{
 					name: 'reason',
-					description: "The reason that you're revoking",
+					description: 'The reason of this action',
 					required: false,
 					type: ApplicationCommandOptionType.String,
 				},
@@ -30,12 +30,12 @@ export const punishmentCommand = {
 		},
 		{
 			name: 'search',
-			description: 'Search for a punishment.',
+			description: 'Search for an existing punishment',
 			type: ApplicationCommandOptionType['Subcommand'],
 			options: [
 				{
 					name: 'id',
-					description: 'The Id of the punishment you wish to find.',
+					description: 'The id of the punishment',
 					required: true,
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
@@ -44,12 +44,12 @@ export const punishmentCommand = {
 		},
 		{
 			name: 'view',
-			description: 'View all the punishments recorded for a user.',
+			description: 'View all the recorded punishments for a user',
 			type: ApplicationCommandOptionType['Subcommand'],
 			options: [
 				{
 					name: 'user',
-					description: 'The user you want to view their punishments.',
+					description: 'The user you want to view punishments for',
 					required: true,
 					type: ApplicationCommandOptionType.User,
 				},
@@ -57,19 +57,19 @@ export const punishmentCommand = {
 		},
 		{
 			name: 'update',
-			description: 'Update a punishment',
+			description: 'Update the duration or reason for a punishment',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'id',
-					description: 'The id of the punishment you want to update.',
+					description: 'The id of the punishment',
 					required: true,
 					type: ApplicationCommandOptionType.String,
 					autocomplete: true,
 				},
 				{
 					name: 'value',
-					description: 'Select what part of the punishment you want to update.',
+					description: 'The part of the punishment you want to update',
 					required: true,
 					type: ApplicationCommandOptionType.Number,
 					choices: [
@@ -85,7 +85,7 @@ export const punishmentCommand = {
 				},
 				{
 					name: 'new-value',
-					description: 'The value you want this punishment to be updated to.',
+					description: 'The new value you want to set for the punishment',
 					required: true,
 					type: ApplicationCommandOptionType.String,
 				},

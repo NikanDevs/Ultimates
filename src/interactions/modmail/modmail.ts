@@ -3,30 +3,30 @@ import { interactionOptions } from '../../typings/Command';
 
 export const modmailCommand = {
 	name: 'modmail',
-	description: 'Actions on modmail.',
+	description: 'Take an action on the modmail system',
 	directory: 'modmail',
 	permission: ['ManageMessages'],
 	cooldown: 10000,
 	options: [
 		{
 			name: 'close',
-			description: 'Closes the ticket in the current channel.',
+			description: 'Close the active ticket in this channel',
 			type: ApplicationCommandOptionType.Subcommand,
 		},
 		{
 			name: 'open',
-			description: "Open a modmail directly into a user's DMs.",
+			description: "Open a modmail directly into a user's DMs",
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'user',
-					description: 'The user you wish to open modmail for.',
+					description: 'The user you want to open modmail for',
 					type: ApplicationCommandOptionType.User,
 					required: true,
 				},
 				{
 					name: 'reason',
-					description: "The reason that you're creating this thread.",
+					description: 'The reason of this creation',
 					type: ApplicationCommandOptionType.String,
 					required: false,
 				},
@@ -34,18 +34,18 @@ export const modmailCommand = {
 		},
 		{
 			name: 'blacklist',
-			description: 'Blacklists/Unblacklists a user from the modmail.',
+			description: 'Blacklist or unblacklist a user from creating tickets',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'user',
-					description: 'The user you wish to take action on.',
+					description: 'The user you want to take action on',
 					type: ApplicationCommandOptionType.User,
 					required: true,
 				},
 				{
 					name: 'reason',
-					description: 'The reason of the action.',
+					description: 'The reason of this action',
 					type: ApplicationCommandOptionType.String,
 					required: false,
 				},

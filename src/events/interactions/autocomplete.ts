@@ -96,7 +96,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			break;
 		case 'unban':
 			const unbanFocus = interaction.options.getFocused(true);
-			if (unbanFocus?.name !== 'user-id') return;
+			if (unbanFocus?.name !== 'user') return;
 
 			const mapBans = (await interaction.guild.bans.fetch()).map((ban) => {
 				return [

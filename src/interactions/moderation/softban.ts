@@ -3,26 +3,26 @@ import { interactionOptions } from '../../typings/Command';
 
 export const softbanCommand = {
 	name: 'softban',
-	description: 'Softbans a member from the server.',
+	description: "Softban a user and they will be able to join once it's the duration is finished",
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['BanMembers'],
 	options: [
 		{
 			name: 'user',
-			description: 'The user you wish to softban.',
+			description: 'The user you want to softban',
 			type: ApplicationCommandOptionType.User,
 			required: true,
 		},
 		{
 			name: 'duration',
-			description: 'The duration you want the member to be banned for.',
+			description: 'The duration you want the member to be banned for',
 			type: ApplicationCommandOptionType.String,
 			required: false,
 		},
 		{
 			name: 'delete_messages',
-			description: 'The amount of days to delete messages for.',
+			description: 'The amount of days to delete messages for',
 			type: ApplicationCommandOptionType.Number,
 			required: false,
 			choices: [
@@ -38,7 +38,7 @@ export const softbanCommand = {
 		},
 		{
 			name: 'reason',
-			description: 'The reason of the softban.',
+			description: 'The reason of the softban',
 			type: ApplicationCommandOptionType.String,
 			required: false,
 			autocomplete: true,

@@ -3,19 +3,19 @@ import { interactionOptions } from '../../typings/Command';
 
 export const configureCommand = {
 	name: 'configure',
-	description: 'Configure different modules of the bot.',
+	description: 'Configure different modules of the bot',
 	directory: 'utility',
 	cooldown: 5000,
 	permission: ['Administrator'],
 	options: [
 		{
 			name: 'logs',
-			description: 'Configure the settings of the logging system.',
+			description: 'Configure the settings of the logging system',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
 					name: 'module',
-					description: 'The log module you want to configure.',
+					description: 'The log module you want to configure',
 					type: ApplicationCommandOptionType.String,
 					required: false,
 					choices: [
@@ -27,14 +27,14 @@ export const configureCommand = {
 				},
 				{
 					name: 'channel',
-					description: 'The channel you want the module to be posting on.',
+					description: 'The channel you want the module to be posting on',
 					type: ApplicationCommandOptionType.Channel,
 					channel_types: [ChannelType.GuildText],
 					required: false,
 				},
 				{
 					name: 'active',
-					description: 'The channel you want the module to be active on.',
+					description: 'If this module should be active at the time and post',
 					type: ApplicationCommandOptionType.Boolean,
 					required: false,
 				},

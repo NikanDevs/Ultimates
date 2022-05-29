@@ -3,20 +3,20 @@ import { interactionOptions } from '../../typings/Command';
 
 export const kickCommand = {
 	name: 'kick',
-	description: 'Kicks a member from the server.',
+	description: 'Kicks out a member from the server',
 	directory: 'moderation',
 	cooldown: 300,
 	permission: ['KickMembers'],
 	options: [
 		{
 			name: 'member',
-			description: 'The member you wish to kick.',
+			description: 'The member you want to kick from the server',
 			type: ApplicationCommandOptionType.User,
 			required: true,
 		},
 		{
 			name: 'reason',
-			description: 'The reason of this kick.',
+			description: 'The reason of this action',
 			type: ApplicationCommandOptionType.String,
 			required: false,
 			autocomplete: true,

@@ -3,7 +3,7 @@ import { interactionOptions } from '../../typings/Command';
 
 export const warningsCommand = {
 	name: 'warnings',
-	description: 'View your active punishments in the server.',
+	description: 'View your active punishments in this server',
 	directory: 'moderation',
 	cooldown: 5000,
 	permission: [],
@@ -11,7 +11,7 @@ export const warningsCommand = {
 	options: [
 		{
 			name: 'type',
-			description: 'Choose if you want to view your automod or manual warnings.',
+			description: 'Filter the warnings being shown',
 			type: ApplicationCommandOptionType.Number,
 			required: false,
 			choices: [
