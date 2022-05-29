@@ -56,9 +56,8 @@ export default new Command({
 									  )}**`
 									: 'Slowmode was turned off.'
 							)
-							.setColor(client.cc.invisible),
+							.setColor(client.cc.moderation),
 					],
-					ephemeral: true,
 				});
 				break;
 		}
