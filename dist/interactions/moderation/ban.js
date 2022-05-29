@@ -4,20 +4,20 @@ exports.banCommand = void 0;
 const discord_js_1 = require("discord.js");
 exports.banCommand = {
     name: 'ban',
-    description: 'Bans a member from the server.',
+    description: 'Bans a user and they will be not able to join this server anymore',
     directory: 'moderation',
     cooldown: 3000,
     permission: ['BanMembers'],
     options: [
         {
             name: 'user',
-            description: 'The user you wish to ban.',
+            description: 'The user you want to ban',
             type: discord_js_1.ApplicationCommandOptionType.User,
             required: true,
         },
         {
             name: 'delete_messages',
-            description: 'The amount of days to delete messages for.',
+            description: 'The amount of days to delete messages for',
             type: discord_js_1.ApplicationCommandOptionType.Number,
             required: false,
             choices: [
@@ -33,7 +33,7 @@ exports.banCommand = {
         },
         {
             name: 'reason',
-            description: 'The reason of the ban.',
+            description: 'The reason of this action',
             type: discord_js_1.ApplicationCommandOptionType.String,
             required: false,
             autocomplete: true,

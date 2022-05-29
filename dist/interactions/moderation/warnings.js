@@ -4,7 +4,7 @@ exports.warningsCommand = void 0;
 const discord_js_1 = require("discord.js");
 exports.warningsCommand = {
     name: 'warnings',
-    description: 'View your active punishments in the server.',
+    description: 'View your active punishments in this server',
     directory: 'moderation',
     cooldown: 5000,
     permission: [],
@@ -12,7 +12,7 @@ exports.warningsCommand = {
     options: [
         {
             name: 'type',
-            description: 'Choose if you want to view your automod or manual warnings.',
+            description: 'Filter the warnings being shown',
             type: discord_js_1.ApplicationCommandOptionType.Number,
             required: false,
             choices: [

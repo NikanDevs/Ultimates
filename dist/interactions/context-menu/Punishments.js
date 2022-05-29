@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.punishmentsContextmenu = void 0;
+// @ts-ignore
 exports.punishmentsContextmenu = {
     name: 'Punishments',
-    description: 'Shows the punishments for a user.',
+    description: 'Shows the punishments for a user',
     directory: 'moderation',
     cooldown: 5000,
     permission: ['ManageMessages'],
