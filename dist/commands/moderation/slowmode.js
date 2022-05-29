@@ -41,9 +41,8 @@ exports.default = new Command_1.Command({
                                 joinWith: ' and ',
                             })}**`
                             : 'Slowmode was turned off.')
-                            .setColor(client.cc.invisible),
+                            .setColor(client.cc.moderation),
                     ],
-                    ephemeral: true,
                 });
                 break;
         }
