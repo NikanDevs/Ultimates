@@ -11,9 +11,9 @@ export const slowmodeCommand = {
 		{
 			name: 'rate',
 			description: 'The rate you want to set the slowmode to, in seconds',
-			type: ApplicationCommandOptionType.Number,
+			type: ApplicationCommandOptionType.Integer,
 			required: false,
-			min_value: 1,
+			min_value: 0,
 			max_value: 21600,
 		},
 	],
