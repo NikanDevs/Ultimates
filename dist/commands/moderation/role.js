@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const getsIgnored_1 = require("../../functions/getsIgnored");
-const role_1 = require("../../interactions/moderation/role");
+const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
-    interaction: role_1.roleCommand,
+    interaction: interactions_1.interactions.role,
     excute: async ({ client, interaction, options }) => {
         const getSubCommand = options.getSubcommand();
         if (getSubCommand === 'edit') {

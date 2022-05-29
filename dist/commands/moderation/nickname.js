@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Command_1 = require("../../structures/Command");
 const moderation_json_1 = require("../../json/moderation.json");
 const getsIgnored_1 = require("../../functions/getsIgnored");
-const nickname_1 = require("../../interactions/moderation/nickname");
+const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
-    interaction: nickname_1.nicknameCommand,
+    interaction: interactions_1.interactions.nickname,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const newNick = options.getString('nickname');

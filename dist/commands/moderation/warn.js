@@ -13,7 +13,7 @@ const timeoutMember_1 = require("../../utils/timeoutMember");
 const sendModDM_1 = require("../../utils/sendModDM");
 const moderation_json_1 = require("../../json/moderation.json");
 const ms_1 = tslib_1.__importDefault(require("ms"));
-const warn_1 = require("../../interactions/moderation/warn");
+const interactions_1 = require("../../interactions");
 var reasons;
 (function (reasons) {
     reasons["two"] = "Reaching 2 manual warnings.";
@@ -26,7 +26,7 @@ var durations;
     durations[durations["four"] = (0, ms_1.default)(moderation_json_1.auto_mute[4])] = "four";
 })(durations || (durations = {}));
 exports.default = new Command_1.Command({
-    interaction: warn_1.warnCommand,
+    interaction: interactions_1.interactions.warn,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;

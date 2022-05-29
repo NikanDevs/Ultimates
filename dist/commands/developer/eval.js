@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const eval_1 = require("../../interactions/developer/eval");
+const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
-    interaction: eval_1.evalCommand,
+    interaction: interactions_1.interactions.eval,
     excute: async ({ client, interaction }) => {
         const modal = client.util
             .modal()

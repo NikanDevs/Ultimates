@@ -13,9 +13,9 @@ const ms_1 = tslib_1.__importDefault(require("ms"));
 const durations_1 = require("../../models/durations");
 const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
-const softban_1 = require("../../interactions/moderation/softban");
+const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
-    interaction: softban_1.softbanCommand,
+    interaction: interactions_1.interactions.softban,
     excute: async ({ client, interaction, options }) => {
         const user = options.getUser('user');
         const member = options.getMember('user');

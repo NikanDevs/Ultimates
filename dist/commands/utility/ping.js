@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const ping_1 = require("../../interactions/utility/ping");
+const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
-    interaction: ping_1.pingCommand,
+    interaction: interactions_1.interactions.ping,
     excute: async ({ client, interaction }) => {
         const pingEmoji = client.emojis.cache.get('894097855759912970');
         const embed = client.util

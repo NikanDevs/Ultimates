@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const warnings_1 = require("../../interactions/moderation/warnings");
+const interactions_1 = require("../../interactions");
 const automod_1 = require("../../models/automod");
 const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
 exports.default = new Command_1.Command({
-    interaction: warnings_1.warningsCommand,
+    interaction: interactions_1.interactions.warnings,
     excute: async ({ client, interaction, options }) => {
         const user = interaction.user;
         const warningsEmbed = client.util

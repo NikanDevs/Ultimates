@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const constants_1 = require("../../constants");
-const configure_1 = require("../../interactions/utility/configure");
+const interactions_1 = require("../../interactions");
 const config_1 = require("../../models/config");
 const Command_1 = require("../../structures/Command");
 var logsNames;
@@ -13,7 +13,7 @@ var logsNames;
     logsNames["error"] = "Errors Loggings";
 })(logsNames || (logsNames = {}));
 exports.default = new Command_1.Command({
-    interaction: configure_1.configureCommand,
+    interaction: interactions_1.interactions.configure,
     excute: async ({ client, interaction, options }) => {
         const subcommand = options.getSubcommand();
         await interaction.deferReply({ ephemeral: false });

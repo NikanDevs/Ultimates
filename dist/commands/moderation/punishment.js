@@ -7,14 +7,14 @@ const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
 const automod_1 = require("../../models/automod");
 const logs_1 = require("../../models/logs");
+const interactions_1 = require("../../interactions");
 const moderation_json_1 = require("../../json/moderation.json");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
 const ms_1 = tslib_1.__importDefault(require("ms"));
-const punishment_1 = require("../../interactions/moderation/punishment");
 exports.default = new Command_1.Command({
-    interaction: punishment_1.punishmentCommand,
+    interaction: interactions_1.interactions.punishment,
     excute: async ({ client, interaction, options }) => {
         const getSubCommand = options.getSubcommand();
         if (getSubCommand === 'revoke') {

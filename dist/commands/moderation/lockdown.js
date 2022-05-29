@@ -4,11 +4,11 @@ const discord_js_1 = require("discord.js");
 const lockdowns_1 = require("../../models/lockdowns");
 const Command_1 = require("../../structures/Command");
 const config_json_1 = require("../../json/config.json");
-const lockdown_1 = require("../../interactions/moderation/lockdown");
+const interactions_1 = require("../../interactions");
 const messageIdsArray = [];
 let messageId;
 exports.default = new Command_1.Command({
-    interaction: lockdown_1.lockdownCommand,
+    interaction: interactions_1.interactions.lockdown,
     excute: async ({ client, interaction, options }) => {
         const getSubCommand = options.getSubcommand();
         if (getSubCommand === 'channel') {

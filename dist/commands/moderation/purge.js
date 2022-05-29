@@ -1,21 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const purge_1 = require("../../interactions/moderation/purge");
+const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 const fifteenDays = 1000 * 60 * 60 * 24 * 15;
 exports.default = new Command_1.Command({
-    interaction: purge_1.purgeCommand,
+    interaction: interactions_1.interactions.purge,
     excute: async ({ client, interaction, options }) => {
         let amount = options.getInteger('amount');
         const member = options.getMember('user');
         const channel = interaction.channel;
-        if (amount <= 1 || amount > 100 || Math.sign(amount) === -1)
-            return interaction.reply({
-                embeds: [
-                    client.embeds.attention('The amount you want to clear must be a number between `1-100`'),
-                ],
-                ephemeral: true,
-            });
         const fetchMessages = await channel.messages.fetch({
             limit: +amount,
             before: interaction.id,

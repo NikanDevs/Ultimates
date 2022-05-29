@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const staff_1 = require("../../interactions/utility/staff");
+const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 const staffPermissions = [
     'ManageMessages',
@@ -22,7 +22,7 @@ var statusPriorities;
     statusPriorities[statusPriorities["undefined"] = 4] = "undefined";
 })(statusPriorities || (statusPriorities = {}));
 exports.default = new Command_1.Command({
-    interaction: staff_1.staffCommand,
+    interaction: interactions_1.interactions.staff,
     excute: async ({ client, interaction }) => {
         await interaction.deferReply({ ephemeral: false });
         const members = await interaction.guild.members.fetch({ force: true });

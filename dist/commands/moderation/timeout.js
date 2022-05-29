@@ -14,9 +14,9 @@ const timeoutMember_1 = require("../../utils/timeoutMember");
 const getsIgnored_1 = require("../../functions/getsIgnored");
 const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
-const timeout_1 = require("../../interactions/moderation/timeout");
+const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
-    interaction: timeout_1.timeoutCommand,
+    interaction: interactions_1.interactions.timeout,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const duration = options.getString('duration') || moderation_json_1.default_config.timeout_duration;

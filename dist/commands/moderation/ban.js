@@ -10,9 +10,9 @@ const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
-const ban_1 = require("../../interactions/moderation/ban");
+const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
-    interaction: ban_1.banCommand,
+    interaction: interactions_1.interactions.ban,
     excute: async ({ client, interaction, options }) => {
         const user = options.getUser('user');
         const member = options.getMember('user');

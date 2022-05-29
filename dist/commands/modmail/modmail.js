@@ -10,9 +10,9 @@ const Command_1 = require("../../structures/Command");
 const Modmail_1 = require("../../typings/Modmail");
 const generateModmailInfoEmbed_1 = require("../../utils/generateModmailInfoEmbed");
 const config_json_1 = require("../../json/config.json");
-const modmail_2 = require("../../interactions/modmail/modmail");
+const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
-    interaction: modmail_2.modmailCommand,
+    interaction: interactions_1.interactions.modmail,
     excute: async ({ client, interaction, options }) => {
         const subCommands = options.getSubcommand();
         const guild = client.guilds.cache.get(config_json_1.guild.id) ||
