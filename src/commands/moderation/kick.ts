@@ -9,10 +9,10 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
 import { default_config } from '../../json/moderation.json';
-import { kickCommand } from '../../interactions/moderation/kick';
+import { interactions } from '../../interactions';
 
 export default new Command({
-	interaction: kickCommand,
+	interaction: interactions.kick,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason = options.getString('reason') || default_config.reason;

@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry, warningExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
@@ -11,7 +11,7 @@ import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { default_config, auto_mute } from '../../json/moderation.json';
 import ms from 'ms';
-import { warnCommand } from '../../interactions/moderation/warn';
+import { interactions } from '../../interactions';
 enum reasons {
 	'two' = 'Reaching 2 manual warnings.',
 	'four' = 'Reaching 4 manual warnings.',
@@ -23,7 +23,7 @@ enum durations {
 }
 
 export default new Command({
-	interaction: warnCommand,
+	interaction: interactions.warn,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason = options.getString('reason') || default_config.reason;

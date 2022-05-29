@@ -1,5 +1,5 @@
 import { ComponentType, Message, User } from 'discord.js';
-import { warningsCommand } from '../../interactions/moderation/warnings';
+import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -7,7 +7,7 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
-	interaction: warningsCommand,
+	interaction: interactions.warnings,
 	excute: async ({ client, interaction, options }) => {
 		const user = interaction.user as User;
 		const warningsEmbed = client.util

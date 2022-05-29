@@ -1,9 +1,9 @@
 import { ComponentType, TextInputStyle } from 'discord.js';
-import { evalCommand } from '../../interactions/developer/eval';
+import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
 export default new Command({
-	interaction: evalCommand,
+	interaction: interactions.eval,
 	excute: async ({ client, interaction }) => {
 		const modal = client.util
 			.modal()

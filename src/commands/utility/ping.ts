@@ -1,8 +1,8 @@
-import { pingCommand } from '../../interactions/utility/ping';
+import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
 export default new Command({
-	interaction: pingCommand,
+	interaction: interactions.ping,
 	excute: async ({ client, interaction }) => {
 		const pingEmoji = client.emojis.cache.get('894097855759912970');
 		const embed = client.util

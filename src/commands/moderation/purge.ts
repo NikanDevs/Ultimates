@@ -1,30 +1,14 @@
-import {
-	ApplicationCommandOptionType,
-	Collection,
-	GuildMember,
-	Message,
-	TextChannel,
-} from 'discord.js';
-import { purgeCommand } from '../../interactions/moderation/purge';
+import { Collection, GuildMember, Message, TextChannel } from 'discord.js';
+import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 const fifteenDays = 1000 * 60 * 60 * 24 * 15;
 
 export default new Command({
-	interaction: purgeCommand,
+	interaction: interactions.purge,
 	excute: async ({ client, interaction, options }) => {
 		let amount = options.getInteger('amount');
 		const member = options.getMember('user') as GuildMember;
 		const channel = interaction.channel as TextChannel;
-
-		if (amount <= 1 || amount > 100 || Math.sign(amount) === -1)
-			return interaction.reply({
-				embeds: [
-					client.embeds.attention(
-						'The amount you want to clear must be a number between `1-100`'
-					),
-				],
-				ephemeral: true,
-			});
 
 		const fetchMessages = await channel.messages.fetch({
 			limit: +amount,

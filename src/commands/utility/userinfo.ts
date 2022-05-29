@@ -1,5 +1,4 @@
 import {
-	ApplicationCommandOptionType,
 	GuildEmoji,
 	GuildMember,
 	User,
@@ -7,11 +6,11 @@ import {
 	ComponentType,
 	ButtonStyle,
 } from 'discord.js';
-import { userinfoCommand } from '../../interactions/utility/userinfo';
+import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
 export default new Command({
-	interaction: userinfoCommand,
+	interaction: interactions.userinfo,
 	excute: async ({ client, interaction, options }) => {
 		// User
 		let member = interaction.options.getMember('user') as GuildMember;

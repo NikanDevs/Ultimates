@@ -2,10 +2,10 @@ import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { lengths } from '../../json/moderation.json';
 import { getsIgnored } from '../../functions/getsIgnored';
-import { nicknameCommand } from '../../interactions/moderation/nickname';
+import { interactions } from '../../interactions';
 
 export default new Command({
-	interaction: nicknameCommand,
+	interaction: interactions.nickname,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const newNick = options.getString('nickname');

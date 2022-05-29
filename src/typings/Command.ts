@@ -20,7 +20,6 @@ export type interactionOptions = {
 	name: string;
 	description: string;
 	directory: directories;
-	aliases?: string[];
 	cooldown?: number;
 	permission?: PermissionResolvable[];
 	available?: boolean;

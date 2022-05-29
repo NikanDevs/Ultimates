@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { getsIgnored } from '../../functions/getsIgnored';
@@ -11,10 +11,10 @@ import ms from 'ms';
 import { durationsModel } from '../../models/durations';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
-import { softbanCommand } from '../../interactions/moderation/softban';
+import { interactions } from '../../interactions';
 
 export default new Command({
-	interaction: softbanCommand,
+	interaction: interactions.softban,
 	excute: async ({ client, interaction, options }) => {
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;

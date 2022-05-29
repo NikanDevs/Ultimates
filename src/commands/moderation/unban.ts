@@ -6,10 +6,10 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { default_config } from '../../json/moderation.json';
-import { unbanCommand } from '../../interactions/moderation/unban';
+import { interactions } from '../../interactions';
 
 export default new Command({
-	interaction: unbanCommand,
+	interaction: interactions.unban,
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user-id');
 		const reason = options.getString('reason') || default_config.reason;

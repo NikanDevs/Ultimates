@@ -9,7 +9,7 @@ import {
 import { lockdownsModel } from '../../models/lockdowns';
 import { Command } from '../../structures/Command';
 import { guild as guildConfig } from '../../json/config.json';
-import { lockdownCommand } from '../../interactions/moderation/lockdown';
+import { interactions } from '../../interactions';
 interface messageIdInterface {
 	channelId: Snowflake;
 	messageId: Snowflake | null;
@@ -18,7 +18,7 @@ const messageIdsArray: messageIdInterface[] = [];
 let messageId: Snowflake;
 
 export default new Command({
-	interaction: lockdownCommand,
+	interaction: interactions.lockdown,
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand() as 'channel' | 'server';
 

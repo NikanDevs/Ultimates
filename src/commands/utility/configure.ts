@@ -1,6 +1,6 @@
 import { TextChannel, Webhook } from 'discord.js';
 import { WEBHOOK_NAMES } from '../../constants';
-import { configureCommand } from '../../interactions/utility/configure';
+import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
 import { Command } from '../../structures/Command';
 enum logsNames {
@@ -12,7 +12,7 @@ enum logsNames {
 }
 
 export default new Command({
-	interaction: configureCommand,
+	interaction: interactions.configure,
 	excute: async ({ client, interaction, options }) => {
 		const subcommand = options.getSubcommand();
 		await interaction.deferReply({ ephemeral: false });

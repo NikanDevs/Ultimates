@@ -9,10 +9,10 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
-import { banCommand } from '../../interactions/moderation/ban';
+import { interactions } from '../../interactions';
 
 export default new Command({
-	interaction: banCommand,
+	interaction: interactions.ban,
 	excute: async ({ client, interaction, options }) => {
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;

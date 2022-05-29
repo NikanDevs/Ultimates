@@ -8,10 +8,10 @@ import { Command } from '../../structures/Command';
 import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { guild as guildConfig } from '../../json/config.json';
-import { modmailCommand } from '../../interactions/modmail/modmail';
+import { interactions } from '../../interactions';
 
 export default new Command({
-	interaction: modmailCommand,
+	interaction: interactions.modmail,
 	excute: async ({ client, interaction, options }) => {
 		const subCommands = options.getSubcommand();
 		const guild =

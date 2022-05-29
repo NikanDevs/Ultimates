@@ -12,10 +12,10 @@ import { timeoutMember } from '../../utils/timeoutMember';
 import { getsIgnored } from '../../functions/getsIgnored';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
-import { timeoutCommand } from '../../interactions/moderation/timeout';
+import { interactions } from '../../interactions';
 
 export default new Command({
-	interaction: timeoutCommand,
+	interaction: interactions.timeout,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const duration = options.getString('duration') || default_config.timeout_duration;

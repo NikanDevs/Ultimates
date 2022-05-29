@@ -4,15 +4,15 @@ import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { automodModel } from '../../models/automod';
 import { logsModel } from '../../models/logs';
+import { interactions } from '../../interactions';
 import { lengths } from '../../json/moderation.json';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { createModLog } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import ms from 'ms';
-import { punishmentCommand } from '../../interactions/moderation/punishment';
 
 export default new Command({
-	interaction: punishmentCommand,
+	interaction: interactions.punishment,
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand();
 

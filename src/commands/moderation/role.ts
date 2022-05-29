@@ -1,10 +1,10 @@
 import { GuildMember, PermissionResolvable, Role } from 'discord.js';
 import { getsIgnored } from '../../functions/getsIgnored';
-import { roleCommand } from '../../interactions/moderation/role';
+import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
 export default new Command({
-	interaction: roleCommand,
+	interaction: interactions.role,
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand();
 
