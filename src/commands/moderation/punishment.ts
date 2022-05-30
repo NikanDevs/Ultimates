@@ -1,4 +1,4 @@
-import { ComponentType, Message, User } from 'discord.js';
+import { ComponentType, Message, TextChannel, User } from 'discord.js';
 import { durationsModel } from '../../models/durations';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -7,7 +7,7 @@ import { logsModel } from '../../models/logs';
 import { interactions } from '../../interactions';
 import { lengths } from '../../json/moderation.json';
 import { PunishmentType } from '../../typings/PunishmentType';
-import { createModLog } from '../../functions/logs/createModLog';
+import { createModLog, getUrlFromCase } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import ms from 'ms';
 
@@ -646,19 +646,52 @@ export default new Command({
 					break;
 			}
 
-			const findDuration = await durationsModel.findOne({
-				case: punishment.case,
-			});
-
-			await createModLog({
+			const updateLog = await createModLog({
 				action: punishment.type as PunishmentType,
 				user: await client.users.fetch(punishment.userId),
 				moderator: interaction.user,
 				reason: value === 2 ? newvalue : punishment.reason,
 				referencedPunishment: punishment,
-				duration: value === 1 ? ms(newvalue) : findDuration.duration,
+				duration: value === 1 ? ms(newvalue) : null,
 				update: value === 1 ? 'duration' : 'reason',
 			});
+
+			const firstLogId = (await getUrlFromCase(punishment.case)).split('/')[6];
+			const getFirstLogChannel = (await client.channels
+				.fetch((await getUrlFromCase(punishment.case)).split('/')[5])
+				.catch(() => {})) as TextChannel;
+			if (!getFirstLogChannel) return;
+			const firstLog = (await getFirstLogChannel.messages
+				.fetch(firstLogId)
+				.catch(() => {})) as Message;
+			if (!firstLog) return;
+
+			switch (value) {
+				case 1:
+					client.webhooks.mod.editMessage(firstLogId, {
+						embeds: [
+							firstLog.embeds[0].setDescription(
+								firstLog.embeds[0].description.replaceAll(
+									'\n• **Duration',
+									`\n• **Duration [[U](${updateLog})]`
+								)
+							),
+						],
+					});
+					break;
+				case 2:
+					client.webhooks.mod.editMessage(firstLogId, {
+						embeds: [
+							firstLog.embeds[0].setDescription(
+								firstLog.embeds[0].description.replaceAll(
+									'\n• **Reason',
+									`\n• **Reason [[U](${updateLog})]`
+								)
+							),
+						],
+					});
+					break;
+			}
 		}
 	},
 });

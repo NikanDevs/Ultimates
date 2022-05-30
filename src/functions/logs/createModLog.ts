@@ -6,6 +6,7 @@ import { addModCase, getModCase } from '../cases/modCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { default_config } from '../../json/moderation.json';
 import { logActivity } from './checkActivity';
+import { guild as guildConfig } from '../../json/config.json';
 
 interface options {
 	action: PunishmentType;
@@ -20,7 +21,7 @@ interface options {
 	update?: 'duration' | 'reason';
 }
 
-async function getUrlFromCase(tofindCase: string | number) {
+export async function getUrlFromCase(tofindCase: string | number) {
 	const data = await logsModel.findById(`${tofindCase}`);
 
 	return data ? data.url : 'https://discord.com/404';
@@ -69,7 +70,7 @@ export async function createModLog(options: options) {
 				`${
 					options.duration
 						? `• **Duration${
-								options.update === 'duration' ? ' [U]' : ' '
+								options.update === 'duration' ? ' [U]' : ''
 						  }:** ${client.util.convertTime(options.duration / 1000)}`
 						: 'LINE_BREAK'
 				}`,
@@ -80,7 +81,7 @@ export async function createModLog(options: options) {
 						: 'Automatic'
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason${options.update === 'reason' ? ' [U]' : ' '}: ** ${
+				`• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${
 					options.reason || default_config.reason
 				}`,
 			]
@@ -90,6 +91,9 @@ export async function createModLog(options: options) {
 
 	if (!logActivity('mod')) return;
 	var logMessage = await client.webhooks.mod.send({ embeds: [embed] });
+	if (update)
+		return `https://discord.com/channels/${guildConfig.id}/${logMessage.channel_id}/${logMessage.id}`;
+
 	if (
 		options.action === PunishmentType.Unmute ||
 		options.action === PunishmentType.Unban ||
