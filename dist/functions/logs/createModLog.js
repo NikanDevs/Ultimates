@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createModLog = void 0;
+exports.createModLog = exports.getUrlFromCase = void 0;
 const discord_js_1 = require("discord.js");
 const __1 = require("../..");
 const logs_1 = require("../../models/logs");
@@ -9,10 +9,12 @@ const modCase_1 = require("../cases/modCase");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
 const moderation_json_1 = require("../../json/moderation.json");
 const checkActivity_1 = require("./checkActivity");
+const config_json_1 = require("../../json/config.json");
 async function getUrlFromCase(tofindCase) {
     const data = await logs_1.logsModel.findById(`${tofindCase}`);
     return data ? data.url : 'https://discord.com/404';
 }
+exports.getUrlFromCase = getUrlFromCase;
 async function createModLog(options) {
     let colors;
     (function (colors) {
@@ -46,20 +48,22 @@ async function createModLog(options) {
             : `• **Referenced to:** [Case #${options.referencedPunishment.case}](${await getUrlFromCase(options.referencedPunishment.case)})`}\n`,
         `• **Action:** ${__1.client.util.capitalize(options.action)}`,
         `${options.duration
-            ? `• **Duration${options.update === 'duration' ? ' [U]' : ' '}:** ${__1.client.util.convertTime(options.duration / 1000)}`
+            ? `• **Duration${options.update === 'duration' ? ' [U]' : ''}:** ${__1.client.util.convertTime(options.duration / 1000)}`
             : 'LINE_BREAK'}`,
         `• **Member:** ${options.user.tag} • ${options.user.id}`,
         `• **Moderator:** ${options.moderator.id !== __1.client.user.id
             ? `${options.moderator.tag} • ${options.moderator.id}`
             : 'Automatic'}`,
         `• **Date:** ${(0, generateDiscordTimestamp_1.generateDiscordTimestamp)(new Date(), 'Short Date/Time')}`,
-        `• **Reason${options.update === 'reason' ? ' [U]' : ' '}: ** ${options.reason || moderation_json_1.default_config.reason}`,
+        `• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${options.reason || moderation_json_1.default_config.reason}`,
     ]
         .join('\n')
         .replaceAll('\nLINE_BREAK', ''));
     if (!(0, checkActivity_1.logActivity)('mod'))
         return;
     var logMessage = await __1.client.webhooks.mod.send({ embeds: [embed] });
+    if (update)
+        return `https://discord.com/channels/${config_json_1.guild.id}/${logMessage.channel_id}/${logMessage.id}`;
     if (options.action === PunishmentType_1.PunishmentType.Unmute ||
         options.action === PunishmentType_1.PunishmentType.Unban ||
         revoke ||

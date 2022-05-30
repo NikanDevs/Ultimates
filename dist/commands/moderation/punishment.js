@@ -512,18 +512,42 @@ exports.default = new Command_1.Command({
                     });
                     break;
             }
-            const findDuration = await durations_1.durationsModel.findOne({
-                case: punishment.case,
-            });
-            await (0, createModLog_1.createModLog)({
+            const updateLog = await (0, createModLog_1.createModLog)({
                 action: punishment.type,
                 user: await client.users.fetch(punishment.userId),
                 moderator: interaction.user,
                 reason: value === 2 ? newvalue : punishment.reason,
                 referencedPunishment: punishment,
-                duration: value === 1 ? (0, ms_1.default)(newvalue) : findDuration.duration,
+                duration: value === 1 ? (0, ms_1.default)(newvalue) : null,
                 update: value === 1 ? 'duration' : 'reason',
             });
+            const firstLogId = (await (0, createModLog_1.getUrlFromCase)(punishment.case)).split('/')[6];
+            const getFirstLogChannel = (await client.channels
+                .fetch((await (0, createModLog_1.getUrlFromCase)(punishment.case)).split('/')[5])
+                .catch(() => { }));
+            if (!getFirstLogChannel)
+                return;
+            const firstLog = (await getFirstLogChannel.messages
+                .fetch(firstLogId)
+                .catch(() => { }));
+            if (!firstLog)
+                return;
+            switch (value) {
+                case 1:
+                    client.webhooks.mod.editMessage(firstLogId, {
+                        embeds: [
+                            firstLog.embeds[0].setDescription(firstLog.embeds[0].description.replaceAll('\n• **Duration', `\n• **Duration [[U](${updateLog})]`)),
+                        ],
+                    });
+                    break;
+                case 2:
+                    client.webhooks.mod.editMessage(firstLogId, {
+                        embeds: [
+                            firstLog.embeds[0].setDescription(firstLog.embeds[0].description.replaceAll('\n• **Reason', `\n• **Reason [[U](${updateLog})]`)),
+                        ],
+                    });
+                    break;
+            }
         }
     },
 });
