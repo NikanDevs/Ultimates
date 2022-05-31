@@ -1,7 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
-import { getsIgnored } from '../../functions/getsIgnored';
+import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -23,7 +23,7 @@ export default new Command({
 			options.getNumber('delete_messages') || default_config.ban_delete_messages;
 		const duration = options.getString('duration') || default_config.softban_duration;
 
-		if (member) if (getsIgnored(interaction, member)) return;
+		if (member) if (ignore(member, { interaction, action: PunishmentType.Softban })) return;
 		if (ms(duration) === undefined)
 			return interaction.reply({
 				embeds: [

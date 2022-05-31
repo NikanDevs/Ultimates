@@ -1,7 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
-import { getsIgnored } from '../../functions/getsIgnored';
+import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -17,7 +17,7 @@ export default new Command({
 		const member = options.getMember('member') as GuildMember;
 		const reason = options.getString('reason') || default_config.reason;
 
-		if (getsIgnored(interaction, member)) return;
+		if (ignore(member, { interaction, action: PunishmentType.Kick })) return;
 
 		const data = new punishmentModel({
 			_id: generateManualId(),

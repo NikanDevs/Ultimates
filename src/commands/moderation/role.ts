@@ -1,7 +1,8 @@
 import { GuildMember, PermissionResolvable, Role } from 'discord.js';
-import { getsIgnored } from '../../functions/getsIgnored';
+import { ignore } from '../../functions/ignore';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
+import { PunishmentType } from '../../typings/PunishmentType';
 
 export default new Command({
 	interaction: interactions.role,
@@ -13,7 +14,7 @@ export default new Command({
 			const role = options.getRole('role') as Role;
 			var alreadyHas: boolean = false;
 
-			if (getsIgnored(interaction, member)) return;
+			if (ignore(member, { interaction, action: PunishmentType.Unknown })) return;
 			if (role.position > interaction.guild.me.roles.highest.position || role.managed)
 				return interaction.reply({
 					embeds: [

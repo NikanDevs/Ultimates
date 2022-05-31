@@ -9,7 +9,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
-import { getsIgnored } from '../../functions/getsIgnored';
+import { ignore } from '../../functions/ignore';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
@@ -21,14 +21,9 @@ export default new Command({
 		const duration = options.getString('duration') || default_config.timeout_duration;
 		const reason = options.getString('reason') || default_config.reason;
 
-		if (getsIgnored(interaction, member)) return;
-		if (member.permissions.has('Administrator'))
-			return interaction.reply({
-				embeds: [client.embeds.error("Administrators can't be timed out.")],
-				ephemeral: true,
-			});
+		if (ignore(member, { interaction, action: PunishmentType.Timeout })) return;
 
-		// Trying to guess if the mod is tryin to unmute
+		// Guess: moderator is trying to unmute
 		if (
 			['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(
 				duration.toLowerCase()

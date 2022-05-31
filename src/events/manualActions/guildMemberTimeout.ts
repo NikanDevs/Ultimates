@@ -13,6 +13,8 @@ import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (newMember.guild.id !== guildConfig.id) return;
+	if (newMember.user.bot) return;
+
 	await oldMember.fetch().catch(() => {});
 	if (!oldMember.communicationDisabledUntil && newMember.communicationDisabledUntil) {
 		const auditLogs = await newMember.guild.fetchAuditLogs({

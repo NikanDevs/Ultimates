@@ -11,6 +11,7 @@ import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (member.guild.id !== guildConfig.id) return;
+	if (member.user.bot) return;
 	if (await member.guild.bans.fetch(member.user).catch(() => {})) return;
 
 	const auditLogs = await member.guild.fetchAuditLogs({

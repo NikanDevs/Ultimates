@@ -11,6 +11,7 @@ import { guild as guildConfig } from '../../json/config.json';
 
 export default new Event('guildBanAdd', async (ban) => {
 	if (ban.guild.id !== guildConfig.id) return;
+	if (ban.user.bot) return;
 
 	const auditLogs = await ban.guild.fetchAuditLogs({
 		limit: 10,

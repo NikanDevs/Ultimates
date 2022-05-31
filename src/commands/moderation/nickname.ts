@@ -1,8 +1,9 @@
 import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { lengths } from '../../json/moderation.json';
-import { getsIgnored } from '../../functions/getsIgnored';
+import { ignore } from '../../functions/ignore';
 import { interactions } from '../../interactions';
+import { PunishmentType } from '../../typings/PunishmentType';
 
 export default new Command({
 	interaction: interactions.nickname,
@@ -11,7 +12,7 @@ export default new Command({
 		const newNick = options.getString('nickname');
 		let auditLogReason = '/nickname was excuted by a moderator.';
 
-		if (getsIgnored(interaction, member)) return;
+		if (ignore(member, { interaction, action: PunishmentType.Unknown })) return;
 
 		if (newNick) {
 			// Expect err

@@ -6,4 +6,5 @@ export enum PunishmentType {
 	Unmute = 'UNMUTE',
 	Unban = 'UNBAN',
 	Softban = 'SOFTBAN',
+	Unknown = 'UNKNOWN',
 }
