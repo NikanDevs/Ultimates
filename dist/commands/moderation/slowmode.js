@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const convertTime_1 = require("../../functions/convertTime");
 const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
@@ -14,9 +15,7 @@ exports.default = new Command_1.Command({
                         client.util
                             .embed()
                             .setDescription(slowmode !== 0
-                            ? `The current slowmode is **${client.util.convertTime(slowmode, {
-                                joinWith: ' and ',
-                            })}**`
+                            ? `The current slowmode is **${(0, convertTime_1.convertTime)(slowmode * 1000)}**`
                             : "This channel doesn't have any slowmode.")
                             .setColor(client.cc.invisible),
                     ],
@@ -37,9 +36,7 @@ exports.default = new Command_1.Command({
                         client.util
                             .embed()
                             .setDescription(rate !== 0
-                            ? `Slowmode was set to **${client.util.convertTime(rate, {
-                                joinWith: ' and ',
-                            })}**`
+                            ? `Slowmode was set to **${(0, convertTime_1.convertTime)(rate * 1000)}**`
                             : 'Slowmode was turned off.')
                             .setColor(client.cc.moderation),
                     ],

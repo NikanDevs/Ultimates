@@ -20,6 +20,7 @@ exports.timeoutCommand = {
             description: 'The duration of this timeout',
             type: discord_js_1.ApplicationCommandOptionType.String,
             required: false,
+            autocomplete: true,
         },
         {
             name: 'reason',

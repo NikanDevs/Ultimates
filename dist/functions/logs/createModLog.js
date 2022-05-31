@@ -10,6 +10,7 @@ const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp
 const moderation_json_1 = require("../../json/moderation.json");
 const checkActivity_1 = require("./checkActivity");
 const config_json_1 = require("../../json/config.json");
+const convertTime_1 = require("../convertTime");
 async function getUrlFromCase(tofindCase) {
     const data = await logs_1.logsModel.findById(`${tofindCase}`);
     return data ? data.url : 'https://discord.com/404';
@@ -48,7 +49,7 @@ async function createModLog(options) {
             : `• **Referenced to:** [Case #${options.referencedPunishment.case}](${await getUrlFromCase(options.referencedPunishment.case)})`}\n`,
         `• **Action:** ${__1.client.util.capitalize(options.action)}`,
         `${options.duration
-            ? `• **Duration${options.update === 'duration' ? ' [U]' : ''}:** ${__1.client.util.convertTime(options.duration / 1000)}`
+            ? `• **Duration${options.update === 'duration' ? ' [U]' : ''}:** ${(0, convertTime_1.convertTime)(options.duration)}`
             : 'LINE_BREAK'}`,
         `• **Member:** ${options.user.tag} • ${options.user.id}`,
         `• **Moderator:** ${options.moderator.id !== __1.client.user.id

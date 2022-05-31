@@ -11,6 +11,7 @@ const Modmail_1 = require("../../typings/Modmail");
 const ModmailCase_1 = require("../../functions/cases/ModmailCase");
 const generateModmailInfoEmbed_1 = require("../../utils/generateModmailInfoEmbed");
 const config_json_1 = require("../../json/config.json");
+const convertTime_1 = require("../../functions/convertTime");
 exports.modmailCooldown = new discord_js_1.Collection();
 let confirmationExists = false;
 let canDM = true;
@@ -43,7 +44,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         const getOpenCooldownRamaining = `${~~(exports.modmailCooldown.get(`open_${message.author.id}`) - Date.now())}`;
         if (exports.modmailCooldown.has(`open_${message.author.id}`))
             return message.channel.send({
-                content: `You need to wait **${__1.client.util.convertTime(+getOpenCooldownRamaining / 1000)}** to open a ticket again.`,
+                content: `You need to wait **${(0, convertTime_1.convertTime)(+getOpenCooldownRamaining)}** to open a ticket again.`,
             });
         if (exports.modmailCooldown.has(`send-message_${message.author.id}`))
             return;

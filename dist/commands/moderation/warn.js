@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
 const modCase_1 = require("../../functions/cases/modCase");
 const constants_1 = require("../../constants");
 const ignore_1 = require("../../functions/ignore");
@@ -12,8 +11,8 @@ const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const timeoutMember_1 = require("../../utils/timeoutMember");
 const sendModDM_1 = require("../../utils/sendModDM");
 const moderation_json_1 = require("../../json/moderation.json");
-const ms_1 = tslib_1.__importDefault(require("ms"));
 const interactions_1 = require("../../interactions");
+const convertTime_1 = require("../../functions/convertTime");
 var reasons;
 (function (reasons) {
     reasons["two"] = "Reaching 2 manual warnings.";
@@ -22,8 +21,8 @@ var reasons;
 })(reasons || (reasons = {}));
 var durations;
 (function (durations) {
-    durations[durations["two"] = (0, ms_1.default)(moderation_json_1.auto_mute[2])] = "two";
-    durations[durations["four"] = (0, ms_1.default)(moderation_json_1.auto_mute[4])] = "four";
+    durations[durations["two"] = +(0, convertTime_1.convertTime)(moderation_json_1.auto_mute[2])] = "two";
+    durations[durations["four"] = +(0, convertTime_1.convertTime)(moderation_json_1.auto_mute[4])] = "four";
 })(durations || (durations = {}));
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.warn,

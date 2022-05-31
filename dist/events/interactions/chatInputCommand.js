@@ -6,6 +6,7 @@ const discord_js_1 = require("discord.js");
 const mongoose_1 = require("mongoose");
 const logger_1 = require("../../logger");
 const config_json_1 = require("../../json/config.json");
+const convertTime_1 = require("../../functions/convertTime");
 const cooldown = new discord_js_1.Collection();
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
     if (!interaction.inGuild())
@@ -40,7 +41,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             const cooldownEmbed = __1.client.util
                 .embed()
                 .setColor(__1.client.cc.errorC)
-                .setDescription(`You need to wait \`${__1.client.util.convertTime(~~(+cooldownRemaining / 1000))}\` to use this context menu.`);
+                .setDescription(`You need to wait \`${(0, convertTime_1.convertTime)(~~+cooldownRemaining)}\` to use this context menu.`);
             return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
         }
         if (command.interaction.directory !== 'developer' && mongoose_1.connection.readyState !== 1) {

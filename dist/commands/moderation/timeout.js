@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
 const Command_1 = require("../../structures/Command");
-const ms_1 = tslib_1.__importDefault(require("ms"));
 const punishments_1 = require("../../models/punishments");
 const constants_1 = require("../../constants");
 const durations_1 = require("../../models/durations");
@@ -15,16 +13,20 @@ const ignore_1 = require("../../functions/ignore");
 const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
 const interactions_1 = require("../../interactions");
+const convertTime_1 = require("../../functions/convertTime");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.timeout,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
-        const duration = options.getString('duration') || moderation_json_1.default_config.timeout_duration;
+        const durationO = options.getString('duration') || moderation_json_1.default_config.timeout_duration;
+        const duration = /^\d+$/.test(durationO)
+            ? parseInt(durationO)
+            : +(0, convertTime_1.convertTime)(durationO);
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Timeout }))
             return;
         // Guess: moderator is trying to unmute
-        if (['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(duration.toLowerCase()))
+        if (['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(durationO.toLowerCase()))
             return interaction.reply({
                 embeds: [
                     client.embeds.attention("If you're trying to unmute a member, try using `/punishment revoke`"),
@@ -36,21 +38,21 @@ exports.default = new Command_1.Command({
                 embeds: [client.embeds.error('This member is already timed out.')],
                 ephemeral: true,
             });
-        if ((0, ms_1.default)(duration) === undefined)
+        if (duration === undefined)
             return interaction.reply({
                 embeds: [
-                    client.embeds.error('The provided duration must be in `1w, 1h, 1m` format.'),
+                    client.embeds.error('The provided duration is not valid, use the autocomplete for a better result.'),
                 ],
                 ephemeral: true,
             });
-        if ((0, ms_1.default)(duration) > 1000 * 60 * 60 * 24 * 27 || (0, ms_1.default)(duration) < 10000)
+        if (duration > 1000 * 60 * 60 * 24 * 27 || duration < 10000)
             return interaction.reply({
                 embeds: [
                     client.embeds.attention('The duration must be between 10 seconds and 27 days.'),
                 ],
                 ephemeral: true,
             });
-        await (0, timeoutMember_1.timeoutMember)(member, { duration: (0, ms_1.default)(duration), reason: reason });
+        await (0, timeoutMember_1.timeoutMember)(member, { duration: duration, reason: reason });
         const data = new punishments_1.punishmentModel({
             _id: (0, generatePunishmentId_1.generateManualId)(),
             case: await (0, modCase_1.getModCase)(),
@@ -59,7 +61,7 @@ exports.default = new Command_1.Command({
             moderatorId: interaction.user.id,
             reason: reason,
             date: new Date(),
-            expire: new Date(constants_1.warningExpiry.getTime() + (0, ms_1.default)(duration)),
+            expire: new Date(constants_1.warningExpiry.getTime() + duration),
         });
         await data.save();
         await interaction.reply({
@@ -74,12 +76,12 @@ exports.default = new Command_1.Command({
         await (0, sendModDM_1.sendModDM)(member, {
             action: PunishmentType_1.PunishmentType.Timeout,
             punishment: data,
-            expire: new Date(Date.now() + (0, ms_1.default)(duration)),
+            expire: new Date(Date.now() + duration),
         });
         await (0, createModLog_1.createModLog)({
             action: PunishmentType_1.PunishmentType.Timeout,
             punishmentId: data._id,
-            duration: (0, ms_1.default)(duration),
+            duration: duration,
             user: member.user,
             moderator: interaction.user,
             reason: reason,

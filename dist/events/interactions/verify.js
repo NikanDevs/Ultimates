@@ -5,6 +5,7 @@ const __1 = require("../..");
 const constants_1 = require("../../constants");
 const Event_1 = require("../../structures/Event");
 const config_json_1 = require("../../json/config.json");
+const convertTime_1 = require("../../functions/convertTime");
 const characters = '0123456789';
 let key1 = '';
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
@@ -57,7 +58,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             embeds: [
                 __1.client.util
                     .embed()
-                    .setDescription(`Please wait **${__1.client.util.convertTime(~~(+cooldownRemaining / 1000))}** before trying to verify again.`)
+                    .setDescription(`Please wait **${(0, convertTime_1.convertTime)(~~+cooldownRemaining)}** before trying to verify again.`)
                     .setColor(__1.client.cc.attentionC),
             ],
             ephemeral: true,

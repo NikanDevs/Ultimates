@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
 const discord_js_1 = require("discord.js");
 const __1 = require("../..");
 const constants_1 = require("../../constants");
@@ -13,9 +12,9 @@ const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const modCase_1 = require("../../functions/cases/modCase");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const timeoutMember_1 = require("../../utils/timeoutMember");
-const ms_1 = tslib_1.__importDefault(require("ms"));
 const sendModDM_1 = require("../../utils/sendModDM");
 const config_json_1 = require("../../json/config.json");
+const convertTime_1 = require("../../functions/convertTime");
 const bypassRoleId = automod_json_1.ignore['bypass-roleId'];
 const categoryIgnores = automod_json_1.ignore['categoryIds'];
 const channelIgnores = automod_json_1.ignore['channelNames'];
@@ -368,7 +367,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         });
         const punishmentCount = punishmentFind.length;
         if (punishmentCount == 2) {
-            const timeoutDurationAt2 = (0, ms_1.default)(automod_json_1.amounts.timeoutDurationAt2Warns);
+            const timeoutDurationAt2 = +(0, convertTime_1.convertTime)(automod_json_1.amounts.timeoutDurationAt2Warns);
             await (0, timeoutMember_1.timeoutMember)(message.member, {
                 reason: 'Reaching 2 automod warnings.',
                 duration: timeoutDurationAt2,
@@ -401,7 +400,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             });
         }
         else if (punishmentCount > 2) {
-            const timeoutDurationAtmore2 = (0, ms_1.default)(automod_json_1.amounts['timeoutDurationAt+2Warns']);
+            const timeoutDurationAtmore2 = +(0, convertTime_1.convertTime)(automod_json_1.amounts['timeoutDurationAt+2Warns']);
             await (0, timeoutMember_1.timeoutMember)(message.member, {
                 reason: `Reaching ${punishmentCount} automod warnings.`,
                 duration: timeoutDurationAtmore2,

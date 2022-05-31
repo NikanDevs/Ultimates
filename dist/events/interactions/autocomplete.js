@@ -5,6 +5,8 @@ const automod_1 = require("../../models/automod");
 const punishments_1 = require("../../models/punishments");
 const Event_1 = require("../../structures/Event");
 const moderation_json_1 = require("../../json/moderation.json");
+const convertTime_1 = require("../../functions/convertTime");
+const moderation_json_2 = require("../../json/moderation.json");
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
     if (!interaction)
         return;
@@ -106,35 +108,71 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
     }
     // Reason autocomplete
     const getReasonsFocus = interaction.options.getFocused(true);
-    if (getReasonsFocus?.name !== 'reason')
-        return;
-    switch (interaction.commandName) {
-        case interaction.commandName:
-            const availableReasons = [...new Set(moderation_json_1.reasons[interaction.commandName])];
-            const filteredReasons = availableReasons
-                .filter((reason) => reason.startsWith(getReasonsFocus.value))
-                .map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data);
-            if (!moderation_json_1.reasons[interaction.commandName].length &&
-                !getReasonsFocus.value.toString().length)
-                return interaction.respond([
+    if (getReasonsFocus?.name === 'reason') {
+        switch (interaction.commandName) {
+            case interaction.commandName:
+                const availableReasons = [...new Set(moderation_json_1.reasons[interaction.commandName])];
+                const filteredReasons = availableReasons
+                    .filter((reason) => reason.startsWith(getReasonsFocus.value))
+                    .map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data);
+                if (!moderation_json_1.reasons[interaction.commandName].length &&
+                    !getReasonsFocus.value.toString().length)
+                    return interaction.respond([
+                        {
+                            name: '⭐️' +
+                                ' • ' +
+                                'No inbuilt reasons were found, type a reason...',
+                            value: 'No reason provided.',
+                        },
+                    ]);
+                if (filteredReasons.length === 0)
+                    return interaction.respond([
+                        {
+                            name: '⭐️' + ' • ' + getReasonsFocus.value.toString(),
+                            value: getReasonsFocus.value.toString(),
+                        },
+                    ]);
+                await interaction.respond(filteredReasons.map((reason) => ({
+                    name: __1.client.util.splitText(reason, { splitCustom: 100 }),
+                    value: reason.split(' • ')[1],
+                })));
+                break;
+        }
+    }
+    // Duration autocomplete
+    const getDurationsFocus = interaction.options.getFocused(true);
+    if (getDurationsFocus?.name == 'duration') {
+        switch (interaction.commandName) {
+            case interaction.commandName:
+                if (!getDurationsFocus.value)
+                    return interaction.respond([
+                        {
+                            name: '⭐️' +
+                                ' • ' +
+                                (0, convertTime_1.convertTime)(+(0, convertTime_1.convertTime)(interaction.commandName === 'softban'
+                                    ? moderation_json_2.default_config.softban_duration
+                                    : moderation_json_2.default_config.timeout_duration)),
+                            value: (0, convertTime_1.convertTime)(interaction.commandName === 'softban'
+                                ? moderation_json_2.default_config.softban_duration
+                                : moderation_json_2.default_config.timeout_duration),
+                        },
+                    ]);
+                if ((0, convertTime_1.convertTime)(getDurationsFocus.value) === undefined)
+                    return interaction
+                        .respond([
+                        {
+                            name: 'Please provide a valid duration. 10s, 10m, 10h, 10w, 10mo, 10y',
+                            value: 'null',
+                        },
+                    ])
+                        .catch(() => { });
+                await interaction.respond([
                     {
-                        name: '⭐️' +
-                            ' • ' +
-                            'No inbuilt reasons were found, type a reason...',
-                        value: 'No reason provided.',
+                        name: (0, convertTime_1.convertTime)(+(0, convertTime_1.convertTime)(getDurationsFocus.value)),
+                        value: (0, convertTime_1.convertTime)(getDurationsFocus.value),
                     },
                 ]);
-            if (filteredReasons.length === 0)
-                return interaction.respond([
-                    {
-                        name: '⭐️' + ' • ' + getReasonsFocus.value.toString(),
-                        value: getReasonsFocus.value.toString(),
-                    },
-                ]);
-            await interaction.respond(filteredReasons.map((reason) => ({
-                name: __1.client.util.splitText(reason, { splitCustom: 100 }),
-                value: reason.split(' • ')[1],
-            })));
-            break;
+                break;
+        }
     }
 });

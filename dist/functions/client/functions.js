@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildPaginationButtons = exports.buildConfirmationButtons = exports.timeConvertFunction = exports.splitTextFunction = exports.capitalizeFunction = void 0;
+exports.buildPaginationButtons = exports.buildConfirmationButtons = exports.splitTextFunction = exports.capitalizeFunction = void 0;
 const discord_js_1 = require("discord.js");
 const __1 = require("../..");
 const constants_1 = require("../../constants");
@@ -45,44 +45,6 @@ function splitTextFunction(text, options) {
     return text;
 }
 exports.splitTextFunction = splitTextFunction;
-function timeConvertFunction(time, options) {
-    // Valuables
-    const joinWith = options?.joinWith ? ` ${options?.joinWith} ` : ' and ';
-    const surroundedBy = options?.surrounded ? options?.surrounded : '';
-    if (!options)
-        joinWith === 'and ';
-    surroundedBy === '';
-    // Calculating each value
-    time = time * 1000;
-    const daysTimestamp = Math.floor(time / 86400000);
-    time -= daysTimestamp * 86400000;
-    const hoursTimestamp = Math.floor(time / 3600000);
-    time -= hoursTimestamp * 3600000;
-    const minutesTimestamp = Math.floor(time / 60000);
-    time -= minutesTimestamp * 60000;
-    const secondsTimestamp = Math.floor(time / 1000);
-    // Strings
-    const daysString = daysTimestamp <= 0 ? '' : daysTimestamp == 1 ? ' day' : ' days', hoursString = hoursTimestamp <= 0 ? '' : hoursTimestamp == 1 ? ' hour' : ' hours', minutesString = minutesTimestamp <= 0 ? '' : minutesTimestamp == 1 ? ' minute' : ' minutes', secondsString = secondsTimestamp <= 0 ? '' : secondsTimestamp == 1 ? ' second' : ' seconds';
-    // Join with
-    const daysJoin = '', hoursJoin = daysTimestamp <= 0 ? '' : joinWith, minutesJoin = hoursTimestamp <= 0 ? '' : joinWith, secondsJoin = minutesTimestamp <= 0 ? '' : joinWith;
-    // Ignoring missing time values and adding rounds
-    const days = daysTimestamp <= 0
-        ? ''
-        : surroundedBy + daysTimestamp.toLocaleString() + surroundedBy, hours = hoursTimestamp <= 0
-        ? ''
-        : surroundedBy + hoursTimestamp.toLocaleString() + surroundedBy, minutes = minutesTimestamp <= 0
-        ? ''
-        : surroundedBy + minutesTimestamp.toLocaleString() + surroundedBy, seconds = secondsTimestamp <= 0
-        ? ''
-        : surroundedBy + secondsTimestamp.toLocaleString() + surroundedBy;
-    // Final results
-    const daysFinal = daysJoin + days + daysString, hoursFinal = hoursJoin + hours + hoursString, minutesFinal = minutesJoin + minutes + minutesString, secondsFinal = secondsJoin + seconds + secondsString;
-    let output = daysFinal + hoursFinal + minutesFinal + secondsFinal;
-    if (output.endsWith(joinWith))
-        output = output.slice(0, 0 - joinWith.length);
-    return output;
-}
-exports.timeConvertFunction = timeConvertFunction;
 function buildConfirmationButtons(firstLabel, secondLabel) {
     return __1.client.util
         .actionRow()

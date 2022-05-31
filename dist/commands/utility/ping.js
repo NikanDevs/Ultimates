@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const convertTime_1 = require("../../functions/convertTime");
 const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
@@ -23,10 +24,7 @@ exports.default = new Command_1.Command({
             inline: true,
         }, {
             name: '🕐 Uptime',
-            value: client.util.convertTime(~~(client.uptime / 1000), {
-                joinWith: '•',
-                surrounded: '**',
-            }),
+            value: (0, convertTime_1.convertTime)(~~client.uptime),
         });
         interaction.reply({
             embeds: [embed],

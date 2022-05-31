@@ -6,7 +6,6 @@ const functions_1 = require("./functions");
 // type buttonStyles =
 //     "Danger" | "Link" | "Primary" | "Secondary" | "Success";
 class clientUtil {
-    convertTime = functions_1.timeConvertFunction;
     resolve = {
         color: (color) => {
             return discord_js_1.Util.resolveColor(color);

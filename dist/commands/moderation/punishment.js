@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
 const discord_js_1 = require("discord.js");
 const durations_1 = require("../../models/durations");
 const punishments_1 = require("../../models/punishments");
@@ -12,7 +11,7 @@ const moderation_json_1 = require("../../json/moderation.json");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
-const ms_1 = tslib_1.__importDefault(require("ms"));
+const convertTime_1 = require("../../functions/convertTime");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.punishment,
     excute: async ({ client, interaction, options }) => {
@@ -411,6 +410,9 @@ exports.default = new Command_1.Command({
                     embeds: [client.embeds.error('No punishment with that ID was found.')],
                     ephemeral: true,
                 });
+            const duration = /^\d+$/.test(newvalue)
+                ? parseInt(newvalue)
+                : +(0, convertTime_1.convertTime)(newvalue);
             switch (value) {
                 case 1:
                     if (!(await interaction.guild.members.fetch(punishment.userId)) &&
@@ -422,27 +424,25 @@ exports.default = new Command_1.Command({
                         });
                     if (punishment.type == PunishmentType_1.PunishmentType.Timeout ||
                         punishment.type === PunishmentType_1.PunishmentType.Softban) {
-                        if ((0, ms_1.default)(newvalue) === undefined)
+                        if (duration === undefined)
                             return interaction.followUp({
                                 embeds: [
                                     client.embeds.error(`The provided duration must be in ${punishment.type === PunishmentType_1.PunishmentType.Softban
-                                        ? `1y, 8w, 1w, 1h, 1m`
-                                        : `1w, 1h, 1d, 1m`} format.`),
+                                        ? `1y, 1mo, 1w, 1h, 1m`
+                                        : `1w, 1h, 1d, 1m, 10s`} format.`),
                                 ],
                                 ephemeral: true,
                             });
-                        if ((0, ms_1.default)(newvalue) > 1000 * 60 * 60 * 24 * 27 ||
-                            ((0, ms_1.default)(newvalue) < 10000 &&
-                                punishment.type === PunishmentType_1.PunishmentType.Timeout))
+                        if (duration > 1000 * 60 * 60 * 24 * 27 ||
+                            (duration < 10000 && punishment.type === PunishmentType_1.PunishmentType.Timeout))
                             return interaction.followUp({
                                 embeds: [
                                     client.embeds.attention('The duration must be between 10 seconds and 27 days.'),
                                 ],
                                 ephemeral: true,
                             });
-                        if ((0, ms_1.default)(newvalue) > 1000 * 60 * 60 * 24 * 365 ||
-                            ((0, ms_1.default)(newvalue) < 60000 &&
-                                punishment.type === PunishmentType_1.PunishmentType.Softban))
+                        if (duration > 1000 * 60 * 60 * 24 * 365 ||
+                            (duration < 60000 && punishment.type === PunishmentType_1.PunishmentType.Softban))
                             return interaction.followUp({
                                 embeds: [
                                     client.embeds.attention('The duration must be between 1 minute and 1 year.'),
@@ -459,7 +459,7 @@ exports.default = new Command_1.Command({
                                 ],
                                 ephemeral: true,
                             });
-                        if ((0, ms_1.default)(newvalue) === findDuration.duration)
+                        if (duration === findDuration.duration)
                             return interaction.followUp({
                                 embeds: [
                                     client.embeds.attention('Try updating the duration to a value that is not the same as the current one.'),
@@ -467,13 +467,11 @@ exports.default = new Command_1.Command({
                             });
                         await durations_1.durationsModel.findOneAndUpdate({
                             case: punishment.case,
-                        }, { $set: { date: new Date(), duration: (0, ms_1.default)(newvalue) } });
-                        await (await interaction.guild.members.fetch(punishment.userId)).timeout((0, ms_1.default)(newvalue), 'Punishment duration updated.');
+                        }, { $set: { date: new Date(), duration: duration } });
+                        await (await interaction.guild.members.fetch(punishment.userId)).timeout(duration, 'Punishment duration updated.');
                         await interaction.followUp({
                             embeds: [
-                                client.embeds.success(`Duration was updated to **${(0, ms_1.default)((0, ms_1.default)(newvalue), {
-                                    long: true,
-                                })}**.`),
+                                client.embeds.success(`Duration was updated to **${(0, convertTime_1.convertTime)(duration)}**.`),
                             ],
                         });
                     }
@@ -518,7 +516,7 @@ exports.default = new Command_1.Command({
                 moderator: interaction.user,
                 reason: value === 2 ? newvalue : punishment.reason,
                 referencedPunishment: punishment,
-                duration: value === 1 ? (0, ms_1.default)(newvalue) : null,
+                duration: value === 1 ? duration : null,
                 update: value === 1 ? 'duration' : 'reason',
             });
             const firstLogId = (await (0, createModLog_1.getUrlFromCase)(punishment.case)).split('/')[6];
