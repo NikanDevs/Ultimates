@@ -2,15 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Command_1 = require("../../structures/Command");
 const moderation_json_1 = require("../../json/moderation.json");
-const getsIgnored_1 = require("../../functions/getsIgnored");
+const ignore_1 = require("../../functions/ignore");
 const interactions_1 = require("../../interactions");
+const PunishmentType_1 = require("../../typings/PunishmentType");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.nickname,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const newNick = options.getString('nickname');
         let auditLogReason = '/nickname was excuted by a moderator.';
-        if ((0, getsIgnored_1.getsIgnored)(interaction, member))
+        if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Unknown }))
             return;
         if (newNick) {
             // Expect err

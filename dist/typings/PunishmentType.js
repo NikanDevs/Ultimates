@@ -10,4 +10,5 @@ var PunishmentType;
     PunishmentType["Unmute"] = "UNMUTE";
     PunishmentType["Unban"] = "UNBAN";
     PunishmentType["Softban"] = "SOFTBAN";
+    PunishmentType["Unknown"] = "UNKNOWN";
 })(PunishmentType = exports.PunishmentType || (exports.PunishmentType = {}));

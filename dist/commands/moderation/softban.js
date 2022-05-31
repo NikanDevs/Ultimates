@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const modCase_1 = require("../../functions/cases/modCase");
 const constants_1 = require("../../constants");
-const getsIgnored_1 = require("../../functions/getsIgnored");
+const ignore_1 = require("../../functions/ignore");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
@@ -23,7 +23,7 @@ exports.default = new Command_1.Command({
         const delete_messages = options.getNumber('delete_messages') || moderation_json_1.default_config.ban_delete_messages;
         const duration = options.getString('duration') || moderation_json_1.default_config.softban_duration;
         if (member)
-            if ((0, getsIgnored_1.getsIgnored)(interaction, member))
+            if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Softban }))
                 return;
         if ((0, ms_1.default)(duration) === undefined)
             return interaction.reply({

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const modCase_1 = require("../../functions/cases/modCase");
 const constants_1 = require("../../constants");
-const getsIgnored_1 = require("../../functions/getsIgnored");
+const ignore_1 = require("../../functions/ignore");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
@@ -16,7 +16,7 @@ exports.default = new Command_1.Command({
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;
-        if ((0, getsIgnored_1.getsIgnored)(interaction, member))
+        if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Kick }))
             return;
         const data = new punishments_1.punishmentModel({
             _id: (0, generatePunishmentId_1.generateManualId)(),

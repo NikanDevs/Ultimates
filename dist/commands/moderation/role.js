@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const getsIgnored_1 = require("../../functions/getsIgnored");
+const ignore_1 = require("../../functions/ignore");
 const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
+const PunishmentType_1 = require("../../typings/PunishmentType");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.role,
     excute: async ({ client, interaction, options }) => {
@@ -11,7 +12,7 @@ exports.default = new Command_1.Command({
             const member = options.getMember('member');
             const role = options.getRole('role');
             var alreadyHas = false;
-            if ((0, getsIgnored_1.getsIgnored)(interaction, member))
+            if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Unknown }))
                 return;
             if (role.position > interaction.guild.me.roles.highest.position || role.managed)
                 return interaction.reply({

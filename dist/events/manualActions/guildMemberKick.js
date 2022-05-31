@@ -13,6 +13,8 @@ const config_json_1 = require("../../json/config.json");
 exports.default = new Event_1.Event('guildMemberRemove', async (member) => {
     if (member.guild.id !== config_json_1.guild.id)
         return;
+    if (member.user.bot)
+        return;
     if (await member.guild.bans.fetch(member.user).catch(() => { }))
         return;
     const auditLogs = await member.guild.fetchAuditLogs({

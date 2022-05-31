@@ -15,6 +15,8 @@ const config_json_1 = require("../../json/config.json");
 exports.default = new Event_1.Event('guildMemberUpdate', async (oldMember, newMember) => {
     if (newMember.guild.id !== config_json_1.guild.id)
         return;
+    if (newMember.user.bot)
+        return;
     await oldMember.fetch().catch(() => { });
     if (!oldMember.communicationDisabledUntil && newMember.communicationDisabledUntil) {
         const auditLogs = await newMember.guild.fetchAuditLogs({

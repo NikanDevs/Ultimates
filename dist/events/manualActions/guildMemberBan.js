@@ -13,6 +13,8 @@ const config_json_1 = require("../../json/config.json");
 exports.default = new Event_1.Event('guildBanAdd', async (ban) => {
     if (ban.guild.id !== config_json_1.guild.id)
         return;
+    if (ban.user.bot)
+        return;
     const auditLogs = await ban.guild.fetchAuditLogs({
         limit: 10,
         type: v9_1.AuditLogEvent['MemberBanAdd'],

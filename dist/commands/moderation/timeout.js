@@ -11,7 +11,7 @@ const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const modCase_1 = require("../../functions/cases/modCase");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const timeoutMember_1 = require("../../utils/timeoutMember");
-const getsIgnored_1 = require("../../functions/getsIgnored");
+const ignore_1 = require("../../functions/ignore");
 const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
 const interactions_1 = require("../../interactions");
@@ -21,14 +21,9 @@ exports.default = new Command_1.Command({
         const member = options.getMember('member');
         const duration = options.getString('duration') || moderation_json_1.default_config.timeout_duration;
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;
-        if ((0, getsIgnored_1.getsIgnored)(interaction, member))
+        if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Timeout }))
             return;
-        if (member.permissions.has('Administrator'))
-            return interaction.reply({
-                embeds: [client.embeds.error("Administrators can't be timed out.")],
-                ephemeral: true,
-            });
-        // Trying to guess if the mod is tryin to unmute
+        // Guess: moderator is trying to unmute
         if (['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(duration.toLowerCase()))
             return interaction.reply({
                 embeds: [
