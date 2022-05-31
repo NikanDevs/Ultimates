@@ -13,7 +13,7 @@
 	},
 	"private": true,
 	"keywords": [],
-	"author": "Nikan",
+	"author": "Nikan's World development team",
 	"license": "AGPL-3.0",
 	"engines": {
 		"node": ">=16.9.0"
@@ -24,12 +24,10 @@
 		"dotenv": "^16.0.0",
 		"glob": "^7.2.0",
 		"mongoose": "^6.2.4",
-		"ms": "^2.1.3",
 		"sourcebin": "^4.3.5"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.2.0",
-		"@types/ms": "^0.7.31",
 		"@types/node": "^17.0.21",
 		"prettier": "^2.6.1",
 		"ts-node": "^10.7.0",

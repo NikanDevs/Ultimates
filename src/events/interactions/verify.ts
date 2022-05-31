@@ -10,6 +10,7 @@ import { client } from '../..';
 import { verificationCollection } from '../../constants';
 import { Event } from '../../structures/Event';
 import { guild as guildConfig } from '../../json/config.json';
+import { convertTime } from '../../functions/convertTime';
 const characters = '0123456789';
 let key1 = '';
 
@@ -71,8 +72,8 @@ export default new Event('interactionCreate', async (interaction) => {
 				client.util
 					.embed()
 					.setDescription(
-						`Please wait **${client.util.convertTime(
-							~~(+cooldownRemaining / 1000)
+						`Please wait **${convertTime(
+							~~+cooldownRemaining
 						)}** before trying to verify again.`
 					)
 					.setColor(client.cc.attentionC),

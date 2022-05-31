@@ -19,6 +19,7 @@ export const softbanCommand = {
 			description: 'The duration you want the member to be banned for',
 			type: ApplicationCommandOptionType.String,
 			required: false,
+			autocomplete: true,
 		},
 		{
 			name: 'delete_messages',

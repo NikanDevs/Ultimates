@@ -10,6 +10,7 @@ const cooldown = new Collection();
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
 import { developers, ownerId } from '../../json/config.json';
+import { convertTime } from '../../functions/convertTime';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction.inGuild()) return;
@@ -54,8 +55,8 @@ export default new Event('interactionCreate', async (interaction) => {
 				.embed()
 				.setColor(client.cc.errorC)
 				.setDescription(
-					`You need to wait \`${client.util.convertTime(
-						~~(+cooldownRemaining / 1000)
+					`You need to wait \`${convertTime(
+						~~+cooldownRemaining
 					)}\` to use this command again.`
 				);
 

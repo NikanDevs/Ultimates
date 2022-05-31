@@ -4,6 +4,8 @@ import { punishmentModel } from '../../models/punishments';
 import { Event } from '../../structures/Event';
 import { reasons } from '../../json/moderation.json';
 import { GuildMember } from 'discord.js';
+import { convertTime } from '../../functions/convertTime';
+import { default_config } from '../../json/moderation.json';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction) return;
@@ -131,42 +133,90 @@ export default new Event('interactionCreate', async (interaction) => {
 
 	// Reason autocomplete
 	const getReasonsFocus = interaction.options.getFocused(true);
-	if (getReasonsFocus?.name !== 'reason') return;
+	if (getReasonsFocus?.name === 'reason') {
+		switch (interaction.commandName) {
+			case interaction.commandName:
+				const availableReasons = [...new Set(reasons[interaction.commandName])];
+				const filteredReasons = availableReasons
+					.filter((reason: string) =>
+						reason.startsWith(getReasonsFocus.value as string)
+					)
+					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data);
 
-	switch (interaction.commandName) {
-		case interaction.commandName:
-			const availableReasons = [...new Set(reasons[interaction.commandName])];
-			const filteredReasons = availableReasons
-				.filter((reason: string) => reason.startsWith(getReasonsFocus.value as string))
-				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data);
+				if (
+					!reasons[interaction.commandName].length &&
+					!getReasonsFocus.value.toString().length
+				)
+					return interaction.respond([
+						{
+							name:
+								'⭐️' +
+								' • ' +
+								'No inbuilt reasons were found, type a reason...',
+							value: 'No reason provided.',
+						},
+					]);
 
-			if (
-				!reasons[interaction.commandName].length &&
-				!getReasonsFocus.value.toString().length
-			)
-				return interaction.respond([
+				if (filteredReasons.length === 0)
+					return interaction.respond([
+						{
+							name: '⭐️' + ' • ' + getReasonsFocus.value.toString(),
+							value: getReasonsFocus.value.toString(),
+						},
+					]);
+				await interaction.respond(
+					filteredReasons.map((reason: string) => ({
+						name: client.util.splitText(reason, { splitCustom: 100 }),
+						value: reason.split(' • ')[1],
+					}))
+				);
+				break;
+		}
+	}
+
+	// Duration autocomplete
+	const getDurationsFocus = interaction.options.getFocused(true);
+	if (getDurationsFocus?.name == 'duration') {
+		switch (interaction.commandName) {
+			case interaction.commandName:
+				if (!(getDurationsFocus.value as string))
+					return interaction.respond([
+						{
+							name:
+								'⭐️' +
+								' • ' +
+								convertTime(
+									+convertTime(
+										interaction.commandName === 'softban'
+											? default_config.softban_duration
+											: default_config.timeout_duration
+									)
+								),
+							value: convertTime(
+								interaction.commandName === 'softban'
+									? default_config.softban_duration
+									: default_config.timeout_duration
+							),
+						},
+					]);
+
+				if (convertTime(getDurationsFocus.value as string) === undefined)
+					return interaction
+						.respond([
+							{
+								name: 'Please provide a valid duration. 10s, 10m, 10h, 10w, 10mo, 10y',
+								value: 'null',
+							},
+						])
+						.catch(() => {});
+
+				await interaction.respond([
 					{
-						name:
-							'⭐️' +
-							' • ' +
-							'No inbuilt reasons were found, type a reason...',
-						value: 'No reason provided.',
+						name: convertTime(+convertTime(getDurationsFocus.value)),
+						value: convertTime(getDurationsFocus.value as string),
 					},
 				]);
-
-			if (filteredReasons.length === 0)
-				return interaction.respond([
-					{
-						name: '⭐️' + ' • ' + getReasonsFocus.value.toString(),
-						value: getReasonsFocus.value.toString(),
-					},
-				]);
-			await interaction.respond(
-				filteredReasons.map((reason: string) => ({
-					name: client.util.splitText(reason, { splitCustom: 100 }),
-					value: reason.split(' • ')[1],
-				}))
-			);
-			break;
+				break;
+		}
 	}
 });

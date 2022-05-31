@@ -1,3 +1,4 @@
+import { convertTime } from '../../functions/convertTime';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
@@ -25,10 +26,7 @@ export default new Command({
 				},
 				{
 					name: '🕐 Uptime',
-					value: client.util.convertTime(~~(client.uptime / 1000), {
-						joinWith: '•',
-						surrounded: '**',
-					}),
+					value: convertTime(~~client.uptime),
 				}
 			);
 		interaction.reply({

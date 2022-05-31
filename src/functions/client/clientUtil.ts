@@ -17,14 +17,12 @@ import {
 	buildPaginationButtons,
 	capitalizeFunction,
 	splitTextFunction,
-	timeConvertFunction,
 } from './functions';
 
 // type buttonStyles =
 //     "Danger" | "Link" | "Primary" | "Secondary" | "Success";
 
 export class clientUtil {
-	convertTime = timeConvertFunction;
 	resolve = {
 		color: (color: ColorResolvable) => {
 			return Util.resolveColor(color);

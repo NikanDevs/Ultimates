@@ -19,6 +19,7 @@ export const timeoutCommand = {
 			description: 'The duration of this timeout',
 			type: ApplicationCommandOptionType.String,
 			required: false,
+			autocomplete: true,
 		},
 		{
 			name: 'reason',

@@ -8,6 +8,7 @@ import { ModmailActionType } from '../../typings/Modmail';
 import { getModmailTicket } from '../../functions/cases/ModmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { guild as guildConfig } from '../../json/config.json';
+import { convertTime } from '../../functions/convertTime';
 export const modmailCooldown: Collection<string, number> = new Collection();
 let confirmationExists: boolean = false;
 let canDM: boolean = true;
@@ -51,8 +52,8 @@ export default new Event('messageCreate', async (message) => {
 
 		if (modmailCooldown.has(`open_${message.author.id}`))
 			return (message.channel as DMChannel).send({
-				content: `You need to wait **${client.util.convertTime(
-					+getOpenCooldownRamaining / 1000
+				content: `You need to wait **${convertTime(
+					+getOpenCooldownRamaining
 				)}** to open a ticket again.`,
 			});
 

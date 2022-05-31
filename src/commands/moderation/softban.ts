@@ -7,11 +7,11 @@ import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
-import ms from 'ms';
 import { durationsModel } from '../../models/durations';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
+import { convertTime } from '../../functions/convertTime';
 
 export default new Command({
 	interaction: interactions.softban,
@@ -21,19 +21,20 @@ export default new Command({
 		const reason = options.getString('reason') || default_config.reason;
 		const delete_messages =
 			options.getNumber('delete_messages') || default_config.ban_delete_messages;
-		const duration = options.getString('duration') || default_config.softban_duration;
+		const durationO = options.getString('duration') || default_config.softban_duration;
+		const duration = /^\d+$/.test(durationO) ? parseInt(durationO) : +convertTime(durationO);
 
 		if (member) if (ignore(member, { interaction, action: PunishmentType.Softban })) return;
-		if (ms(duration) === undefined)
+		if (duration === undefined)
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						'The provided duration must be in `1y, 8w, 1w, 1h, 1m` format.'
+						'The provided duration is not valid, use the autocomplete for a better result.'
 					),
 				],
 				ephemeral: true,
 			});
-		if (ms(duration) > 1000 * 60 * 60 * 24 * 365 || ms(duration) < 60000)
+		if (duration > 1000 * 60 * 60 * 24 * 365 || duration < 60000)
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
@@ -51,7 +52,7 @@ export default new Command({
 			moderatorId: interaction.user.id,
 			reason: reason,
 			date: new Date(),
-			expire: new Date(punishmentExpiry.getTime() + ms(duration)),
+			expire: new Date(punishmentExpiry.getTime() + duration),
 		});
 		await data.save();
 
@@ -59,7 +60,7 @@ export default new Command({
 			await sendModDM(member, {
 				action: PunishmentType.Softban,
 				punishment: data,
-				expire: new Date(ms(duration)),
+				expire: new Date(duration),
 			});
 		await interaction.guild.members.ban(user, {
 			deleteMessageDays: delete_messages,
@@ -71,7 +72,7 @@ export default new Command({
 			type: PunishmentType.Softban,
 			userId: user.id,
 			date: new Date(),
-			endsAt: ms(duration),
+			endsAt: duration,
 		});
 		await durationData.save();
 
@@ -89,7 +90,7 @@ export default new Command({
 			action: PunishmentType.Softban,
 			punishmentId: data._id,
 			user: user,
-			duration: ms(duration),
+			duration: duration,
 			moderator: interaction.user,
 			reason: reason,
 		});

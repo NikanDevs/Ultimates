@@ -4,6 +4,7 @@ import { CommandInteractionOptionResolver, GuildMember, Collection } from 'disco
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
 import { developers, ownerId } from '../../json/config.json';
+import { convertTime } from '../../functions/convertTime';
 const cooldown = new Collection();
 
 export default new Event('interactionCreate', async (interaction) => {
@@ -53,8 +54,8 @@ export default new Event('interactionCreate', async (interaction) => {
 				.embed()
 				.setColor(client.cc.errorC)
 				.setDescription(
-					`You need to wait \`${client.util.convertTime(
-						~~(+cooldownRemaining / 1000)
+					`You need to wait \`${convertTime(
+						~~+cooldownRemaining
 					)}\` to use this context menu.`
 				);
 

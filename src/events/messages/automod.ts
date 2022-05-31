@@ -10,9 +10,9 @@ import { generateAutomodId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
-import ms from 'ms';
 import { sendModDM } from '../../utils/sendModDM';
 import { guild as guildConfig } from '../../json/config.json';
+import { convertTime } from '../../functions/convertTime';
 const bypassRoleId = ignore['bypass-roleId'];
 const categoryIgnores = ignore['categoryIds'];
 const channelIgnores = ignore['channelNames'];
@@ -428,7 +428,7 @@ export default new Event('messageCreate', async (message) => {
 		const punishmentCount = punishmentFind.length;
 
 		if (punishmentCount == 2) {
-			const timeoutDurationAt2 = ms(amounts.timeoutDurationAt2Warns);
+			const timeoutDurationAt2 = +convertTime(amounts.timeoutDurationAt2Warns);
 			await timeoutMember(message.member, {
 				reason: 'Reaching 2 automod warnings.',
 				duration: timeoutDurationAt2,
@@ -462,7 +462,7 @@ export default new Event('messageCreate', async (message) => {
 				expire: automodPunishmentExpiry,
 			});
 		} else if (punishmentCount > 2) {
-			const timeoutDurationAtmore2 = ms(amounts['timeoutDurationAt+2Warns']);
+			const timeoutDurationAtmore2 = +convertTime(amounts['timeoutDurationAt+2Warns']);
 			await timeoutMember(message.member, {
 				reason: `Reaching ${punishmentCount} automod warnings.`,
 				duration: timeoutDurationAtmore2,

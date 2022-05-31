@@ -1,4 +1,5 @@
 import { TextChannel } from 'discord.js';
+import { convertTime } from '../../functions/convertTime';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
@@ -16,11 +17,8 @@ export default new Command({
 							.embed()
 							.setDescription(
 								slowmode !== 0
-									? `The current slowmode is **${client.util.convertTime(
-											slowmode,
-											{
-												joinWith: ' and ',
-											}
+									? `The current slowmode is **${convertTime(
+											slowmode * 1000
 									  )}**`
 									: "This channel doesn't have any slowmode."
 							)
@@ -48,12 +46,7 @@ export default new Command({
 							.embed()
 							.setDescription(
 								rate !== 0
-									? `Slowmode was set to **${client.util.convertTime(
-											rate,
-											{
-												joinWith: ' and ',
-											}
-									  )}**`
+									? `Slowmode was set to **${convertTime(rate * 1000)}**`
 									: 'Slowmode was turned off.'
 							)
 							.setColor(client.cc.moderation),

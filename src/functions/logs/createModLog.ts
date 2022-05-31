@@ -7,6 +7,7 @@ import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { default_config } from '../../json/moderation.json';
 import { logActivity } from './checkActivity';
 import { guild as guildConfig } from '../../json/config.json';
+import { convertTime } from '../convertTime';
 
 interface options {
 	action: PunishmentType;
@@ -71,7 +72,7 @@ export async function createModLog(options: options) {
 					options.duration
 						? `• **Duration${
 								options.update === 'duration' ? ' [U]' : ''
-						  }:** ${client.util.convertTime(options.duration / 1000)}`
+						  }:** ${convertTime(options.duration)}`
 						: 'LINE_BREAK'
 				}`,
 				`• **Member:** ${options.user.tag} • ${options.user.id}`,

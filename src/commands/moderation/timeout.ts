@@ -1,6 +1,5 @@
 import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
-import ms from 'ms';
 import { punishmentModel } from '../../models/punishments';
 import { warningExpiry } from '../../constants';
 import { durationsModel } from '../../models/durations';
@@ -13,12 +12,16 @@ import { ignore } from '../../functions/ignore';
 import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
+import { convertTime } from '../../functions/convertTime';
 
 export default new Command({
 	interaction: interactions.timeout,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const duration = options.getString('duration') || default_config.timeout_duration;
+		const durationO = options.getString('duration') || default_config.timeout_duration;
+		const duration: number = /^\d+$/.test(durationO)
+			? parseInt(durationO)
+			: +convertTime(durationO);
 		const reason = options.getString('reason') || default_config.reason;
 
 		if (ignore(member, { interaction, action: PunishmentType.Timeout })) return;
@@ -26,7 +29,7 @@ export default new Command({
 		// Guess: moderator is trying to unmute
 		if (
 			['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(
-				duration.toLowerCase()
+				durationO.toLowerCase()
 			)
 		)
 			return interaction.reply({
@@ -42,16 +45,16 @@ export default new Command({
 				embeds: [client.embeds.error('This member is already timed out.')],
 				ephemeral: true,
 			});
-		if (ms(duration) === undefined)
+		if (duration === undefined)
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						'The provided duration must be in `1w, 1h, 1m` format.'
+						'The provided duration is not valid, use the autocomplete for a better result.'
 					),
 				],
 				ephemeral: true,
 			});
-		if (ms(duration) > 1000 * 60 * 60 * 24 * 27 || ms(duration) < 10000)
+		if (duration > 1000 * 60 * 60 * 24 * 27 || duration < 10000)
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
@@ -61,7 +64,7 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		await timeoutMember(member, { duration: ms(duration), reason: reason });
+		await timeoutMember(member, { duration: duration, reason: reason });
 
 		const data = new punishmentModel({
 			_id: generateManualId(),
@@ -71,7 +74,7 @@ export default new Command({
 			moderatorId: interaction.user.id,
 			reason: reason,
 			date: new Date(),
-			expire: new Date(warningExpiry.getTime() + ms(duration)),
+			expire: new Date(warningExpiry.getTime() + duration),
 		});
 		await data.save();
 
@@ -88,13 +91,13 @@ export default new Command({
 		await sendModDM(member, {
 			action: PunishmentType.Timeout,
 			punishment: data,
-			expire: new Date(Date.now() + ms(duration)),
+			expire: new Date(Date.now() + duration),
 		});
 
 		await createModLog({
 			action: PunishmentType.Timeout,
 			punishmentId: data._id,
-			duration: ms(duration),
+			duration: duration,
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,

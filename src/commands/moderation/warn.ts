@@ -10,16 +10,16 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { default_config, auto_mute } from '../../json/moderation.json';
-import ms from 'ms';
 import { interactions } from '../../interactions';
+import { convertTime } from '../../functions/convertTime';
 enum reasons {
 	'two' = 'Reaching 2 manual warnings.',
 	'four' = 'Reaching 4 manual warnings.',
 	'six' = 'Reaching 6 manual warnings.',
 }
 enum durations {
-	'two' = ms(auto_mute[2]),
-	'four' = ms(auto_mute[4]),
+	'two' = +convertTime(auto_mute[2]),
+	'four' = +convertTime(auto_mute[4]),
 }
 
 export default new Command({

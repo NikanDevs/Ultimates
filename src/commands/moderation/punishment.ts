@@ -9,7 +9,7 @@ import { lengths } from '../../json/moderation.json';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { createModLog, getUrlFromCase } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
-import ms from 'ms';
+import { convertTime } from '../../functions/convertTime';
 
 export default new Command({
 	interaction: interactions.punishment,
@@ -502,6 +502,9 @@ export default new Command({
 					ephemeral: true,
 				});
 
+			const duration = /^\d+$/.test(newvalue)
+				? parseInt(newvalue)
+				: +convertTime(newvalue);
 			switch (value) {
 				case 1:
 					if (
@@ -520,14 +523,14 @@ export default new Command({
 						punishment.type == PunishmentType.Timeout ||
 						punishment.type === PunishmentType.Softban
 					) {
-						if (ms(newvalue) === undefined)
+						if (duration === undefined)
 							return interaction.followUp({
 								embeds: [
 									client.embeds.error(
 										`The provided duration must be in ${
 											punishment.type === PunishmentType.Softban
-												? `1y, 8w, 1w, 1h, 1m`
-												: `1w, 1h, 1d, 1m`
+												? `1y, 1mo, 1w, 1h, 1m`
+												: `1w, 1h, 1d, 1m, 10s`
 										} format.`
 									),
 								],
@@ -535,9 +538,8 @@ export default new Command({
 							});
 
 						if (
-							ms(newvalue) > 1000 * 60 * 60 * 24 * 27 ||
-							(ms(newvalue) < 10000 &&
-								punishment.type === PunishmentType.Timeout)
+							duration > 1000 * 60 * 60 * 24 * 27 ||
+							(duration < 10000 && punishment.type === PunishmentType.Timeout)
 						)
 							return interaction.followUp({
 								embeds: [
@@ -549,9 +551,8 @@ export default new Command({
 							});
 
 						if (
-							ms(newvalue) > 1000 * 60 * 60 * 24 * 365 ||
-							(ms(newvalue) < 60000 &&
-								punishment.type === PunishmentType.Softban)
+							duration > 1000 * 60 * 60 * 24 * 365 ||
+							(duration < 60000 && punishment.type === PunishmentType.Softban)
 						)
 							return interaction.followUp({
 								embeds: [
@@ -576,7 +577,7 @@ export default new Command({
 								ephemeral: true,
 							});
 
-						if (ms(newvalue) === findDuration.duration)
+						if (duration === findDuration.duration)
 							return interaction.followUp({
 								embeds: [
 									client.embeds.attention(
@@ -589,18 +590,16 @@ export default new Command({
 							{
 								case: punishment.case,
 							},
-							{ $set: { date: new Date(), duration: ms(newvalue) } }
+							{ $set: { date: new Date(), duration: duration } }
 						);
 
 						await (
 							await interaction.guild.members.fetch(punishment.userId)
-						).timeout(ms(newvalue), 'Punishment duration updated.');
+						).timeout(duration, 'Punishment duration updated.');
 						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
-									`Duration was updated to **${ms(ms(newvalue), {
-										long: true,
-									})}**.`
+									`Duration was updated to **${convertTime(duration)}**.`
 								),
 							],
 						});
@@ -652,7 +651,7 @@ export default new Command({
 				moderator: interaction.user,
 				reason: value === 2 ? newvalue : punishment.reason,
 				referencedPunishment: punishment,
-				duration: value === 1 ? ms(newvalue) : null,
+				duration: value === 1 ? duration : null,
 				update: value === 1 ? 'duration' : 'reason',
 			});
 
