@@ -20,41 +20,31 @@ class Logger {
         this.info('Logger started', { showDate: false });
     }
     error(options) {
-        const current = this.support ? chalk_1.default.gray.italic(this.current) : this.current;
-        const header = this.support ? chalk_1.default.redBright.bold('[ERROR]') : '[ERROR]';
-        const source = this.support ? chalk_1.default.blueBright(options.source) : options.source;
-        const reason = this.support ? this.formatReason(options.reason) : options.reason;
-        console.log([
-            '\n',
-            current,
-            `${header} ${this.support ? chalk_1.default.cyan('•') : '•'} ${source}`,
-            reason,
-        ].join('\n'));
+        const current = chalk_1.default.gray.italic(this.current);
+        const header = chalk_1.default.redBright.bold('[ERROR]');
+        const source = chalk_1.default.blueBright(options.source);
+        const reason = this.formatReason(options.reason);
+        console.log(['\n', current, `${header} ${chalk_1.default.cyan('•')} ${source}`, reason].join('\n'));
         return true;
     }
     warn(options) {
-        const current = this.support ? chalk_1.default.gray.italic(this.current) : this.current;
-        const header = this.support ? chalk_1.default.yellowBright.bold('[WARN]') : '[WARN]';
-        const source = this.support ? chalk_1.default.blueBright(options.source) : options.source;
-        const reason = this.support ? this.formatReason(options.reason) : options.reason.stack;
-        console.log([
-            '\n',
-            current,
-            `${header} ${this.support ? chalk_1.default.cyan('•') : '•'} ${source}`,
-            reason,
-        ].join('\n'));
+        const current = chalk_1.default.gray.italic(this.current);
+        const header = chalk_1.default.yellowBright.bold('[WARN]');
+        const source = chalk_1.default.blueBright(options.source);
+        const reason = this.formatReason(options.reason);
+        console.log(['\n', current, `${header} ${chalk_1.default.cyan('•')} ${source}`, reason].join('\n'));
         return true;
     }
     info(message, options) {
-        const current = this.support ? chalk_1.default.gray.italic(this.current) : this.current;
-        const header = this.support ? chalk_1.default.yellowBright.bold('[INFO]') : '[INFO]';
-        const source = this.support ? chalk_1.default.blueBright(options?.source) : options?.source;
-        const reason = this.support ? chalk_1.default.whiteBright(message) : message;
+        const current = chalk_1.default.gray.italic(this.current);
+        const header = chalk_1.default.yellowBright.bold('[INFO]');
+        const source = chalk_1.default.blueBright(options?.source);
+        const reason = chalk_1.default.whiteBright(message);
         const showDate = options.showDate !== null ? options.showDate : true;
         console.log([
             showDate ? '\n' : '\nLINE_BREAK',
             showDate ? current : 'LINE_BREAK',
-            `${header} ${this.support ? chalk_1.default.cyan('•') : '•'} ${source === undefined ? reason : reason}`,
+            `${header} ${chalk_1.default.cyan('•')} ${source === undefined ? reason : reason}`,
             `${source === undefined ? reason : 'LINE_BREAK'}`,
         ]
             .join('\n')
