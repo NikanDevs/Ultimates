@@ -30,53 +30,37 @@ export class Logger {
 	}
 
 	error(options: options): boolean | null {
-		const current = this.support ? chalk.gray.italic(this.current) : this.current;
-		const header = this.support ? chalk.redBright.bold('[ERROR]') : '[ERROR]';
-		const source = this.support ? chalk.blueBright(options.source) : options.source;
-		const reason = this.support ? this.formatReason(options.reason) : options.reason;
+		const current = chalk.gray.italic(this.current);
+		const header = chalk.redBright.bold('[ERROR]');
+		const source = chalk.blueBright(options.source);
+		const reason = this.formatReason(options.reason);
 
-		console.log(
-			[
-				'\n',
-				current,
-				`${header} ${this.support ? chalk.cyan('•') : '•'} ${source}`,
-				reason,
-			].join('\n')
-		);
+		console.log(['\n', current, `${header} ${chalk.cyan('•')} ${source}`, reason].join('\n'));
 		return true;
 	}
 
 	warn(options: options): boolean | null {
-		const current = this.support ? chalk.gray.italic(this.current) : this.current;
-		const header = this.support ? chalk.yellowBright.bold('[WARN]') : '[WARN]';
-		const source = this.support ? chalk.blueBright(options.source) : options.source;
-		const reason = this.support ? this.formatReason(options.reason) : options.reason.stack;
+		const current = chalk.gray.italic(this.current);
+		const header = chalk.yellowBright.bold('[WARN]');
+		const source = chalk.blueBright(options.source);
+		const reason = this.formatReason(options.reason);
 
-		console.log(
-			[
-				'\n',
-				current,
-				`${header} ${this.support ? chalk.cyan('•') : '•'} ${source}`,
-				reason,
-			].join('\n')
-		);
+		console.log(['\n', current, `${header} ${chalk.cyan('•')} ${source}`, reason].join('\n'));
 		return true;
 	}
 
 	info(message: string, options?: options): boolean | null {
-		const current = this.support ? chalk.gray.italic(this.current) : this.current;
-		const header = this.support ? chalk.yellowBright.bold('[INFO]') : '[INFO]';
-		const source = this.support ? chalk.blueBright(options?.source) : options?.source;
-		const reason = this.support ? chalk.whiteBright(message) : message;
+		const current = chalk.gray.italic(this.current);
+		const header = chalk.yellowBright.bold('[INFO]');
+		const source = chalk.blueBright(options?.source);
+		const reason = chalk.whiteBright(message);
 		const showDate = options.showDate !== null ? options.showDate : true;
 
 		console.log(
 			[
 				showDate ? '\n' : '\nLINE_BREAK',
 				showDate ? current : 'LINE_BREAK',
-				`${header} ${this.support ? chalk.cyan('•') : '•'} ${
-					source === undefined ? reason : reason
-				}`,
+				`${header} ${chalk.cyan('•')} ${source === undefined ? reason : reason}`,
 				`${source === undefined ? reason : 'LINE_BREAK'}`,
 			]
 				.join('\n')
