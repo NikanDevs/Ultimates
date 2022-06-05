@@ -62,7 +62,7 @@ async function createModLog(options) {
         .replaceAll('\nLINE_BREAK', ''));
     if (!(0, checkActivity_1.logActivity)('mod'))
         return;
-    var logMessage = await __1.client.webhooks.mod.send({ embeds: [embed] });
+    var logMessage = await __1.client.config.webhooks.mod.send({ embeds: [embed] });
     if (update)
         return `https://discord.com/channels/${config_json_1.guild.id}/${logMessage.channel_id}/${logMessage.id}`;
     if (options.action === PunishmentType_1.PunishmentType.Unmute ||

@@ -54,7 +54,7 @@ async function createModmailLog(options) {
         .join('\n')
         .replaceAll('LINE_BREAK\n', ''));
     if ((0, checkActivity_1.logActivity)('modmail'))
-        var logMessage = await __1.client.webhooks.modmail.send({ embeds: [embed] });
+        var logMessage = await __1.client.config.webhooks.modmail.send({ embeds: [embed] });
     if (options.action === Modmail_1.ModmailActionType.Open) {
         await (0, ModmailCase_1.addModmailTicket)();
         if ((0, checkActivity_1.logActivity)('modmail'))

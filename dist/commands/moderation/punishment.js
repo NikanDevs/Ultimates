@@ -7,11 +7,11 @@ const Command_1 = require("../../structures/Command");
 const automod_1 = require("../../models/automod");
 const logs_1 = require("../../models/logs");
 const interactions_1 = require("../../interactions");
-const moderation_json_1 = require("../../json/moderation.json");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
 const convertTime_1 = require("../../functions/convertTime");
+const constants_1 = require("../../constants");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.punishment,
     excute: async ({ client, interaction, options }) => {
@@ -19,7 +19,7 @@ exports.default = new Command_1.Command({
         if (getSubCommand === 'revoke') {
             const warnId = options.getString('id');
             const reason = options.getString('reason') || 'No reason was provided.';
-            const data = warnId.length === moderation_json_1.lengths['automod-id']
+            const data = warnId.length == constants_1.AUTOMOD_ID_LENGTH
                 ? await automod_1.automodModel.findById(warnId).catch(() => { })
                 : await punishments_1.punishmentModel.findById(warnId).catch(() => { });
             if (!data)
@@ -146,7 +146,7 @@ exports.default = new Command_1.Command({
             const warnId = options.getString('id');
             const baseEmbed = client.util.embed().setColor(client.cc.invisible);
             switch (warnId.length) {
-                case moderation_json_1.lengths['automod-id']:
+                case constants_1.AUTOMOD_ID_LENGTH:
                     await automod_1.automodModel
                         .findById(warnId)
                         .catch(() => (doesExist = false))
@@ -194,7 +194,7 @@ exports.default = new Command_1.Command({
                         });
                     });
                     break;
-                case moderation_json_1.lengths['manual-id']:
+                case constants_1.PUNISHMENT_ID_LENGTH:
                     await punishments_1.punishmentModel
                         .findById(warnId)
                         .catch(() => (doesExist = false))
@@ -398,10 +398,10 @@ exports.default = new Command_1.Command({
             let punishment = null;
             await interaction.deferReply({ ephemeral: true });
             switch (id.length) {
-                case moderation_json_1.lengths['manual-id']:
+                case constants_1.PUNISHMENT_ID_LENGTH:
                     punishment = await punishments_1.punishmentModel.findById(id).catch(() => { });
                     break;
-                case moderation_json_1.lengths['automod-id']:
+                case constants_1.AUTOMOD_ID_LENGTH:
                     punishment = await automod_1.automodModel.findById(id).catch(() => { });
                     break;
             }
@@ -492,12 +492,12 @@ exports.default = new Command_1.Command({
                             ],
                         });
                     switch (id.length) {
-                        case moderation_json_1.lengths['manual-id']:
+                        case constants_1.PUNISHMENT_ID_LENGTH:
                             punishment = await punishments_1.punishmentModel.findByIdAndUpdate(id, {
                                 $set: { reason: newvalue },
                             });
                             break;
-                        case moderation_json_1.lengths['automod-id']:
+                        case constants_1.AUTOMOD_ID_LENGTH:
                             punishment = await automod_1.automodModel.findByIdAndUpdate(id, {
                                 $set: { reason: newvalue },
                             });
@@ -532,14 +532,14 @@ exports.default = new Command_1.Command({
                 return;
             switch (value) {
                 case 1:
-                    client.webhooks.mod.editMessage(firstLogId, {
+                    client.config.webhooks.mod.editMessage(firstLogId, {
                         embeds: [
                             firstLog.embeds[0].setDescription(firstLog.embeds[0].description.replaceAll('\n• **Duration', `\n• **Duration [[U](${updateLog})]`)),
                         ],
                     });
                     break;
                 case 2:
-                    client.webhooks.mod.editMessage(firstLogId, {
+                    client.config.webhooks.mod.editMessage(firstLogId, {
                         embeds: [
                             firstLog.embeds[0].setDescription(firstLog.embeds[0].description.replaceAll('\n• **Reason', `\n• **Reason [[U](${updateLog})]`)),
                         ],

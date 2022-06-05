@@ -41,5 +41,34 @@ exports.configureCommand = {
                 },
             ],
         },
+        {
+            name: 'automod',
+            description: 'Configure the settings of the auto moderation system',
+            type: discord_js_1.ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: 'module',
+                    description: 'The automod module you want to configure',
+                    type: discord_js_1.ApplicationCommandOptionType.String,
+                    required: false,
+                    choices: [
+                        { name: 'Filtered Words', value: 'badwords' },
+                        { name: 'Discord Invites', value: 'invites' },
+                        { name: 'Large Messages', value: 'largeMessage' },
+                        { name: 'Mass Mentions', value: 'massMention' },
+                        { name: 'Mass Emojis', value: 'massEmoji' },
+                        { name: 'Spam', value: 'spam' },
+                        { name: 'capitals', value: 'capitals' },
+                        { name: 'Urls & Links', value: 'urls' },
+                    ],
+                },
+                {
+                    name: 'active',
+                    description: 'If this module should be active at the time',
+                    type: discord_js_1.ApplicationCommandOptionType.Boolean,
+                    required: false,
+                },
+            ],
+        },
     ],
 };

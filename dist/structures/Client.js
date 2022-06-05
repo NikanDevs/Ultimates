@@ -31,23 +31,17 @@ const mongoose_1 = require("mongoose");
 const config_json_1 = require("../json/config.json");
 const clientUtil_1 = require("../functions/client/clientUtil");
 const properties_1 = require("../functions/client/properties");
-const config_1 = require("../models/config");
 const logger_1 = require("../logger");
 const logs_1 = require("../models/logs");
 const modmail_1 = require("../models/modmail");
+const clientConfig_1 = require("../functions/client/clientConfig");
 const globPromise = (0, util_1.promisify)(glob_1.glob);
 class Ultimates extends discord_js_1.Client {
     commands = new discord_js_1.Collection();
     util = new clientUtil_1.clientUtil();
     embeds = properties_1.clientEmbeds;
     cc = properties_1.cc;
-    webhooks = {
-        mod: null,
-        message: null,
-        modmail: null,
-        servergate: null,
-    };
-    config = properties_1.clientConfig;
+    config = new clientConfig_1.clientConfig();
     // Constructor
     constructor() {
         super({
@@ -74,8 +68,9 @@ class Ultimates extends discord_js_1.Client {
         if (!mongoDBConnection)
             return;
         await (0, mongoose_1.connect)(mongoDBConnection).then(() => logger_1.logger.info('MongoDB connected', { showDate: false }));
-        await this.updateWebhookData();
         await this.checkSubstance();
+        await this.config.updateLogs();
+        await this.config.updateAutomod();
         await this.registerModules();
         await this.login(process.env.DISCORD_TOKEN).then(() => {
             this.handlerErrors();
@@ -134,43 +129,6 @@ class Ultimates extends discord_js_1.Client {
         process.on('exit', () => {
             this.destroy();
         });
-    }
-    /** Takes webhook data from the database and updates them in the vars. */
-    async updateWebhookData() {
-        const data = await config_1.configModel.findById('logs');
-        if (!data)
-            return;
-        function getWebhookInfo(url) {
-            if (!url)
-                return [undefined];
-            const filtered = url.replaceAll('https://discord.com/api/webhooks/', '');
-            const returns = [];
-            returns.push(filtered.split('/')[0]);
-            returns.push(filtered.split('/')[1]);
-            return returns;
-        }
-        this.webhooks.mod = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.mod.webhook)[0],
-            token: getWebhookInfo(data.mod.webhook)[1],
-        });
-        this.webhooks.message = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.message.webhook)[0],
-            token: getWebhookInfo(data.message.webhook)[1],
-        });
-        this.webhooks.modmail = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.modmail.webhook)[0],
-            token: getWebhookInfo(data.modmail.webhook)[1],
-        });
-        this.webhooks.servergate = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.servergate.webhook)[0],
-            token: getWebhookInfo(data.servergate.webhook)[1],
-        });
-        this.config.logsActive = {
-            mod: data.mod.active,
-            modmail: data.modmail.active,
-            message: data.message.active,
-            servergate: data.servergate.active,
-        };
     }
     async checkSubstance() {
         const logs = await logs_1.logsModel.findById('substance');

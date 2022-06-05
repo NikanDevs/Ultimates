@@ -46,5 +46,5 @@ exports.default = new Event_1.Event('messageDelete', async (message) => {
             : 'No attachments',
         inline: true,
     });
-    __1.client.webhooks.message.send({ embeds: [logEmbed] });
+    __1.client.config.webhooks.message.send({ embeds: [logEmbed] });
 });

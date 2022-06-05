@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clientEmbeds = exports.clientConfig = exports.cc = void 0;
+exports.clientEmbeds = exports.cc = void 0;
 const discord_js_1 = require("discord.js");
 const database_json_1 = require("../../json/database.json");
 const __1 = require("../..");
@@ -16,14 +16,6 @@ exports.cc = {
     attentionE: database_json_1.emojis.attention,
     previous: '◀️',
     next: '▶️',
-};
-exports.clientConfig = {
-    logsActive: {
-        mod: null,
-        message: null,
-        modmail: null,
-        servergate: null,
-    },
 };
 exports.clientEmbeds = {
     error: function name(error) {

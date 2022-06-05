@@ -5,7 +5,6 @@ const discord_js_1 = require("discord.js");
 const __1 = require("../..");
 const modmail_1 = require("../../models/modmail");
 const Event_1 = require("../../structures/Event");
-const automod_json_1 = require("../../json/automod.json");
 const createModmailLog_1 = require("../../functions/logs/createModmailLog");
 const Modmail_1 = require("../../typings/Modmail");
 const ModmailCase_1 = require("../../functions/cases/ModmailCase");
@@ -53,7 +52,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             channel.type === discord_js_1.ChannelType.GuildText)
             .find((channel) => channel?.topic?.endsWith(message.author.id));
         if (openedThread) {
-            if (automod_json_1.badwords.some((word) => message.content.toLowerCase().includes(word)))
+            if (__1.client.config.automod.filteredWords.some((word) => message.content.toLowerCase().includes(word)))
                 return message.reply({
                     content: "You're not allowed to use this word in modmails.",
                 });

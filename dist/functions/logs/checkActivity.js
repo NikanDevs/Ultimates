@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.logActivity = void 0;
 const __1 = require("../..");
 function logActivity(type) {
-    if (__1.client.config.logsActive[type] === null || __1.client.config.logsActive[type] === false) {
+    if (__1.client.config.logging[type] === null || __1.client.config.logging[type] === false) {
         return false;
     }
     else

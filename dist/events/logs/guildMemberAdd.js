@@ -33,5 +33,5 @@ exports.default = new Event_1.Event('guildMemberAdd', async (member) => {
         embed.setDescription(embed.description + '\n\nA user has joined!');
     }
     // Sending the member joined message.
-    __1.client.webhooks.servergate?.send({ embeds: [embed] });
+    __1.client.config.webhooks.servergate?.send({ embeds: [embed] });
 });

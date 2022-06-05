@@ -60,7 +60,7 @@ exports.default = new Event_1.Event('messageUpdate', async (oldMessage, newMessa
         value: `<t:${~~(+newMessage.editedTimestamp / 1000)}:R>`,
         inline: true,
     });
-    __1.client.webhooks.message.send({
+    __1.client.config.webhooks.message.send({
         embeds: [logEmbed],
     });
 });

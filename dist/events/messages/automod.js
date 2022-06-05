@@ -15,23 +15,24 @@ const timeoutMember_1 = require("../../utils/timeoutMember");
 const sendModDM_1 = require("../../utils/sendModDM");
 const config_json_1 = require("../../json/config.json");
 const convertTime_1 = require("../../functions/convertTime");
+const config = __1.client.config.automod;
 const bypassRoleId = automod_json_1.ignore['bypass-roleId'];
 const categoryIgnores = automod_json_1.ignore['categoryIds'];
 const channelIgnores = automod_json_1.ignore['channelNames'];
 const roleIgnores = automod_json_1.ignore['roleIds'];
 const permissionIgnores = automod_json_1.ignore['permissions'];
 exports.default = new Event_1.Event('messageCreate', async (message) => {
-    const guildMember = message.member;
+    const member = message.member;
     const textChannel = message.channel;
     // Main Reqs
     if (!message.guild ||
         message.guildId !== config_json_1.guild.id ||
         message.author.bot ||
         !message.content ||
-        guildMember.roles.cache.has(bypassRoleId))
+        member.roles.cache.has(bypassRoleId))
         return;
     // Spam Collector
-    if (automod_json_1.enabledModules.spam && !(await getsIgnored('spam'))) {
+    if (config.modules.spam && !getsIgnored('spam')) {
         switch (constants_2.automodSpamCollection.get(message.author.id)) {
             case undefined:
                 constants_2.automodSpamCollection.set(message.author.id, 1);
@@ -55,8 +56,8 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         }
     }
     if (message.content.length > 550 &&
-        automod_json_1.enabledModules['large-message'] &&
-        !(await getsIgnored('large-message'))) {
+        config.modules.largeMessage &&
+        !getsIgnored('large-message')) {
         message?.delete();
         textChannel
             .send({
@@ -92,8 +93,8 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         }).then(() => checkForAutoPunish(data));
     }
     else if (isDiscordInvite(message.content) &&
-        automod_json_1.enabledModules.invites &&
-        !(await getsIgnored('invites'))) {
+        config.modules.invites &&
+        !getsIgnored('invites')) {
         message?.delete();
         textChannel
             .send({
@@ -128,7 +129,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             expire: constants_1.automodPunishmentExpiry,
         }).then(() => checkForAutoPunish(data));
     }
-    else if (isURL(message.content) && automod_json_1.enabledModules.urls && !(await getsIgnored('urls'))) {
+    else if (isURL(message.content) && config.modules.urls && !getsIgnored('urls')) {
         message?.delete();
         textChannel
             .send({
@@ -164,8 +165,8 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         }).then(() => checkForAutoPunish(data));
     }
     else if (message.mentions?.members.size > 4 &&
-        automod_json_1.enabledModules['mass-mention'] &&
-        !(await getsIgnored('mass-mention'))) {
+        config.modules.massMention &&
+        !getsIgnored('mass-mention')) {
         message?.delete();
         textChannel
             .send({
@@ -200,9 +201,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             expire: constants_1.automodPunishmentExpiry,
         }).then(() => checkForAutoPunish(data));
     }
-    else if (mostIsCap(message.content) &&
-        automod_json_1.enabledModules.capitals &&
-        !(await getsIgnored('capitals'))) {
+    else if (mostIsCap(message.content) && config.modules.capitals && !getsIgnored('capitals')) {
         message?.delete();
         textChannel
             .send({
@@ -238,8 +237,8 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         }).then(() => checkForAutoPunish(data));
     }
     else if (mostIsEmojis(message.content) &&
-        automod_json_1.enabledModules['mass-emoji'] &&
-        !(await getsIgnored('mass-emoji'))) {
+        config.modules.massEmoji &&
+        !getsIgnored('mass-emoji')) {
         message?.delete();
         textChannel
             .send({
@@ -274,9 +273,9 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             expire: constants_1.automodPunishmentExpiry,
         }).then(() => checkForAutoPunish(data));
     }
-    else if (automod_json_1.badwords.some((word) => message.content.toUpperCase().includes(word)) &&
-        automod_json_1.enabledModules.badwords &&
-        !(await getsIgnored('badwords'))) {
+    else if (config.filteredWords.some((word) => message.content.toUpperCase().includes(word)) &&
+        config.modules.badwords &&
+        !getsIgnored('badwords')) {
         message?.delete();
         textChannel
             .send({
@@ -311,9 +310,9 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             expire: constants_1.automodPunishmentExpiry,
         }).then(() => checkForAutoPunish(data));
     }
-    else if (constants_2.automodSpamCollection.get(message.author.id) === automod_json_1.amounts['spam_count'] &&
-        automod_json_1.enabledModules.spam &&
-        !(await getsIgnored('spam'))) {
+    else if (constants_2.automodSpamCollection.get(message.author.id) === constants_1.AUTOMOD_SPAM_COUNT &&
+        config.modules.spam &&
+        !getsIgnored('spam')) {
         constants_2.automodSpamCollection.delete(message.author.id);
         let sentMessage = (await textChannel.send({
             content: `${message.author} you may not send messages this quick.`,
@@ -351,11 +350,12 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         }).then(() => checkForAutoPunish(data));
     }
     // Functions
-    async function getsIgnored(type) {
-        if (channelIgnores[type.toString()].includes(textChannel.name) ||
+    function getsIgnored(type) {
+        if (member.permissions?.has('Administrator') ||
+            channelIgnores[type.toString()].includes(textChannel.name) ||
             categoryIgnores[type.toString()].includes(textChannel.parentId) ||
-            roleIgnores[type.toString()].some((roleId) => guildMember.roles.cache.get(roleId)) ||
-            permissionIgnores[type.toString()].some((permission) => guildMember.permissions.has(permission)))
+            roleIgnores[type.toString()].some((roleId) => member.roles.cache.get(roleId)) ||
+            permissionIgnores[type.toString()].some((permission) => member.permissions.has(permission)))
             return true;
         else
             return false;
@@ -459,7 +459,7 @@ function mostIsCap(str) {
             nonCapitals.push(str);
     });
     if (capitals.length > nonCapitals.length) {
-        if ((capitals.length / nonCapitals.length) * 100 > automod_json_1.amounts['max_caps_percentage'])
+        if ((capitals.length / nonCapitals.length) * 100 > constants_1.AUTOMOD_MAX_CAPS)
             return true;
         else
             return false;
@@ -474,7 +474,7 @@ function mostIsEmojis(str) {
         if (parseEmoji?.id)
             countEmojis.push(rawStr);
     }
-    if (countEmojis.length > automod_json_1.amounts['max_emoji']) {
+    if (countEmojis.length > constants_1.AUTOMOD_MAX_EMOJI_COUNT) {
         return true;
     }
     else {

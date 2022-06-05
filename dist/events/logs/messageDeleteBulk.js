@@ -54,7 +54,7 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
     });
     logEmbed.setDescription(`${__1.client.util.splitText(messagesMapped.join('\n'), { splitFor: 'Embed Description' })}`);
     if (messages.size > 10) {
-        const webHookMsg = await __1.client.webhooks.message.send({
+        const webHookMsg = await __1.client.config.webhooks.message.send({
             content: 'Preparing the bulk message delete logs...',
         });
         const map = messages.map((msg) => {
@@ -76,13 +76,13 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
             .setLabel('View All Messages')
             .setStyle(discord_js_1.ButtonStyle['Link'])
             .setURL(srcbin.url));
-        __1.client.webhooks.message.editMessage(webHookMsg.id, {
+        __1.client.config.webhooks.message.editMessage(webHookMsg.id, {
             embeds: [logEmbed],
             components: [viewAllRow],
             content: ' ',
         });
     }
     else {
-        __1.client.webhooks.message.send({ embeds: [logEmbed] });
+        __1.client.config.webhooks.message.send({ embeds: [logEmbed] });
     }
 });

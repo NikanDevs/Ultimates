@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Command_1 = require("../../structures/Command");
-const moderation_json_1 = require("../../json/moderation.json");
 const ignore_1 = require("../../functions/ignore");
 const interactions_1 = require("../../interactions");
 const PunishmentType_1 = require("../../typings/PunishmentType");
@@ -35,7 +34,7 @@ exports.default = new Command_1.Command({
             function generateNick() {
                 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
                 let nickname = '';
-                for (var i = 0; i < moderation_json_1.lengths['moderated-nickname']; i++) {
+                for (var i = 0; i < 5; i++) {
                     nickname += characters.charAt(Math.floor(Math.random() * characters.length));
                 }
                 return nickname;
