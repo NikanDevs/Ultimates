@@ -1,18 +1,5 @@
 {
-	"enabledModules": {
-		"badwords": true,
-		"invites": true,
-		"large-message": true,
-		"mass-mention": true,
-		"mass-emoji": true,
-		"spam": true,
-		"capitals": true,
-		"urls": false
-	},
 	"amounts": {
-		"max_emoji": 10,
-		"max_caps_percentage": 90,
-		"spam_count": 5,
 		"timeoutDurationAt2Warns": "30m",
 		"timeoutDurationAt+2Warns": "1h"
 	},
@@ -58,27 +45,5 @@
 			"capitals": ["Administrator", "ManageMessages"],
 			"urls": ["ManageMessages"]
 		}
-	},
-	"badwords": [
-		"FUCK",
-		"PISS",
-		"WANKER",
-		"TOSSER",
-		"BOLLOCKS",
-		"ASSHOLE",
-		"PRICK",
-		"BASTARD",
-		"BELLEND",
-		"BITCH",
-		"NIGG",
-		"DICK",
-		"CUNT",
-		"PUSS",
-		"NUDE",
-		"BOOB",
-		"PORN",
-		"PENIS",
-		"SHIT",
-		"COCK"
-	]
+	}
 }

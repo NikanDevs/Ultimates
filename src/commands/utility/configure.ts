@@ -1,4 +1,11 @@
-import { TextChannel, Webhook } from 'discord.js';
+import {
+	ButtonStyle,
+	ComponentType,
+	Message,
+	TextChannel,
+	TextInputStyle,
+	Webhook,
+} from 'discord.js';
 import { WEBHOOK_NAMES } from '../../constants';
 import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
@@ -9,6 +16,16 @@ enum logsNames {
 	'modmail' = 'Modmail Logging',
 	'servergate' = 'Joins and Leaves',
 	'error' = 'Errors Loggings',
+}
+enum automodModulesNames {
+	'badwords' = 'Filtered words',
+	'invites' = 'Discord invites',
+	'largeMessage' = 'Large messages',
+	'massMention' = 'Mass mentions',
+	'massEmoji' = 'Mass emoji',
+	'spam' = 'Spam',
+	'capitals' = 'Too many caps',
+	'urls' = 'Urls and links',
 }
 
 export default new Command({
@@ -39,16 +56,16 @@ export default new Command({
 			if (channel && channel?.id !== data.channelId) {
 				switch (module) {
 					case 'mod':
-						await client.webhooks.mod?.delete().catch(() => {});
+						await client.config.webhooks.mod?.delete().catch(() => {});
 						break;
 					case 'message':
-						await client.webhooks.message?.delete().catch(() => {});
+						await client.config.webhooks.message?.delete().catch(() => {});
 						break;
 					case 'modmail':
-						await client.webhooks.modmail?.delete().catch(() => {});
+						await client.config.webhooks.modmail?.delete().catch(() => {});
 						break;
 					case 'servergate':
-						await client.webhooks.servergate?.delete().catch(() => {});
+						await client.config.webhooks.servergate?.delete().catch(() => {});
 						break;
 				}
 				newWebhook = await channel.createWebhook(WEBHOOK_NAMES[module], {
@@ -78,7 +95,7 @@ export default new Command({
 						},
 					}
 				);
-				await client.updateWebhookData();
+				await client.config.updateLogs();
 			}
 
 			const embed = client.util
@@ -93,23 +110,162 @@ export default new Command({
 				);
 
 			await interaction.followUp({ embeds: [embed] });
-		}
 
-		async function formatLogField(module: 'mod' | 'message' | 'modmail' | 'servergate') {
-			const data = await configModel.findById('logs');
-			let channel = (await client.channels
-				.fetch(data[module].channelId)
-				.catch(() => {})) as TextChannel;
-			return {
-				name: logsNames[module],
-				value: data[module].webhook
-					? `${
-							data[module].active
-								? '<:online:886215547249913856>'
-								: '<:offline:906867114126770186>'
-					  } • ${channel ? channel : "The logs channel wasn't found."}`
-					: '<:idle:906867112612601866> • This module is not set, yet...',
-			};
+			// Functions
+			async function formatLogField(module: 'mod' | 'message' | 'modmail' | 'servergate') {
+				const data = await configModel.findById('logs');
+				let channel = (await client.channels
+					.fetch(data[module].channelId)
+					.catch(() => {})) as TextChannel;
+				return {
+					name: logsNames[module],
+					value: data[module].webhook
+						? `${
+								data[module].active
+									? '<:online:886215547249913856>'
+									: '<:offline:906867114126770186>'
+						  } • ${channel ? channel : "The logs channel wasn't found."}`
+						: '<:idle:906867112612601866> • This module is not set, yet...',
+				};
+			}
+		} else if (subcommand === 'automod') {
+			const module = options.getString('module');
+			const active = options.getBoolean('active');
+			var data = await configModel.findById('automod');
+			if (!data) {
+				const newData = new configModel({
+					_id: 'automod',
+					filteredWords: [],
+					modules: {
+						badwords: false,
+						invites: false,
+						largeMessage: false,
+						massMention: false,
+						massEmoji: false,
+						spam: false,
+						capitals: false,
+						urls: false,
+					},
+				});
+				await newData.save();
+			}
+			data = await configModel.findById('automod');
+
+			if (module && active !== null) {
+				await configModel.findByIdAndUpdate('automod', {
+					$set: {
+						modules: {
+							...(await configModel.findById('automod')).modules,
+							[module]: active,
+						},
+					},
+				});
+				await client.config.updateAutomod();
+			}
+
+			const embed = client.util
+				.embed()
+				.setTitle('Automod Configuration')
+				.setColor(client.cc.ultimates)
+				.setDescription(
+					[
+						await formatDescription('badwords'),
+						await formatDescription('invites'),
+						await formatDescription('largeMessage'),
+						await formatDescription('massMention'),
+						await formatDescription('massEmoji'),
+						await formatDescription('spam'),
+						await formatDescription('capitals'),
+						await formatDescription('urls'),
+					].join('\n')
+				);
+
+			if (data.filteredWords.length)
+				embed.addFields({
+					name: 'Filtered Words',
+					value: client.util.splitText(
+						data.filteredWords
+							.map((word: string) => word.toLowerCase())
+							.join(', '),
+						{ splitFor: 'Embed Field Value' }
+					),
+				});
+
+			const button = client.util
+				.actionRow()
+				.addComponents(
+					client.util
+						.button()
+						.setLabel('Add filtered words')
+						.setStyle(ButtonStyle.Secondary)
+						.setCustomId('badwords')
+				);
+
+			const sentInteraction = (await interaction.followUp({
+				embeds: [embed],
+				components: [button],
+			})) as Message;
+
+			const collector = sentInteraction.createMessageComponentCollector({
+				componentType: ComponentType.Button,
+				time: 1000 * 60 * 1,
+			});
+
+			collector.on('collect', async (collected) => {
+				if (collected.user.id !== interaction.user.id)
+					return collected.reply({
+						content: 'You can not use this.',
+						ephemeral: true,
+					});
+				if (collected.customId !== 'badwords') return;
+
+				const modal = client.util
+					.modal()
+					.setTitle('Add filtered words')
+					.setCustomId('add-badwords')
+					.addComponents({
+						type: ComponentType['ActionRow'],
+						components: [
+							{
+								type: ComponentType['TextInput'],
+								custom_id: 'input',
+								label: 'Separate words with commas',
+								style: TextInputStyle['Paragraph'],
+								required: true,
+								max_length: 4000,
+								min_length: 1,
+								placeholder:
+									'badword1, frick, pizza, cake - type an existing word to remove it',
+							},
+						],
+					});
+				await collected.showModal(modal);
+				collector.stop();
+			});
+
+			collector.on('end', () => {
+				interaction.editReply({ components: [] });
+			});
+
+			// Functions
+			async function formatDescription(
+				module:
+					| 'badwords'
+					| 'invites'
+					| 'largeMessage'
+					| 'massMention'
+					| 'massEmoji'
+					| 'spam'
+					| 'capitals'
+					| 'urls'
+			) {
+				const data = await configModel.findById('automod');
+				return `${
+					data.modules[module]
+						? '<:online:886215547249913856>'
+						: '<:offline:906867114126770186>'
+				} - ${automodModulesNames[module]}`;
+			}
 		}
 	},
 });

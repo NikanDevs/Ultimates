@@ -5,11 +5,11 @@ import { Command } from '../../structures/Command';
 import { automodModel } from '../../models/automod';
 import { logsModel } from '../../models/logs';
 import { interactions } from '../../interactions';
-import { lengths } from '../../json/moderation.json';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { createModLog, getUrlFromCase } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { convertTime } from '../../functions/convertTime';
+import { AUTOMOD_ID_LENGTH, PUNISHMENT_ID_LENGTH } from '../../constants';
 
 export default new Command({
 	interaction: interactions.punishment,
@@ -21,7 +21,7 @@ export default new Command({
 			const reason = options.getString('reason') || 'No reason was provided.';
 
 			const data =
-				warnId.length === lengths['automod-id']
+				warnId.length == AUTOMOD_ID_LENGTH
 					? await automodModel.findById(warnId).catch(() => {})
 					: await punishmentModel.findById(warnId).catch(() => {});
 			if (!data)
@@ -165,7 +165,7 @@ export default new Command({
 			const baseEmbed = client.util.embed().setColor(client.cc.invisible);
 
 			switch (warnId.length) {
-				case lengths['automod-id']:
+				case AUTOMOD_ID_LENGTH:
 					await automodModel
 						.findById(warnId)
 						.catch(() => (doesExist = false))
@@ -231,7 +231,7 @@ export default new Command({
 								);
 						});
 					break;
-				case lengths['manual-id']:
+				case PUNISHMENT_ID_LENGTH:
 					await punishmentModel
 						.findById(warnId)
 						.catch(() => (doesExist = false))
@@ -488,10 +488,10 @@ export default new Command({
 
 			await interaction.deferReply({ ephemeral: true });
 			switch (id.length) {
-				case lengths['manual-id']:
+				case PUNISHMENT_ID_LENGTH:
 					punishment = await punishmentModel.findById(id).catch(() => {});
 					break;
-				case lengths['automod-id']:
+				case AUTOMOD_ID_LENGTH:
 					punishment = await automodModel.findById(id).catch(() => {});
 					break;
 			}
@@ -625,12 +625,12 @@ export default new Command({
 						});
 
 					switch (id.length) {
-						case lengths['manual-id']:
+						case PUNISHMENT_ID_LENGTH:
 							punishment = await punishmentModel.findByIdAndUpdate(id, {
 								$set: { reason: newvalue },
 							});
 							break;
-						case lengths['automod-id']:
+						case AUTOMOD_ID_LENGTH:
 							punishment = await automodModel.findByIdAndUpdate(id, {
 								$set: { reason: newvalue },
 							});
@@ -667,7 +667,7 @@ export default new Command({
 
 			switch (value) {
 				case 1:
-					client.webhooks.mod.editMessage(firstLogId, {
+					client.config.webhooks.mod.editMessage(firstLogId, {
 						embeds: [
 							firstLog.embeds[0].setDescription(
 								firstLog.embeds[0].description.replaceAll(
@@ -679,7 +679,7 @@ export default new Command({
 					});
 					break;
 				case 2:
-					client.webhooks.mod.editMessage(firstLogId, {
+					client.config.webhooks.mod.editMessage(firstLogId, {
 						embeds: [
 							firstLog.embeds[0].setDescription(
 								firstLog.embeds[0].description.replaceAll(

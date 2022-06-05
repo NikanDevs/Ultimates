@@ -1,8 +1,13 @@
 import { GuildMember, Message, PermissionResolvable, TextChannel, Util } from 'discord.js';
 import { client } from '../..';
-import { automodPunishmentExpiry } from '../../constants';
+import {
+	automodPunishmentExpiry,
+	AUTOMOD_MAX_CAPS,
+	AUTOMOD_MAX_EMOJI_COUNT,
+	AUTOMOD_SPAM_COUNT,
+} from '../../constants';
 import { Event } from '../../structures/Event';
-import { badwords, ignore, enabledModules, amounts } from '../../json/automod.json';
+import { ignore, amounts } from '../../json/automod.json';
 import { automodModel } from '../../models/automod';
 import { automodSpamCollection } from '../../constants';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -13,6 +18,7 @@ import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { guild as guildConfig } from '../../json/config.json';
 import { convertTime } from '../../functions/convertTime';
+const config = client.config.automod;
 const bypassRoleId = ignore['bypass-roleId'];
 const categoryIgnores = ignore['categoryIds'];
 const channelIgnores = ignore['channelNames'];
@@ -20,7 +26,7 @@ const roleIgnores = ignore['roleIds'];
 const permissionIgnores = ignore['permissions'];
 
 export default new Event('messageCreate', async (message) => {
-	const guildMember = message.member as GuildMember;
+	const member = message.member as GuildMember;
 	const textChannel = message.channel as TextChannel;
 
 	// Main Reqs
@@ -29,12 +35,12 @@ export default new Event('messageCreate', async (message) => {
 		message.guildId !== guildConfig.id ||
 		message.author.bot ||
 		!message.content ||
-		guildMember.roles.cache.has(bypassRoleId)
+		member.roles.cache.has(bypassRoleId)
 	)
 		return;
 
 	// Spam Collector
-	if (enabledModules.spam && !(await getsIgnored('spam'))) {
+	if (config.modules.spam && !getsIgnored('spam')) {
 		switch (automodSpamCollection.get(message.author.id)) {
 			case undefined:
 				automodSpamCollection.set(message.author.id, 1);
@@ -60,8 +66,8 @@ export default new Event('messageCreate', async (message) => {
 
 	if (
 		message.content.length > 550 &&
-		enabledModules['large-message'] &&
-		!(await getsIgnored('large-message'))
+		config.modules.largeMessage &&
+		!getsIgnored('large-message')
 	) {
 		message?.delete();
 		textChannel
@@ -103,8 +109,8 @@ export default new Event('messageCreate', async (message) => {
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		isDiscordInvite(message.content) &&
-		enabledModules.invites &&
-		!(await getsIgnored('invites'))
+		config.modules.invites &&
+		!getsIgnored('invites')
 	) {
 		message?.delete();
 		textChannel
@@ -144,7 +150,7 @@ export default new Event('messageCreate', async (message) => {
 			reason: reasons['invites'],
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
-	} else if (isURL(message.content) && enabledModules.urls && !(await getsIgnored('urls'))) {
+	} else if (isURL(message.content) && config.modules.urls && !getsIgnored('urls')) {
 		message?.delete();
 		textChannel
 			.send({
@@ -185,8 +191,8 @@ export default new Event('messageCreate', async (message) => {
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		message.mentions?.members.size > 4 &&
-		enabledModules['mass-mention'] &&
-		!(await getsIgnored('mass-mention'))
+		config.modules.massMention &&
+		!getsIgnored('mass-mention')
 	) {
 		message?.delete();
 		textChannel
@@ -226,11 +232,7 @@ export default new Event('messageCreate', async (message) => {
 			reason: reasons['mass-mention'],
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
-	} else if (
-		mostIsCap(message.content) &&
-		enabledModules.capitals &&
-		!(await getsIgnored('capitals'))
-	) {
+	} else if (mostIsCap(message.content) && config.modules.capitals && !getsIgnored('capitals')) {
 		message?.delete();
 		textChannel
 			.send({
@@ -271,8 +273,8 @@ export default new Event('messageCreate', async (message) => {
 		}).then(() => checkForAutoPunish(data));
 	} else if (
 		mostIsEmojis(message.content) &&
-		enabledModules['mass-emoji'] &&
-		!(await getsIgnored('mass-emoji'))
+		config.modules.massEmoji &&
+		!getsIgnored('mass-emoji')
 	) {
 		message?.delete();
 		textChannel
@@ -313,9 +315,9 @@ export default new Event('messageCreate', async (message) => {
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
-		badwords.some((word) => message.content.toUpperCase().includes(word)) &&
-		enabledModules.badwords &&
-		!(await getsIgnored('badwords'))
+		config.filteredWords.some((word) => message.content.toUpperCase().includes(word)) &&
+		config.modules.badwords &&
+		!getsIgnored('badwords')
 	) {
 		message?.delete();
 		textChannel
@@ -356,9 +358,9 @@ export default new Event('messageCreate', async (message) => {
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
-		automodSpamCollection.get(message.author.id) === amounts['spam_count'] &&
-		enabledModules.spam &&
-		!(await getsIgnored('spam'))
+		automodSpamCollection.get(message.author.id) === AUTOMOD_SPAM_COUNT &&
+		config.modules.spam &&
+		!getsIgnored('spam')
 	) {
 		automodSpamCollection.delete(message.author.id);
 
@@ -406,15 +408,16 @@ export default new Event('messageCreate', async (message) => {
 	}
 
 	// Functions
-	async function getsIgnored(type: types) {
+	function getsIgnored(type: types) {
 		if (
+			member.permissions?.has('Administrator') ||
 			channelIgnores[type.toString()].includes(textChannel.name) ||
 			categoryIgnores[type.toString()].includes(textChannel.parentId) ||
 			roleIgnores[type.toString()].some((roleId: string) =>
-				guildMember.roles.cache.get(roleId)
+				member.roles.cache.get(roleId)
 			) ||
 			permissionIgnores[type.toString()].some((permission: string) =>
-				guildMember.permissions.has(permission as PermissionResolvable)
+				member.permissions.has(permission as PermissionResolvable)
 			)
 		)
 			return true;
@@ -528,8 +531,7 @@ function mostIsCap(str: string) {
 	});
 
 	if (capitals.length > nonCapitals.length) {
-		if ((capitals.length / nonCapitals.length) * 100 > amounts['max_caps_percentage'])
-			return true;
+		if ((capitals.length / nonCapitals.length) * 100 > AUTOMOD_MAX_CAPS) return true;
 		else return false;
 	} else return false;
 }
@@ -539,7 +541,7 @@ function mostIsEmojis(str: string) {
 		const parseEmoji = Util.parseEmoji(rawStr);
 		if (parseEmoji?.id) countEmojis.push(rawStr);
 	}
-	if (countEmojis.length > amounts['max_emoji']) {
+	if (countEmojis.length > AUTOMOD_MAX_EMOJI_COUNT) {
 		return true;
 	} else {
 		return false;

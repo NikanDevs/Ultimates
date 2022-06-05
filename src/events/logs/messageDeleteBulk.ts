@@ -66,7 +66,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 	);
 
 	if (messages.size > 10) {
-		const webHookMsg = await client.webhooks.message.send({
+		const webHookMsg = await client.config.webhooks.message.send({
 			content: 'Preparing the bulk message delete logs...',
 		});
 
@@ -97,12 +97,12 @@ export default new Event('messageDeleteBulk', async (messages) => {
 					.setURL(srcbin.url)
 			);
 
-		client.webhooks.message.editMessage(webHookMsg.id, {
+		client.config.webhooks.message.editMessage(webHookMsg.id, {
 			embeds: [logEmbed],
 			components: [viewAllRow],
 			content: ' ',
 		});
 	} else {
-		client.webhooks.message.send({ embeds: [logEmbed] });
+		client.config.webhooks.message.send({ embeds: [logEmbed] });
 	}
 });

@@ -1,6 +1,5 @@
 import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
-import { lengths } from '../../json/moderation.json';
 import { ignore } from '../../functions/ignore';
 import { interactions } from '../../interactions';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -40,7 +39,7 @@ export default new Command({
 				const characters =
 					'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
 				let nickname = '';
-				for (var i = 0; i < lengths['moderated-nickname']; i++) {
+				for (var i = 0; i < 5; i++) {
 					nickname += characters.charAt(
 						Math.floor(Math.random() * characters.length)
 					);

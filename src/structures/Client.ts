@@ -1,4 +1,4 @@
-import { Client, Collection, ClientEvents, Partials, WebhookClient, Webhook } from 'discord.js';
+import { Client, Collection, ClientEvents, Partials } from 'discord.js';
 import { interactionType } from '../typings/Command';
 import { glob } from 'glob';
 import { promisify } from 'util';
@@ -6,11 +6,11 @@ import { connect } from 'mongoose';
 import { Event } from './Event';
 import { enabledModules as configEnabledModules } from '../json/config.json';
 import { clientUtil } from '../functions/client/clientUtil';
-import { cc, clientEmbeds, clientConfig } from '../functions/client/properties';
-import { configModel } from '../models/config';
+import { cc, clientEmbeds } from '../functions/client/properties';
 import { logger } from '../logger';
 import { logsModel } from '../models/logs';
 import { modmailModel } from '../models/modmail';
+import { clientConfig } from '../functions/client/clientConfig';
 const globPromise = promisify(glob);
 
 export class Ultimates extends Client {
@@ -18,13 +18,7 @@ export class Ultimates extends Client {
 	util = new clientUtil();
 	embeds = clientEmbeds;
 	cc = cc;
-	webhooks = {
-		mod: null as WebhookClient,
-		message: null as WebhookClient,
-		modmail: null as WebhookClient,
-		servergate: null as WebhookClient,
-	};
-	config = clientConfig;
+	config = new clientConfig();
 
 	// Constructor
 	constructor() {
@@ -54,9 +48,9 @@ export class Ultimates extends Client {
 		await connect(mongoDBConnection).then(() =>
 			logger.info('MongoDB connected', { showDate: false })
 		);
-		await this.updateWebhookData();
 		await this.checkSubstance();
-
+		await this.config.updateLogs();
+		await this.config.updateAutomod();
 		await this.registerModules();
 
 		await this.login(process.env.DISCORD_TOKEN).then(() => {
@@ -124,47 +118,6 @@ export class Ultimates extends Client {
 		process.on('exit', () => {
 			this.destroy();
 		});
-	}
-
-	/** Takes webhook data from the database and updates them in the vars. */
-	async updateWebhookData() {
-		const data = await configModel.findById('logs');
-		if (!data) return;
-
-		function getWebhookInfo(url: string) {
-			if (!url) return [undefined];
-
-			const filtered = url.replaceAll('https://discord.com/api/webhooks/', '');
-			const returns: string[] = [];
-			returns.push(filtered.split('/')[0]);
-			returns.push(filtered.split('/')[1]);
-
-			return returns;
-		}
-
-		this.webhooks.mod = new WebhookClient({
-			id: getWebhookInfo(data.mod.webhook)[0],
-			token: getWebhookInfo(data.mod.webhook)[1],
-		});
-		this.webhooks.message = new WebhookClient({
-			id: getWebhookInfo(data.message.webhook)[0],
-			token: getWebhookInfo(data.message.webhook)[1],
-		});
-		this.webhooks.modmail = new WebhookClient({
-			id: getWebhookInfo(data.modmail.webhook)[0],
-			token: getWebhookInfo(data.modmail.webhook)[1],
-		});
-		this.webhooks.servergate = new WebhookClient({
-			id: getWebhookInfo(data.servergate.webhook)[0],
-			token: getWebhookInfo(data.servergate.webhook)[1],
-		});
-
-		this.config.logsActive = {
-			mod: data.mod.active,
-			modmail: data.modmail.active,
-			message: data.message.active,
-			servergate: data.servergate.active,
-		};
 	}
 
 	async checkSubstance() {

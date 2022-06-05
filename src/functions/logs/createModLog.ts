@@ -91,7 +91,7 @@ export async function createModLog(options: options) {
 		);
 
 	if (!logActivity('mod')) return;
-	var logMessage = await client.webhooks.mod.send({ embeds: [embed] });
+	var logMessage = await client.config.webhooks.mod.send({ embeds: [embed] });
 	if (update)
 		return `https://discord.com/channels/${guildConfig.id}/${logMessage.channel_id}/${logMessage.id}`;
 

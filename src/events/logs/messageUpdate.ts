@@ -72,7 +72,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		}
 	);
 
-	client.webhooks.message.send({
+	client.config.webhooks.message.send({
 		embeds: [logEmbed],
 	});
 });

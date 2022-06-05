@@ -20,6 +20,11 @@ export const automodSpamCollection: Collection<string, number> = new Collection(
 
 // Other constants
 export const EMBED_DESCRIPTION_MAX_LENGTH = 4096;
+export const PUNISHMENT_ID_LENGTH = 18;
+export const AUTOMOD_ID_LENGTH = 6;
+export const AUTOMOD_SPAM_COUNT = 5;
+export const AUTOMOD_MAX_EMOJI_COUNT = 10;
+export const AUTOMOD_MAX_CAPS = 90; /** % **/
 export enum WEBHOOK_NAMES {
 	'mod' = 'Mod-Logs',
 	'message' = 'Message-Logs',

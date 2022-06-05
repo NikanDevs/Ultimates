@@ -53,5 +53,5 @@ export default new Event('messageDelete', async (message: Message) => {
 			}
 		);
 
-	client.webhooks.message.send({ embeds: [logEmbed] });
+	client.config.webhooks.message.send({ embeds: [logEmbed] });
 });

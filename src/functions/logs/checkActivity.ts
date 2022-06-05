@@ -1,7 +1,7 @@
 import { client } from '../..';
 
 export function logActivity(type: 'mod' | 'message' | 'modmail' | 'servergate') {
-	if (client.config.logsActive[type] === null || client.config.logsActive[type] === false) {
+	if (client.config.logging[type] === null || client.config.logging[type] === false) {
 		return false;
 	} else return true;
 }

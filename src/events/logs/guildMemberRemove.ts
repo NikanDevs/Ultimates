@@ -39,5 +39,5 @@ export default new Event('guildMemberRemove', async (member) => {
 	}
 
 	// Sending the left message
-	client.webhooks.servergate?.send({ embeds: [embed] });
+	client.config.webhooks.servergate?.send({ embeds: [embed] });
 });

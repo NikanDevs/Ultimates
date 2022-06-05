@@ -1,9 +1,4 @@
 {
-	"lengths": {
-		"automod-id": 6,
-		"manual-id": 18,
-		"moderated-nickname": 5
-	},
 	"auto_mute": {
 		"2": "2h",
 		"4": "6h"

@@ -2,7 +2,6 @@ import { ChannelType, Collection, ComponentType, DMChannel, Guild, TextChannel }
 import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import { Event } from '../../structures/Event';
-import { badwords } from '../../json/automod.json';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { ModmailActionType } from '../../typings/Modmail';
 import { getModmailTicket } from '../../functions/cases/ModmailCase';
@@ -70,7 +69,11 @@ export default new Event('messageCreate', async (message) => {
 			) as TextChannel;
 
 		if (openedThread) {
-			if (badwords.some((word) => message.content.toLowerCase().includes(word)))
+			if (
+				client.config.automod.filteredWords.some((word) =>
+					message.content.toLowerCase().includes(word)
+				)
+			)
 				return message.reply({
 					content: "You're not allowed to use this word in modmails.",
 				});

@@ -17,15 +17,6 @@ export const cc = {
 	next: '▶️',
 };
 
-export const clientConfig = {
-	logsActive: {
-		mod: null,
-		message: null,
-		modmail: null,
-		servergate: null,
-	},
-};
-
 export const clientEmbeds = {
 	error: function name(error: string) {
 		const embed = client.util
