@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const __1 = require("../..");
 const Event_1 = require("../../structures/Event");
 const logs_json_1 = require("../../json/logs.json");
@@ -21,8 +22,7 @@ exports.default = new Event_1.Event('messageDelete', async (message) => {
         ignore.channel.includes(channel?.id) ||
         ignore.roles.some((role) => message?.member?.roles?.cache.has(role)))
         return;
-    const logEmbed = __1.client.util
-        .embed()
+    const logEmbed = new discord_js_1.EmbedBuilder()
         .setAuthor({
         name: message.author.tag,
         iconURL: message.author.displayAvatarURL(),
@@ -31,20 +31,24 @@ exports.default = new Event_1.Event('messageDelete', async (message) => {
         .setDescription(message.content || 'No content.')
         .setColor(__1.client.util.resolve.color('#b59190'))
         .setFooter({ text: 'Message ID: ' + message.id })
-        .addFields({
-        name: 'Mention',
-        value: `${message.author}`,
-        inline: true,
-    }, {
-        name: 'Channel',
-        value: `${message.channel}`,
-        inline: true,
-    }, {
-        name: 'Attachments',
-        value: message.attachments.size
-            ? `${message.attachments.size} attachments`
-            : 'No attachments',
-        inline: true,
-    });
+        .addFields([
+        {
+            name: 'Mention',
+            value: `${message.author}`,
+            inline: true,
+        },
+        {
+            name: 'Channel',
+            value: `${message.channel}`,
+            inline: true,
+        },
+        {
+            name: 'Attachments',
+            value: message.attachments.size
+                ? `${message.attachments.size} attachments`
+                : 'No attachments',
+            inline: true,
+        },
+    ]);
     __1.client.config.webhooks.message.send({ embeds: [logEmbed] });
 });

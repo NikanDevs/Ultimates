@@ -18,8 +18,7 @@ async function createModmailLog(options) {
         colors["BLACKLIST_REMOVE"] = "#60b3b1";
     })(colors || (colors = {}));
     const ticket = options.ticket;
-    const embed = __1.client.util
-        .embed()
+    const embed = new discord_js_1.EmbedBuilder()
         .setAuthor({
         name: `Modmail | ${options.action === Modmail_1.ModmailActionType.Open
             ? ticket.type === 'DIRECT'

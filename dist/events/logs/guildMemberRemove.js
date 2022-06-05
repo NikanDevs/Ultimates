@@ -6,6 +6,7 @@ const leftMembers_1 = require("../../models/leftMembers");
 const constants_1 = require("../../constants");
 const checkActivity_1 = require("../../functions/logs/checkActivity");
 const config_json_1 = require("../../json/config.json");
+const discord_js_1 = require("discord.js");
 exports.default = new Event_1.Event('guildMemberRemove', async (member) => {
     if (!(0, checkActivity_1.logActivity)('servergate'))
         return;
@@ -14,8 +15,7 @@ exports.default = new Event_1.Event('guildMemberRemove', async (member) => {
     const roles = member.roles.cache
         .filter((r) => r.id !== member.guild.id)
         .map((role) => role.id);
-    const embed = __1.client.util
-        .embed()
+    const embed = new discord_js_1.EmbedBuilder()
         .setAuthor({ name: member.guild.name, iconURL: member.guild.iconURL() })
         .setColor(__1.client.util.resolve.color('#b55c4e'))
         .setDescription([

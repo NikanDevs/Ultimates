@@ -32,8 +32,7 @@ async function createModLog(options) {
     const currentCase = await (0, modCase_1.getModCase)();
     if ((0, checkActivity_1.logActivity)('mod'))
         await (0, modCase_1.addModCase)();
-    const embed = __1.client.util
-        .embed()
+    const embed = new discord_js_1.EmbedBuilder()
         .setAuthor({
         name: ` ${revoke ? 'Revoke' : update ? 'Update' : __1.client.util.capitalize(options.action)} | Case: #${revoke ? options.referencedPunishment.case : currentCase}`,
         iconURL: __1.client.user.displayAvatarURL(),

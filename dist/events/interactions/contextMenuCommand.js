@@ -37,8 +37,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         // Cooldowns
         if (cooldown.has(`${command.interaction.name}${interaction.user.id}`)) {
             const cooldownRemaining = `${~~(+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now())}`;
-            const cooldownEmbed = __1.client.util
-                .embed()
+            const cooldownEmbed = new discord_js_1.EmbedBuilder()
                 .setColor(__1.client.cc.errorC)
                 .setDescription(`You need to wait \`${(0, convertTime_1.convertTime)(~~+cooldownRemaining)}\` to use this command again.`);
             return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });

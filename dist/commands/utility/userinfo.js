@@ -89,43 +89,47 @@ exports.default = new Command_1.Command({
         // Fetching users
         await user?.fetch(true);
         await member?.fetch(true);
-        const userinfoEmbed = client.util
-            .embed()
+        const userinfoEmbed = new discord_js_1.EmbedBuilder()
             .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
             .setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
             .setThumbnail(user.displayAvatarURL())
             .setColor(client.cc.invisible)
-            .addFields({
-            name: 'Account Information',
-            value: [
-                `• **ID:** ${user.id}`,
-                `• **Username:** ${user.username}`,
-                `• **Discriminator:** #${user.discriminator}`,
-                `• **Registered:** <t:${~~(+user.createdAt / 1000)}:f> | <t:${~~(+user.createdAt / 1000)}:R>`,
-                `• **Bot:** ${user?.bot ? `${client.cc.successE}` : `${client.cc.errorE}`}`,
-            ].join('\n'),
-        }, {
-            name: 'Avatar',
-            value: [
-                `• **Animated:** ${user.displayAvatarURL().endsWith('.gif')
-                    ? `${client.cc.successE}`
-                    : `${client.cc.errorE}`}`,
-                `• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
-            ].join('\n'),
-            inline: true,
-        });
-        // User's banner
-        if (user.bannerURL()) {
-            userinfoEmbed.setImage(user.bannerURL({ size: 1024 })).addFields({
-                name: 'Banner',
+            .addFields([
+            {
+                name: 'Account Information',
                 value: [
-                    `• **Animated:** ${user.bannerURL().endsWith('.gif')
+                    `• **ID:** ${user.id}`,
+                    `• **Username:** ${user.username}`,
+                    `• **Discriminator:** #${user.discriminator}`,
+                    `• **Registered:** <t:${~~(+user.createdAt / 1000)}:f> | <t:${~~(+user.createdAt / 1000)}:R>`,
+                    `• **Bot:** ${user?.bot ? `${client.cc.successE}` : `${client.cc.errorE}`}`,
+                ].join('\n'),
+            },
+            {
+                name: 'Avatar',
+                value: [
+                    `• **Animated:** ${user.displayAvatarURL().endsWith('.gif')
                         ? `${client.cc.successE}`
                         : `${client.cc.errorE}`}`,
-                    `• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
+                    `• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
                 ].join('\n'),
                 inline: true,
-            });
+            },
+        ]);
+        // User's banner
+        if (user.bannerURL()) {
+            userinfoEmbed.setImage(user.bannerURL({ size: 1024 })).addFields([
+                {
+                    name: 'Banner',
+                    value: [
+                        `• **Animated:** ${user.bannerURL().endsWith('.gif')
+                            ? `${client.cc.successE}`
+                            : `${client.cc.errorE}`}`,
+                        `• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
+                    ].join('\n'),
+                    inline: true,
+                },
+            ]);
         }
         // User's Badges
         let badgesReweite;
@@ -153,10 +157,12 @@ exports.default = new Command_1.Command({
             badgesArray.push(`${findBadgeEmoji} • ${badgesReweite[badge]}`);
         });
         if (badgesArray.length !== 0) {
-            userinfoEmbed.addFields({
-                name: `Badges [${badgesArray.length}]`,
-                value: badgesArray.join('\n'),
-            });
+            userinfoEmbed.addFields([
+                {
+                    name: `Badges [${badgesArray.length}]`,
+                    value: badgesArray.join('\n'),
+                },
+            ]);
         }
         if (!member) {
             interaction.reply({ embeds: [userinfoEmbed] });
@@ -164,33 +170,36 @@ exports.default = new Command_1.Command({
         else if (member) {
             if (member.presence && ['dnd', 'online', 'idle'].includes(member.presence?.status)) {
                 const devices = member.presence?.clientStatus || {};
-                userinfoEmbed.addFields({
-                    name: `Presence`,
-                    value: [
-                        `• **Status:** ${client.util.capitalize(member?.presence?.status)}`,
-                        `• **Devices [${Object.entries(devices).length}]:** ${Object.entries(devices)
-                            .map((value) => `${value[0][0].toUpperCase()}${value[0].slice(1)}`)
-                            .join(', ')}`,
-                    ].join('\n'),
-                });
+                userinfoEmbed.addFields([
+                    {
+                        name: `Presence`,
+                        value: [
+                            `• **Status:** ${client.util.capitalize(member?.presence?.status)}`,
+                            `• **Devices [${Object.entries(devices).length}]:** ${Object.entries(devices)
+                                .map((value) => `${value[0][0].toUpperCase()}${value[0].slice(1)}`)
+                                .join(', ')}`,
+                        ].join('\n'),
+                    },
+                ]);
             }
             const buttonComponents = (options) => [
-                client.util.actionRow().addComponents(client.util
-                    .button()
-                    .setLabel('Account')
-                    .setStyle(discord_js_1.ButtonStyle['Primary'])
-                    .setDisabled(options.disableAccount || false)
-                    .setCustomId('1'), client.util
-                    .button()
-                    .setLabel('Guild')
-                    .setStyle(discord_js_1.ButtonStyle['Primary'])
-                    .setDisabled(options.disableGuild || false)
-                    .setCustomId('2'), client.util
-                    .button()
-                    .setLabel('Roles')
-                    .setStyle(discord_js_1.ButtonStyle['Primary'])
-                    .setDisabled(options.disableRoles || false)
-                    .setCustomId('3')),
+                new discord_js_1.ActionRowBuilder().addComponents([
+                    new discord_js_1.ButtonBuilder()
+                        .setLabel('Account')
+                        .setStyle(discord_js_1.ButtonStyle['Primary'])
+                        .setDisabled(options.disableAccount || false)
+                        .setCustomId('1'),
+                    new discord_js_1.ButtonBuilder()
+                        .setLabel('Guild')
+                        .setStyle(discord_js_1.ButtonStyle['Primary'])
+                        .setDisabled(options.disableGuild || false)
+                        .setCustomId('2'),
+                    new discord_js_1.ButtonBuilder()
+                        .setLabel('Roles')
+                        .setStyle(discord_js_1.ButtonStyle['Primary'])
+                        .setDisabled(options.disableRoles || false)
+                        .setCustomId('3'),
+                ]),
             ];
             const sentInteraction = (await interaction.reply({
                 embeds: [userinfoEmbed],
@@ -236,8 +245,7 @@ exports.default = new Command_1.Command({
                         if (user?.id === interaction.guild.ownerId) {
                             acknowments = 'Server Owner';
                         }
-                        const userinfoGuildEmbed = client.util
-                            .embed()
+                        const userinfoGuildEmbed = new discord_js_1.EmbedBuilder()
                             .setAuthor({
                             name: user.tag,
                             iconURL: user.displayAvatarURL(),
@@ -245,32 +253,38 @@ exports.default = new Command_1.Command({
                             .setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
                             .setThumbnail(user.displayAvatarURL())
                             .setColor(client.cc.invisible)
-                            .addFields({
-                            name: `Information in ${interaction.guild.name}`,
-                            value: [
-                                `• ** Joined:** <t:${~~(+member.joinedAt / 1000)}:f> [<t:${~~(+member.joinedAt / 1000)}:R>]`,
-                                `• **Nickname:** ${member.displayName === member.user?.username
-                                    ? 'No Nickname'
-                                    : `${member.displayName}`}`,
-                                `• **Booster:** ${member.premiumSinceTimestamp
-                                    ? `${client.cc.successE}`
-                                    : `${client.cc.errorE}`}`,
-                                `• **Boosting Since:** ${member.premiumSinceTimestamp
-                                    ? `<t:${~~(member.premiumSinceTimestamp / 1000)}:f> | <t:${~~(member.premiumSinceTimestamp / 1000)}:R>`
-                                    : 'Not boosting the server!'}`,
-                                `• **Acknowments:** ${acknowments}`,
-                            ].join('\n'),
-                        });
-                        if (member.avatarURL())
-                            userinfoGuildEmbed.addFields({
-                                name: 'Server Avatar',
+                            .addFields([
+                            {
+                                name: `Information in ${interaction.guild.name}`,
                                 value: [
-                                    `• **Animated:** ${member.avatarURL().endsWith('.gif')
+                                    `• ** Joined:** <t:${~~(+member.joinedAt / 1000)}:f> [<t:${~~(+member.joinedAt / 1000)}:R>]`,
+                                    `• **Nickname:** ${member.displayName === member.user?.username
+                                        ? 'No Nickname'
+                                        : `${member.displayName}`}`,
+                                    `• **Booster:** ${member.premiumSinceTimestamp
                                         ? `${client.cc.successE}`
                                         : `${client.cc.errorE}`}`,
-                                    `• **Formats:** ${UrlTypeCheck(member.avatarURL(), 'Avatar')}`,
+                                    `• **Boosting Since:** ${member.premiumSinceTimestamp
+                                        ? `<t:${~~(member.premiumSinceTimestamp /
+                                            1000)}:f> | <t:${~~(member.premiumSinceTimestamp /
+                                            1000)}:R>`
+                                        : 'Not boosting the server!'}`,
+                                    `• **Acknowments:** ${acknowments}`,
                                 ].join('\n'),
-                            });
+                            },
+                        ]);
+                        if (member.avatarURL())
+                            userinfoGuildEmbed.addFields([
+                                {
+                                    name: 'Server Avatar',
+                                    value: [
+                                        `• **Animated:** ${member.avatarURL().endsWith('.gif')
+                                            ? `${client.cc.successE}`
+                                            : `${client.cc.errorE}`}`,
+                                        `• **Formats:** ${UrlTypeCheck(member.avatarURL(), 'Avatar')}`,
+                                    ].join('\n'),
+                                },
+                            ]);
                         interaction.editReply({
                             embeds: [userinfoGuildEmbed],
                             components: buttonComponents({ disableGuild: true }),
@@ -281,8 +295,7 @@ exports.default = new Command_1.Command({
                         const mappedRoles = member.roles.cache
                             .sort((a, b) => b.position - a.position)
                             .filter((r) => r.id !== interaction.guildId);
-                        const userinfoRolesEmbed = client.util
-                            .embed()
+                        const userinfoRolesEmbed = new discord_js_1.EmbedBuilder()
                             .setAuthor({
                             name: user.tag,
                             iconURL: user.displayAvatarURL(),

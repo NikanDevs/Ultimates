@@ -86,11 +86,15 @@ exports.default = new Command_1.Command({
                 });
                 await client.config.updateLogs();
             }
-            const embed = client.util
-                .embed()
+            const embed = new discord_js_1.EmbedBuilder()
                 .setTitle('Logging Configuration')
                 .setColor(client.cc.ultimates)
-                .addFields(await formatLogField('mod'), await formatLogField('message'), await formatLogField('modmail'), await formatLogField('servergate'));
+                .addFields([
+                await formatLogField('mod'),
+                await formatLogField('message'),
+                await formatLogField('modmail'),
+                await formatLogField('servergate'),
+            ]);
             await interaction.followUp({ embeds: [embed] });
             // Functions
             async function formatLogField(module) {
@@ -141,8 +145,7 @@ exports.default = new Command_1.Command({
                 });
                 await client.config.updateAutomod();
             }
-            const embed = client.util
-                .embed()
+            const embed = new discord_js_1.EmbedBuilder()
                 .setTitle('Automod Configuration')
                 .setColor(client.cc.ultimates)
                 .setDescription([
@@ -156,19 +159,20 @@ exports.default = new Command_1.Command({
                 await formatDescription('urls'),
             ].join('\n'));
             if (data.filteredWords.length)
-                embed.addFields({
-                    name: 'Filtered Words',
-                    value: client.util.splitText(data.filteredWords
-                        .map((word) => word.toLowerCase())
-                        .join(', '), { splitFor: 'Embed Field Value' }),
-                });
-            const button = client.util
-                .actionRow()
-                .addComponents(client.util
-                .button()
-                .setLabel('Add filtered words')
-                .setStyle(discord_js_1.ButtonStyle.Secondary)
-                .setCustomId('badwords'));
+                embed.addFields([
+                    {
+                        name: 'Filtered Words',
+                        value: client.util.splitText(data.filteredWords
+                            .map((word) => word.toLowerCase())
+                            .join(', '), { splitFor: 'Embed Field Value' }),
+                    },
+                ]);
+            const button = new discord_js_1.ActionRowBuilder().addComponents([
+                new discord_js_1.ButtonBuilder()
+                    .setLabel('Add filtered words')
+                    .setStyle(discord_js_1.ButtonStyle.Secondary)
+                    .setCustomId('badwords'),
+            ]);
             const sentInteraction = (await interaction.followUp({
                 embeds: [embed],
                 components: [button],
@@ -185,25 +189,26 @@ exports.default = new Command_1.Command({
                     });
                 if (collected.customId !== 'badwords')
                     return;
-                const modal = client.util
-                    .modal()
+                const modal = new discord_js_1.ModalBuilder()
                     .setTitle('Add filtered words')
                     .setCustomId('add-badwords')
-                    .addComponents({
-                    type: discord_js_1.ComponentType['ActionRow'],
-                    components: [
-                        {
-                            type: discord_js_1.ComponentType['TextInput'],
-                            custom_id: 'input',
-                            label: 'Separate words with commas',
-                            style: discord_js_1.TextInputStyle['Paragraph'],
-                            required: true,
-                            max_length: 4000,
-                            min_length: 1,
-                            placeholder: 'badword1, frick, pizza, cake - type an existing word to remove it',
-                        },
-                    ],
-                });
+                    .addComponents([
+                    {
+                        type: discord_js_1.ComponentType.ActionRow,
+                        components: [
+                            {
+                                type: discord_js_1.ComponentType.TextInput,
+                                custom_id: 'input',
+                                label: 'Separate words with commas',
+                                style: discord_js_1.TextInputStyle.Paragraph,
+                                required: true,
+                                max_length: 4000,
+                                min_length: 1,
+                                placeholder: 'badword1, frick, pizza, cake - type an existing word to remove it',
+                            },
+                        ],
+                    },
+                ]);
                 await collected.showModal(modal);
                 collector.stop();
             });

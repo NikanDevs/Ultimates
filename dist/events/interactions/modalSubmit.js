@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const __1 = require("../..");
 const config_1 = require("../../models/config");
 const Event_1 = require("../../structures/Event");
@@ -29,7 +30,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         await __1.client.config.updateAutomod();
         await interaction.reply({
             embeds: [
-                __1.client.util.embed({
+                new discord_js_1.EmbedBuilder({
                     description: [
                         wordsArray.length
                             ? '**Added filtered words:**\n' +

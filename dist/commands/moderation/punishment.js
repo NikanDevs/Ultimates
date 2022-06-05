@@ -144,7 +144,7 @@ exports.default = new Command_1.Command({
         else if (getSubCommand === 'search') {
             let doesExist = true;
             const warnId = options.getString('id');
-            const baseEmbed = client.util.embed().setColor(client.cc.invisible);
+            const baseEmbed = new discord_js_1.EmbedBuilder().setColor(client.cc.invisible);
             switch (warnId.length) {
                 case constants_1.AUTOMOD_ID_LENGTH:
                     await automod_1.automodModel
@@ -163,35 +163,43 @@ exports.default = new Command_1.Command({
                             name: client.user.username,
                             iconURL: client.user.displayAvatarURL(),
                         })
-                            .addFields({
-                            name: 'Type',
-                            value: `Automod ${client.util.capitalize(automodWarn.type)}`,
-                            inline: true,
-                        }, {
-                            name: 'Date & Time',
-                            value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(automodWarn.date, 'Short Date/Time'),
-                            inline: true,
-                        }, {
-                            name: 'Expire',
-                            value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(automodWarn.expire),
-                            inline: true,
-                        }, {
-                            name: 'User',
-                            value: getUser.toString(),
-                            inline: true,
-                        }, {
-                            name: 'User Tag',
-                            value: getUser.tag,
-                            inline: true,
-                        }, {
-                            name: 'User Id',
-                            value: automodWarn.userId,
-                            inline: true,
-                        }, {
-                            name: 'Reason',
-                            value: automodWarn.reason,
-                            inline: true,
-                        });
+                            .addFields([
+                            {
+                                name: 'Type',
+                                value: `Automod ${client.util.capitalize(automodWarn.type)}`,
+                                inline: true,
+                            },
+                            {
+                                name: 'Date & Time',
+                                value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(automodWarn.date, 'Short Date/Time'),
+                                inline: true,
+                            },
+                            {
+                                name: 'Expire',
+                                value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(automodWarn.expire),
+                                inline: true,
+                            },
+                            {
+                                name: 'User',
+                                value: getUser.toString(),
+                                inline: true,
+                            },
+                            {
+                                name: 'User Tag',
+                                value: getUser.tag,
+                                inline: true,
+                            },
+                            {
+                                name: 'User Id',
+                                value: automodWarn.userId,
+                                inline: true,
+                            },
+                            {
+                                name: 'Reason',
+                                value: automodWarn.reason,
+                                inline: true,
+                            },
+                        ]);
                     });
                     break;
                 case constants_1.PUNISHMENT_ID_LENGTH:
@@ -214,47 +222,58 @@ exports.default = new Command_1.Command({
                             name: client.user.username,
                             iconURL: client.user.displayAvatarURL(),
                         })
-                            .addFields({
-                            name: 'Type',
-                            value: `Manual ${client.util.capitalize(manualWarn.type)}`,
-                            inline: true,
-                        }, {
-                            name: 'Date & Time',
-                            value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(manualWarn.date, 'Short Date/Time'),
-                            inline: true,
-                        }, {
-                            name: 'Expire',
-                            value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(manualWarn.expire),
-                            inline: true,
-                        }, {
-                            name: 'User',
-                            value: getUser.toString(),
-                            inline: true,
-                        }, {
-                            name: 'User Tag',
-                            value: getUser.tag,
-                            inline: true,
-                        }, {
-                            name: 'User Id',
-                            value: manualWarn.userId,
-                            inline: true,
-                        }, {
-                            name: 'Moderator',
-                            value: getMod.toString(),
-                            inline: true,
-                        }, {
-                            name: 'Moderator Tag',
-                            value: getMod.tag,
-                            inline: true,
-                        }, {
-                            name: 'Moderator Id',
-                            value: manualWarn.moderatorId,
-                            inline: true,
-                        }, {
-                            name: 'Reason',
-                            value: manualWarn.reason,
-                            inline: true,
-                        });
+                            .addFields([
+                            {
+                                name: 'Type',
+                                value: `Manual ${client.util.capitalize(manualWarn.type)}`,
+                                inline: true,
+                            },
+                            {
+                                name: 'Date & Time',
+                                value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(manualWarn.date, 'Short Date/Time'),
+                                inline: true,
+                            },
+                            {
+                                name: 'Expire',
+                                value: (0, generateDiscordTimestamp_1.generateDiscordTimestamp)(manualWarn.expire),
+                                inline: true,
+                            },
+                            {
+                                name: 'User',
+                                value: getUser.toString(),
+                                inline: true,
+                            },
+                            {
+                                name: 'User Tag',
+                                value: getUser.tag,
+                                inline: true,
+                            },
+                            {
+                                name: 'User Id',
+                                value: manualWarn.userId,
+                                inline: true,
+                            },
+                            {
+                                name: 'Moderator',
+                                value: getMod.toString(),
+                                inline: true,
+                            },
+                            {
+                                name: 'Moderator Tag',
+                                value: getMod.tag,
+                                inline: true,
+                            },
+                            {
+                                name: 'Moderator Id',
+                                value: manualWarn.moderatorId,
+                                inline: true,
+                            },
+                            {
+                                name: 'Reason',
+                                value: manualWarn.reason,
+                                inline: true,
+                            },
+                        ]);
                     });
                     break;
                 default:
@@ -307,8 +326,7 @@ exports.default = new Command_1.Command({
                     .join('\n')
                     .replaceAll('\nLINE_BREAK', '');
             }));
-            const warningsEmbed = client.util
-                .embed()
+            const warningsEmbed = new discord_js_1.EmbedBuilder()
                 .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
                 .setColor(client.cc.invisible)
                 .setThumbnail(user.displayAvatarURL());
@@ -316,7 +334,7 @@ exports.default = new Command_1.Command({
             if (warnings.length === 0)
                 return interaction.reply({
                     embeds: [
-                        client.util.embed({
+                        new discord_js_1.EmbedBuilder({
                             description: `No punishments were found for **${user.tag}**`,
                             color: client.cc.invisible,
                         }),
@@ -534,14 +552,14 @@ exports.default = new Command_1.Command({
                 case 1:
                     client.config.webhooks.mod.editMessage(firstLogId, {
                         embeds: [
-                            firstLog.embeds[0].setDescription(firstLog.embeds[0].description.replaceAll('\n• **Duration', `\n• **Duration [[U](${updateLog})]`)),
+                            discord_js_1.EmbedBuilder.from(firstLog.embeds[0]).setDescription(firstLog.embeds[0].description.replaceAll('\n• **Duration', `\n• **Duration [[U](${updateLog})]`)),
                         ],
                     });
                     break;
                 case 2:
                     client.config.webhooks.mod.editMessage(firstLogId, {
                         embeds: [
-                            firstLog.embeds[0].setDescription(firstLog.embeds[0].description.replaceAll('\n• **Reason', `\n• **Reason [[U](${updateLog})]`)),
+                            discord_js_1.EmbedBuilder.from(firstLog.embeds[0]).setDescription(firstLog.embeds[0].description.replaceAll('\n• **Reason', `\n• **Reason [[U](${updateLog})]`)),
                         ],
                     });
                     break;

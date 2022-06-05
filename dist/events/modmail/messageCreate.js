@@ -21,15 +21,14 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
     if (!message?.guild && message.channel.type === discord_js_1.ChannelType.DM && !message.author?.bot) {
         // Checking for blacklist
         const data = await modmail_1.modmailModel.findById(message.author.id);
-        const blacklistedEmbed = __1.client.util
-            .embed()
+        const blacklistedEmbed = new discord_js_1.EmbedBuilder()
             .setAuthor({ name: guild.name, iconURL: guild.iconURL() })
             .setTitle('Blacklisted from using modmail')
             .setDescription([
             'Sorry, but looks like you were blacklisted from using the modmail.',
             "If you think that this is not fair and you don't deserve it, please contact a moderator!",
         ].join('\n'))
-            .addFields({ name: 'Reason', value: `${data?.reason}` })
+            .addFields([{ name: 'Reason', value: `${data?.reason}` }])
             .setColor(__1.client.cc.errorC);
         if (data)
             return message.channel?.send({
@@ -61,8 +60,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                 exports.modmailCooldown.delete(`send-message_${message.author.id}`);
             }, 500);
             const finalEmbeds = [];
-            const toSendEmbed = __1.client.util
-                .embed()
+            const toSendEmbed = new discord_js_1.EmbedBuilder()
                 .setAuthor({
                 name: message.author.tag,
                 iconURL: message.author.displayAvatarURL(),
@@ -79,8 +77,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                     ?.map((attach) => attach)
                     .slice(1, message.attachments?.size)
                     .forEach((attachment) => {
-                    const attachmentEmbed = __1.client.util
-                        .embed()
+                    const attachmentEmbed = new discord_js_1.EmbedBuilder()
                         .setAuthor({ name: `Attachment #${attachmentCounter}` })
                         .setImage(attachment.proxyURL)
                         .setColor(__1.client.util.resolve.color('Orange'));
@@ -109,8 +106,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             });
         }
         else if (!openedThread) {
-            const confirmationEmbed = __1.client.util
-                .embed()
+            const confirmationEmbed = new discord_js_1.EmbedBuilder()
                 .setAuthor({ name: guild.name, iconURL: guild.iconURL() })
                 .setTitle('Are you sure that you want to create a ticket?')
                 .setColor(__1.client.cc.ultimates)
@@ -162,8 +158,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                             ticketId: await (0, ModmailCase_1.getModmailTicket)(),
                         });
                         // Thread Created
-                        const createdEmbed = __1.client.util
-                            .embed()
+                        const createdEmbed = new discord_js_1.EmbedBuilder()
                             .setAuthor({ name: guild.name, iconURL: guild.iconURL() })
                             .setTitle('Ticket created')
                             .setColor(__1.client.util.resolve.color('Green'))
@@ -196,8 +191,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                 content: 'The user was not found.',
             });
         const finalEmbeds = [];
-        const toSendEmbed = __1.client.util
-            .embed()
+        const toSendEmbed = new discord_js_1.EmbedBuilder()
             .setAuthor({
             name: 'Staff Member',
             iconURL: 'https://cdn.discordapp.com/attachments/870637449158742057/909825851225427978/staff-icon.png',
@@ -213,8 +207,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                 ?.map((attach) => attach)
                 .slice(1, message.attachments?.size)
                 .forEach((attachment) => {
-                const attachmentEmbed = __1.client.util
-                    .embed()
+                const attachmentEmbed = new discord_js_1.EmbedBuilder()
                     .setAuthor({ name: `Attachment #${attachmentCounter}` })
                     .setImage(attachment.proxyURL)
                     .setColor(__1.client.util.resolve.color('Orange'));

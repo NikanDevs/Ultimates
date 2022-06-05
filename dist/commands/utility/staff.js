@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 const staffPermissions = [
@@ -36,8 +37,7 @@ exports.default = new Command_1.Command({
             statuses["dnd"] = "<:dnd:906867112222531614>";
             statuses["undefined"] = "<:offline:906867114126770186>";
         })(statuses || (statuses = {}));
-        const embed = client.util
-            .embed()
+        const embed = new discord_js_1.EmbedBuilder()
             .setAuthor({ name: 'Staff members', iconURL: client.user.displayAvatarURL() })
             .setColor(client.cc.ultimates)
             .setDescription(staff

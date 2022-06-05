@@ -34,7 +34,7 @@ function ignore(member, options) {
         });
         return true;
     }
-    if (member.roles?.highest.position >= interaction.guild.me.roles?.highest.position) {
+    if (member.roles?.highest.position >= interaction.guild.members.me.roles?.highest.position) {
         interaction.reply({
             embeds: [
                 __1.client.embeds.error("I don't have enough permissions to perform this action."),

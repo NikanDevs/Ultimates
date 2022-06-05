@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildPaginationButtons = exports.buildConfirmationButtons = exports.splitTextFunction = exports.capitalizeFunction = void 0;
 const discord_js_1 = require("discord.js");
-const __1 = require("../..");
 const constants_1 = require("../../constants");
 // Capitalize
 function capitalizeFunction(str) {
@@ -46,30 +45,22 @@ function splitTextFunction(text, options) {
 }
 exports.splitTextFunction = splitTextFunction;
 function buildConfirmationButtons(firstLabel, secondLabel) {
-    return __1.client.util
-        .actionRow()
-        .addComponents(__1.client.util
-        .button()
-        .setLabel(firstLabel)
-        .setStyle(discord_js_1.ButtonStyle['Success'])
-        .setCustomId('1'), __1.client.util
-        .button()
-        .setLabel(secondLabel)
-        .setStyle(discord_js_1.ButtonStyle['Danger'])
-        .setCustomId('2'));
+    return new discord_js_1.ActionRowBuilder().setComponents([
+        new discord_js_1.ButtonBuilder().setLabel(firstLabel).setStyle(discord_js_1.ButtonStyle.Success).setCustomId('1'),
+        new discord_js_1.ButtonBuilder().setLabel(secondLabel).setStyle(discord_js_1.ButtonStyle.Danger).setCustomId('2'),
+    ]);
 }
 exports.buildConfirmationButtons = buildConfirmationButtons;
 function buildPaginationButtons() {
-    return __1.client.util
-        .actionRow()
-        .addComponents(__1.client.util
-        .button()
-        .setCustomId('1')
-        .setEmoji({ name: __1.client.cc.previous })
-        .setStyle(discord_js_1.ButtonStyle['Primary']), __1.client.util
-        .button()
-        .setCustomId('2')
-        .setEmoji({ name: __1.client.cc.next })
-        .setStyle(discord_js_1.ButtonStyle['Primary']));
+    return new discord_js_1.ActionRowBuilder().setComponents([
+        new discord_js_1.ButtonBuilder()
+            .setCustomId('1')
+            .setEmoji({ name: '◀️' })
+            .setStyle(discord_js_1.ButtonStyle.Primary),
+        new discord_js_1.ButtonBuilder()
+            .setCustomId('2')
+            .setEmoji({ name: '▶️' })
+            .setStyle(discord_js_1.ButtonStyle.Primary),
+    ]);
 }
 exports.buildPaginationButtons = buildPaginationButtons;

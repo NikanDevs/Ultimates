@@ -19,22 +19,19 @@ exports.cc = {
 };
 exports.clientEmbeds = {
     error: function name(error) {
-        const embed = __1.client.util
-            .embed()
+        const embed = new discord_js_1.EmbedBuilder()
             .setDescription(exports.cc.errorE + ' ' + error)
             .setColor(discord_js_1.Util.resolveColor('Red'));
         return embed;
     },
     attention: function (message) {
-        const embed = __1.client.util
-            .embed()
+        const embed = new discord_js_1.EmbedBuilder()
             .setDescription(exports.cc.attentionE + ' ' + message)
             .setColor(discord_js_1.Util.resolveColor('#f0e17c'));
         return embed;
     },
     success: function (message) {
-        const embed = __1.client.util
-            .embed()
+        const embed = new discord_js_1.EmbedBuilder()
             .setDescription(exports.cc.successE + ' ' + message)
             .setColor(discord_js_1.Util.resolveColor('#9eea9a'));
         return embed;
@@ -49,8 +46,7 @@ exports.clientEmbeds = {
             pastForm["UNBAN"] = "unbanned";
             pastForm["SOFTBAN"] = "soft banned";
         })(pastForm || (pastForm = {}));
-        const embed = __1.client.util
-            .embed()
+        const embed = new discord_js_1.EmbedBuilder()
             .setDescription(`${user} was **${pastForm[options['action']]}**  • ID: \`${options['id']}\``)
             .setColor(__1.client.cc.moderation);
         return embed;

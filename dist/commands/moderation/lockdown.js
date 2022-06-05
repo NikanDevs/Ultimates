@@ -20,8 +20,7 @@ exports.default = new Command_1.Command({
                 .includes('SendMessages' || 'Connect')
                 ? false
                 : true;
-            const embed = client.util
-                .embed()
+            const embed = new discord_js_1.EmbedBuilder()
                 .setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
                 .setAuthor({
                 name: 'Channel ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
@@ -31,10 +30,12 @@ exports.default = new Command_1.Command({
                 ? 'This channel was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the channel gets unlocked'
                 : 'This channel was unlocked by a moderator!\n\nYou can now use the channel, thanks for your patient.');
             if (options.getString('reason'))
-                embed.addFields({
-                    name: 'Reason',
-                    value: options.getString('reason'),
-                });
+                embed.addFields([
+                    {
+                        name: 'Reason',
+                        value: options.getString('reason'),
+                    },
+                ]);
             switch (channel.type) {
                 case discord_js_1.ChannelType.GuildText:
                     await channel.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
@@ -143,8 +144,7 @@ exports.default = new Command_1.Command({
                         break;
                 }
             });
-            const embed = client.util
-                .embed()
+            const embed = new discord_js_1.EmbedBuilder()
                 .setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
                 .setAuthor({
                 name: 'Server ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
@@ -154,10 +154,12 @@ exports.default = new Command_1.Command({
                 ? 'This server was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the server gets unlocked'
                 : 'This server was unlocked by a moderator!\n\nYou can now use it, thanks for your patient.');
             if (options.getString('reason'))
-                embed.addFields({
-                    name: 'Reason',
-                    value: options.getString('reason'),
-                });
+                embed.addFields([
+                    {
+                        name: 'Reason',
+                        value: options.getString('reason'),
+                    },
+                ]);
             generalChannel.send({
                 embeds: [embed],
             });

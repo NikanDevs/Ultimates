@@ -21,7 +21,7 @@ exports.default = new Event_1.Event('guildMemberUpdate', async (oldMember, newMe
     if (!oldMember.communicationDisabledUntil && newMember.communicationDisabledUntil) {
         const auditLogs = await newMember.guild.fetchAuditLogs({
             limit: 10,
-            type: v9_1.AuditLogEvent['MemberUpdate'],
+            type: v9_1.AuditLogEvent.MemberUpdate,
         });
         const findCase = auditLogs.entries.find((log) => log.target.id === newMember.user.id);
         if (!findCase)

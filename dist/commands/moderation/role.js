@@ -14,7 +14,8 @@ exports.default = new Command_1.Command({
             var alreadyHas = false;
             if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Unknown }))
                 return;
-            if (role.position > interaction.guild.me.roles.highest.position || role.managed)
+            if (role.position > interaction.guild.members.me.roles.highest.position ||
+                role.managed)
                 return interaction.reply({
                     embeds: [
                         client.embeds.error("I don't have enough permissions to manage that role."),

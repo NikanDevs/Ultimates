@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const convertTime_1 = require("../../functions/convertTime");
 const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
@@ -12,8 +13,7 @@ exports.default = new Command_1.Command({
             case null:
                 await interaction.reply({
                     embeds: [
-                        client.util
-                            .embed()
+                        new discord_js_1.EmbedBuilder()
                             .setDescription(slowmode !== 0
                             ? `The current slowmode is **${(0, convertTime_1.convertTime)(slowmode * 1000)}**`
                             : "This channel doesn't have any slowmode.")
@@ -33,12 +33,9 @@ exports.default = new Command_1.Command({
                 await interaction.channel.setRateLimitPerUser(rate);
                 await interaction.reply({
                     embeds: [
-                        client.util
-                            .embed()
-                            .setDescription(rate !== 0
+                        client.embeds.success(rate !== 0
                             ? `Slowmode was set to **${(0, convertTime_1.convertTime)(rate * 1000)}**`
-                            : 'Slowmode was turned off.')
-                            .setColor(client.cc.moderation),
+                            : 'Slowmode was turned off.'),
                     ],
                 });
                 break;

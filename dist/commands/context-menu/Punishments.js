@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const functions_1 = require("../../functions/client/functions");
 const interactions_1 = require("../../interactions");
 const automod_1 = require("../../models/automod");
 const punishments_1 = require("../../models/punishments");
@@ -49,8 +50,7 @@ exports.default = new Command_1.Command({
                 .join('\n')
                 .replaceAll('\nLINE_BREAK', '');
         }));
-        const warningsEmbed = client.util
-            .embed()
+        const warningsEmbed = new discord_js_1.EmbedBuilder()
             .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
             .setColor(client.cc.invisible)
             .setThumbnail(user.displayAvatarURL());
@@ -58,7 +58,7 @@ exports.default = new Command_1.Command({
         if (warnings.length === 0)
             return interaction.reply({
                 embeds: [
-                    client.util.embed({
+                    new discord_js_1.EmbedBuilder({
                         description: `No punishments were found for **${user.tag}**`,
                         color: client.cc.invisible,
                     }),
@@ -83,11 +83,11 @@ exports.default = new Command_1.Command({
                 .setFooter({ text: `Page ${currentPage}/${totalPages}` });
             var sentInteraction = (await interaction.followUp({
                 embeds: [warningsEmbed],
-                components: [client.util.build.paginator()],
+                components: [(0, functions_1.buildPaginationButtons)()],
             }));
             const collector = sentInteraction.createMessageComponentCollector({
                 time: 60000,
-                componentType: discord_js_1.ComponentType['Button'],
+                componentType: discord_js_1.ComponentType.Button,
             });
             collector.on('collect', (collected) => {
                 if (interaction.user.id !== collected.user.id)
@@ -98,7 +98,7 @@ exports.default = new Command_1.Command({
                 switch (collected.customId) {
                     case '1':
                         if (currentPage === 1)
-                            return collected.deferUpdate();
+                            collected.deferUpdate();
                         currentSlice1 = currentSlice1 - 3;
                         currentSlice2 = currentSlice2 - 3;
                         currentPage = currentPage - 1;
@@ -113,7 +113,7 @@ exports.default = new Command_1.Command({
                         break;
                     case '2':
                         if (currentPage === totalPages)
-                            return collected.deferUpdate();
+                            collected.deferUpdate();
                         currentSlice1 = currentSlice1 + 3;
                         currentSlice2 = currentSlice2 + 3;
                         currentPage = currentPage + 1;

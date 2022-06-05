@@ -11,8 +11,7 @@ exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.warnings,
     excute: async ({ client, interaction, options }) => {
         const user = interaction.user;
-        const warningsEmbed = client.util
-            .embed()
+        const warningsEmbed = new discord_js_1.EmbedBuilder()
             .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
             .setColor(client.cc.invisible)
             .setThumbnail(user.displayAvatarURL());
@@ -92,7 +91,7 @@ exports.default = new Command_1.Command({
         if (warningsMap.length === 0)
             return interaction.reply({
                 embeds: [
-                    client.util.embed({
+                    new discord_js_1.EmbedBuilder({
                         description: `No ${optionChoice ? (optionChoice === 1 ? 'manual ' : 'automod ') : ''}warnings were found for you, you're clean!`,
                         color: client.cc.invisible,
                     }),

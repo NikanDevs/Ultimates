@@ -19,7 +19,7 @@ exports.default = new Event_1.Event('guildMemberRemove', async (member) => {
         return;
     const auditLogs = await member.guild.fetchAuditLogs({
         limit: 10,
-        type: v9_1.AuditLogEvent['MemberKick'],
+        type: v9_1.AuditLogEvent.MemberKick,
     });
     const findCase = auditLogs.entries.find((log) => log.target.id === member.id);
     if (!findCase)

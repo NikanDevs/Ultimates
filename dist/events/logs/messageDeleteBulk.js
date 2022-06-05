@@ -31,27 +31,30 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
     })
         .slice(0, messagesToShow);
     // Creating the embed!
-    const logEmbed = __1.client.util
-        .embed()
+    const logEmbed = new discord_js_1.EmbedBuilder()
         .setAuthor({
         name: randomMessage.author?.tag,
         iconURL: randomMessage.author.displayAvatarURL(),
     })
         .setTitle('Messages Bulk Deleted')
         .setColor(__1.client.util.resolve.color('#b59190'))
-        .addFields({
-        name: 'Channel',
-        value: `${randomMessage.channel}`,
-        inline: true,
-    }, {
-        name: 'Showing',
-        value: `${messagesToShow}`,
-        inline: true,
-    }, {
-        name: 'Amount',
-        value: messages.size.toString(),
-        inline: true,
-    });
+        .addFields([
+        {
+            name: 'Channel',
+            value: `${randomMessage.channel}`,
+            inline: true,
+        },
+        {
+            name: 'Showing',
+            value: `${messagesToShow}`,
+            inline: true,
+        },
+        {
+            name: 'Amount',
+            value: messages.size.toString(),
+            inline: true,
+        },
+    ]);
     logEmbed.setDescription(`${__1.client.util.splitText(messagesMapped.join('\n'), { splitFor: 'Embed Description' })}`);
     if (messages.size > 10) {
         const webHookMsg = await __1.client.config.webhooks.message.send({
@@ -69,13 +72,12 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
             title: `Bulk Deleted Messages`,
             description: `Bulk Deleted Messages in #${channel.name} - amount: ${messages.size}`,
         });
-        const viewAllRow = __1.client.util
-            .actionRow()
-            .addComponents(__1.client.util
-            .button()
-            .setLabel('View All Messages')
-            .setStyle(discord_js_1.ButtonStyle['Link'])
-            .setURL(srcbin.url));
+        const viewAllRow = new discord_js_1.ActionRowBuilder().addComponents([
+            new discord_js_1.ButtonBuilder()
+                .setLabel('View All Messages')
+                .setStyle(discord_js_1.ButtonStyle['Link'])
+                .setURL(srcbin.url),
+        ]);
         __1.client.config.webhooks.message.editMessage(webHookMsg.id, {
             embeds: [logEmbed],
             components: [viewAllRow],

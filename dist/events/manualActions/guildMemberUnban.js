@@ -17,7 +17,7 @@ exports.default = new Event_1.Event('guildBanRemove', async (ban) => {
         return;
     const auditLogs = await ban.guild.fetchAuditLogs({
         limit: 10,
-        type: v9_1.AuditLogEvent['MemberBanRemove'],
+        type: v9_1.AuditLogEvent.MemberBanRemove,
     });
     const findCase = auditLogs.entries.find((log) => log.target.id === ban.user.id);
     if (!findCase)
