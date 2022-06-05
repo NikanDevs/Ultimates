@@ -1,4 +1,4 @@
-import { Guild, GuildMember, User } from 'discord.js';
+import { EmbedBuilder, Guild, GuildMember, User } from 'discord.js';
 import { client } from '..';
 import { guild as guildConfig } from '../json/config.json';
 
@@ -8,8 +8,7 @@ export async function generateModmailInfoEmbed(user: User) {
 		((await client.guilds.fetch(guildConfig.id)) as Guild);
 	const guildMember = (await guild.members.fetch(user.id)) as GuildMember;
 
-	return client.util
-		.embed()
+	return new EmbedBuilder()
 		.setAuthor({
 			name: user.tag,
 			iconURL: user.displayAvatarURL(),
@@ -17,7 +16,7 @@ export async function generateModmailInfoEmbed(user: User) {
 		.setColor(client.cc.ultimates)
 		.setDescription(`${user} • ID: ${user.id}`)
 		.setThumbnail(user.displayAvatarURL())
-		.addFields(
+		.addFields([
 			{
 				name: 'Account Information',
 				value: [
@@ -40,7 +39,7 @@ export async function generateModmailInfoEmbed(user: User) {
 							: guildMember.displayName
 					}`,
 				].join('\n'),
-			}
-		);
+			},
+		]);
 }
 

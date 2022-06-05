@@ -1,4 +1,4 @@
-import { ComponentType, Message, TextChannel, User } from 'discord.js';
+import { ComponentType, EmbedBuilder, Message, TextChannel, User } from 'discord.js';
 import { durationsModel } from '../../models/durations';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -162,7 +162,7 @@ export default new Command({
 		} else if (getSubCommand === 'search') {
 			let doesExist: boolean = true;
 			const warnId = options.getString('id');
-			const baseEmbed = client.util.embed().setColor(client.cc.invisible);
+			const baseEmbed = new EmbedBuilder().setColor(client.cc.invisible);
 
 			switch (warnId.length) {
 				case AUTOMOD_ID_LENGTH:
@@ -185,7 +185,7 @@ export default new Command({
 									name: client.user.username,
 									iconURL: client.user.displayAvatarURL(),
 								})
-								.addFields(
+								.addFields([
 									{
 										name: 'Type',
 										value: `Automod ${client.util.capitalize(
@@ -227,8 +227,8 @@ export default new Command({
 										name: 'Reason',
 										value: automodWarn.reason,
 										inline: true,
-									}
-								);
+									},
+								]);
 						});
 					break;
 				case PUNISHMENT_ID_LENGTH:
@@ -254,7 +254,7 @@ export default new Command({
 									name: client.user.username,
 									iconURL: client.user.displayAvatarURL(),
 								})
-								.addFields(
+								.addFields([
 									{
 										name: 'Type',
 										value: `Manual ${client.util.capitalize(
@@ -311,8 +311,8 @@ export default new Command({
 										name: 'Reason',
 										value: manualWarn.reason,
 										inline: true,
-									}
-								);
+									},
+								]);
 						});
 					break;
 				default:
@@ -383,8 +383,7 @@ export default new Command({
 					})
 				);
 
-			const warningsEmbed = client.util
-				.embed()
+			const warningsEmbed = new EmbedBuilder()
 				.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
 				.setColor(client.cc.invisible)
 				.setThumbnail(user.displayAvatarURL());
@@ -393,7 +392,7 @@ export default new Command({
 			if (warnings.length === 0)
 				return interaction.reply({
 					embeds: [
-						client.util.embed({
+						new EmbedBuilder({
 							description: `No punishments were found for **${user.tag}**`,
 							color: client.cc.invisible,
 						}),
@@ -429,7 +428,7 @@ export default new Command({
 					componentType: ComponentType['Button'],
 				});
 
-				collector.on('collect', (collected) => {
+				collector.on('collect', (collected): any => {
 					if (interaction.user.id !== collected.user.id)
 						return collected.reply({
 							content: 'You can not use this.',
@@ -669,7 +668,7 @@ export default new Command({
 				case 1:
 					client.config.webhooks.mod.editMessage(firstLogId, {
 						embeds: [
-							firstLog.embeds[0].setDescription(
+							EmbedBuilder.from(firstLog.embeds[0]).setDescription(
 								firstLog.embeds[0].description.replaceAll(
 									'\n• **Duration',
 									`\n• **Duration [[U](${updateLog})]`
@@ -681,7 +680,7 @@ export default new Command({
 				case 2:
 					client.config.webhooks.mod.editMessage(firstLogId, {
 						embeds: [
-							firstLog.embeds[0].setDescription(
+							EmbedBuilder.from(firstLog.embeds[0]).setDescription(
 								firstLog.embeds[0].description.replaceAll(
 									'\n• **Reason',
 									`\n• **Reason [[U](${updateLog})]`

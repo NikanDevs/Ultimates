@@ -1,7 +1,11 @@
 import {
+	ActionRowBuilder,
+	ButtonBuilder,
 	ButtonStyle,
 	ComponentType,
+	EmbedBuilder,
 	Message,
+	ModalBuilder,
 	TextChannel,
 	TextInputStyle,
 	Webhook,
@@ -98,16 +102,15 @@ export default new Command({
 				await client.config.updateLogs();
 			}
 
-			const embed = client.util
-				.embed()
+			const embed = new EmbedBuilder()
 				.setTitle('Logging Configuration')
 				.setColor(client.cc.ultimates)
-				.addFields(
+				.addFields([
 					await formatLogField('mod'),
 					await formatLogField('message'),
 					await formatLogField('modmail'),
-					await formatLogField('servergate')
-				);
+					await formatLogField('servergate'),
+				]);
 
 			await interaction.followUp({ embeds: [embed] });
 
@@ -163,8 +166,7 @@ export default new Command({
 				await client.config.updateAutomod();
 			}
 
-			const embed = client.util
-				.embed()
+			const embed = new EmbedBuilder()
 				.setTitle('Automod Configuration')
 				.setColor(client.cc.ultimates)
 				.setDescription(
@@ -181,25 +183,24 @@ export default new Command({
 				);
 
 			if (data.filteredWords.length)
-				embed.addFields({
-					name: 'Filtered Words',
-					value: client.util.splitText(
-						data.filteredWords
-							.map((word: string) => word.toLowerCase())
-							.join(', '),
-						{ splitFor: 'Embed Field Value' }
-					),
-				});
+				embed.addFields([
+					{
+						name: 'Filtered Words',
+						value: client.util.splitText(
+							data.filteredWords
+								.map((word: string) => word.toLowerCase())
+								.join(', '),
+							{ splitFor: 'Embed Field Value' }
+						),
+					},
+				]);
 
-			const button = client.util
-				.actionRow()
-				.addComponents(
-					client.util
-						.button()
-						.setLabel('Add filtered words')
-						.setStyle(ButtonStyle.Secondary)
-						.setCustomId('badwords')
-				);
+			const button = new ActionRowBuilder<ButtonBuilder>().addComponents([
+				new ButtonBuilder()
+					.setLabel('Add filtered words')
+					.setStyle(ButtonStyle.Secondary)
+					.setCustomId('badwords'),
+			]);
 
 			const sentInteraction = (await interaction.followUp({
 				embeds: [embed],
@@ -211,7 +212,7 @@ export default new Command({
 				time: 1000 * 60 * 1,
 			});
 
-			collector.on('collect', async (collected) => {
+			collector.on('collect', async (collected): Promise<any> => {
 				if (collected.user.id !== interaction.user.id)
 					return collected.reply({
 						content: 'You can not use this.',
@@ -219,26 +220,27 @@ export default new Command({
 					});
 				if (collected.customId !== 'badwords') return;
 
-				const modal = client.util
-					.modal()
+				const modal = new ModalBuilder()
 					.setTitle('Add filtered words')
 					.setCustomId('add-badwords')
-					.addComponents({
-						type: ComponentType['ActionRow'],
-						components: [
-							{
-								type: ComponentType['TextInput'],
-								custom_id: 'input',
-								label: 'Separate words with commas',
-								style: TextInputStyle['Paragraph'],
-								required: true,
-								max_length: 4000,
-								min_length: 1,
-								placeholder:
-									'badword1, frick, pizza, cake - type an existing word to remove it',
-							},
-						],
-					});
+					.addComponents([
+						{
+							type: ComponentType.ActionRow,
+							components: [
+								{
+									type: ComponentType.TextInput,
+									custom_id: 'input',
+									label: 'Separate words with commas',
+									style: TextInputStyle.Paragraph,
+									required: true,
+									max_length: 4000,
+									min_length: 1,
+									placeholder:
+										'badword1, frick, pizza, cake - type an existing word to remove it',
+								},
+							],
+						},
+					]);
 				await collected.showModal(modal);
 				collector.stop();
 			});

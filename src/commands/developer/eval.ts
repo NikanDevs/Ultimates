@@ -1,23 +1,22 @@
-import { ComponentType, TextInputStyle } from 'discord.js';
+import { ComponentType, ModalBuilder, TextInputStyle } from 'discord.js';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
 export default new Command({
 	interaction: interactions.eval,
-	excute: async ({ client, interaction }) => {
-		const modal = client.util
-			.modal()
+	excute: async ({ interaction }) => {
+		const modal = new ModalBuilder()
 			.setTitle('Evaluation')
 			.setCustomId('eval')
-			.addComponents(
+			.addComponents([
 				{
-					type: ComponentType['ActionRow'],
+					type: ComponentType.ActionRow,
 					components: [
 						{
-							type: ComponentType['TextInput'],
+							type: ComponentType.TextInput,
 							custom_id: 'eval',
 							label: 'Enter the code:',
-							style: TextInputStyle['Paragraph'],
+							style: TextInputStyle.Paragraph,
 							required: true,
 							max_length: 4000,
 							min_length: 1,
@@ -26,13 +25,13 @@ export default new Command({
 					],
 				},
 				{
-					type: ComponentType['ActionRow'],
+					type: ComponentType.ActionRow,
 					components: [
 						{
-							type: ComponentType['TextInput'],
+							type: ComponentType.TextInput,
 							custom_id: 'eval-async',
 							label: 'Async',
-							style: TextInputStyle['Short'],
+							style: TextInputStyle.Short,
 							required: false,
 							max_length: 5,
 							min_length: 1,
@@ -41,21 +40,21 @@ export default new Command({
 					],
 				},
 				{
-					type: ComponentType['ActionRow'],
+					type: ComponentType.ActionRow,
 					components: [
 						{
-							type: ComponentType['TextInput'],
+							type: ComponentType.TextInput,
 							custom_id: 'eval-silent',
 							label: 'Silent',
-							style: TextInputStyle['Short'],
+							style: TextInputStyle.Short,
 							required: false,
 							max_length: 5,
 							min_length: 1,
 							placeholder: 'true - false',
 						},
 					],
-				}
-			);
+				},
+			]);
 
 		await interaction.showModal(modal);
 	},

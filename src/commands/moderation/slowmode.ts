@@ -1,4 +1,4 @@
-import { TextChannel } from 'discord.js';
+import { EmbedBuilder, TextChannel } from 'discord.js';
 import { convertTime } from '../../functions/convertTime';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
@@ -13,8 +13,7 @@ export default new Command({
 			case null:
 				await interaction.reply({
 					embeds: [
-						client.util
-							.embed()
+						new EmbedBuilder()
 							.setDescription(
 								slowmode !== 0
 									? `The current slowmode is **${convertTime(
@@ -42,14 +41,11 @@ export default new Command({
 				await (interaction.channel as TextChannel).setRateLimitPerUser(rate);
 				await interaction.reply({
 					embeds: [
-						client.util
-							.embed()
-							.setDescription(
-								rate !== 0
-									? `Slowmode was set to **${convertTime(rate * 1000)}**`
-									: 'Slowmode was turned off.'
-							)
-							.setColor(client.cc.moderation),
+						client.embeds.success(
+							rate !== 0
+								? `Slowmode was set to **${convertTime(rate * 1000)}**`
+								: 'Slowmode was turned off.'
+						),
 					],
 				});
 				break;

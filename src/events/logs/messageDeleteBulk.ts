@@ -1,4 +1,10 @@
-import { ButtonStyle, TextChannel } from 'discord.js';
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	EmbedBuilder,
+	TextChannel,
+} from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
@@ -36,15 +42,14 @@ export default new Event('messageDeleteBulk', async (messages) => {
 		.slice(0, messagesToShow);
 
 	// Creating the embed!
-	const logEmbed = client.util
-		.embed()
+	const logEmbed = new EmbedBuilder()
 		.setAuthor({
 			name: randomMessage.author?.tag,
 			iconURL: randomMessage.author.displayAvatarURL(),
 		})
 		.setTitle('Messages Bulk Deleted')
 		.setColor(client.util.resolve.color('#b59190'))
-		.addFields(
+		.addFields([
 			{
 				name: 'Channel',
 				value: `${randomMessage.channel}`,
@@ -59,8 +64,8 @@ export default new Event('messageDeleteBulk', async (messages) => {
 				name: 'Amount',
 				value: messages.size.toString(),
 				inline: true,
-			}
-		);
+			},
+		]);
 	logEmbed.setDescription(
 		`${client.util.splitText(messagesMapped.join('\n'), { splitFor: 'Embed Description' })}`
 	);
@@ -87,15 +92,12 @@ export default new Event('messageDeleteBulk', async (messages) => {
 			}
 		);
 
-		const viewAllRow = client.util
-			.actionRow()
-			.addComponents(
-				client.util
-					.button()
-					.setLabel('View All Messages')
-					.setStyle(ButtonStyle['Link'])
-					.setURL(srcbin.url)
-			);
+		const viewAllRow = new ActionRowBuilder<ButtonBuilder>().addComponents([
+			new ButtonBuilder()
+				.setLabel('View All Messages')
+				.setStyle(ButtonStyle['Link'])
+				.setURL(srcbin.url),
+		]);
 
 		client.config.webhooks.message.editMessage(webHookMsg.id, {
 			embeds: [logEmbed],

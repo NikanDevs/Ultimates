@@ -1,4 +1,4 @@
-import { GuildMember, TextChannel } from 'discord.js';
+import { EmbedBuilder, GuildMember, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
@@ -26,8 +26,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 	)
 		return;
 
-	const logEmbed = client.util
-		.embed()
+	const logEmbed = new EmbedBuilder()
 		.setAuthor({
 			name: newMessage.author?.tag,
 			iconURL: newMessage.author?.displayAvatarURL(),
@@ -38,7 +37,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		.setFooter({ text: 'Message ID: ' + newMessage.id });
 
 	if (oldMessage.content !== newMessage.content) {
-		logEmbed.addFields(
+		logEmbed.addFields([
 			{
 				name: 'Old message ',
 				value: client.util.splitText(oldMessage?.content, {
@@ -50,11 +49,11 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 				value: client.util.splitText(newMessage?.content, {
 					splitFor: 'Embed Field Value',
 				}),
-			}
-		);
+			},
+		]);
 	}
 
-	logEmbed.addFields(
+	logEmbed.addFields([
 		{
 			name: 'User',
 			value: `${newMessage.author}`,
@@ -69,8 +68,8 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			name: 'Edited At',
 			value: `<t:${~~(+newMessage.editedTimestamp / 1000)}:R>`,
 			inline: true,
-		}
-	);
+		},
+	]);
 
 	client.config.webhooks.message.send({
 		embeds: [logEmbed],

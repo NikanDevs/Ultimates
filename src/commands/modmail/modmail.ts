@@ -1,4 +1,4 @@
-import { ChannelType, GuildMember, TextChannel, CategoryChannel } from 'discord.js';
+import { ChannelType, GuildMember, TextChannel, CategoryChannel, EmbedBuilder } from 'discord.js';
 import { create } from 'sourcebin';
 import { modmailCooldown } from '../../events/modmail/messageCreate';
 import { getModmailTicket } from '../../functions/cases/ModmailCase';
@@ -117,8 +117,7 @@ export default new Command({
 					setTimeout(() => {
 						interaction?.channel?.delete();
 
-						const closedEmbed = client.util
-							.embed()
+						const closedEmbed = new EmbedBuilder()
 							.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 							.setTitle('Ticket closed')
 							.setDescription(
@@ -233,16 +232,14 @@ export default new Command({
 			if (data)
 				return interaction.reply({
 					embeds: [
-						client.util.embed({
-							description: `${member.user.tag} is blacklisted from opening modmails.`,
-							color: client.cc.errorC,
-						}),
+						client.embeds.attention(
+							`${member.user.tag} is blacklisted from opening modmails.`
+						),
 					],
 					ephemeral: true,
 				});
 
-			const openedModmailEmbed = client.util
-				.embed()
+			const openedModmailEmbed = new EmbedBuilder()
 				.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 				.setTitle('Modmail opened')
 				.setColor(client.util.resolve.color('Yellow'))
@@ -253,10 +250,12 @@ export default new Command({
 					].join('\n')
 				);
 			if (options?.getString('reason'))
-				openedModmailEmbed.addFields({
-					name: 'Reason',
-					value: options?.getString('reason'),
-				});
+				openedModmailEmbed.addFields([
+					{
+						name: 'Reason',
+						value: options?.getString('reason'),
+					},
+				]);
 
 			member.user
 				.send({ embeds: [openedModmailEmbed] })
@@ -279,7 +278,7 @@ export default new Command({
 						case true:
 							await interaction.reply({
 								embeds: [
-									client.util.embed({
+									new EmbedBuilder({
 										description:
 											"Please wait while we're trying to set this ticket up...",
 										color: client.cc.attentionC,

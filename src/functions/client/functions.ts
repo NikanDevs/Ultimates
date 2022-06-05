@@ -1,5 +1,4 @@
-import { ButtonStyle } from 'discord.js';
-import { client } from '../..';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
 
 // Capitalize
@@ -57,35 +56,21 @@ export function splitTextFunction(text: string, options?: splitOptions) {
 }
 
 export function buildConfirmationButtons(firstLabel: string, secondLabel: string) {
-	return client.util
-		.actionRow()
-		.addComponents(
-			client.util
-				.button()
-				.setLabel(firstLabel)
-				.setStyle(ButtonStyle['Success'])
-				.setCustomId('1'),
-			client.util
-				.button()
-				.setLabel(secondLabel)
-				.setStyle(ButtonStyle['Danger'])
-				.setCustomId('2')
-		);
+	return new ActionRowBuilder<ButtonBuilder>().setComponents([
+		new ButtonBuilder().setLabel(firstLabel).setStyle(ButtonStyle.Success).setCustomId('1'),
+		new ButtonBuilder().setLabel(secondLabel).setStyle(ButtonStyle.Danger).setCustomId('2'),
+	]);
 }
 
 export function buildPaginationButtons() {
-	return client.util
-		.actionRow()
-		.addComponents(
-			client.util
-				.button()
-				.setCustomId('1')
-				.setEmoji({ name: client.cc.previous })
-				.setStyle(ButtonStyle['Primary']),
-			client.util
-				.button()
-				.setCustomId('2')
-				.setEmoji({ name: client.cc.next })
-				.setStyle(ButtonStyle['Primary'])
-		);
+	return new ActionRowBuilder<ButtonBuilder>().setComponents([
+		new ButtonBuilder()
+			.setCustomId('1')
+			.setEmoji({ name: '◀️' })
+			.setStyle(ButtonStyle.Primary),
+		new ButtonBuilder()
+			.setCustomId('2')
+			.setEmoji({ name: '▶️' })
+			.setStyle(ButtonStyle.Primary),
+	]);
 }

@@ -1,3 +1,4 @@
+import { EmbedBuilder } from 'discord.js';
 import { client } from '../..';
 import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
@@ -30,7 +31,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		await interaction.reply({
 			embeds: [
-				client.util.embed({
+				new EmbedBuilder({
 					description: [
 						wordsArray.length
 							? '**Added filtered words:**\n' +

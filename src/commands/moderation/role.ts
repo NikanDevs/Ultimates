@@ -15,7 +15,10 @@ export default new Command({
 			var alreadyHas: boolean = false;
 
 			if (ignore(member, { interaction, action: PunishmentType.Unknown })) return;
-			if (role.position > interaction.guild.me.roles.highest.position || role.managed)
+			if (
+				role.position > interaction.guild.members.me.roles.highest.position ||
+				role.managed
+			)
 				return interaction.reply({
 					embeds: [
 						client.embeds.error(

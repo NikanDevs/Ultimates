@@ -1,15 +1,5 @@
 import {
-	ActionRow,
-	ActionRowData,
-	ButtonComponent,
-	ButtonComponentData,
 	ColorResolvable,
-	Embed,
-	EmbedData,
-	MessageActionRowComponentData,
-	Modal,
-	ModalData,
-	TextInputComponentData,
 	Util,
 } from 'discord.js';
 import {
@@ -18,9 +8,6 @@ import {
 	capitalizeFunction,
 	splitTextFunction,
 } from './functions';
-
-// type buttonStyles =
-//     "Danger" | "Link" | "Primary" | "Secondary" | "Success";
 
 export class clientUtil {
 	resolve = {
@@ -34,17 +21,4 @@ export class clientUtil {
 	};
 	capitalize = capitalizeFunction;
 	splitText = splitTextFunction;
-
-	embed(...args: EmbedData[]) {
-		return new Embed(...args);
-	}
-	actionRow(...args: ActionRowData<MessageActionRowComponentData | TextInputComponentData>[]) {
-		return new ActionRow(...args);
-	}
-	button(...args: ButtonComponentData[]) {
-		return new ButtonComponent(...args);
-	}
-	modal(...args: ModalData[]) {
-		return new Modal(...args);
-	}
 }

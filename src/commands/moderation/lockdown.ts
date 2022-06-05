@@ -1,6 +1,7 @@
 import {
 	ApplicationCommandOptionType,
 	ChannelType,
+	EmbedBuilder,
 	GuildChannel,
 	Message,
 	Snowflake,
@@ -32,8 +33,7 @@ export default new Command({
 				? false
 				: true;
 
-			const embed = client.util
-				.embed()
+			const embed = new EmbedBuilder()
 				.setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
 				.setAuthor({
 					name: 'Channel ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
@@ -46,10 +46,12 @@ export default new Command({
 				);
 
 			if (options.getString('reason'))
-				embed.addFields({
-					name: 'Reason',
-					value: options.getString('reason'),
-				});
+				embed.addFields([
+					{
+						name: 'Reason',
+						value: options.getString('reason'),
+					},
+				]);
 
 			switch (channel.type) {
 				case ChannelType.GuildText:
@@ -175,8 +177,7 @@ export default new Command({
 					}
 				});
 
-			const embed = client.util
-				.embed()
+			const embed = new EmbedBuilder()
 				.setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
 				.setAuthor({
 					name: 'Server ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
@@ -188,10 +189,12 @@ export default new Command({
 						: 'This server was unlocked by a moderator!\n\nYou can now use it, thanks for your patient.'
 				);
 			if (options.getString('reason'))
-				embed.addFields({
-					name: 'Reason',
-					value: options.getString('reason'),
-				});
+				embed.addFields([
+					{
+						name: 'Reason',
+						value: options.getString('reason'),
+					},
+				]);
 			generalChannel.send({
 				embeds: [embed],
 			});

@@ -1,4 +1,4 @@
-import { Message, TextChannel } from 'discord.js';
+import { EmbedBuilder, Message, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
@@ -23,8 +23,7 @@ export default new Event('messageDelete', async (message: Message) => {
 	)
 		return;
 
-	const logEmbed = client.util
-		.embed()
+	const logEmbed = new EmbedBuilder()
 		.setAuthor({
 			name: message.author.tag,
 			iconURL: message.author.displayAvatarURL(),
@@ -33,7 +32,7 @@ export default new Event('messageDelete', async (message: Message) => {
 		.setDescription(message.content || 'No content.')
 		.setColor(client.util.resolve.color('#b59190'))
 		.setFooter({ text: 'Message ID: ' + message.id })
-		.addFields(
+		.addFields([
 			{
 				name: 'Mention',
 				value: `${message.author}`,
@@ -50,8 +49,8 @@ export default new Event('messageDelete', async (message: Message) => {
 					? `${message.attachments.size} attachments`
 					: 'No attachments',
 				inline: true,
-			}
-		);
+			},
+		]);
 
 	client.config.webhooks.message.send({ embeds: [logEmbed] });
 });

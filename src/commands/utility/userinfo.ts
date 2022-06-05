@@ -5,6 +5,9 @@ import {
 	Message,
 	ComponentType,
 	ButtonStyle,
+	ActionRowBuilder,
+	ButtonBuilder,
+	EmbedBuilder,
 } from 'discord.js';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
@@ -95,13 +98,12 @@ export default new Command({
 		// Fetching users
 		await user?.fetch(true);
 		await member?.fetch(true);
-		const userinfoEmbed = client.util
-			.embed()
+		const userinfoEmbed = new EmbedBuilder()
 			.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
 			.setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
 			.setThumbnail(user.displayAvatarURL())
 			.setColor(client.cc.invisible)
-			.addFields(
+			.addFields([
 				{
 					name: 'Account Information',
 					value: [
@@ -127,23 +129,25 @@ export default new Command({
 						`• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
 					].join('\n'),
 					inline: true,
-				}
-			);
+				},
+			]);
 
 		// User's banner
 		if (user.bannerURL()) {
-			userinfoEmbed.setImage(user.bannerURL({ size: 1024 })).addFields({
-				name: 'Banner',
-				value: [
-					`• **Animated:** ${
-						user.bannerURL().endsWith('.gif')
-							? `${client.cc.successE}`
-							: `${client.cc.errorE}`
-					}`,
-					`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
-				].join('\n'),
-				inline: true,
-			});
+			userinfoEmbed.setImage(user.bannerURL({ size: 1024 })).addFields([
+				{
+					name: 'Banner',
+					value: [
+						`• **Animated:** ${
+							user.bannerURL().endsWith('.gif')
+								? `${client.cc.successE}`
+								: `${client.cc.errorE}`
+						}`,
+						`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
+					].join('\n'),
+					inline: true,
+				},
+			]);
 		}
 
 		// User's Badges
@@ -175,10 +179,12 @@ export default new Command({
 		});
 
 		if (badgesArray.length !== 0) {
-			userinfoEmbed.addFields({
-				name: `Badges [${badgesArray.length}]`,
-				value: badgesArray.join('\n'),
-			});
+			userinfoEmbed.addFields([
+				{
+					name: `Badges [${badgesArray.length}]`,
+					value: badgesArray.join('\n'),
+				},
+			]);
 		}
 
 		if (!member) {
@@ -186,20 +192,24 @@ export default new Command({
 		} else if (member) {
 			if (member.presence && ['dnd', 'online', 'idle'].includes(member.presence?.status)) {
 				const devices = member.presence?.clientStatus || {};
-				userinfoEmbed.addFields({
-					name: `Presence`,
-					value: [
-						`• **Status:** ${client.util.capitalize(member?.presence?.status)}`,
-						`• **Devices [${Object.entries(devices).length}]:** ${Object.entries(
-							devices
-						)
-							.map(
-								(value) =>
-									`${value[0][0].toUpperCase()}${value[0].slice(1)}`
-							)
-							.join(', ')}`,
-					].join('\n'),
-				});
+				userinfoEmbed.addFields([
+					{
+						name: `Presence`,
+						value: [
+							`• **Status:** ${client.util.capitalize(
+								member?.presence?.status
+							)}`,
+							`• **Devices [${
+								Object.entries(devices).length
+							}]:** ${Object.entries(devices)
+								.map(
+									(value) =>
+										`${value[0][0].toUpperCase()}${value[0].slice(1)}`
+								)
+								.join(', ')}`,
+						].join('\n'),
+					},
+				]);
 			}
 
 			// Button Components
@@ -210,28 +220,25 @@ export default new Command({
 				disablePermissions?: boolean;
 			}
 			const buttonComponents = (options: buttonComponentsOptions) => [
-				client.util.actionRow().addComponents(
-					client.util
-						.button()
+				new ActionRowBuilder<ButtonBuilder>().addComponents([
+					new ButtonBuilder()
 						.setLabel('Account')
 						.setStyle(ButtonStyle['Primary'])
 						.setDisabled(options.disableAccount || false)
 						.setCustomId('1'),
 
-					client.util
-						.button()
+					new ButtonBuilder()
 						.setLabel('Guild')
 						.setStyle(ButtonStyle['Primary'])
 						.setDisabled(options.disableGuild || false)
 						.setCustomId('2'),
 
-					client.util
-						.button()
+					new ButtonBuilder()
 						.setLabel('Roles')
 						.setStyle(ButtonStyle['Primary'])
 						.setDisabled(options.disableRoles || false)
-						.setCustomId('3')
-				),
+						.setCustomId('3'),
+				]),
 			];
 
 			const sentInteraction = (await interaction.reply({
@@ -246,7 +253,7 @@ export default new Command({
 			});
 
 			// Whenever the collector is triggered
-			userinfoCollector.on('collect', async (collected) => {
+			userinfoCollector.on('collect', async (collected): Promise<any> => {
 				if (collected.user.id !== interaction.user.id)
 					return collected.reply({
 						content: 'You can not use this.',
@@ -284,8 +291,7 @@ export default new Command({
 							acknowments = 'Server Owner';
 						}
 
-						const userinfoGuildEmbed = client.util
-							.embed()
+						const userinfoGuildEmbed = new EmbedBuilder()
 							.setAuthor({
 								name: user.tag,
 								iconURL: user.displayAvatarURL(),
@@ -295,50 +301,56 @@ export default new Command({
 							)
 							.setThumbnail(user.displayAvatarURL())
 							.setColor(client.cc.invisible)
-							.addFields({
-								name: `Information in ${interaction.guild.name}`,
-								value: [
-									`• ** Joined:** <t:${~~(
-										+member.joinedAt / 1000
-									)}:f> [<t:${~~(+member.joinedAt / 1000)}:R>]`,
-									`• **Nickname:** ${
-										member.displayName === member.user?.username
-											? 'No Nickname'
-											: `${member.displayName}`
-									}`,
-									`• **Booster:** ${
-										member.premiumSinceTimestamp
-											? `${client.cc.successE}`
-											: `${client.cc.errorE}`
-									}`,
-									`• **Boosting Since:** ${
-										member.premiumSinceTimestamp
-											? `<t:${~~(
-													member.premiumSinceTimestamp / 1000
-											  )}:f> | <t:${~~(
-													member.premiumSinceTimestamp / 1000
-											  )}:R>`
-											: 'Not boosting the server!'
-									}`,
-									`• **Acknowments:** ${acknowments}`,
-								].join('\n'),
-							});
+							.addFields([
+								{
+									name: `Information in ${interaction.guild.name}`,
+									value: [
+										`• ** Joined:** <t:${~~(
+											+member.joinedAt / 1000
+										)}:f> [<t:${~~(+member.joinedAt / 1000)}:R>]`,
+										`• **Nickname:** ${
+											member.displayName === member.user?.username
+												? 'No Nickname'
+												: `${member.displayName}`
+										}`,
+										`• **Booster:** ${
+											member.premiumSinceTimestamp
+												? `${client.cc.successE}`
+												: `${client.cc.errorE}`
+										}`,
+										`• **Boosting Since:** ${
+											member.premiumSinceTimestamp
+												? `<t:${~~(
+														member.premiumSinceTimestamp /
+														1000
+												  )}:f> | <t:${~~(
+														member.premiumSinceTimestamp /
+														1000
+												  )}:R>`
+												: 'Not boosting the server!'
+										}`,
+										`• **Acknowments:** ${acknowments}`,
+									].join('\n'),
+								},
+							]);
 
 						if (member.avatarURL())
-							userinfoGuildEmbed.addFields({
-								name: 'Server Avatar',
-								value: [
-									`• **Animated:** ${
-										member.avatarURL().endsWith('.gif')
-											? `${client.cc.successE}`
-											: `${client.cc.errorE}`
-									}`,
-									`• **Formats:** ${UrlTypeCheck(
-										member.avatarURL(),
-										'Avatar'
-									)}`,
-								].join('\n'),
-							});
+							userinfoGuildEmbed.addFields([
+								{
+									name: 'Server Avatar',
+									value: [
+										`• **Animated:** ${
+											member.avatarURL().endsWith('.gif')
+												? `${client.cc.successE}`
+												: `${client.cc.errorE}`
+										}`,
+										`• **Formats:** ${UrlTypeCheck(
+											member.avatarURL(),
+											'Avatar'
+										)}`,
+									].join('\n'),
+								},
+							]);
 
 						interaction.editReply({
 							embeds: [userinfoGuildEmbed],
@@ -351,8 +363,7 @@ export default new Command({
 						const mappedRoles = member.roles.cache
 							.sort((a, b) => b.position - a.position)
 							.filter((r) => r.id !== interaction.guildId);
-						const userinfoRolesEmbed = client.util
-							.embed()
+						const userinfoRolesEmbed = new EmbedBuilder()
 							.setAuthor({
 								name: user.tag,
 								iconURL: user.displayAvatarURL(),

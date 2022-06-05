@@ -1,4 +1,4 @@
-import { GuildMember, PermissionResolvable } from 'discord.js';
+import { EmbedBuilder, GuildMember, PermissionResolvable } from 'discord.js';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 const staffPermissions: PermissionResolvable = [
@@ -44,8 +44,7 @@ export default new Command({
 			undefined = '<:offline:906867114126770186>',
 		}
 
-		const embed = client.util
-			.embed()
+		const embed = new EmbedBuilder()
 			.setAuthor({ name: 'Staff members', iconURL: client.user.displayAvatarURL() })
 			.setColor(client.cc.ultimates)
 			.setDescription(

@@ -1,4 +1,4 @@
-import { TextChannel, User, Util } from 'discord.js';
+import { EmbedBuilder, TextChannel, User, Util } from 'discord.js';
 import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
@@ -32,8 +32,7 @@ export async function createModmailLog(options: options) {
 
 	const ticket = options.ticket;
 
-	const embed = client.util
-		.embed()
+	const embed = new EmbedBuilder()
 		.setAuthor({
 			name: `Modmail | ${
 				options.action === ModmailActionType.Open

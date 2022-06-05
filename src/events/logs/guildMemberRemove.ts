@@ -4,6 +4,7 @@ import { leftMembersModel } from '../../models/leftMembers';
 import { leftMemberExpiry } from '../../constants';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { guild as guildConfig } from '../../json/config.json';
+import { EmbedBuilder } from 'discord.js';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (!logActivity('servergate')) return;
@@ -13,8 +14,7 @@ export default new Event('guildMemberRemove', async (member) => {
 		.filter((r) => r.id !== member.guild.id)
 		.map((role) => role.id);
 
-	const embed = client.util
-		.embed()
+	const embed = new EmbedBuilder()
 		.setAuthor({ name: member.guild.name, iconURL: member.guild.iconURL() })
 		.setColor(client.util.resolve.color('#b55c4e'))
 		.setDescription(

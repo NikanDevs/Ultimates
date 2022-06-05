@@ -1,9 +1,13 @@
 import {
+	ActionRowBuilder,
+	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
 	ComponentType,
+	EmbedBuilder,
 	GuildMember,
 	Message,
+	ModalBuilder,
 	TextInputStyle,
 } from 'discord.js';
 import { client } from '../..';
@@ -18,13 +22,10 @@ export default new Event('interactionCreate', async (interaction) => {
 	// --- Modal answers
 	if (interaction.isModalSubmit()) {
 		if (interaction.customId !== 'verify-' + interaction.user.id) return;
-		const getField = interaction.fields.getField('verify-' + interaction.user.id);
-		if (!getField) return;
-		const getValue = getField?.value;
+		const getValue = interaction.fields.getTextInputValue('verify-' + interaction.user.id);
 
 		if (getValue.toString() === verificationCollection.get('modal-' + interaction.user.id)) {
-			const verifedEmbed = client.util
-				.embed()
+			const verifedEmbed = new EmbedBuilder()
 				.setColor(client.cc.successC)
 				.setDescription('Congrats! You were verified in the server.');
 
@@ -36,8 +37,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		} else if (
 			getValue.toString() !== verificationCollection.get('modal-' + interaction.user.id)
 		) {
-			const deniedEmbed = client.util
-				.embed()
+			const deniedEmbed = new EmbedBuilder()
 				.setColor(client.cc.errorC)
 				.setDescription(
 					"Whoops, your answer wasn't correct. Try again to get verified."
@@ -69,8 +69,7 @@ export default new Event('interactionCreate', async (interaction) => {
 	if (verificationCollection.has('cooldown-' + interaction.user.id))
 		return interaction.reply({
 			embeds: [
-				client.util
-					.embed()
+				new EmbedBuilder()
 					.setDescription(
 						`Please wait **${convertTime(
 							~~+cooldownRemaining
@@ -119,15 +118,14 @@ export default new Event('interactionCreate', async (interaction) => {
 		generateKey2();
 
 		// Embeds and components
-		const embed = client.util
-			.embed()
+		const embed = new EmbedBuilder()
 			.setAuthor({
 				name: 'Are these keys matching each other?',
 			})
 			.setDescription(
 				'Check if the 2 keys below are **exactly** the same as each other. Submit your answer by clicking the buttons!'
 			)
-			.addFields(
+			.addFields([
 				{
 					name: 'Key #1',
 					value: key1,
@@ -137,24 +135,20 @@ export default new Event('interactionCreate', async (interaction) => {
 					name: 'Key #2',
 					value: key2,
 					inline: true,
-				}
-			)
+				},
+			])
 			.setColor(client.cc.invisible);
 
-		const buttonComponent = client.util
-			.actionRow()
-			.addComponents(
-				client.util
-					.button()
-					.setCustomId('verify-1')
-					.setLabel('Matching')
-					.setStyle(ButtonStyle['Success']),
-				client.util
-					.button()
-					.setCustomId('verify-2')
-					.setLabel('Not Matching')
-					.setStyle(ButtonStyle['Danger'])
-			);
+		const buttonComponent = new ActionRowBuilder<ButtonBuilder>().addComponents([
+			new ButtonBuilder()
+				.setCustomId('verify-1')
+				.setLabel('Matching')
+				.setStyle(ButtonStyle['Success']),
+			new ButtonBuilder()
+				.setCustomId('verify-2')
+				.setLabel('Not Matching')
+				.setStyle(ButtonStyle['Danger']),
+		]);
 
 		const msg = (await interaction.followUp({
 			embeds: [embed],
@@ -177,8 +171,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				(areMatching && collected.customId === 'verify-1') ||
 				(!areMatching && collected.customId === 'verify-2')
 			) {
-				const verifedEmbed = client.util
-					.embed()
+				const verifedEmbed = new EmbedBuilder()
 					.setColor(client.cc.successC)
 					.setDescription('Congrats! You were verified in the server.');
 
@@ -186,8 +179,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				(interaction.member as GuildMember).roles.add(guildConfig.memberRoleId);
 				interaction.editReply({ embeds: [verifedEmbed], components: [] });
 			} else {
-				const deniedEmbed = client.util
-					.embed()
+				const deniedEmbed = new EmbedBuilder()
 					.setColor(client.cc.errorC)
 					.setDescription(
 						"Whoops, your answer wasn't correct. Try again to get verified."
@@ -200,8 +192,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		collector.on('end', (_, reason) => {
 			if (reason === 'success') return;
 
-			const timedOut = client.util
-				.embed()
+			const timedOut = new EmbedBuilder()
 				.setColor(client.cc.errorC)
 				.setDescription('Verification timed out, try again to verify yourself.');
 
@@ -210,25 +201,26 @@ export default new Event('interactionCreate', async (interaction) => {
 	} else if (verifiactionMode <= 5) {
 		generateKey1();
 
-		const modal = client.util
-			.modal()
+		const modal = new ModalBuilder()
 			.setTitle('Verification | Code: ' + key1)
 			.setCustomId('verify-' + interaction.user.id)
-			.addComponents({
-				type: ComponentType['ActionRow'],
-				components: [
-					{
-						type: ComponentType['TextInput'],
-						custom_id: 'verify-' + interaction.user.id,
-						label: 'Your Code: ' + key1,
-						style: TextInputStyle['Short'],
-						required: true,
-						max_length: 5,
-						min_length: 5,
-						placeholder: `Enter your verification code...`,
-					},
-				],
-			});
+			.addComponents([
+				{
+					type: ComponentType.ActionRow,
+					components: [
+						{
+							type: ComponentType.TextInput,
+							custom_id: 'verify-' + interaction.user.id,
+							label: 'Your Code: ' + key1,
+							style: TextInputStyle['Short'],
+							required: true,
+							max_length: 5,
+							min_length: 5,
+							placeholder: `Enter your verification code...`,
+						},
+					],
+				},
+			]);
 
 		await interaction.showModal(modal);
 		verificationCollection.set('modal-' + interaction.user.id, key1);

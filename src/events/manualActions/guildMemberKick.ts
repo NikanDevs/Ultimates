@@ -8,6 +8,7 @@ import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { default_config } from '../../json/moderation.json';
 import { guild as guildConfig } from '../../json/config.json';
+import { User } from 'discord.js';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (member.guild.id !== guildConfig.id) return;
@@ -16,9 +17,9 @@ export default new Event('guildMemberRemove', async (member) => {
 
 	const auditLogs = await member.guild.fetchAuditLogs({
 		limit: 10,
-		type: AuditLogEvent['MemberKick'],
+		type: AuditLogEvent.MemberKick,
 	});
-	const findCase = auditLogs.entries.find((log) => log.target.id === member.id);
+	const findCase = auditLogs.entries.find((log) => (log.target as User).id === member.id);
 	if (!findCase) return;
 	const { executor, reason } = findCase;
 	if (executor.bot) return;

@@ -1,4 +1,4 @@
-import { TextChannel, User, Util } from 'discord.js';
+import { EmbedBuilder, TextChannel, User, Util } from 'discord.js';
 import { client } from '../..';
 import { logsModel } from '../../models/logs';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -43,8 +43,7 @@ export async function createModLog(options: options) {
 	const update: boolean = options.update ? true : false;
 	const currentCase = await getModCase();
 	if (logActivity('mod')) await addModCase();
-	const embed = client.util
-		.embed()
+	const embed = new EmbedBuilder()
 		.setAuthor({
 			name: ` ${
 				revoke ? 'Revoke' : update ? 'Update' : client.util.capitalize(options.action)

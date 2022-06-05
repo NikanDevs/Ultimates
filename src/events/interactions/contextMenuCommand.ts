@@ -5,6 +5,7 @@ import {
 	GuildMember,
 	Collection,
 	ContextMenuCommandInteraction,
+	EmbedBuilder,
 } from 'discord.js';
 const cooldown = new Collection();
 import { connection, ConnectionStates } from 'mongoose';
@@ -51,8 +52,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			const cooldownRemaining = `${~~(
 				+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now()
 			)}`;
-			const cooldownEmbed = client.util
-				.embed()
+			const cooldownEmbed = new EmbedBuilder()
 				.setColor(client.cc.errorC)
 				.setDescription(
 					`You need to wait \`${convertTime(

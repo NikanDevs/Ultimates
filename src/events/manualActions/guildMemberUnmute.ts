@@ -9,6 +9,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { createModLog } from '../../functions/logs/createModLog';
 import { default_config } from '../../json/moderation.json';
 import { guild as guildConfig } from '../../json/config.json';
+import { User } from 'discord.js';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (newMember.guild.id !== guildConfig.id) return;
@@ -18,10 +19,12 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (oldMember.communicationDisabledUntil && !newMember.communicationDisabledUntil) {
 		const auditLogs = await newMember.guild.fetchAuditLogs({
 			limit: 10,
-			type: AuditLogEvent['MemberUpdate'],
+			type: AuditLogEvent.MemberUpdate,
 		});
 
-		const findCase = auditLogs.entries.find((log) => log.target.id === newMember.user.id);
+		const findCase = auditLogs.entries.find(
+			(log) => (log.target as User).id === newMember.user.id
+		);
 		if (!findCase) return;
 		const { executor, reason } = findCase;
 		if (executor.bot) return;

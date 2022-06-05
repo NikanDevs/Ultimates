@@ -1,4 +1,4 @@
-import { Colors, User, Util } from 'discord.js';
+import { Colors, EmbedBuilder, User, Util } from 'discord.js';
 import { emojis } from '../../json/database.json';
 import { client } from '../..';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -19,22 +19,19 @@ export const cc = {
 
 export const clientEmbeds = {
 	error: function name(error: string) {
-		const embed = client.util
-			.embed()
+		const embed = new EmbedBuilder()
 			.setDescription(cc.errorE + ' ' + error)
 			.setColor(Util.resolveColor('Red'));
 		return embed;
 	},
 	attention: function (message: string) {
-		const embed = client.util
-			.embed()
+		const embed = new EmbedBuilder()
 			.setDescription(cc.attentionE + ' ' + message)
 			.setColor(Util.resolveColor('#f0e17c'));
 		return embed;
 	},
 	success: function (message: string) {
-		const embed = client.util
-			.embed()
+		const embed = new EmbedBuilder()
 			.setDescription(cc.successE + ' ' + message)
 			.setColor(Util.resolveColor('#9eea9a'));
 		return embed;
@@ -48,8 +45,7 @@ export const clientEmbeds = {
 			'UNBAN' = 'unbanned',
 			'SOFTBAN' = 'soft banned',
 		}
-		const embed = client.util
-			.embed()
+		const embed = new EmbedBuilder()
 			.setDescription(
 				`${user} was **${pastForm[options['action']]}**  • ID: \`${options['id']}\``
 			)

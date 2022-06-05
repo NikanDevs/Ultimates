@@ -1,4 +1,12 @@
-import { ChannelType, Collection, ComponentType, DMChannel, Guild, TextChannel } from 'discord.js';
+import {
+	ChannelType,
+	Collection,
+	ComponentType,
+	DMChannel,
+	EmbedBuilder,
+	Guild,
+	TextChannel,
+} from 'discord.js';
 import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import { Event } from '../../structures/Event';
@@ -21,8 +29,7 @@ export default new Event('messageCreate', async (message) => {
 	if (!message?.guild && message.channel.type === ChannelType.DM && !message.author?.bot) {
 		// Checking for blacklist
 		const data = await modmailModel.findById(message.author.id);
-		const blacklistedEmbed = client.util
-			.embed()
+		const blacklistedEmbed = new EmbedBuilder()
 			.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 			.setTitle('Blacklisted from using modmail')
 			.setDescription(
@@ -31,7 +38,7 @@ export default new Event('messageCreate', async (message) => {
 					"If you think that this is not fair and you don't deserve it, please contact a moderator!",
 				].join('\n')
 			)
-			.addFields({ name: 'Reason', value: `${data?.reason}` })
+			.addFields([{ name: 'Reason', value: `${data?.reason}` }])
 			.setColor(client.cc.errorC);
 
 		if (data)
@@ -84,8 +91,7 @@ export default new Event('messageCreate', async (message) => {
 			}, 500);
 
 			const finalEmbeds = [];
-			const toSendEmbed = client.util
-				.embed()
+			const toSendEmbed = new EmbedBuilder()
 				.setAuthor({
 					name: message.author.tag,
 					iconURL: message.author.displayAvatarURL(),
@@ -103,8 +109,7 @@ export default new Event('messageCreate', async (message) => {
 					?.map((attach) => attach)
 					.slice(1, message.attachments?.size)
 					.forEach((attachment) => {
-						const attachmentEmbed = client.util
-							.embed()
+						const attachmentEmbed = new EmbedBuilder()
 							.setAuthor({ name: `Attachment #${attachmentCounter}` })
 							.setImage(attachment.proxyURL)
 							.setColor(client.util.resolve.color('Orange'));
@@ -135,8 +140,7 @@ export default new Event('messageCreate', async (message) => {
 					canSend = true;
 				});
 		} else if (!openedThread) {
-			const confirmationEmbed = client.util
-				.embed()
+			const confirmationEmbed = new EmbedBuilder()
 				.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 				.setTitle('Are you sure that you want to create a ticket?')
 				.setColor(client.cc.ultimates)
@@ -203,8 +207,7 @@ export default new Event('messageCreate', async (message) => {
 						});
 
 						// Thread Created
-						const createdEmbed = client.util
-							.embed()
+						const createdEmbed = new EmbedBuilder()
 							.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 							.setTitle('Ticket created')
 							.setColor(client.util.resolve.color('Green'))
@@ -245,8 +248,7 @@ export default new Event('messageCreate', async (message) => {
 			});
 
 		const finalEmbeds = [];
-		const toSendEmbed = client.util
-			.embed()
+		const toSendEmbed = new EmbedBuilder()
 			.setAuthor({
 				name: 'Staff Member',
 				iconURL: 'https://cdn.discordapp.com/attachments/870637449158742057/909825851225427978/staff-icon.png',
@@ -264,8 +266,7 @@ export default new Event('messageCreate', async (message) => {
 				?.map((attach) => attach)
 				.slice(1, message.attachments?.size)
 				.forEach((attachment) => {
-					const attachmentEmbed = client.util
-						.embed()
+					const attachmentEmbed = new EmbedBuilder()
 						.setAuthor({ name: `Attachment #${attachmentCounter}` })
 						.setImage(attachment.proxyURL)
 						.setColor(client.util.resolve.color('Orange'));

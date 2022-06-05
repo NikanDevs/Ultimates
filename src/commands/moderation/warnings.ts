@@ -1,4 +1,4 @@
-import { ComponentType, Message, User } from 'discord.js';
+import { ComponentType, EmbedBuilder, Message, User } from 'discord.js';
 import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
@@ -10,8 +10,7 @@ export default new Command({
 	interaction: interactions.warnings,
 	excute: async ({ client, interaction, options }) => {
 		const user = interaction.user as User;
-		const warningsEmbed = client.util
-			.embed()
+		const warningsEmbed = new EmbedBuilder()
 			.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
 			.setColor(client.cc.invisible)
 			.setThumbnail(user.displayAvatarURL());
@@ -111,7 +110,7 @@ export default new Command({
 		if (warningsMap.length === 0)
 			return interaction.reply({
 				embeds: [
-					client.util.embed({
+					new EmbedBuilder({
 						description: `No ${
 							optionChoice ? (optionChoice === 1 ? 'manual ' : 'automod ') : ''
 						}warnings were found for you, you're clean!`,
@@ -149,7 +148,7 @@ export default new Command({
 				componentType: ComponentType['Button'],
 			});
 
-			collector.on('collect', (collected) => {
+			collector.on('collect', (collected): any => {
 				if (interaction.user.id !== collected.user.id)
 					return collected.reply({
 						content: 'You can not use this.',

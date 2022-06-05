@@ -45,7 +45,7 @@ export function ignore(member: GuildMember, options: options): boolean {
 		});
 		return true;
 	}
-	if (member.roles?.highest.position >= interaction.guild.me.roles?.highest.position) {
+	if (member.roles?.highest.position >= interaction.guild.members.me.roles?.highest.position) {
 		interaction.reply({
 			embeds: [
 				client.embeds.error("I don't have enough permissions to perform this action."),
