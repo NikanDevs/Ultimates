@@ -20,7 +20,8 @@ var statusPriorities;
     statusPriorities[statusPriorities["online"] = 1] = "online";
     statusPriorities[statusPriorities["idle"] = 2] = "idle";
     statusPriorities[statusPriorities["dnd"] = 3] = "dnd";
-    statusPriorities[statusPriorities["undefined"] = 4] = "undefined";
+    statusPriorities[statusPriorities["offline"] = 4] = "offline";
+    statusPriorities[statusPriorities["undefined"] = 5] = "undefined";
 })(statusPriorities || (statusPriorities = {}));
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.staff,
@@ -35,6 +36,7 @@ exports.default = new Command_1.Command({
             statuses["online"] = "<:online:886215547249913856>";
             statuses["idle"] = "<:idle:906867112612601866>";
             statuses["dnd"] = "<:dnd:906867112222531614>";
+            statuses["offline"] = "<:invisible:983325305273995334>";
             statuses["undefined"] = "<:offline:906867114126770186>";
         })(statuses || (statuses = {}));
         const embed = new discord_js_1.EmbedBuilder()
