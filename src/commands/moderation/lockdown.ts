@@ -26,7 +26,7 @@ export default new Command({
 			const channel = (options.getChannel('channel') ||
 				interaction.channel) as GuildChannel;
 			const alreadyLocked = channel
-				.permissionsFor(guildConfig.memberRoleId)
+				.permissionsFor(client.config.general.guild.memberRoleId)
 				.toArray()
 				.includes('SendMessages' || 'Connect')
 				? false
@@ -54,12 +54,15 @@ export default new Command({
 
 			switch (channel.type) {
 				case ChannelType.GuildText:
-					await channel.permissionOverwrites.edit(guildConfig.memberRoleId, {
-						SendMessages: alreadyLocked ? null : false,
-						SendMessagesInThreads: alreadyLocked ? null : false,
-						CreatePrivateThreads: alreadyLocked ? null : false,
-						CreatePublicThreads: alreadyLocked ? null : false,
-					});
+					await channel.permissionOverwrites.edit(
+						client.config.general.guild.memberRoleId,
+						{
+							SendMessages: alreadyLocked ? null : false,
+							SendMessagesInThreads: alreadyLocked ? null : false,
+							CreatePrivateThreads: alreadyLocked ? null : false,
+							CreatePublicThreads: alreadyLocked ? null : false,
+						}
+					);
 					if (!alreadyLocked) {
 						var msg = (await (channel as TextChannel).send({
 							embeds: [embed],
@@ -71,13 +74,19 @@ export default new Command({
 				case ChannelType.GuildVoice:
 				case ChannelType.GuildStageVoice:
 					if (!alreadyLocked) {
-						await channel.permissionOverwrites.edit(guildConfig.memberRoleId, {
-							Connect: false,
-						});
+						await channel.permissionOverwrites.edit(
+							client.config.general.guild.memberRoleId,
+							{
+								Connect: false,
+							}
+						);
 					} else if (alreadyLocked) {
-						await channel.permissionOverwrites.edit(guildConfig.memberRoleId, {
-							SendMessages: true,
-						});
+						await channel.permissionOverwrites.edit(
+							client.config.general.guild.memberRoleId,
+							{
+								SendMessages: true,
+							}
+						);
 					}
 					break;
 				default:
@@ -128,7 +137,7 @@ export default new Command({
 				guildConfig.generalChannelId
 			)) as TextChannel;
 			const alreadyLocked = generalChannel
-				.permissionsFor(guildConfig.memberRoleId)
+				.permissionsFor(client.config.general.guild.memberRoleId)
 				.toArray()
 				.includes('SendMessages')
 				? false
@@ -143,7 +152,7 @@ export default new Command({
 				)
 				.filter((ch) =>
 					ch
-						.permissionsFor(guildConfig.memberRoleId)
+						.permissionsFor(client.config.general.guild.memberRoleId)
 						.toArray()
 						.includes('ViewChannel')
 				)
@@ -158,20 +167,26 @@ export default new Command({
 				.forEach(async (ch) => {
 					switch (ch.type) {
 						case ChannelType.GuildText:
-							await ch.permissionOverwrites.edit(guildConfig.memberRoleId, {
-								SendMessages: alreadyLocked ? null : false,
-								SendMessagesInThreads: alreadyLocked ? null : false,
-								CreatePrivateThreads: alreadyLocked ? null : false,
-								CreatePublicThreads: alreadyLocked ? null : false,
-							});
+							await ch.permissionOverwrites.edit(
+								client.config.general.guild.memberRoleId,
+								{
+									SendMessages: alreadyLocked ? null : false,
+									SendMessagesInThreads: alreadyLocked ? null : false,
+									CreatePrivateThreads: alreadyLocked ? null : false,
+									CreatePublicThreads: alreadyLocked ? null : false,
+								}
+							);
 							if (ch.id !== generalChannel.id)
 								messageIdsArray.push({ channelId: ch.id, messageId: null });
 							break;
 						case ChannelType.GuildVoice:
 						case ChannelType.GuildStageVoice:
-							await ch.permissionOverwrites.edit(guildConfig.memberRoleId, {
-								Connect: alreadyLocked ? null : false,
-							});
+							await ch.permissionOverwrites.edit(
+								client.config.general.guild.memberRoleId,
+								{
+									Connect: alreadyLocked ? null : false,
+								}
+							);
 							break;
 					}
 				});

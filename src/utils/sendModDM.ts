@@ -80,14 +80,14 @@ export async function sendModDM(member: GuildMember, options: options) {
 
 	const appealButton = new ActionRowBuilder<ButtonBuilder>().addComponents([
 		new ButtonBuilder()
-			.setURL(guildConfig.appealLink)
+			.setURL(client.config.general.guild.appealLink)
 			.setStyle(ButtonStyle['Link'])
 			.setLabel('Appeal'),
 	]);
 	let appealComponent: ActionRowBuilder<ButtonBuilder>[] = [];
 	if (
 		(options.action === PunishmentType.Ban || options.action === PunishmentType.Softban) &&
-		guildConfig.appealLink?.length !== undefined
+		client.config.general.guild.appealLink?.length !== undefined
 	)
 		appealComponent = [appealButton];
 

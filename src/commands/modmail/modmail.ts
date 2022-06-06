@@ -5,7 +5,7 @@ import { getModmailTicket } from '../../functions/cases/ModmailCase';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { modmailModel } from '../../models/modmail';
 import { Command } from '../../structures/Command';
-import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
+import { ModmailActionType } from '../../typings/Modmail';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { guild as guildConfig } from '../../json/config.json';
 import { interactions } from '../../interactions';
@@ -23,7 +23,7 @@ export default new Command({
 
 			if (
 				currentTextChannel.guildId !== guildConfig.id ||
-				currentTextChannel.parentId !== guildConfig.modmailCategoryId ||
+				currentTextChannel.parentId !== client.config.general.guild.modmailCategoryId ||
 				currentTextChannel.id === '885266382235795477' ||
 				currentTextChannel.id === '880538350740725850'
 			)
@@ -207,7 +207,9 @@ export default new Command({
 			// Checking already exists
 			const guildCategory = client.guilds.cache
 				.get(guildConfig.id)
-				.channels.cache.get(guildConfig.modmailCategoryId) as CategoryChannel;
+				.channels.cache.get(
+					client.config.general.guild.modmailCategoryId
+				) as CategoryChannel;
 			const findExisting = guildCategory.children.cache.find(
 				/* child? sus af */ (child: TextChannel) =>
 					child.topic?.slice(child.topic?.length - client.user.id.length) ===
@@ -288,7 +290,7 @@ export default new Command({
 								member.user.username,
 								{
 									type: ChannelType.GuildText,
-									parent: guildConfig.modmailCategoryId,
+									parent: client.config.general.guild.modmailCategoryId,
 									topic: `A tunnel to contact **${member.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${member.id}`,
 									reason: `Direct modmail thread opened.`,
 								}

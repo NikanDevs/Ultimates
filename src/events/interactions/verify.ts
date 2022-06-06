@@ -29,7 +29,9 @@ export default new Event('interactionCreate', async (interaction) => {
 				.setColor(client.cc.successC)
 				.setDescription('Congrats! You were verified in the server.');
 
-			(interaction.member as GuildMember).roles.add(guildConfig.memberRoleId);
+			(interaction.member as GuildMember).roles.add(
+				client.config.general.guild.memberRoleId
+			);
 
 			interaction.reply({ embeds: [verifedEmbed], ephemeral: true });
 			verificationCollection.delete('cooldown-' + interaction.user.id);
@@ -51,12 +53,16 @@ export default new Event('interactionCreate', async (interaction) => {
 	// Verify Button
 	if (!interaction.isButton()) return;
 	if ((interaction as ButtonInteraction).customId !== 'verify') return;
-	if (!interaction.guild.roles.cache.get(guildConfig.memberRoleId))
+	if (!interaction.guild.roles.cache.get(client.config.general.guild.memberRoleId))
 		return interaction.reply({
 			content: "Member role wasn't found, please contact a staff member!",
 			ephemeral: true,
 		});
-	if ((interaction.member as GuildMember).roles.cache.has(guildConfig.memberRoleId))
+	if (
+		(interaction.member as GuildMember).roles.cache.has(
+			client.config.general.guild.memberRoleId
+		)
+	)
 		return interaction.reply({
 			content: "You're already verified into the server!",
 			ephemeral: true,
@@ -175,8 +181,15 @@ export default new Event('interactionCreate', async (interaction) => {
 					.setColor(client.cc.successC)
 					.setDescription('Congrats! You were verified in the server.');
 
-				if (!interaction.guild.roles.cache.get(guildConfig.memberRoleId)) return;
-				(interaction.member as GuildMember).roles.add(guildConfig.memberRoleId);
+				if (
+					!interaction.guild.roles.cache.get(
+						client.config.general.guild.memberRoleId
+					)
+				)
+					return;
+				(interaction.member as GuildMember).roles.add(
+					client.config.general.guild.memberRoleId
+				);
 				interaction.editReply({ embeds: [verifedEmbed], components: [] });
 			} else {
 				const deniedEmbed = new EmbedBuilder()

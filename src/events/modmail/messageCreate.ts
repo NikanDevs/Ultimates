@@ -68,7 +68,7 @@ export default new Event('messageCreate', async (message) => {
 		const openedThread = guild.channels.cache
 			.filter(
 				(channel) =>
-					channel.parentId === guildConfig.modmailCategoryId &&
+					channel.parentId === client.config.general.guild.modmailCategoryId &&
 					channel.type === ChannelType.GuildText
 			)
 			.find((channel: TextChannel) =>
@@ -186,7 +186,7 @@ export default new Event('messageCreate', async (message) => {
 							message.author.username,
 							{
 								type: ChannelType.GuildText,
-								parent: guildConfig.modmailCategoryId,
+								parent: client.config.general.guild.modmailCategoryId,
 								topic: `A tunnel to contact **${message.author.username}**, they requested this ticket to be opened through DMs. | ID: ${message.author.id}`,
 								reason: `Modmail ticket open request.`,
 							}
@@ -235,7 +235,7 @@ export default new Event('messageCreate', async (message) => {
 		message?.guild &&
 		message.channel.type === ChannelType.GuildText &&
 		!message.author?.bot &&
-		message.channel.parentId === guildConfig.modmailCategoryId
+		message.channel.parentId === client.config.general.guild.modmailCategoryId
 	) {
 		const channelTopic = (message.channel as TextChannel).topic;
 		const usersThread = guild.members.cache.find(
