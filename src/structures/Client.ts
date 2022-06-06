@@ -23,7 +23,7 @@ export class Ultimates extends Client {
 	// Constructor
 	constructor() {
 		super({
-			intents: 32767,
+			intents: 131071,
 			partials: [
 				Partials.Channel,
 				Partials.GuildMember,
