@@ -20,7 +20,7 @@ exports.default = new Command_1.Command({
         if (subCommands === 'close') {
             const currentTextChannel = interaction.channel;
             if (currentTextChannel.guildId !== config_json_1.guild.id ||
-                currentTextChannel.parentId !== config_json_1.guild.modmailCategoryId ||
+                currentTextChannel.parentId !== client.config.general.guild.modmailCategoryId ||
                 currentTextChannel.id === '885266382235795477' ||
                 currentTextChannel.id === '880538350740725850')
                 return interaction.reply({
@@ -165,7 +165,7 @@ exports.default = new Command_1.Command({
             // Checking already exists
             const guildCategory = client.guilds.cache
                 .get(config_json_1.guild.id)
-                .channels.cache.get(config_json_1.guild.modmailCategoryId);
+                .channels.cache.get(client.config.general.guild.modmailCategoryId);
             const findExisting = guildCategory.children.cache.find(
             /* child? sus af */ (child) => child.topic?.slice(child.topic?.length - client.user.id.length) ===
                 member.id);
@@ -227,7 +227,7 @@ exports.default = new Command_1.Command({
                         });
                         const threadChannel = await guild.channels.create(member.user.username, {
                             type: discord_js_1.ChannelType.GuildText,
-                            parent: config_json_1.guild.modmailCategoryId,
+                            parent: client.config.general.guild.modmailCategoryId,
                             topic: `A tunnel to contact **${member.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${member.id}`,
                             reason: `Direct modmail thread opened.`,
                         });

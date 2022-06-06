@@ -15,7 +15,7 @@ exports.default = new Command_1.Command({
             const channel = (options.getChannel('channel') ||
                 interaction.channel);
             const alreadyLocked = channel
-                .permissionsFor(config_json_1.guild.memberRoleId)
+                .permissionsFor(client.config.general.guild.memberRoleId)
                 .toArray()
                 .includes('SendMessages' || 'Connect')
                 ? false
@@ -38,7 +38,7 @@ exports.default = new Command_1.Command({
                 ]);
             switch (channel.type) {
                 case discord_js_1.ChannelType.GuildText:
-                    await channel.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
+                    await channel.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
                         SendMessages: alreadyLocked ? null : false,
                         SendMessagesInThreads: alreadyLocked ? null : false,
                         CreatePrivateThreads: alreadyLocked ? null : false,
@@ -54,12 +54,12 @@ exports.default = new Command_1.Command({
                 case discord_js_1.ChannelType.GuildVoice:
                 case discord_js_1.ChannelType.GuildStageVoice:
                     if (!alreadyLocked) {
-                        await channel.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
+                        await channel.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
                             Connect: false,
                         });
                     }
                     else if (alreadyLocked) {
-                        await channel.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
+                        await channel.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
                             SendMessages: true,
                         });
                     }
@@ -105,7 +105,7 @@ exports.default = new Command_1.Command({
             await interaction.deferReply();
             const generalChannel = (await interaction.guild.channels.fetch(config_json_1.guild.generalChannelId));
             const alreadyLocked = generalChannel
-                .permissionsFor(config_json_1.guild.memberRoleId)
+                .permissionsFor(client.config.general.guild.memberRoleId)
                 .toArray()
                 .includes('SendMessages')
                 ? false
@@ -115,7 +115,7 @@ exports.default = new Command_1.Command({
                 ch.type === discord_js_1.ChannelType.GuildVoice ||
                 ch.type === discord_js_1.ChannelType.GuildStageVoice)
                 .filter((ch) => ch
-                .permissionsFor(config_json_1.guild.memberRoleId)
+                .permissionsFor(client.config.general.guild.memberRoleId)
                 .toArray()
                 .includes('ViewChannel'))
                 .filter((ch) => !alreadyLocked
@@ -127,7 +127,7 @@ exports.default = new Command_1.Command({
                 .forEach(async (ch) => {
                 switch (ch.type) {
                     case discord_js_1.ChannelType.GuildText:
-                        await ch.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
+                        await ch.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
                             SendMessages: alreadyLocked ? null : false,
                             SendMessagesInThreads: alreadyLocked ? null : false,
                             CreatePrivateThreads: alreadyLocked ? null : false,
@@ -138,7 +138,7 @@ exports.default = new Command_1.Command({
                         break;
                     case discord_js_1.ChannelType.GuildVoice:
                     case discord_js_1.ChannelType.GuildStageVoice:
-                        await ch.permissionOverwrites.edit(config_json_1.guild.memberRoleId, {
+                        await ch.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
                             Connect: alreadyLocked ? null : false,
                         });
                         break;

@@ -11,7 +11,8 @@ exports.default = new Event_1.Event('typingStart', async (typing) => {
     if (typing.user.bot)
         return;
     if (typing.guild) {
-        if (typing.channel.parentId !== config_json_1.guild.modmailCategoryId)
+        if (typing.channel.parentId !==
+            __1.client.config.general.guild.modmailCategoryId)
             return;
         const channelTopic = typing.channel.topic;
         const usersThread = guild.members.cache.find((user) => user.id === channelTopic.slice(channelTopic.length - user.id.length));
@@ -23,7 +24,7 @@ exports.default = new Event_1.Event('typingStart', async (typing) => {
     }
     else if (!typing.guild && typing.channel.type === discord_js_1.ChannelType.DM) {
         const openedThread = guild.channels.cache
-            .filter((channel) => channel.parentId === config_json_1.guild.modmailCategoryId &&
+            .filter((channel) => channel.parentId === __1.client.config.general.guild.modmailCategoryId &&
             channel.type === discord_js_1.ChannelType.GuildText)
             .find((channel) => channel?.topic?.endsWith(`${typing.user.id}`));
         if (!openedThread)

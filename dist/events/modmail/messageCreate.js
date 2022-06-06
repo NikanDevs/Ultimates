@@ -47,7 +47,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         if (exports.modmailCooldown.has(`send-message_${message.author.id}`))
             return;
         const openedThread = guild.channels.cache
-            .filter((channel) => channel.parentId === config_json_1.guild.modmailCategoryId &&
+            .filter((channel) => channel.parentId === __1.client.config.general.guild.modmailCategoryId &&
             channel.type === discord_js_1.ChannelType.GuildText)
             .find((channel) => channel?.topic?.endsWith(message.author.id));
         if (openedThread) {
@@ -141,7 +141,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                         });
                         const threadChannel = await guild.channels.create(message.author.username, {
                             type: discord_js_1.ChannelType.GuildText,
-                            parent: config_json_1.guild.modmailCategoryId,
+                            parent: __1.client.config.general.guild.modmailCategoryId,
                             topic: `A tunnel to contact **${message.author.username}**, they requested this ticket to be opened through DMs. | ID: ${message.author.id}`,
                             reason: `Modmail ticket open request.`,
                         });
@@ -183,7 +183,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
     else if (message?.guild &&
         message.channel.type === discord_js_1.ChannelType.GuildText &&
         !message.author?.bot &&
-        message.channel.parentId === config_json_1.guild.modmailCategoryId) {
+        message.channel.parentId === __1.client.config.general.guild.modmailCategoryId) {
         const channelTopic = message.channel.topic;
         const usersThread = guild.members.cache.find((user) => user.id === channelTopic.slice(channelTopic.length - user.id.length));
         if (!usersThread)

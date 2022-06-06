@@ -6,7 +6,6 @@ const __1 = require("..");
 const PunishmentType_1 = require("../typings/PunishmentType");
 const generateDiscordTimestamp_1 = require("./generateDiscordTimestamp");
 const moderation_json_1 = require("../json/moderation.json");
-const config_json_1 = require("../json/config.json");
 async function sendModDM(member, options) {
     let pastForm;
     (function (pastForm) {
@@ -63,13 +62,13 @@ async function sendModDM(member, options) {
     ]);
     const appealButton = new discord_js_1.ActionRowBuilder().addComponents([
         new discord_js_1.ButtonBuilder()
-            .setURL(config_json_1.guild.appealLink)
+            .setURL(__1.client.config.general.guild.appealLink)
             .setStyle(discord_js_1.ButtonStyle['Link'])
             .setLabel('Appeal'),
     ]);
     let appealComponent = [];
     if ((options.action === PunishmentType_1.PunishmentType.Ban || options.action === PunishmentType_1.PunishmentType.Softban) &&
-        config_json_1.guild.appealLink?.length !== undefined)
+        __1.client.config.general.guild.appealLink?.length !== undefined)
         appealComponent = [appealButton];
     await member.send({ embeds: [embed], components: appealComponent }).catch(() => { });
 }

@@ -4,7 +4,6 @@ const discord_js_1 = require("discord.js");
 const __1 = require("../..");
 const constants_1 = require("../../constants");
 const Event_1 = require("../../structures/Event");
-const config_json_1 = require("../../json/config.json");
 const convertTime_1 = require("../../functions/convertTime");
 const characters = '0123456789';
 let key1 = '';
@@ -18,7 +17,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             const verifedEmbed = new discord_js_1.EmbedBuilder()
                 .setColor(__1.client.cc.successC)
                 .setDescription('Congrats! You were verified in the server.');
-            interaction.member.roles.add(config_json_1.guild.memberRoleId);
+            interaction.member.roles.add(__1.client.config.general.guild.memberRoleId);
             interaction.reply({ embeds: [verifedEmbed], ephemeral: true });
             constants_1.verificationCollection.delete('cooldown-' + interaction.user.id);
             constants_1.verificationCollection.delete('modal-' + interaction.user.id);
@@ -36,12 +35,12 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         return;
     if (interaction.customId !== 'verify')
         return;
-    if (!interaction.guild.roles.cache.get(config_json_1.guild.memberRoleId))
+    if (!interaction.guild.roles.cache.get(__1.client.config.general.guild.memberRoleId))
         return interaction.reply({
             content: "Member role wasn't found, please contact a staff member!",
             ephemeral: true,
         });
-    if (interaction.member.roles.cache.has(config_json_1.guild.memberRoleId))
+    if (interaction.member.roles.cache.has(__1.client.config.general.guild.memberRoleId))
         return interaction.reply({
             content: "You're already verified into the server!",
             ephemeral: true,
@@ -138,9 +137,9 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
                 const verifedEmbed = new discord_js_1.EmbedBuilder()
                     .setColor(__1.client.cc.successC)
                     .setDescription('Congrats! You were verified in the server.');
-                if (!interaction.guild.roles.cache.get(config_json_1.guild.memberRoleId))
+                if (!interaction.guild.roles.cache.get(__1.client.config.general.guild.memberRoleId))
                     return;
-                interaction.member.roles.add(config_json_1.guild.memberRoleId);
+                interaction.member.roles.add(__1.client.config.general.guild.memberRoleId);
                 interaction.editReply({ embeds: [verifedEmbed], components: [] });
             }
             else {
