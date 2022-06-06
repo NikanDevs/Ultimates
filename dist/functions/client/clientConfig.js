@@ -34,8 +34,21 @@ class clientConfig {
         /** Automod Array of filtered words */
         filteredWords: [],
     };
+    /** General data */
+    general = {
+        ownerId: null,
+        developers: [],
+        success: '',
+        error: '',
+        attention: '',
+        guild: {
+            appealLink: null,
+            memberRoleId: null,
+            modmailCategoryId: null,
+        },
+    };
     async updateLogs() {
-        const data = await config_1.configModel.findById('logs');
+        const data = await config_1.configModel.findById('logging');
         if (!data)
             return;
         function getWebhookInfo(url) {
@@ -48,26 +61,26 @@ class clientConfig {
             return returns;
         }
         this.webhooks.mod = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.mod.webhook)[0],
-            token: getWebhookInfo(data.mod.webhook)[1],
+            id: getWebhookInfo(data.logging.mod.webhook)[0],
+            token: getWebhookInfo(data.logging.mod.webhook)[1],
         });
         this.webhooks.message = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.message.webhook)[0],
-            token: getWebhookInfo(data.message.webhook)[1],
+            id: getWebhookInfo(data.logging.message.webhook)[0],
+            token: getWebhookInfo(data.logging.message.webhook)[1],
         });
         this.webhooks.modmail = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.modmail.webhook)[0],
-            token: getWebhookInfo(data.modmail.webhook)[1],
+            id: getWebhookInfo(data.logging.modmail.webhook)[0],
+            token: getWebhookInfo(data.logging.modmail.webhook)[1],
         });
         this.webhooks.servergate = new discord_js_1.WebhookClient({
-            id: getWebhookInfo(data.servergate.webhook)[0],
-            token: getWebhookInfo(data.servergate.webhook)[1],
+            id: getWebhookInfo(data.logging.servergate.webhook)[0],
+            token: getWebhookInfo(data.logging.servergate.webhook)[1],
         });
         this.logging = {
-            mod: data.mod.active,
-            modmail: data.modmail.active,
-            message: data.message.active,
-            servergate: data.servergate.active,
+            mod: data.logging.mod.active,
+            modmail: data.logging.modmail.active,
+            message: data.logging.message.active,
+            servergate: data.logging.servergate.active,
         };
     }
     async updateAutomod() {
@@ -85,6 +98,23 @@ class clientConfig {
             urls: data.modules.urls,
         };
         this.automod.filteredWords = data.filteredWords;
+    }
+    async updateGeneral() {
+        const data = await config_1.configModel.findById('general');
+        if (!data)
+            return;
+        this.general = {
+            ownerId: data.ownerId,
+            developers: data.developers,
+            success: data.success,
+            error: data.error,
+            attention: data.attention,
+            guild: {
+                appealLink: data.guild.appealLink,
+                memberRoleId: data.guild.memberRoleId,
+                modmailCategoryId: data.guild.modmailCategoryId,
+            },
+        };
     }
 }
 exports.clientConfig = clientConfig;

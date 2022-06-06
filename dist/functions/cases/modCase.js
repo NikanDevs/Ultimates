@@ -13,5 +13,6 @@ async function addModCase() {
     await logs_1.logsModel.findByIdAndUpdate('substance', {
         $set: { currentCase: currentCase + 1 },
     });
+    return true;
 }
 exports.addModCase = addModCase;

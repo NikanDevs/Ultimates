@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.clientEmbeds = exports.cc = void 0;
 const discord_js_1 = require("discord.js");
-const database_json_1 = require("../../json/database.json");
 const __1 = require("../..");
 exports.cc = {
     errorC: discord_js_1.Colors.Red,
@@ -11,29 +10,26 @@ exports.cc = {
     attentionC: discord_js_1.Colors.Yellow,
     invisible: discord_js_1.Util.resolveColor('#2F3136'),
     moderation: discord_js_1.Util.resolveColor('#dbca95'),
-    successE: database_json_1.emojis.sucess,
-    errorE: database_json_1.emojis.error,
-    attentionE: database_json_1.emojis.attention,
     previous: '◀️',
     next: '▶️',
 };
 exports.clientEmbeds = {
-    error: function name(error) {
+    success: function (message) {
         const embed = new discord_js_1.EmbedBuilder()
-            .setDescription(exports.cc.errorE + ' ' + error)
-            .setColor(discord_js_1.Util.resolveColor('Red'));
+            .setDescription(__1.client.config.general.success + ' ' + message)
+            .setColor(discord_js_1.Util.resolveColor('#9eea9a'));
         return embed;
     },
     attention: function (message) {
         const embed = new discord_js_1.EmbedBuilder()
-            .setDescription(exports.cc.attentionE + ' ' + message)
+            .setDescription(__1.client.config.general.attention + ' ' + message)
             .setColor(discord_js_1.Util.resolveColor('#f0e17c'));
         return embed;
     },
-    success: function (message) {
+    error: function name(error) {
         const embed = new discord_js_1.EmbedBuilder()
-            .setDescription(exports.cc.successE + ' ' + message)
-            .setColor(discord_js_1.Util.resolveColor('#9eea9a'));
+            .setDescription(__1.client.config.general.error + ' ' + error)
+            .setColor(discord_js_1.Util.resolveColor('Red'));
         return embed;
     },
     moderation: function (user, options) {

@@ -102,15 +102,17 @@ exports.default = new Command_1.Command({
                     `• **Username:** ${user.username}`,
                     `• **Discriminator:** #${user.discriminator}`,
                     `• **Registered:** <t:${~~(+user.createdAt / 1000)}:f> | <t:${~~(+user.createdAt / 1000)}:R>`,
-                    `• **Bot:** ${user?.bot ? `${client.cc.successE}` : `${client.cc.errorE}`}`,
+                    `• **Bot:** ${user?.bot
+                        ? `${client.config.general.success}`
+                        : `${client.config.general.error}`}`,
                 ].join('\n'),
             },
             {
                 name: 'Avatar',
                 value: [
                     `• **Animated:** ${user.displayAvatarURL().endsWith('.gif')
-                        ? `${client.cc.successE}`
-                        : `${client.cc.errorE}`}`,
+                        ? `${client.config.general.success}`
+                        : `${client.config.general.error}`}`,
                     `• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
                 ].join('\n'),
                 inline: true,
@@ -123,8 +125,8 @@ exports.default = new Command_1.Command({
                     name: 'Banner',
                     value: [
                         `• **Animated:** ${user.bannerURL().endsWith('.gif')
-                            ? `${client.cc.successE}`
-                            : `${client.cc.errorE}`}`,
+                            ? `${client.config.general.success}`
+                            : `${client.config.general.error}`}`,
                         `• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
                     ].join('\n'),
                     inline: true,
@@ -262,8 +264,8 @@ exports.default = new Command_1.Command({
                                         ? 'No Nickname'
                                         : `${member.displayName}`}`,
                                     `• **Booster:** ${member.premiumSinceTimestamp
-                                        ? `${client.cc.successE}`
-                                        : `${client.cc.errorE}`}`,
+                                        ? `${client.config.general.success}`
+                                        : `${client.config.general.error}`}`,
                                     `• **Boosting Since:** ${member.premiumSinceTimestamp
                                         ? `<t:${~~(member.premiumSinceTimestamp /
                                             1000)}:f> | <t:${~~(member.premiumSinceTimestamp /
@@ -279,8 +281,8 @@ exports.default = new Command_1.Command({
                                     name: 'Server Avatar',
                                     value: [
                                         `• **Animated:** ${member.avatarURL().endsWith('.gif')
-                                            ? `${client.cc.successE}`
-                                            : `${client.cc.errorE}`}`,
+                                            ? `${client.config.general.success}`
+                                            : `${client.config.general.error}`}`,
                                         `• **Formats:** ${UrlTypeCheck(member.avatarURL(), 'Avatar')}`,
                                     ].join('\n'),
                                 },

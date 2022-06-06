@@ -39,9 +39,9 @@ const globPromise = (0, util_1.promisify)(glob_1.glob);
 class Ultimates extends discord_js_1.Client {
     commands = new discord_js_1.Collection();
     util = new clientUtil_1.clientUtil();
+    config = new clientConfig_1.clientConfig();
     embeds = properties_1.clientEmbeds;
     cc = properties_1.cc;
-    config = new clientConfig_1.clientConfig();
     // Constructor
     constructor() {
         super({
@@ -71,6 +71,7 @@ class Ultimates extends discord_js_1.Client {
         await this.checkSubstance();
         await this.config.updateLogs();
         await this.config.updateAutomod();
+        await this.config.updateGeneral();
         await this.registerModules();
         await this.login(process.env.DISCORD_TOKEN).then(() => {
             this.handlerErrors();

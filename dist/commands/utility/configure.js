@@ -34,19 +34,21 @@ exports.default = new Command_1.Command({
             const channel = options.getChannel('channel');
             const active = options.getBoolean('active');
             let newWebhook;
-            const data = await config_1.configModel.findById('logs');
+            const data = await config_1.configModel.findById('logging');
             if (!data) {
                 const newData = new config_1.configModel({
                     _id: 'logs',
-                    mod: { channelId: null, webhook: null, active: null },
-                    modmail: { channelId: null, webhook: null, active: null },
-                    message: { channelId: null, webhook: null, active: null },
-                    servergate: { channelId: null, webhook: null, active: null },
-                    error: { channelId: null, webhook: null, active: null },
+                    logging: {
+                        mod: { channelId: null, webhook: null, active: null },
+                        modmail: { channelId: null, webhook: null, active: null },
+                        message: { channelId: null, webhook: null, active: null },
+                        servergate: { channelId: null, webhook: null, active: null },
+                        error: { channelId: null, webhook: null, active: null },
+                    },
                 });
                 await newData.save();
             }
-            if (channel && channel?.id !== data.channelId) {
+            if (channel && channel?.id !== data.logging[module].channelId) {
                 switch (module) {
                     case 'mod':
                         await client.config.webhooks.mod?.delete().catch(() => { });
@@ -67,20 +69,22 @@ exports.default = new Command_1.Command({
                 });
             }
             if (module && (channel || active !== null)) {
-                await config_1.configModel.findByIdAndUpdate({ _id: 'logs' }, {
+                await config_1.configModel.findByIdAndUpdate('logging', {
                     $set: {
-                        [module]: {
-                            channelId: channel
-                                ? channel.id === data[module].channelId
-                                    ? data[module].channelId
-                                    : channel.id
-                                : data[module].channelId,
-                            webhook: channel
-                                ? channel.id === data[module].channel
-                                    ? data[module].webhook
-                                    : newWebhook.url
-                                : data[module].webhook,
-                            active: active === null ? data[module].active : active,
+                        logging: {
+                            [module]: {
+                                channelId: channel
+                                    ? channel.id === data[module].channelId
+                                        ? data[module].channelId
+                                        : channel.id
+                                    : data[module].channelId,
+                                webhook: channel
+                                    ? channel.id === data[module].channelId
+                                        ? data[module].webhook
+                                        : newWebhook.url
+                                    : data[module].webhook,
+                                active: active === null ? data[module].active : active,
+                            },
                         },
                     },
                 });
@@ -98,17 +102,17 @@ exports.default = new Command_1.Command({
             await interaction.followUp({ embeds: [embed] });
             // Functions
             async function formatLogField(module) {
-                const data = await config_1.configModel.findById('logs');
+                const data = await config_1.configModel.findById('logging');
                 let channel = (await client.channels
                     .fetch(data[module].channelId)
                     .catch(() => { }));
                 return {
                     name: logsNames[module],
-                    value: data[module].webhook
-                        ? `${data[module].active
+                    value: data.logging[module].webhook
+                        ? `${data.logging[module].active
                             ? '<:online:886215547249913856>'
                             : '<:offline:906867114126770186>'} • ${channel ? channel : "The logs channel wasn't found."}`
-                        : '<:idle:906867112612601866> • This module is not set, yet...',
+                        : '<:idle:906867112612601866> • This module is ✖︎',
                 };
             }
         }
@@ -137,9 +141,11 @@ exports.default = new Command_1.Command({
             if (module && active !== null) {
                 await config_1.configModel.findByIdAndUpdate('automod', {
                     $set: {
-                        modules: {
-                            ...(await config_1.configModel.findById('automod')).modules,
-                            [module]: active,
+                        automod: {
+                            modules: {
+                                ...(await config_1.configModel.findById('automod')).modules,
+                                [module]: active,
+                            },
                         },
                     },
                 });
@@ -222,6 +228,91 @@ exports.default = new Command_1.Command({
                     ? '<:online:886215547249913856>'
                     : '<:offline:906867114126770186>'} - ${automodModulesNames[module]}`;
             }
+        }
+        else if (subcommand === 'general') {
+            const module = options.getString('module');
+            let newvalue = options.getString('new-value');
+            let data = await config_1.configModel.findById('general');
+            if (!data) {
+                const newData = new config_1.configModel({
+                    _id: 'general',
+                    ownerId: null,
+                    developers: [],
+                    success: '',
+                    error: '',
+                    attention: '',
+                    guild: {
+                        appealLink: null,
+                        memberRoleId: null,
+                        modmailCategoryId: null,
+                    },
+                });
+                await newData.save();
+            }
+            data = await config_1.configModel.findById('general');
+            if (module && newvalue) {
+                if (module === 'developers') {
+                    const currentDevs = (await config_1.configModel.findById('general')).developers;
+                    if (currentDevs.includes(newvalue)) {
+                        currentDevs.splice(currentDevs.indexOf(newvalue));
+                        newvalue = 'null';
+                    }
+                    await config_1.configModel.findByIdAndUpdate('general', {
+                        $set: {
+                            developers: currentDevs.concat([newvalue].filter((value) => value !== 'null')),
+                        },
+                    });
+                }
+                else if (module.startsWith('guild')) {
+                    await config_1.configModel.findByIdAndUpdate('general', {
+                        $set: {
+                            guild: {
+                                ...(await config_1.configModel.findById('general')).guild,
+                                [module.replaceAll('guild_', '')]: newvalue,
+                            },
+                        },
+                    });
+                }
+                else {
+                    await config_1.configModel.findByIdAndUpdate('general', {
+                        $set: {
+                            [module]: newvalue,
+                        },
+                    });
+                }
+                await client.config.updateGeneral();
+            }
+            data = await config_1.configModel.findById('general');
+            const embed = new discord_js_1.EmbedBuilder()
+                .setTitle('General Configuration')
+                .setColor(client.cc.ultimates)
+                .setDescription([
+                `• ${discord_js_1.Formatters.bold('Owner')} - ${(await client.users.fetch(data.ownerId).catch(() => { })) || '✖︎'}`,
+                `• ${discord_js_1.Formatters.bold('Success')} - ${data.success || '✖︎'}`,
+                `• ${discord_js_1.Formatters.bold('Error')} - ${data.error || '✖︎'}`,
+                `• ${discord_js_1.Formatters.bold('Attention')} - ${data.attention || '✖︎'}`,
+                `• ${discord_js_1.Formatters.bold('Appeal Link')} - ${data.guild.appealLink || '✖︎'}`,
+                `• ${discord_js_1.Formatters.bold('Member Role')} - ${data.guild.memberRoleId
+                    ? await interaction.guild.roles
+                        .fetch(data.guild.memberRoleId)
+                        .catch(() => { })
+                    : '✖︎'}`,
+                `• ${discord_js_1.Formatters.bold('Modmail Category')} - ${data.guild.modmailCategoryId
+                    ? await interaction.guild.channels
+                        .fetch(data.guild.modmailCategoryId)
+                        .catch(() => { })
+                    : '✖︎'}`,
+                `• ${discord_js_1.Formatters.bold('Developers')} - ${data.developers.length
+                    ? data.developers
+                        .map((dev) => `${client.users.cache.get(dev)
+                        ?.tag === undefined
+                        ? `Not found, ID: ${dev}`
+                        : client.users.cache.get(dev)
+                            ?.tag}`)
+                        .join(' `|` ')
+                    : 'No developers.'}`,
+            ].join('\n'));
+            await interaction.followUp({ embeds: [embed] });
         }
     },
 });

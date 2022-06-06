@@ -5,7 +5,6 @@ const __1 = require("../..");
 const discord_js_1 = require("discord.js");
 const mongoose_1 = require("mongoose");
 const logger_1 = require("../../logger");
-const config_json_1 = require("../../json/config.json");
 const convertTime_1 = require("../../functions/convertTime");
 const cooldown = new discord_js_1.Collection();
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
@@ -23,12 +22,12 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
                 ],
                 ephemeral: true,
             });
-        if (!config_json_1.developers.includes(interaction.user.id) &&
+        if (!__1.client.config.general.developers.includes(interaction.user.id) &&
             command.interaction.directory === 'developer')
             return;
         // Permission Check
         if (command.interaction.permission?.some((perm) => !member.permissions.has(perm)) &&
-            interaction.user.id !== config_json_1.ownerId)
+            interaction.user.id !== __1.client.config.general.ownerId)
             return interaction.reply({
                 embeds: [
                     __1.client.embeds.attention("You don't have permissions to use this command."),
@@ -70,8 +69,8 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             reason: err,
         }));
         if (command.interaction.cooldown &&
-            !config_json_1.developers.includes(interaction.user.id) &&
-            config_json_1.ownerId !== interaction.user.id) {
+            !__1.client.config.general.developers.includes(interaction.user.id) &&
+            __1.client.config.general.ownerId !== interaction.user.id) {
             cooldown.set(`${command.interaction.name}${interaction.user.id}`, Date.now() + command.interaction.cooldown);
             setTimeout(() => {
                 cooldown.delete(`${command.interaction.name}${interaction.user.id}`);
