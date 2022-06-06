@@ -510,7 +510,7 @@ export default new Command({
 						!(await interaction.guild.members
 							.fetch(punishment.userId)
 							.catch(() => {})) &&
-						PunishmentType.Timeout
+						punishment.type === PunishmentType.Timeout
 					)
 						return interaction.followUp({
 							embeds: [
