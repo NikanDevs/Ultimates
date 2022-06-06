@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -16,6 +16,12 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason = options.getString('reason') || default_config.reason;
+
+		if (!member)
+			return interaction.reply({
+				embeds: [client.embeds.error('I could not find that member in this server.')],
+				ephemeral: true,
+			});
 
 		if (ignore(member, { interaction, action: PunishmentType.Kick })) return;
 

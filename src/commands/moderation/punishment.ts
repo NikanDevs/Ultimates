@@ -507,7 +507,9 @@ export default new Command({
 			switch (value) {
 				case 1:
 					if (
-						!(await interaction.guild.members.fetch(punishment.userId)) &&
+						!(await interaction.guild.members
+							.fetch(punishment.userId)
+							.catch(() => {})) &&
 						PunishmentType.Timeout
 					)
 						return interaction.followUp({

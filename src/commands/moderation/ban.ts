@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -21,6 +21,11 @@ export default new Command({
 			options.getNumber('delete_messages') || default_config.ban_delete_messages;
 
 		if (member) if (ignore(member, { interaction, action: PunishmentType.Ban })) return;
+		if (interaction.guild.bans.fetch(user.id).catch(() => {}))
+			return interaction.reply({
+				embeds: [client.embeds.error('This user is already banned from the server.')],
+				ephemeral: true,
+			});
 
 		const data = new punishmentModel({
 			_id: generateManualId(),

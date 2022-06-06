@@ -43,9 +43,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		)
 			return interaction.reply({
 				embeds: [
-					client.embeds.attention(
-						"You don't have permissions to use this context menu."
-					),
+					client.embeds.attention("You don't have permissions to use this command."),
 				],
 				ephemeral: true,
 			});
@@ -60,7 +58,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				.setDescription(
 					`You need to wait \`${convertTime(
 						~~+cooldownRemaining
-					)}\` to use this context menu.`
+					)}\` to use this command.`
 				);
 
 			return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });

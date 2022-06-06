@@ -25,6 +25,12 @@ export default new Command({
 		const duration = /^\d+$/.test(durationO) ? parseInt(durationO) : +convertTime(durationO);
 
 		if (member) if (ignore(member, { interaction, action: PunishmentType.Softban })) return;
+		if (interaction.guild.bans.fetch(user.id).catch(() => {}))
+			return interaction.reply({
+				embeds: [client.embeds.error('This user is already banned from the server.')],
+				ephemeral: true,
+			});
+
 		if (duration === undefined)
 			return interaction.reply({
 				embeds: [

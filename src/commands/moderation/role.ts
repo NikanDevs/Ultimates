@@ -44,7 +44,7 @@ export default new Command({
 						client.embeds.error(
 							`Woah! That role has some moderation powers, try ${
 								alreadyHas ? 'removing' : 'adding'
-							} them yourself.`
+							} it yourself.`
 						),
 					],
 					ephemeral: true,

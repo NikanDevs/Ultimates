@@ -79,6 +79,13 @@ export function ignore(member: GuildMember, options: options): boolean {
 		});
 		return true;
 	}
+	if (member.permissions.has('Administrator')) {
+		interaction.reply({
+			embeds: [client.embeds.error('You can not take actions on an administrator.')],
+			ephemeral: true,
+		});
+		return true;
+	}
 	if (
 		(interaction.member as GuildMember).roles.highest.position <=
 		member.roles.highest.position

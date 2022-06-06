@@ -17,7 +17,7 @@ export const nicknameCommand = {
 		{
 			name: 'nickname',
 			description: 'The new nickname you want to set for the member',
-			type: ApplicationCommandOptionType.User,
+			type: ApplicationCommandOptionType.String,
 			required: false,
 		},
 	],

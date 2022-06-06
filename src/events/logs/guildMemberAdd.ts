@@ -19,7 +19,7 @@ export default new Event('guildMemberAdd', async (member) => {
 
 	const embed = new EmbedBuilder()
 		.setAuthor({ name: member.guild.name, iconURL: member.guild.iconURL() })
-		.setColor(client.util.resolve.color('#529e79'))
+		.setColor('#529e79')
 		.setDescription(
 			[
 				`• **Mention:** ${member}\n`,
@@ -27,7 +27,7 @@ export default new Event('guildMemberAdd', async (member) => {
 				`• **Registered:** <t:${~~(member.user.createdTimestamp / 1000)}:R>`,
 				`• **Joined:** <t:${~~(member.joinedTimestamp / 1000)}:R>`,
 				`• **Member Count:** ${member.guild.memberCount}`,
-				`\n\n${findData ? 'A user has joined back!' : 'A user has joined!'}`,
+				`\n${findData ? 'A user has joined back!' : 'A user has joined!'}`,
 			].join('\n')
 		);
 

@@ -1,4 +1,4 @@
-import { GuildMember, User } from 'discord.js';
+import { Formatters, GuildMember, User } from 'discord.js';
 import { Event } from '../structures/Event';
 import { client } from '..';
 import { createModLog } from '../functions/logs/createModLog';
@@ -18,7 +18,9 @@ export default new Event('ready', () => {
 
 		filterTimeout.forEach(async (data) => {
 			await data.delete();
-			const guildMember = (await guild.members?.fetch(data.userId)) as GuildMember;
+			const guildMember = (await guild.members
+				?.fetch(data.userId)
+				.catch(() => {})) as GuildMember;
 			const findUser = (await client.users
 				.fetch(data.userId, { force: true })
 				.catch(() => {})) as User;
@@ -39,7 +41,8 @@ export default new Event('ready', () => {
 		const filterSoftbans = findSoftbans?.filter(
 			(c) => Date.now() > (c.date as Date).getTime() + c.duration
 		);
-		let reason = '~~Unbanned due to softban duration~~ Already unbanned.';
+		let reason =
+			Formatters.strikethrough('Unbanned due to softban duration') + 'Already unbanned.';
 		if (!filterTimeout) return;
 
 		filterSoftbans.forEach(async (data) => {

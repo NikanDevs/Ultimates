@@ -27,7 +27,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						`No context menus were found matching \`/${interaction.commandName}\``
+						`No context menus were found matching \`${interaction.commandName}\``
 					),
 				],
 				ephemeral: true,
@@ -41,7 +41,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
-						"You don't have permissions to run this command.interaction."
+						"You don't have permissions to use this context-menu."
 					),
 				],
 				ephemeral: true,
@@ -57,7 +57,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				.setDescription(
 					`You need to wait \`${convertTime(
 						~~+cooldownRemaining
-					)}\` to use this command again.`
+					)}\` to use this context-menu again.`
 				);
 
 			return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });

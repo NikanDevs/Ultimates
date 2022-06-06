@@ -11,7 +11,7 @@ import { interactions } from '../../interactions';
 export default new Command({
 	interaction: interactions.unban,
 	excute: async ({ client, interaction, options }) => {
-		const userId = options.getString('user-id');
+		const userId = options.getString('user');
 		const reason = options.getString('reason') || default_config.reason;
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
