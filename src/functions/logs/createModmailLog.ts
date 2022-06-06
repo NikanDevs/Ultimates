@@ -103,7 +103,7 @@ export async function createModmailLog(options: options) {
 
 		await modmailModel.findByIdAndUpdate(options.user.id, { $set: { url: findMessage.url } });
 	} else if (options.action === ModmailActionType.Close) {
-		const openedTickets: [] = (await modmailModel.findById('substance')).openedTickets;
+		const openedTickets = (await modmailModel.findById('substance')).openedTickets;
 		const ticketData = (openedTickets as ModmailTicketData[]).find(
 			(data) => data.userId === options.user.id
 		);

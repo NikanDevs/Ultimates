@@ -36,7 +36,7 @@ export class clientConfig {
 	};
 
 	async updateLogs() {
-		const data = await configModel.findById('logs');
+		const data = await configModel.findById('logging');
 		if (!data) return;
 
 		function getWebhookInfo(url: string) {
@@ -51,27 +51,27 @@ export class clientConfig {
 		}
 
 		this.webhooks.mod = new WebhookClient({
-			id: getWebhookInfo(data.mod.webhook)[0],
-			token: getWebhookInfo(data.mod.webhook)[1],
+			id: getWebhookInfo(data.logging.mod.webhook)[0],
+			token: getWebhookInfo(data.logging.mod.webhook)[1],
 		});
 		this.webhooks.message = new WebhookClient({
-			id: getWebhookInfo(data.message.webhook)[0],
-			token: getWebhookInfo(data.message.webhook)[1],
+			id: getWebhookInfo(data.logging.message.webhook)[0],
+			token: getWebhookInfo(data.logging.message.webhook)[1],
 		});
 		this.webhooks.modmail = new WebhookClient({
-			id: getWebhookInfo(data.modmail.webhook)[0],
-			token: getWebhookInfo(data.modmail.webhook)[1],
+			id: getWebhookInfo(data.logging.modmail.webhook)[0],
+			token: getWebhookInfo(data.logging.modmail.webhook)[1],
 		});
 		this.webhooks.servergate = new WebhookClient({
-			id: getWebhookInfo(data.servergate.webhook)[0],
-			token: getWebhookInfo(data.servergate.webhook)[1],
+			id: getWebhookInfo(data.logging.servergate.webhook)[0],
+			token: getWebhookInfo(data.logging.servergate.webhook)[1],
 		});
 
 		this.logging = {
-			mod: data.mod.active,
-			modmail: data.modmail.active,
-			message: data.message.active,
-			servergate: data.servergate.active,
+			mod: data.logging.mod.active,
+			modmail: data.logging.modmail.active,
+			message: data.logging.message.active,
+			servergate: data.logging.servergate.active,
 		};
 	}
 

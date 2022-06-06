@@ -1,5 +1,4 @@
 import {
-	ApplicationCommandOptionType,
 	ChannelType,
 	EmbedBuilder,
 	GuildChannel,

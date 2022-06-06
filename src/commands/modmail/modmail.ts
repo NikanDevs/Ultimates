@@ -78,9 +78,7 @@ export default new Command({
 				.replaceAll('LINE_BREAK', '');
 
 			const openedTickets = (await modmailModel.findById('substance')).openedTickets;
-			const ticketData = (openedTickets as ModmailTicketData[]).find(
-				(data) => data.userId === userId
-			);
+			const ticketData = openedTickets.find((data) => data.userId === userId);
 
 			const transcript = await create(
 				[

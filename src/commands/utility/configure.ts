@@ -39,25 +39,33 @@ export default new Command({
 		await interaction.deferReply({ ephemeral: false });
 
 		if (subcommand === 'logs') {
-			const module = options.getString('module');
+			const module = options.getString('module') as
+				| 'mod'
+				| 'modmail'
+				| 'message'
+				| 'servergate'
+				| 'error';
+
 			const channel = options.getChannel('channel') as TextChannel;
 			const active = options.getBoolean('active');
 			let newWebhook: Webhook;
 
-			const data = await configModel.findById('logs');
+			const data = await configModel.findById('logging');
 			if (!data) {
 				const newData = new configModel({
 					_id: 'logs',
-					mod: { channelId: null, webhook: null, active: null },
-					modmail: { channelId: null, webhook: null, active: null },
-					message: { channelId: null, webhook: null, active: null },
-					servergate: { channelId: null, webhook: null, active: null },
-					error: { channelId: null, webhook: null, active: null },
+					logging: {
+						mod: { channelId: null, webhook: null, active: null },
+						modmail: { channelId: null, webhook: null, active: null },
+						message: { channelId: null, webhook: null, active: null },
+						servergate: { channelId: null, webhook: null, active: null },
+						error: { channelId: null, webhook: null, active: null },
+					},
 				});
 				await newData.save();
 			}
 
-			if (channel && channel?.id !== data.channelId) {
+			if (channel && channel?.id !== data.logging[module].channelId) {
 				switch (module) {
 					case 'mod':
 						await client.config.webhooks.mod?.delete().catch(() => {});
@@ -79,10 +87,9 @@ export default new Command({
 			}
 
 			if (module && (channel || active !== null)) {
-				await configModel.findByIdAndUpdate(
-					{ _id: 'logs' },
-					{
-						$set: {
+				await configModel.findByIdAndUpdate('logging', {
+					$set: {
+						logging: {
 							[module]: {
 								channelId: channel
 									? channel.id === data[module].channelId
@@ -90,15 +97,15 @@ export default new Command({
 										: channel.id
 									: data[module].channelId,
 								webhook: channel
-									? channel.id === data[module].channel
+									? channel.id === data[module].channelId
 										? data[module].webhook
 										: newWebhook.url
 									: data[module].webhook,
 								active: active === null ? data[module].active : active,
 							},
 						},
-					}
-				);
+					},
+				});
 				await client.config.updateLogs();
 			}
 
@@ -116,15 +123,15 @@ export default new Command({
 
 			// Functions
 			async function formatLogField(module: 'mod' | 'message' | 'modmail' | 'servergate') {
-				const data = await configModel.findById('logs');
+				const data = await configModel.findById('logging');
 				let channel = (await client.channels
 					.fetch(data[module].channelId)
 					.catch(() => {})) as TextChannel;
 				return {
 					name: logsNames[module],
-					value: data[module].webhook
+					value: data.logging[module].webhook
 						? `${
-								data[module].active
+								data.logging[module].active
 									? '<:online:886215547249913856>'
 									: '<:offline:906867114126770186>'
 						  } • ${channel ? channel : "The logs channel wasn't found."}`
@@ -157,9 +164,11 @@ export default new Command({
 			if (module && active !== null) {
 				await configModel.findByIdAndUpdate('automod', {
 					$set: {
-						modules: {
-							...(await configModel.findById('automod')).modules,
-							[module]: active,
+						automod: {
+							modules: {
+								...(await configModel.findById('automod')).modules,
+								[module]: active,
+							},
 						},
 					},
 				});
