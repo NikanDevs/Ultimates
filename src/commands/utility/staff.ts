@@ -17,7 +17,8 @@ enum statusPriorities {
 	'online' = 1,
 	'idle' = 2,
 	'dnd' = 3,
-	undefined = 4,
+	'offline' = 4,
+	undefined = 5,
 }
 
 export default new Command({
@@ -41,6 +42,7 @@ export default new Command({
 			'online' = '<:online:886215547249913856>',
 			'idle' = '<:idle:906867112612601866>',
 			'dnd' = '<:dnd:906867112222531614>',
+			'offline' = '<:invisible:983325305273995334>',
 			undefined = '<:offline:906867114126770186>',
 		}
 
