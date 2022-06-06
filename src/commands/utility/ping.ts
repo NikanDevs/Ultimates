@@ -15,13 +15,13 @@ export default new Command({
 			.setColor(client.cc.ultimates)
 			.setDescription(
 				[
+					`<:mongoDB:983328317929316392> **MongoDB** - ${client.util.capitalize(
+						ConnectionStates[connection.readyState]
+					)}`,
 					`${pingEmoji(client.ws.ping)} **Websocket** - ${client.ws.ping}ms`,
 					`${pingEmoji(Date.now() - interaction.createdTimestamp)} **Roundtrip** - ${
 						Date.now() - interaction.createdTimestamp
 					}ms`,
-					`<:mongoDB:983328317929316392> **MongoDB** - ${client.util.capitalize(
-						ConnectionStates[connection.readyState]
-					)}`,
 					'',
 					`🕓 **Uptime** - ${convertTime(+client.uptime)}`,
 				].join('\n')

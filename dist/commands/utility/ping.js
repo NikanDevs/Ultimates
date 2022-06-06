@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const mongoose_1 = require("mongoose");
+const convertTime_1 = require("../../functions/convertTime");
 const interactions_1 = require("../../interactions");
 const Command_1 = require("../../structures/Command");
 exports.default = new Command_1.Command({
@@ -14,9 +15,11 @@ exports.default = new Command_1.Command({
         })
             .setColor(client.cc.ultimates)
             .setDescription([
+            `<:mongoDB:983328317929316392> **MongoDB** - ${client.util.capitalize(mongoose_1.ConnectionStates[mongoose_1.connection.readyState])}`,
             `${pingEmoji(client.ws.ping)} **Websocket** - ${client.ws.ping}ms`,
             `${pingEmoji(Date.now() - interaction.createdTimestamp)} **Roundtrip** - ${Date.now() - interaction.createdTimestamp}ms`,
-            `<:mongoDB:983328317929316392> **MongoDB** - ${client.util.capitalize(mongoose_1.ConnectionStates[mongoose_1.connection.readyState])}`,
+            '',
+            `🕓 **Uptime** - ${(0, convertTime_1.convertTime)(+client.uptime)}`,
         ].join('\n'));
         interaction.reply({
             embeds: [embed],
