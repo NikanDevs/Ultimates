@@ -25,6 +25,11 @@ exports.default = new Command_1.Command({
         if (member)
             if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Softban }))
                 return;
+        if (interaction.guild.bans.fetch(user.id).catch(() => { }))
+            return interaction.reply({
+                embeds: [client.embeds.error('This user is already banned from the server.')],
+                ephemeral: true,
+            });
         if (duration === undefined)
             return interaction.reply({
                 embeds: [

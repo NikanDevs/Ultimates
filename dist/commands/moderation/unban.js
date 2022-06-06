@@ -12,7 +12,7 @@ const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.unban,
     excute: async ({ client, interaction, options }) => {
-        const userId = options.getString('user-id');
+        const userId = options.getString('user');
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;
         const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => { });
         if (!bannedMember)

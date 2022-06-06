@@ -31,7 +31,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             interaction.user.id !== config_json_1.ownerId)
             return interaction.reply({
                 embeds: [
-                    __1.client.embeds.attention("You don't have permissions to use this context menu."),
+                    __1.client.embeds.attention("You don't have permissions to use this command."),
                 ],
                 ephemeral: true,
             });
@@ -40,7 +40,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             const cooldownRemaining = `${~~(+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now())}`;
             const cooldownEmbed = new discord_js_1.EmbedBuilder()
                 .setColor(__1.client.cc.errorC)
-                .setDescription(`You need to wait \`${(0, convertTime_1.convertTime)(~~+cooldownRemaining)}\` to use this context menu.`);
+                .setDescription(`You need to wait \`${(0, convertTime_1.convertTime)(~~+cooldownRemaining)}\` to use this command.`);
             return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
         }
         if (command.interaction.directory !== 'developer' && mongoose_1.connection.readyState !== 1) {

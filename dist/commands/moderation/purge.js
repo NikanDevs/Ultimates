@@ -6,8 +6,8 @@ const fifteenDays = 1000 * 60 * 60 * 24 * 15;
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.purge,
     excute: async ({ client, interaction, options }) => {
-        let amount = options.getInteger('amount');
-        const member = options.getMember('user');
+        let amount = Math.round(options.getNumber('amount'));
+        const user = options.getUser('user');
         const channel = interaction.channel;
         const fetchMessages = await channel.messages.fetch({
             limit: +amount,
@@ -20,10 +20,10 @@ exports.default = new Command_1.Command({
             messagesToPurge = fetchMessages.filter((msg) => !msg.pinned && Date.now() + msg.createdTimestamp > fifteenDays);
             descriptionText = `Cleared **${messagesToPurge?.size}** messages in ${channel}`;
         }
-        if (member) {
-            messagesToPurge = fetchMessages.filter((msg) => msg.author.id === member.id &&
+        if (user) {
+            messagesToPurge = fetchMessages.filter((msg) => msg.author.id === user.id &&
                 Date.now() + msg.createdTimestamp > fifteenDays);
-            descriptionText = `Cleared **${messagesToPurge?.size}** messages from \`${member?.user.username}\``;
+            descriptionText = `Cleared **${messagesToPurge?.size}** messages from \`${user?.username}\``;
         }
         // If the purge fails
         if (messagesToPurge.size === 0)

@@ -20,14 +20,14 @@ exports.default = new Event_1.Event('guildMemberAdd', async (member) => {
     }
     const embed = new discord_js_1.EmbedBuilder()
         .setAuthor({ name: member.guild.name, iconURL: member.guild.iconURL() })
-        .setColor(__1.client.util.resolve.color('#529e79'))
+        .setColor('#529e79')
         .setDescription([
         `• **Mention:** ${member}\n`,
         `• **User:** ${member.user.tag} • ${member.user.id}`,
         `• **Registered:** <t:${~~(member.user.createdTimestamp / 1000)}:R>`,
         `• **Joined:** <t:${~~(member.joinedTimestamp / 1000)}:R>`,
         `• **Member Count:** ${member.guild.memberCount}`,
-        `\n\n${findData ? 'A user has joined back!' : 'A user has joined!'}`,
+        `\n${findData ? 'A user has joined back!' : 'A user has joined!'}`,
     ].join('\n'));
     // Sending the member joined message.
     __1.client.config.webhooks.servergate?.send({ embeds: [embed] });

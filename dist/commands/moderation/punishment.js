@@ -433,7 +433,9 @@ exports.default = new Command_1.Command({
                 : +(0, convertTime_1.convertTime)(newvalue);
             switch (value) {
                 case 1:
-                    if (!(await interaction.guild.members.fetch(punishment.userId)) &&
+                    if (!(await interaction.guild.members
+                        .fetch(punishment.userId)
+                        .catch(() => { })) &&
                         PunishmentType_1.PunishmentType.Timeout)
                         return interaction.followUp({
                             embeds: [

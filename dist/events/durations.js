@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const Event_1 = require("../structures/Event");
 const __1 = require("..");
 const createModLog_1 = require("../functions/logs/createModLog");
@@ -16,7 +17,9 @@ exports.default = new Event_1.Event('ready', () => {
             return;
         filterTimeout.forEach(async (data) => {
             await data.delete();
-            const guildMember = (await guild.members?.fetch(data.userId));
+            const guildMember = (await guild.members
+                ?.fetch(data.userId)
+                .catch(() => { }));
             const findUser = (await __1.client.users
                 .fetch(data.userId, { force: true })
                 .catch(() => { }));
@@ -33,7 +36,7 @@ exports.default = new Event_1.Event('ready', () => {
         // Unbans
         const findSoftbans = await durations_1.durationsModel.find({ type: PunishmentType_1.PunishmentType.Softban });
         const filterSoftbans = findSoftbans?.filter((c) => Date.now() > c.date.getTime() + c.duration);
-        let reason = '~~Unbanned due to softban duration~~ Already unbanned.';
+        let reason = discord_js_1.Formatters.strikethrough('Unbanned due to softban duration') + 'Already unbanned.';
         if (!filterTimeout)
             return;
         filterSoftbans.forEach(async (data) => {

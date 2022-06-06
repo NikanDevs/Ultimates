@@ -16,6 +16,11 @@ exports.default = new Command_1.Command({
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const reason = options.getString('reason') || moderation_json_1.default_config.reason;
+        if (!member)
+            return interaction.reply({
+                embeds: [client.embeds.error('I could not find that member in this server.')],
+                ephemeral: true,
+            });
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Kick }))
             return;
         const data = new punishments_1.punishmentModel({

@@ -66,6 +66,13 @@ function ignore(member, options) {
         });
         return true;
     }
+    if (member.permissions.has('Administrator')) {
+        interaction.reply({
+            embeds: [__1.client.embeds.error('You can not take actions on an administrator.')],
+            ephemeral: true,
+        });
+        return true;
+    }
     if (interaction.member.roles.highest.position <=
         member.roles.highest.position) {
         interaction.reply({

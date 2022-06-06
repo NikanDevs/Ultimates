@@ -35,7 +35,7 @@ exports.default = new Command_1.Command({
             ].some((permission) => role.permissions.has(permission)))
                 return interaction.reply({
                     embeds: [
-                        client.embeds.error(`Woah! That role has some moderation powers, try ${alreadyHas ? 'removing' : 'adding'} them yourself.`),
+                        client.embeds.error(`Woah! That role has some moderation powers, try ${alreadyHas ? 'removing' : 'adding'} it yourself.`),
                     ],
                     ephemeral: true,
                 });
