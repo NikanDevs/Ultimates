@@ -12,6 +12,11 @@ exports.default = new Command_1.Command({
         let auditLogReason = '/nickname was excuted by a moderator.';
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Unknown }))
             return;
+        if (!member)
+            return interaction.reply({
+                embeds: [client.embeds.error('I could not find that member in this server.')],
+                ephemeral: true,
+            });
         if (newNick) {
             // Expect err
             if (newNick.length > 32)

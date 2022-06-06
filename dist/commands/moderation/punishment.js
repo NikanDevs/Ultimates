@@ -436,7 +436,7 @@ exports.default = new Command_1.Command({
                     if (!(await interaction.guild.members
                         .fetch(punishment.userId)
                         .catch(() => { })) &&
-                        PunishmentType_1.PunishmentType.Timeout)
+                        punishment.type === PunishmentType_1.PunishmentType.Timeout)
                         return interaction.followUp({
                             embeds: [
                                 client.embeds.error('The punished user is not in the server. I can not update the timeout.'),
