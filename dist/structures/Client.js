@@ -45,7 +45,7 @@ class Ultimates extends discord_js_1.Client {
     // Constructor
     constructor() {
         super({
-            intents: 32767,
+            intents: 131071,
             partials: [
                 discord_js_1.Partials.Channel,
                 discord_js_1.Partials.GuildMember,
