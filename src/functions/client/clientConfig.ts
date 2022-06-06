@@ -35,6 +35,20 @@ export class clientConfig {
 		filteredWords: [] as string[],
 	};
 
+	/** General data */
+	general = {
+		ownerId: null as string,
+		developers: [] as string[],
+		success: '' as string,
+		error: '' as string,
+		attention: '' as string,
+		guild: {
+			appealLink: null as string,
+			memberRoleId: null as string,
+			modmailCategoryId: null as string,
+		},
+	};
+
 	async updateLogs() {
 		const data = await configModel.findById('logging');
 		if (!data) return;
@@ -91,6 +105,24 @@ export class clientConfig {
 		};
 
 		this.automod.filteredWords = data.filteredWords;
+	}
+
+	async updateGeneral() {
+		const data = await configModel.findById('general');
+		if (!data) return;
+
+		this.general = {
+			ownerId: data.ownerId,
+			developers: data.developers,
+			success: data.success,
+			error: data.error,
+			attention: data.attention,
+			guild: {
+				appealLink: data.guild.appealLink,
+				memberRoleId: data.guild.memberRoleId,
+				modmailCategoryId: data.guild.modmailCategoryId,
+			},
+		};
 	}
 }
 

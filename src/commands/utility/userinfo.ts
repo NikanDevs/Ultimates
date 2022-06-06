@@ -114,7 +114,9 @@ export default new Command({
 							+user.createdAt / 1000
 						)}:R>`,
 						`• **Bot:** ${
-							user?.bot ? `${client.cc.successE}` : `${client.cc.errorE}`
+							user?.bot
+								? `${client.config.general.success}`
+								: `${client.config.general.error}`
 						}`,
 					].join('\n'),
 				},
@@ -123,8 +125,8 @@ export default new Command({
 					value: [
 						`• **Animated:** ${
 							user.displayAvatarURL().endsWith('.gif')
-								? `${client.cc.successE}`
-								: `${client.cc.errorE}`
+								? `${client.config.general.success}`
+								: `${client.config.general.error}`
 						}`,
 						`• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
 					].join('\n'),
@@ -140,8 +142,8 @@ export default new Command({
 					value: [
 						`• **Animated:** ${
 							user.bannerURL().endsWith('.gif')
-								? `${client.cc.successE}`
-								: `${client.cc.errorE}`
+								? `${client.config.general.success}`
+								: `${client.config.general.error}`
 						}`,
 						`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
 					].join('\n'),
@@ -315,8 +317,8 @@ export default new Command({
 										}`,
 										`• **Booster:** ${
 											member.premiumSinceTimestamp
-												? `${client.cc.successE}`
-												: `${client.cc.errorE}`
+												? `${client.config.general.success}`
+												: `${client.config.general.error}`
 										}`,
 										`• **Boosting Since:** ${
 											member.premiumSinceTimestamp
@@ -341,8 +343,8 @@ export default new Command({
 									value: [
 										`• **Animated:** ${
 											member.avatarURL().endsWith('.gif')
-												? `${client.cc.successE}`
-												: `${client.cc.errorE}`
+												? `${client.config.general.success}`
+												: `${client.config.general.error}`
 										}`,
 										`• **Formats:** ${UrlTypeCheck(
 											member.avatarURL(),

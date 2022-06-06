@@ -16,9 +16,9 @@ const globPromise = promisify(glob);
 export class Ultimates extends Client {
 	commands = new Collection() as Collection<string, interactionType>;
 	util = new clientUtil();
+	config = new clientConfig();
 	embeds = clientEmbeds;
 	cc = cc;
-	config = new clientConfig();
 
 	// Constructor
 	constructor() {
@@ -51,6 +51,8 @@ export class Ultimates extends Client {
 		await this.checkSubstance();
 		await this.config.updateLogs();
 		await this.config.updateAutomod();
+		await this.config.updateGeneral();
+
 		await this.registerModules();
 
 		await this.login(process.env.DISCORD_TOKEN).then(() => {

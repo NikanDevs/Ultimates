@@ -4,6 +4,7 @@ import {
 	ButtonStyle,
 	ComponentType,
 	EmbedBuilder,
+	Formatters,
 	Message,
 	ModalBuilder,
 	TextChannel,
@@ -135,11 +136,19 @@ export default new Command({
 									? '<:online:886215547249913856>'
 									: '<:offline:906867114126770186>'
 						  } • ${channel ? channel : "The logs channel wasn't found."}`
-						: '<:idle:906867112612601866> • This module is not set, yet...',
+						: '<:idle:906867112612601866> • This module is ✖︎',
 				};
 			}
 		} else if (subcommand === 'automod') {
-			const module = options.getString('module');
+			const module = options.getString('module') as
+				| 'badwords'
+				| 'invites'
+				| 'largeMessage'
+				| 'massMention'
+				| 'massEmoji'
+				| 'spam'
+				| 'capitals'
+				| 'urls';
 			const active = options.getBoolean('active');
 			var data = await configModel.findById('automod');
 			if (!data) {
@@ -277,6 +286,111 @@ export default new Command({
 						: '<:offline:906867114126770186>'
 				} - ${automodModulesNames[module]}`;
 			}
+		} else if (subcommand === 'general') {
+			const module = options.getString('module');
+			let newvalue = options.getString('new-value');
+
+			let data = await configModel.findById('general');
+			if (!data) {
+				const newData = new configModel({
+					_id: 'general',
+					ownerId: null,
+					developers: [],
+					success: '',
+					error: '',
+					attention: '',
+					guild: {
+						appealLink: null,
+						memberRoleId: null,
+						modmailCategoryId: null,
+					},
+				});
+				await newData.save();
+			}
+			data = await configModel.findById('general');
+
+			if (module && newvalue) {
+				if (module === 'developers') {
+					const currentDevs = (await configModel.findById('general')).developers;
+					if (currentDevs.includes(newvalue)) {
+						currentDevs.splice(currentDevs.indexOf(newvalue));
+						newvalue = 'null';
+					}
+					await configModel.findByIdAndUpdate('general', {
+						$set: {
+							developers: currentDevs.concat(
+								[newvalue].filter((value) => value !== 'null')
+							),
+						},
+					});
+				} else if (module.startsWith('guild')) {
+					await configModel.findByIdAndUpdate('general', {
+						$set: {
+							guild: {
+								...(await configModel.findById('general')).guild,
+								[module.replaceAll('guild_', '')]: newvalue,
+							},
+						},
+					});
+				} else {
+					await configModel.findByIdAndUpdate('general', {
+						$set: {
+							[module]: newvalue,
+						},
+					});
+				}
+				await client.config.updateGeneral();
+			}
+			data = await configModel.findById('general');
+
+			const embed = new EmbedBuilder()
+				.setTitle('General Configuration')
+				.setColor(client.cc.ultimates)
+				.setDescription(
+					[
+						`• ${Formatters.bold('Owner')} - ${
+							(await client.users.fetch(data.ownerId).catch(() => {})) || '✖︎'
+						}`,
+						`• ${Formatters.bold('Success')} - ${data.success || '✖︎'}`,
+						`• ${Formatters.bold('Error')} - ${data.error || '✖︎'}`,
+						`• ${Formatters.bold('Attention')} - ${data.attention || '✖︎'}`,
+						`• ${Formatters.bold('Appeal Link')} - ${
+							data.guild.appealLink || '✖︎'
+						}`,
+						`• ${Formatters.bold('Member Role')} - ${
+							data.guild.memberRoleId
+								? await interaction.guild.roles
+										.fetch(data.guild.memberRoleId)
+										.catch(() => {})
+								: '✖︎'
+						}`,
+						`• ${Formatters.bold('Modmail Category')} - ${
+							data.guild.modmailCategoryId
+								? await interaction.guild.channels
+										.fetch(data.guild.modmailCategoryId)
+										.catch(() => {})
+								: '✖︎'
+						}`,
+						`• ${Formatters.bold('Developers')} - ${
+							data.developers.length
+								? data.developers
+										.map(
+											(dev) =>
+												`${
+													client.users.cache.get(dev)
+														?.tag === undefined
+														? `Not found, ID: ${dev}`
+														: client.users.cache.get(dev)
+																?.tag
+												}`
+										)
+										.join(' `|` ')
+								: 'No developers.'
+						}`,
+					].join('\n')
+				);
+
+			await interaction.followUp({ embeds: [embed] });
 		}
 	},
 });

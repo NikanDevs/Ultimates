@@ -8,7 +8,6 @@ import {
 } from 'discord.js';
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
-import { developers, ownerId } from '../../json/config.json';
 import { convertTime } from '../../functions/convertTime';
 const cooldown = new Collection();
 
@@ -31,7 +30,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			});
 
 		if (
-			!developers.includes(interaction.user.id) &&
+			!client.config.general.developers.includes(interaction.user.id) &&
 			command.interaction.directory === 'developer'
 		)
 			return;
@@ -39,7 +38,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		// Permission Check
 		if (
 			command.interaction.permission?.some((perm) => !member.permissions.has(perm)) &&
-			interaction.user.id !== ownerId
+			interaction.user.id !== client.config.general.ownerId
 		)
 			return interaction.reply({
 				embeds: [
@@ -100,8 +99,8 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		if (
 			command.interaction.cooldown &&
-			!developers.includes(interaction.user.id) &&
-			ownerId !== interaction.user.id
+			!client.config.general.developers.includes(interaction.user.id) &&
+			client.config.general.ownerId !== interaction.user.id
 		) {
 			cooldown.set(
 				`${command.interaction.name}${interaction.user.id}`,

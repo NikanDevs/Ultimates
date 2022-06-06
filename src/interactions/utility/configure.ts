@@ -69,6 +69,39 @@ export const configureCommand = {
 				},
 			],
 		},
+		{
+			name: 'general',
+			description: 'Configure the general config and settings',
+			type: ApplicationCommandOptionType.Subcommand,
+			options: [
+				{
+					name: 'module',
+					description: 'The general module you want to configure',
+					type: ApplicationCommandOptionType.String,
+					required: false,
+					choices: [
+						{ name: 'Owner ID', value: 'ownerId' },
+						{ name: 'Add or remove a developer', value: 'developers' },
+						{ name: 'Server ban appeal link', value: 'guild_appealLink' },
+						{ name: 'Server member role id', value: 'guild_memberRoleId' },
+						{
+							name: 'Server modmail category id',
+							value: 'guild_modmailCategoryId',
+						},
+						{ name: 'Success Emoji', value: 'success' },
+						{ name: 'Attention Emoji', value: 'attention' },
+						{ name: 'Error Emoji', value: 'error' },
+					],
+				},
+				{
+					name: 'new-value',
+					description:
+						'The new value of this module, developer module adds or removes a single user',
+					type: ApplicationCommandOptionType.String,
+					required: false,
+				},
+			],
+		},
 	],
 } as interactionOptions;
 

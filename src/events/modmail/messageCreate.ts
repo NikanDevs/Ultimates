@@ -127,11 +127,11 @@ export default new Event('messageCreate', async (message) => {
 				.then(async () => {
 					switch (canSend) {
 						case true:
-							await message.react(client.cc.successE);
+							await message.react(client.config.general.success);
 							break;
 
 						case false:
-							await message.react(client.cc.errorE);
+							await message.react(client.config.general.error);
 							await message.reply({
 								content: 'Something went wrong while trying to send your message, try again!',
 							});
@@ -284,11 +284,11 @@ export default new Event('messageCreate', async (message) => {
 			.then(async () => {
 				switch (canDM) {
 					case true:
-						await message.react(client.cc.successE);
+						await message.react(client.config.general.success);
 						break;
 
 					case false:
-						await message.react(client.cc.errorE);
+						await message.react(client.config.general.error);
 						await message.reply({
 							content: "I wasn't able to DM the user.",
 						});

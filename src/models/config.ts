@@ -4,13 +4,15 @@ import mongoose from 'mongoose';
 type T = {
 	_id: 'moderation' | 'automod' | 'logging' | 'general' | 'ignore';
 	// General
-	owner: string[];
+	ownerId: string;
 	developers: string[];
+	success: string;
+	error: string;
+	attention: string;
 	guild: {
 		id: string;
 		appealLink: string;
 		memberRoleId: string | Snowflake;
-		generalChatId: string | Snowflake;
 		modmailCategoryId: string | Snowflake;
 	};
 	// Automod
@@ -38,8 +40,11 @@ type T = {
 const schema = new mongoose.Schema({
 	_id: String,
 	// General
-	owner: { type: String, required: false },
+	ownerId: { type: String, required: false },
 	developers: { type: Object, required: false },
+	success: { type: String, required: false },
+	error: { type: String, required: false },
+	attention: { type: String, required: false },
 	guild: { type: Object, required: false },
 	// Automod
 	filteredWords: { type: Array, required: false },
