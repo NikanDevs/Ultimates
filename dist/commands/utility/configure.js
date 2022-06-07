@@ -37,7 +37,7 @@ exports.default = new Command_1.Command({
             const data = await config_1.configModel.findById('logging');
             if (!data) {
                 const newData = new config_1.configModel({
-                    _id: 'logs',
+                    _id: 'logging',
                     logging: {
                         mod: { channelId: null, webhook: null, active: null },
                         modmail: { channelId: null, webhook: null, active: null },
@@ -112,7 +112,7 @@ exports.default = new Command_1.Command({
                         ? `${data.logging[module].active
                             ? '<:online:886215547249913856>'
                             : '<:offline:906867114126770186>'} • ${channel ? channel : "The logs channel wasn't found."}`
-                        : '<:idle:906867112612601866> • This module is ✖︎',
+                        : '<:idle:906867112612601866> • This module is not set, yet...',
                 };
             }
         }
