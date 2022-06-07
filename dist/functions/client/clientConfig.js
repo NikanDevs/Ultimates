@@ -68,6 +68,7 @@ class clientConfig {
             ban: [],
             softban: [],
             unban: [],
+            kick: [],
         },
     };
     async updateLogs() {
@@ -168,6 +169,7 @@ class clientConfig {
                 ban: data.reasons.ban,
                 softban: data.reasons.softban,
                 unban: data.reasons.unban,
+                kick: data.reasons.kick,
             },
         };
     }

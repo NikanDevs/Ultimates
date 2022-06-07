@@ -346,7 +346,7 @@ exports.default = new Command_1.Command({
                     },
                     default: {
                         timeout: 60 * 60 * 1000,
-                        softban: 60 * 60 * 24 * 30,
+                        softban: 60 * 60 * 24 * 30 * 1000,
                         msgs: 0,
                         reason: 'No reason was provided.',
                     },
@@ -458,7 +458,57 @@ exports.default = new Command_1.Command({
                     : `${data.default.msgs} days`}`,
                 `• ${discord_js_1.Formatters.bold('Default punishment reason')} - ${data.default.reason || '✖︎'}`,
             ].join('\n'));
-            await interaction.followUp({ embeds: [embed] });
+            const selectmenu = new discord_js_1.ActionRowBuilder().setComponents([
+                new discord_js_1.SelectMenuBuilder()
+                    .setCustomId('reasons')
+                    .setMaxValues(1)
+                    .setMinValues(1)
+                    .setPlaceholder('Select a command to edit reasons for...')
+                    .setOptions([
+                    { label: '/warn', value: 'warn' },
+                    { label: '/timeout', value: 'timeout' },
+                    { label: '/ban', value: 'ban' },
+                    { label: '/softban', value: 'softban' },
+                    { label: '/unban', value: 'unban' },
+                    { label: '/kick', value: 'kick' },
+                ]),
+            ]);
+            const sentInteraction = (await interaction.followUp({
+                embeds: [embed],
+                components: [selectmenu],
+            }));
+            const collector = sentInteraction.createMessageComponentCollector({
+                componentType: discord_js_1.ComponentType.SelectMenu,
+                time: 60000,
+            });
+            collector.on('collect', async (collected) => {
+                if (collected.user.id !== interaction.user.id)
+                    return interaction.reply({
+                        content: 'You can not use this.',
+                        ephemeral: true,
+                    });
+                const modal = new discord_js_1.ModalBuilder()
+                    .setTitle('Add reasons')
+                    .setCustomId('add-reason-' + collected.values)
+                    .addComponents([
+                    {
+                        type: discord_js_1.ComponentType.ActionRow,
+                        components: [
+                            {
+                                type: discord_js_1.ComponentType.TextInput,
+                                custom_id: 'input',
+                                label: 'Separate reasons with --',
+                                style: discord_js_1.TextInputStyle.Paragraph,
+                                required: true,
+                                max_length: 4000,
+                                min_length: 1,
+                                placeholder: 'Eating warns, being the imposter - type an existing reason to remove it',
+                            },
+                        ],
+                    },
+                ]);
+                await collected.showModal(modal);
+            });
         }
     },
 });

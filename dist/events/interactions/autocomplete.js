@@ -4,7 +4,6 @@ const __1 = require("../..");
 const automod_1 = require("../../models/automod");
 const punishments_1 = require("../../models/punishments");
 const Event_1 = require("../../structures/Event");
-const moderation_json_1 = require("../../json/moderation.json");
 const convertTime_1 = require("../../functions/convertTime");
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
     if (!interaction)
@@ -110,18 +109,21 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
     if (getReasonsFocus?.name === 'reason') {
         switch (interaction.commandName) {
             case interaction.commandName:
-                const availableReasons = [...new Set(moderation_json_1.reasons[interaction.commandName])];
+                const availableReasons = [
+                    ...new Set(__1.client.config.moderation.reasons[interaction.commandName]),
+                ];
                 const filteredReasons = availableReasons
                     .filter((reason) => reason.startsWith(getReasonsFocus.value))
-                    .map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data);
-                if (!moderation_json_1.reasons[interaction.commandName].length &&
+                    .map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
+                    .slice(0, 25);
+                if (!__1.client.config.moderation.reasons[interaction.commandName].length &&
                     !getReasonsFocus.value.toString().length)
                     return interaction.respond([
                         {
                             name: '⭐️' +
                                 ' • ' +
                                 'No inbuilt reasons were found, type a reason...',
-                            value: 'No reason provided.',
+                            value: __1.client.config.moderation.default.reason,
                         },
                     ]);
                 if (filteredReasons.length === 0)
