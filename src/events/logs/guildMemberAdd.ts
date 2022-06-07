@@ -6,7 +6,6 @@ import { guild as guildConfig } from '../../json/config.json';
 import { EmbedBuilder } from 'discord.js';
 
 export default new Event('guildMemberAdd', async (member) => {
-	if (!logActivity('servergate')) return;
 	if (member.guild.id !== guildConfig.id) return;
 
 	// If the member has any previous experience joining the server
@@ -31,6 +30,7 @@ export default new Event('guildMemberAdd', async (member) => {
 			].join('\n')
 		);
 
-	// Sending the member joined message.
-	client.config.webhooks.servergate?.send({ embeds: [embed] });
+	if (logActivity('servergate'))
+		// Sending the member joined message.
+		client.config.webhooks.servergate?.send({ embeds: [embed] });
 });

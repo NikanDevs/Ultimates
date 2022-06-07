@@ -7,7 +7,6 @@ import { guild as guildConfig } from '../../json/config.json';
 import { EmbedBuilder } from 'discord.js';
 
 export default new Event('guildMemberRemove', async (member) => {
-	if (!logActivity('servergate')) return;
 	if (member.guild.id !== guildConfig.id) return;
 
 	const roles = member.roles.cache
@@ -38,6 +37,7 @@ export default new Event('guildMemberRemove', async (member) => {
 		}).save();
 	}
 
-	// Sending the left message
-	client.config.webhooks.servergate?.send({ embeds: [embed] });
+	if (logActivity('servergate'))
+		// Sending the left message
+		client.config.webhooks.servergate?.send({ embeds: [embed] });
 });

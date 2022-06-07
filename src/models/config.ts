@@ -50,7 +50,7 @@ const schema = new mongoose.Schema({
 	filteredWords: { type: Array, required: false },
 	modules: { type: Object, required: false },
 	// Logging
-	logging: { type: Object, required: false },
+	logging: { type: Object },
 });
 
 export const configModel = mongoose.model<T>('config', schema);
