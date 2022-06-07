@@ -104,7 +104,7 @@ exports.default = new Command_1.Command({
             async function formatLogField(module) {
                 const data = await config_1.configModel.findById('logging');
                 let channel = (await client.channels
-                    .fetch(data[module].channelId)
+                    .fetch(data.logging[module].channelId)
                     .catch(() => { }));
                 return {
                     name: logsNames[module],
