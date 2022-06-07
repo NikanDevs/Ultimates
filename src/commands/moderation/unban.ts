@@ -5,14 +5,13 @@ import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
-import { default_config } from '../../json/moderation.json';
 import { interactions } from '../../interactions';
 
 export default new Command({
 	interaction: interactions.unban,
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user');
-		const reason = options.getString('reason') || default_config.reason;
+		const reason = options.getString('reason') || client.config.moderation.default.reason;
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
 		if (!bannedMember)

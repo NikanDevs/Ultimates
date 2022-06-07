@@ -12,10 +12,10 @@ export function convertTime(time: number | string): string {
 			// Calculating each value
 			const yearsTimestamp = Math.floor(time / (365 * 24 * 60 * 60 * 1000));
 			time -= yearsTimestamp * 365 * 24 * 60 * 60 * 1000;
-			const monthsTimestamp = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
-			time -= monthsTimestamp * 30 * 24 * 60 * 60 * 1000;
-			const weeksTimestamp = Math.floor(time / (7 * 24 * 60 * 60 * 1000));
-			time -= weeksTimestamp * 7 * 24 * 60 * 60 * 1000;
+			// const monthsTimestamp = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
+			// time -= monthsTimestamp * 30 * 24 * 60 * 60 * 1000;
+			// const weeksTimestamp = Math.floor(time / (7 * 24 * 60 * 60 * 1000));
+			// time -= weeksTimestamp * 7 * 24 * 60 * 60 * 1000;
 			const daysTimestamp = Math.floor(time / (24 * 60 * 60 * 1000));
 			time -= daysTimestamp * 24 * 60 * 60 * 1000;
 			const hoursTimestamp = Math.floor(time / (60 * 60 * 1000));
@@ -27,12 +27,12 @@ export function convertTime(time: number | string): string {
 			const yearS = !yearsTimestamp
 				? ''
 				: `${yearsTimestamp} year` + (yearsTimestamp === 1 ? '' : 's');
-			const monthS = !monthsTimestamp
-				? ''
-				: `${monthsTimestamp} month` + (monthsTimestamp === 1 ? '' : 's');
-			const weekS = !weeksTimestamp
-				? ''
-				: `${weeksTimestamp} week` + (weeksTimestamp === 1 ? '' : 's');
+			// const monthS = !monthsTimestamp
+			// 	? ''
+			// 	: `${monthsTimestamp} month` + (monthsTimestamp === 1 ? '' : 's');
+			// const weekS = !weeksTimestamp
+			// 	? ''
+			// 	: `${weeksTimestamp} week` + (weeksTimestamp === 1 ? '' : 's');
 			const dayS = !daysTimestamp
 				? ''
 				: `${daysTimestamp} day` + (daysTimestamp === 1 ? '' : 's');
@@ -46,7 +46,7 @@ export function convertTime(time: number | string): string {
 				? ''
 				: `${secondsTimestamp} second` + (secondsTimestamp === 1 ? '' : 's');
 
-			const result = [yearS, monthS, weekS, dayS, hourS, minuteS, secondS].filter(
+			const result = [yearS, /**monthS, weekS,**/ dayS, hourS, minuteS, secondS].filter(
 				(item) => item !== ''
 			);
 			return result.join(' and ');
@@ -122,5 +122,17 @@ export function convertTime(time: number | string): string {
 
 			return miliseconds !== 0 ? (miliseconds * 1000).toString() : undefined;
 	}
+}
+
+export function isValidDuration(v: string | number): boolean {
+	if (/^\d+$/.test(v.toString())) return true;
+	if (convertTime(v as string) === undefined) return false;
+	else return true;
+}
+
+export function convertToTimestamp(v: string | number): number {
+	if (/^\d+$/.test(v.toString())) return parseInt(v.toString());
+	if (convertTime(v as string) === undefined) return undefined;
+	else return +convertTime(v as string);
 }
 

@@ -1,7 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { punishmentModel } from '../../models/punishments';
-import { warningExpiry } from '../../constants';
+import { MAX_TIMEOUT_DURATION, MIN_TIMEOUT_DURATION, warningExpiry } from '../../constants';
 import { durationsModel } from '../../models/durations';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -9,27 +9,25 @@ import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { ignore } from '../../functions/ignore';
-import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
-import { convertTime } from '../../functions/convertTime';
+import { convertTime, convertToTimestamp, isValidDuration } from '../../functions/convertTime';
 
 export default new Command({
 	interaction: interactions.timeout,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const durationO = options.getString('duration') || default_config.timeout_duration;
-		const duration: number = /^\d+$/.test(durationO)
-			? parseInt(durationO)
-			: +convertTime(durationO);
-		const reason = options.getString('reason') || default_config.reason;
+		const durationO =
+			options.getString('duration') || client.config.moderation.default.timeout;
+		const duration: number = convertToTimestamp(durationO);
+		const reason = options.getString('reason') || client.config.moderation.default.reason;
 
 		if (ignore(member, { interaction, action: PunishmentType.Timeout })) return;
 
 		// Guess: moderator is trying to unmute
 		if (
 			['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(
-				durationO.toLowerCase()
+				options.getString('duration').toLowerCase()
 			)
 		)
 			return interaction.reply({
@@ -45,7 +43,7 @@ export default new Command({
 				embeds: [client.embeds.error('This member is already timed out.')],
 				ephemeral: true,
 			});
-		if (duration === undefined)
+		if (!isValidDuration(durationO))
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
@@ -54,11 +52,13 @@ export default new Command({
 				],
 				ephemeral: true,
 			});
-		if (duration > 1000 * 60 * 60 * 24 * 27 || duration < 10000)
+		if (duration > MAX_TIMEOUT_DURATION || duration < MIN_TIMEOUT_DURATION)
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
-						'The duration must be between 10 seconds and 27 days.'
+						`The duration must be between ${convertTime(
+							MIN_TIMEOUT_DURATION
+						)} and ${convertTime(MAX_TIMEOUT_DURATION)}.`
 					),
 				],
 				ephemeral: true,

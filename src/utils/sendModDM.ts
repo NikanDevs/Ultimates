@@ -1,17 +1,13 @@
 import {
-	ActionRow,
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
 	GuildMember,
-	MessageActionRowComponent,
 } from 'discord.js';
 import { client } from '..';
 import { PunishmentType } from '../typings/PunishmentType';
 import { generateDiscordTimestamp } from './generateDiscordTimestamp';
-import { default_config } from '../json/moderation.json';
-import { guild as guildConfig } from '../json/config.json';
 
 interface options {
 	action: PunishmentType;
@@ -73,7 +69,7 @@ export async function sendModDM(member: GuildMember, options: options) {
 			},
 			{
 				name: 'Reason',
-				value: options.punishment.reason || default_config.reason,
+				value: options.punishment.reason || client.config.moderation.default.reason,
 				inline: false,
 			},
 		]);

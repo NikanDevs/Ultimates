@@ -6,9 +6,9 @@ import { punishmentExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
-import { default_config } from '../../json/moderation.json';
 import { guild as guildConfig } from '../../json/config.json';
 import { User } from 'discord.js';
+import { client } from '../..';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (member.guild.id !== guildConfig.id) return;
@@ -30,7 +30,7 @@ export default new Event('guildMemberRemove', async (member) => {
 		type: PunishmentType.Kick,
 		userId: member.id,
 		moderatorId: executor.id,
-		reason: reason || default_config.reason,
+		reason: reason || client.config.moderation.default.reason,
 		date: new Date(),
 		expire: punishmentExpiry,
 	});

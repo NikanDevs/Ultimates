@@ -4,7 +4,6 @@ import { logsModel } from '../../models/logs';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { addModCase, getModCase } from '../cases/modCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
-import { default_config } from '../../json/moderation.json';
 import { logActivity } from './checkActivity';
 import { guild as guildConfig } from '../../json/config.json';
 import { convertTime } from '../convertTime';
@@ -82,7 +81,7 @@ export async function createModLog(options: options) {
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
 				`• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${
-					options.reason || default_config.reason
+					options.reason || client.config.moderation.default.reason
 				}`,
 			]
 				.join('\n')

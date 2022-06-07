@@ -11,7 +11,14 @@ import {
 	TextInputStyle,
 	Webhook,
 } from 'discord.js';
-import { WEBHOOK_NAMES } from '../../constants';
+import {
+	MAX_SOFTBAN_DURATION,
+	MAX_TIMEOUT_DURATION,
+	MIN_SOFTBAN_DURATION,
+	MIN_TIMEOUT_DURATION,
+	WEBHOOK_NAMES,
+} from '../../constants';
+import { convertTime, convertToTimestamp, isValidDuration } from '../../functions/convertTime';
 import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
 import { Command } from '../../structures/Command';
@@ -303,7 +310,7 @@ export default new Command({
 			}
 		} else if (subcommand === 'general') {
 			const module = options.getString('module');
-			let newvalue = options.getString('new-value');
+			let value = options.getString('value');
 
 			let data = await configModel.findById('general');
 			if (!data) {
@@ -324,17 +331,17 @@ export default new Command({
 			}
 			data = await configModel.findById('general');
 
-			if (module && newvalue) {
+			if (module && value) {
 				if (module === 'developers') {
 					const currentDevs = (await configModel.findById('general')).developers;
-					if (currentDevs.includes(newvalue)) {
-						currentDevs.splice(currentDevs.indexOf(newvalue));
-						newvalue = 'null';
+					if (currentDevs.includes(value)) {
+						currentDevs.splice(currentDevs.indexOf(value));
+						value = 'null';
 					}
 					await configModel.findByIdAndUpdate('general', {
 						$set: {
 							developers: currentDevs.concat(
-								[newvalue].filter((value) => value !== 'null')
+								[value].filter((value) => value !== 'null')
 							),
 						},
 					});
@@ -343,14 +350,14 @@ export default new Command({
 						$set: {
 							guild: {
 								...(await configModel.findById('general')).guild,
-								[module.replaceAll('guild_', '')]: newvalue,
+								[module.replaceAll('guild_', '')]: value,
 							},
 						},
 					});
 				} else {
 					await configModel.findByIdAndUpdate('general', {
 						$set: {
-							[module]: newvalue,
+							[module]: value,
 						},
 					});
 				}
@@ -401,6 +408,185 @@ export default new Command({
 										)
 										.join(' `|` ')
 								: 'No developers.'
+						}`,
+					].join('\n')
+				);
+
+			await interaction.followUp({ embeds: [embed] });
+		} else if (subcommand === 'moderation') {
+			let module = options.getString('module');
+			const value = options.getString('value');
+
+			let data = await configModel.findById('moderation');
+			if (!data) {
+				const newData = new configModel({
+					_id: 'moderation',
+					count: { automod: 3, timeout1: 2, timeout2: 4, ban: 6 },
+					duration: {
+						timeout1: 60 * 60 * 1000,
+						timeout2: 2 * 60 * 60 * 100,
+						ban: null,
+						automod: 60 * 30 * 1000,
+					},
+					default: {
+						timeout: 60 * 60 * 1000,
+						softban: 60 * 60 * 24 * 30,
+						msgs: 0,
+						reason: 'No reason was provided.',
+					},
+					reasons: {
+						warn: [],
+						timeout: [],
+						ban: [],
+						softban: [],
+						unban: [],
+					},
+				});
+				await newData.save();
+			}
+			data = await configModel.findById('moderation');
+
+			if (module && value) {
+				// Counts
+				if (
+					(module.startsWith('count') || module.includes('msgs')) &&
+					isNaN(parseInt(value))
+				)
+					return interaction.followUp({
+						embeds: [client.embeds.attention('The input should be a number.')],
+					});
+
+				if (
+					module.includes('msgs') &&
+					(isNaN(parseInt(value)) || parseInt(value) < 0 || parseInt(value) > 7)
+				)
+					return interaction.followUp({
+						embeds: [
+							client.embeds.attention('The days must be between 0 and 7.'),
+						],
+					});
+
+				if (
+					!module.startsWith('count') &&
+					(module.includes('timeout') || module.includes('automod')) &&
+					(!isValidDuration(value) ||
+						convertToTimestamp(value) > MAX_TIMEOUT_DURATION ||
+						convertToTimestamp(value) < MIN_TIMEOUT_DURATION)
+				)
+					return interaction.followUp({
+						embeds: [
+							client.embeds.attention(
+								`The duration must be between ${convertTime(
+									MIN_TIMEOUT_DURATION
+								)} and ${convertTime(MAX_TIMEOUT_DURATION)}.`
+							),
+						],
+					});
+
+				if (
+					module.startsWith('default') &&
+					module.includes('ban') &&
+					(!isValidDuration(value) ||
+						convertToTimestamp(value) > MAX_SOFTBAN_DURATION ||
+						convertToTimestamp(value) < MIN_SOFTBAN_DURATION)
+				)
+					return interaction.followUp({
+						embeds: [
+							client.embeds.attention(
+								`The duration must be between ${convertTime(
+									MIN_SOFTBAN_DURATION
+								)} and ${convertTime(MAX_SOFTBAN_DURATION)}.`
+							),
+						],
+					});
+
+				if (module.startsWith('count')) {
+					module = module.replaceAll('count_', '');
+					await configModel.findByIdAndUpdate('moderation', {
+						$set: {
+							count: {
+								...(await configModel.findById('moderation')).count,
+								[module]: parseInt(value),
+							},
+						},
+					});
+				} else if (module.startsWith('duration')) {
+					module = module.replaceAll('duration_', '');
+					await configModel.findByIdAndUpdate('moderation', {
+						$set: {
+							duration: {
+								...(await configModel.findById('moderation')).duration,
+								[module]:
+									module === 'duration_ban'
+										? convertToTimestamp(value) === undefined
+											? null
+											: convertToTimestamp(value)
+										: convertToTimestamp(value),
+							},
+						},
+					});
+				} else if (module.startsWith('default')) {
+					module = module.replaceAll('default_', '');
+					await configModel.findByIdAndUpdate('moderation', {
+						$set: {
+							default: {
+								...(await configModel.findById('moderation')).default,
+								[module]:
+									module === 'reason'
+										? value
+										: module === 'msgs'
+										? parseInt(value)
+										: convertToTimestamp(value),
+							},
+						},
+					});
+				}
+				await client.config.updateModeration();
+			}
+
+			data = await configModel.findById('moderation');
+			const embed = new EmbedBuilder()
+				.setTitle('Moderation Configuration')
+				.setColor(client.cc.ultimates)
+				.setDescription(
+					[
+						`• ${Formatters.bold('1st timeout warnings count')} - ${
+							data.count.timeout1 || '✖︎'
+						}`,
+						`• ${Formatters.bold('2nd timeout warnings count')} - ${
+							data.count.timeout2 || '✖︎'
+						}`,
+						`• ${Formatters.bold('Ban warnings count')} - ${
+							data.count.ban || '✖︎'
+						}`,
+						`• ${Formatters.bold('Automod timeout warning multiplication')} - ${
+							data.count.timeout1 || '✖︎'
+						}`,
+						`• ${Formatters.bold('1st auto timeout duration ')} - ${
+							convertTime(data.duration.timeout1) || '✖︎'
+						}`,
+						`• ${Formatters.bold('2nd auto timeout duration')} - ${
+							convertTime(data.duration.timeout2) || '✖︎'
+						}`,
+						`• ${Formatters.bold('Auto ban duration')} - ${
+							data.duration.ban ? convertTime(data.duration.ban) : 'Permanent'
+						}`,
+						`• ${Formatters.bold('Automod auto timeout duration')} - ${
+							convertTime(data.duration.automod) || '✖︎'
+						}`,
+						`• ${Formatters.bold('Default timeout duration')} - ${
+							convertTime(data.default.timeout) || '✖︎'
+						}`,
+						`• ${Formatters.bold('Default softban duration')} - ${
+							convertTime(data.default.softban) || '✖︎'
+						}`,
+						`• ${Formatters.bold('Default ban delete msgs duration')} - ${
+							!data.default.msgs
+								? "don't delete any"
+								: `${data.default.msgs} days`
+						}`,
+						`• ${Formatters.bold('Default punishment reason')} - ${
+							data.default.reason || '✖︎'
 						}`,
 					].join('\n')
 				);

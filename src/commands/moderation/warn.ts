@@ -9,24 +9,18 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
-import { default_config, auto_mute } from '../../json/moderation.json';
 import { interactions } from '../../interactions';
-import { convertTime } from '../../functions/convertTime';
 enum reasons {
-	'two' = 'Reaching 2 manual warnings.',
-	'four' = 'Reaching 4 manual warnings.',
-	'six' = 'Reaching 6 manual warnings.',
-}
-enum durations {
-	'two' = +convertTime(auto_mute[2]),
-	'four' = +convertTime(auto_mute[4]),
+	'two' = 'Reaching 2 warnings.',
+	'four' = 'Reaching 4 warnings.',
+	'six' = 'Reaching 6 warnings.',
 }
 
 export default new Command({
 	interaction: interactions.warn,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason = options.getString('reason') || default_config.reason;
+		const reason = options.getString('reason') || client.config.moderation.default.reason;
 
 		if (ignore(member, { interaction, action: PunishmentType.Warn })) return;
 
@@ -75,9 +69,9 @@ export default new Command({
 			const warningsCount = findWarnings.length;
 
 			switch (warningsCount) {
-				case 2:
+				case client.config.moderation.count.timeout1:
 					await timeoutMember(member, {
-						duration: durations['two'],
+						duration: client.config.moderation.duration.timeout1,
 						reason: reasons['two'],
 					});
 
@@ -87,9 +81,12 @@ export default new Command({
 						type: PunishmentType.Timeout,
 						userId: member.id,
 						moderatorId: client.user.id,
-						reason: reasons['two'],
+						reason: reasons.two,
 						date: new Date(),
-						expire: new Date(warningExpiry.getTime() + durations.two),
+						expire: new Date(
+							warningExpiry.getTime() +
+								client.config.moderation.duration.timeout1
+						),
 					});
 					data.save();
 
@@ -99,19 +96,21 @@ export default new Command({
 						user: member.user,
 						moderator: client.user,
 						reason: reasons['two'],
-						duration: durations['two'],
+						duration: client.config.moderation.duration.timeout1,
 						referencedPunishment: warnData,
 					});
 
 					sendModDM(member, {
 						action: PunishmentType.Timeout,
 						punishment: data,
-						expire: new Date(Date.now() + durations.two),
+						expire: new Date(
+							Date.now() + client.config.moderation.duration.timeout1
+						),
 					});
 					break;
-				case 4:
+				case client.config.moderation.count.timeout2:
 					await timeoutMember(member, {
-						duration: durations['four'],
+						duration: client.config.moderation.duration.timeout2,
 						reason: reasons['four'],
 					});
 
@@ -123,7 +122,10 @@ export default new Command({
 						moderatorId: client.user.id,
 						reason: reasons['four'],
 						date: new Date(),
-						expire: new Date(warningExpiry.getTime() + durations.two),
+						expire: new Date(
+							warningExpiry.getTime() +
+								client.config.moderation.duration.timeout2
+						),
 					});
 					data2.save();
 
@@ -133,17 +135,19 @@ export default new Command({
 						user: member.user,
 						moderator: client.user,
 						reason: reasons['four'],
-						duration: durations['four'],
+						duration: client.config.moderation.duration.timeout2,
 						referencedPunishment: warnData,
 					});
 
 					sendModDM(member, {
 						action: PunishmentType.Timeout,
 						punishment: data2,
-						expire: new Date(Date.now() + durations.four),
+						expire: new Date(
+							Date.now() + client.config.moderation.duration.timeout2
+						),
 					});
 					break;
-				case 6:
+				case client.config.moderation.count.ban:
 					const data3 = new punishmentModel({
 						_id: generateManualId(),
 						case: await getModCase(),
@@ -172,7 +176,7 @@ export default new Command({
 					});
 					await member.ban({
 						reason: reasons['six'],
-						deleteMessageDays: default_config.ban_delete_messages,
+						deleteMessageDays: client.config.moderation.default.msgs,
 					});
 					break;
 			}

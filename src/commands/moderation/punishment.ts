@@ -9,7 +9,14 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { createModLog, getUrlFromCase } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { convertTime } from '../../functions/convertTime';
-import { AUTOMOD_ID_LENGTH, PUNISHMENT_ID_LENGTH } from '../../constants';
+import {
+	AUTOMOD_ID_LENGTH,
+	MAX_SOFTBAN_DURATION,
+	MAX_TIMEOUT_DURATION,
+	MIN_SOFTBAN_DURATION,
+	MIN_TIMEOUT_DURATION,
+	PUNISHMENT_ID_LENGTH,
+} from '../../constants';
 
 export default new Command({
 	interaction: interactions.punishment,
@@ -523,26 +530,32 @@ export default new Command({
 							});
 
 						if (
-							duration > 1000 * 60 * 60 * 24 * 27 ||
-							(duration < 10000 && punishment.type === PunishmentType.Timeout)
+							duration > MAX_TIMEOUT_DURATION ||
+							(duration < MIN_TIMEOUT_DURATION &&
+								punishment.type === PunishmentType.Timeout)
 						)
 							return interaction.followUp({
 								embeds: [
 									client.embeds.attention(
-										'The duration must be between 10 seconds and 27 days.'
+										`The duration must be between ${convertTime(
+											MIN_TIMEOUT_DURATION
+										)} and ${convertTime(MAX_TIMEOUT_DURATION)}.`
 									),
 								],
 								ephemeral: true,
 							});
 
 						if (
-							duration > 1000 * 60 * 60 * 24 * 365 ||
-							(duration < 60000 && punishment.type === PunishmentType.Softban)
+							duration > MAX_SOFTBAN_DURATION ||
+							(duration < MIN_SOFTBAN_DURATION &&
+								punishment.type === PunishmentType.Softban)
 						)
 							return interaction.followUp({
 								embeds: [
 									client.embeds.attention(
-										'The duration must be between 1 minute and 1 year.'
+										`The duration must be between ${convertTime(
+											MIN_SOFTBAN_DURATION
+										)}and ${convertTime(MAX_SOFTBAN_DURATION)}.`
 									),
 								],
 								ephemeral: true,

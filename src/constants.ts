@@ -25,6 +25,10 @@ export const AUTOMOD_ID_LENGTH = 6;
 export const AUTOMOD_SPAM_COUNT = 5;
 export const AUTOMOD_MAX_EMOJI_COUNT = 10;
 export const AUTOMOD_MAX_CAPS = 90; /** % **/
+export const MIN_SOFTBAN_DURATION = 60000; // 1 minute
+export const MAX_SOFTBAN_DURATION = 1000 * 60 * 60 * 24 * 365; // 1 year
+export const MIN_TIMEOUT_DURATION = 10000; // 10 seconds
+export const MAX_TIMEOUT_DURATION = 1000 * 60 * 60 * 24 * 27; // 27 days
 export enum WEBHOOK_NAMES {
 	'mod' = 'Mod-Logs',
 	'message' = 'Message-Logs',

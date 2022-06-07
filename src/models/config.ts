@@ -15,6 +15,32 @@ type T = {
 		memberRoleId: string | Snowflake;
 		modmailCategoryId: string | Snowflake;
 	};
+	// Moderation
+	count: {
+		timeout1: number;
+		timeout2: number;
+		ban: number;
+		automod: number;
+	};
+	duration: {
+		timeout1: number;
+		timeout2: number;
+		ban: number;
+		automod: number;
+	};
+	default: {
+		timeout: number;
+		softban: number;
+		msgs: number;
+		reason: string;
+	};
+	reasons: {
+		warn: string[];
+		timeout: string[];
+		ban: string[];
+		softban: string[];
+		unban: string[];
+	};
 	// Automod
 	filteredWords: string[];
 	modules: {
@@ -46,11 +72,16 @@ const schema = new mongoose.Schema({
 	error: { type: String, required: false },
 	attention: { type: String, required: false },
 	guild: { type: Object, required: false },
+	// Moderation
+	count: { type: Object, required: false },
+	duration: { type: Object, required: false },
+	default: { type: Object, required: false },
+	reasons: { type: Object, required: false },
 	// Automod
 	filteredWords: { type: Array, required: false },
 	modules: { type: Object, required: false },
 	// Logging
-	logging: { type: Object },
+	logging: { type: Object, required: false },
 });
 
 export const configModel = mongoose.model<T>('config', schema);

@@ -7,9 +7,9 @@ import { durationsModel } from '../../models/durations';
 import { getModCase } from '../../functions/cases/modCase';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { createModLog } from '../../functions/logs/createModLog';
-import { default_config } from '../../json/moderation.json';
 import { guild as guildConfig } from '../../json/config.json';
 import { User } from 'discord.js';
+import { client } from '../..';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (newMember.guild.id !== guildConfig.id) return;
@@ -41,7 +41,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: PunishmentType.Unmute,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
-			reason: reason || default_config.reason,
+			reason: reason || client.config.moderation.default.reason,
 			date: new Date(),
 			expire: warningExpiry,
 		});

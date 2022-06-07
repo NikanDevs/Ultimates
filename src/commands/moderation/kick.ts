@@ -8,14 +8,13 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
-import { default_config } from '../../json/moderation.json';
 import { interactions } from '../../interactions';
 
 export default new Command({
 	interaction: interactions.kick,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason = options.getString('reason') || default_config.reason;
+		const reason = options.getString('reason') || client.config.moderation.default.reason;
 
 		if (!member)
 			return interaction.reply({

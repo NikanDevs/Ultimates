@@ -7,7 +7,6 @@ import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
-import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 
@@ -16,9 +15,9 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
-		const reason = options.getString('reason') || default_config.reason;
+		const reason = options.getString('reason') || client.config.moderation.default.reason;
 		const delete_messages =
-			options.getNumber('delete_messages') || default_config.ban_delete_messages;
+			options.getNumber('delete_messages') || client.config.moderation.default.msgs;
 
 		if (member) if (ignore(member, { interaction, action: PunishmentType.Ban })) return;
 		if (await interaction.guild.bans.fetch(user.id).catch(() => {}))

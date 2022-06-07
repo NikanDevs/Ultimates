@@ -49,6 +49,30 @@ export class clientConfig {
 		},
 	};
 
+	/** The config for the moderation system. */
+	moderation = {
+		count: { automod: null, timeout1: null, timeout2: null, ban: null },
+		duration: {
+			timeout1: null as number,
+			timeout2: null as number,
+			ban: null as number,
+			automod: null as number,
+		},
+		default: {
+			timeout: null as number,
+			softban: null as number,
+			msgs: null as number,
+			reason: null as string,
+		},
+		reasons: {
+			warn: [] as string[],
+			timeout: [] as string[],
+			ban: [] as string[],
+			softban: [] as string[],
+			unban: [] as string[],
+		},
+	};
+
 	async updateLogs() {
 		const data = await configModel.findById('logging');
 		if (!data) return;
@@ -121,6 +145,39 @@ export class clientConfig {
 				appealLink: data.guild.appealLink,
 				memberRoleId: data.guild.memberRoleId,
 				modmailCategoryId: data.guild.modmailCategoryId,
+			},
+		};
+	}
+
+	async updateModeration() {
+		const data = await configModel.findById('moderation');
+		if (!data) return;
+
+		this.moderation = {
+			count: {
+				automod: data.count.automod,
+				timeout1: data.count.timeout1,
+				timeout2: data.count.timeout2,
+				ban: data.count.timeout2,
+			},
+			duration: {
+				timeout1: data.duration.timeout1,
+				timeout2: data.duration.timeout2,
+				ban: data.duration.ban,
+				automod: data.duration.automod,
+			},
+			default: {
+				timeout: data.default.timeout,
+				softban: data.default.softban,
+				msgs: data.default.msgs,
+				reason: data.default.reason,
+			},
+			reasons: {
+				warn: data.reasons.warn,
+				timeout: data.reasons.timeout,
+				ban: data.reasons.ban,
+				softban: data.reasons.softban,
+				unban: data.reasons.unban,
 			},
 		};
 	}

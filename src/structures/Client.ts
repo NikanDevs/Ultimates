@@ -4,7 +4,6 @@ import { glob } from 'glob';
 import { promisify } from 'util';
 import { connect } from 'mongoose';
 import { Event } from './Event';
-import { enabledModules as configEnabledModules } from '../json/config.json';
 import { clientUtil } from '../functions/client/clientUtil';
 import { cc, clientEmbeds } from '../functions/client/properties';
 import { logger } from '../logger';
@@ -52,6 +51,7 @@ export class Ultimates extends Client {
 		await this.config.updateLogs();
 		await this.config.updateAutomod();
 		await this.config.updateGeneral();
+		await this.config.updateModeration();
 
 		await this.registerModules();
 
@@ -68,30 +68,19 @@ export class Ultimates extends Client {
 	async registerModules() {
 		// Commands
 		const slashFiles = await globPromise(`${__dirname}/../commands/**/*{.ts,.js}`);
-		slashFiles
-			.filter((file) => (!configEnabledModules.modmail ? !file.includes('modmail') : true))
-			.forEach(async (filePaths) => {
-				const command: interactionType = await this.importFiles(filePaths);
+		slashFiles.forEach(async (filePaths) => {
+			const command: interactionType = await this.importFiles(filePaths);
 
-				this.commands.set(command.interaction.name, command);
-			});
+			this.commands.set(command.interaction.name, command);
+		});
 
 		const eventFiles =
 			(await globPromise(`${__dirname}/../events/**/*{.ts,.js}`)) ||
 			(await globPromise(`${__dirname}/../events/**{.ts,.js}`));
-		eventFiles
-			// automod
-			.filter((file) => (!configEnabledModules.automod ? !file.includes('automod') : true))
-			// modmail
-			.filter((file) => (!configEnabledModules.modmail ? !file.includes('modmail') : true))
-			// verification
-			.filter((file) =>
-				!configEnabledModules.verification ? !file.includes('verify') : true
-			)
-			.forEach(async (filePaths) => {
-				const event: Event<keyof ClientEvents> = await this.importFiles(filePaths);
-				this.on(event.event, event.run);
-			});
+		eventFiles.forEach(async (filePaths) => {
+			const event: Event<keyof ClientEvents> = await this.importFiles(filePaths);
+			this.on(event.event, event.run);
+		});
 	}
 
 	/** Handles process errors and exits if called. */

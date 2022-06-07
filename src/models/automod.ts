@@ -1,6 +1,6 @@
 import { Snowflake } from 'discord.js';
 import mongoose from 'mongoose';
-import { default_config } from '../json/moderation.json';
+import { client } from '..';
 import { PunishmentType } from '../typings/PunishmentType';
 
 type T = {
@@ -18,7 +18,7 @@ const schema = new mongoose.Schema({
 	case: Number,
 	type: String,
 	userId: String,
-	reason: { type: String, default: default_config.reason },
+	reason: { type: String, default: client.config.moderation.default.reason },
 	date: Date,
 	expire: Date,
 });

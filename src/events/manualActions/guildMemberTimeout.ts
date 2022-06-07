@@ -7,10 +7,10 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
-import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
 import { guild as guildConfig } from '../../json/config.json';
 import { User } from 'discord.js';
+import { client } from '../..';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (newMember.guild.id !== guildConfig.id) return;
@@ -40,7 +40,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: PunishmentType.Timeout,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
-			reason: reason || default_config.reason,
+			reason: reason || client.config.moderation.default.reason,
 			date: new Date(),
 			expire: new Date(warningExpiry.getTime() + duration),
 		});

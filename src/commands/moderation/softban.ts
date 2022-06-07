@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { punishmentExpiry } from '../../constants';
+import { MAX_SOFTBAN_DURATION, MIN_SOFTBAN_DURATION, punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -8,21 +8,21 @@ import { Command } from '../../structures/Command';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { durationsModel } from '../../models/durations';
-import { default_config } from '../../json/moderation.json';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
-import { convertTime } from '../../functions/convertTime';
+import { convertTime, convertToTimestamp } from '../../functions/convertTime';
 
 export default new Command({
 	interaction: interactions.softban,
 	excute: async ({ client, interaction, options }) => {
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
-		const reason = options.getString('reason') || default_config.reason;
+		const reason = options.getString('reason') || client.config.moderation.default.reason;
 		const delete_messages =
-			options.getNumber('delete_messages') || default_config.ban_delete_messages;
-		const durationO = options.getString('duration') || default_config.softban_duration;
-		const duration = /^\d+$/.test(durationO) ? parseInt(durationO) : +convertTime(durationO);
+			options.getNumber('delete_messages') || client.config.moderation.default.msgs;
+		const durationO =
+			options.getString('duration') || client.config.moderation.default.softban;
+		const duration = convertToTimestamp(durationO);
 
 		if (member) if (ignore(member, { interaction, action: PunishmentType.Softban })) return;
 		if (await interaction.guild.bans.fetch(user.id).catch(() => {}))
@@ -40,11 +40,13 @@ export default new Command({
 				],
 				ephemeral: true,
 			});
-		if (duration > 1000 * 60 * 60 * 24 * 365 || duration < 60000)
+		if (duration > MAX_SOFTBAN_DURATION || duration < MIN_SOFTBAN_DURATION)
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
-						'The duration must be between 1 minute and 1 year.'
+						`The duration must be between ${convertTime(
+							MIN_SOFTBAN_DURATION
+						)}and ${convertTime(MAX_SOFTBAN_DURATION)}.`
 					),
 				],
 				ephemeral: true,

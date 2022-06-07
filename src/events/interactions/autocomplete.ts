@@ -5,7 +5,6 @@ import { Event } from '../../structures/Event';
 import { reasons } from '../../json/moderation.json';
 import { GuildMember } from 'discord.js';
 import { convertTime } from '../../functions/convertTime';
-import { default_config } from '../../json/moderation.json';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction) return;
@@ -188,14 +187,14 @@ export default new Event('interactionCreate', async (interaction) => {
 								convertTime(
 									+convertTime(
 										interaction.commandName === 'softban'
-											? default_config.softban_duration
-											: default_config.timeout_duration
+											? client.config.moderation.default.softban
+											: client.config.moderation.default.timeout
 									)
 								),
 							value: convertTime(
 								interaction.commandName === 'softban'
-									? default_config.softban_duration
-									: default_config.timeout_duration
+									? client.config.moderation.default.softban
+									: client.config.moderation.default.timeout
 							),
 						},
 					]);
