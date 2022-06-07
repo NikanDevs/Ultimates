@@ -28,7 +28,7 @@ exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.configure,
     excute: async ({ client, interaction, options }) => {
         const subcommand = options.getSubcommand();
-        await interaction.deferReply({ ephemeral: false });
+        await interaction.deferReply({ ephemeral: true });
         if (subcommand === 'logs') {
             const module = options.getString('module');
             const channel = options.getChannel('channel');
@@ -78,7 +78,7 @@ exports.default = new Command_1.Command({
                                     ? channel.id === data.logging[module].channelId
                                         ? data.logging[module].channelId
                                         : channel.id
-                                    : data[module].channelId,
+                                    : data.logging[module].channelId,
                                 webhook: channel
                                     ? channel.id === data.logging[module].channelId
                                         ? data.logging[module].webhook
@@ -91,16 +91,24 @@ exports.default = new Command_1.Command({
                 });
                 await client.config.updateLogs();
             }
-            const embed = new discord_js_1.EmbedBuilder()
-                .setTitle('Logging Configuration')
-                .setColor(client.cc.ultimates)
-                .addFields([
-                await formatLogField('mod'),
-                await formatLogField('message'),
-                await formatLogField('modmail'),
-                await formatLogField('servergate'),
-            ]);
-            await interaction.followUp({ embeds: [embed] });
+            if (!module) {
+                const embed = new discord_js_1.EmbedBuilder()
+                    .setTitle('Logging Configuration')
+                    .setColor(client.cc.ultimates)
+                    .addFields([
+                    await formatLogField('mod'),
+                    await formatLogField('message'),
+                    await formatLogField('modmail'),
+                    await formatLogField('servergate'),
+                ]);
+                await interaction.followUp({ embeds: [embed] });
+            }
+            else {
+                const embed = new discord_js_1.EmbedBuilder()
+                    .setColor(client.cc.ultimates)
+                    .addFields([await formatLogField(module)]);
+                await interaction.followUp({ embeds: [embed] });
+            }
             // Functions
             async function formatLogField(module) {
                 const data = await config_1.configModel.findById('logging');
@@ -142,86 +150,92 @@ exports.default = new Command_1.Command({
             if (module && active !== null) {
                 await config_1.configModel.findByIdAndUpdate('automod', {
                     $set: {
-                        automod: {
-                            modules: {
-                                ...(await config_1.configModel.findById('automod')).modules,
-                                [module]: active,
-                            },
+                        modules: {
+                            ...(await config_1.configModel.findById('automod')).modules,
+                            [module]: active,
                         },
                     },
                 });
                 await client.config.updateAutomod();
             }
-            const embed = new discord_js_1.EmbedBuilder()
-                .setTitle('Automod Configuration')
-                .setColor(client.cc.ultimates)
-                .setDescription([
-                await formatDescription('badwords'),
-                await formatDescription('invites'),
-                await formatDescription('largeMessage'),
-                await formatDescription('massMention'),
-                await formatDescription('massEmoji'),
-                await formatDescription('spam'),
-                await formatDescription('capitals'),
-                await formatDescription('urls'),
-            ].join('\n'));
-            if (data.filteredWords.length)
-                embed.addFields([
-                    {
-                        name: 'Filtered Words',
-                        value: client.util.splitText(data.filteredWords
-                            .map((word) => word.toLowerCase())
-                            .join(', '), { splitFor: 'Embed Field Value' }),
-                    },
+            if (!module) {
+                const embed = new discord_js_1.EmbedBuilder()
+                    .setTitle('Automod Configuration')
+                    .setColor(client.cc.ultimates)
+                    .setDescription([
+                    await formatDescription('badwords'),
+                    await formatDescription('invites'),
+                    await formatDescription('largeMessage'),
+                    await formatDescription('massMention'),
+                    await formatDescription('massEmoji'),
+                    await formatDescription('spam'),
+                    await formatDescription('capitals'),
+                    await formatDescription('urls'),
+                ].join('\n'));
+                if (data.filteredWords.length)
+                    embed.addFields([
+                        {
+                            name: 'Filtered Words',
+                            value: client.util.splitText(data.filteredWords
+                                .map((word) => word.toLowerCase())
+                                .join(', '), { splitFor: 'Embed Field Value' }),
+                        },
+                    ]);
+                const button = new discord_js_1.ActionRowBuilder().addComponents([
+                    new discord_js_1.ButtonBuilder()
+                        .setLabel('Add filtered words')
+                        .setStyle(discord_js_1.ButtonStyle.Secondary)
+                        .setCustomId('badwords'),
                 ]);
-            const button = new discord_js_1.ActionRowBuilder().addComponents([
-                new discord_js_1.ButtonBuilder()
-                    .setLabel('Add filtered words')
-                    .setStyle(discord_js_1.ButtonStyle.Secondary)
-                    .setCustomId('badwords'),
-            ]);
-            const sentInteraction = (await interaction.followUp({
-                embeds: [embed],
-                components: [button],
-            }));
-            const collector = sentInteraction.createMessageComponentCollector({
-                componentType: discord_js_1.ComponentType.Button,
-                time: 1000 * 60 * 1,
-            });
-            collector.on('collect', async (collected) => {
-                if (collected.user.id !== interaction.user.id)
-                    return collected.reply({
-                        content: 'You can not use this.',
-                        ephemeral: true,
-                    });
-                if (collected.customId !== 'badwords')
-                    return;
-                const modal = new discord_js_1.ModalBuilder()
-                    .setTitle('Add filtered words')
-                    .setCustomId('add-badwords')
-                    .addComponents([
-                    {
-                        type: discord_js_1.ComponentType.ActionRow,
-                        components: [
-                            {
-                                type: discord_js_1.ComponentType.TextInput,
-                                custom_id: 'input',
-                                label: 'Separate words with commas',
-                                style: discord_js_1.TextInputStyle.Paragraph,
-                                required: true,
-                                max_length: 4000,
-                                min_length: 1,
-                                placeholder: 'badword1, frick, pizza, cake - type an existing word to remove it',
-                            },
-                        ],
-                    },
-                ]);
-                await collected.showModal(modal);
-                collector.stop();
-            });
-            collector.on('end', () => {
-                interaction.editReply({ components: [] });
-            });
+                const sentInteraction = (await interaction.followUp({
+                    embeds: [embed],
+                    components: [button],
+                }));
+                const collector = sentInteraction.createMessageComponentCollector({
+                    componentType: discord_js_1.ComponentType.Button,
+                    time: 1000 * 60 * 1,
+                });
+                collector.on('collect', async (collected) => {
+                    if (collected.user.id !== interaction.user.id)
+                        return collected.reply({
+                            content: 'You can not use this.',
+                            ephemeral: true,
+                        });
+                    if (collected.customId !== 'badwords')
+                        return;
+                    const modal = new discord_js_1.ModalBuilder()
+                        .setTitle('Add filtered words')
+                        .setCustomId('add-badwords')
+                        .addComponents([
+                        {
+                            type: discord_js_1.ComponentType.ActionRow,
+                            components: [
+                                {
+                                    type: discord_js_1.ComponentType.TextInput,
+                                    custom_id: 'input',
+                                    label: 'Separate words with commas',
+                                    style: discord_js_1.TextInputStyle.Paragraph,
+                                    required: true,
+                                    max_length: 4000,
+                                    min_length: 1,
+                                    placeholder: 'badword1, frick, pizza, cake - type an existing word to remove it',
+                                },
+                            ],
+                        },
+                    ]);
+                    await collected.showModal(modal);
+                    collector.stop();
+                });
+                collector.on('end', () => {
+                    interaction.editReply({ components: [] });
+                });
+            }
+            else {
+                const embed = new discord_js_1.EmbedBuilder()
+                    .setColor(client.cc.ultimates)
+                    .setDescription(await formatDescription(module));
+                await interaction.followUp({ embeds: [embed] });
+            }
             // Functions
             async function formatDescription(module) {
                 const data = await config_1.configModel.findById('automod');
