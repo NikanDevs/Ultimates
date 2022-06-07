@@ -37,15 +37,14 @@ export default new Command({
 	interaction: interactions.configure,
 	excute: async ({ client, interaction, options }) => {
 		const subcommand = options.getSubcommand();
-		await interaction.deferReply({ ephemeral: false });
+		await interaction.deferReply({ ephemeral: true });
 
 		if (subcommand === 'logs') {
 			const module = options.getString('module') as
 				| 'mod'
 				| 'modmail'
 				| 'message'
-				| 'servergate'
-				| 'error';
+				| 'servergate';
 
 			const channel = options.getChannel('channel') as TextChannel;
 			const active = options.getBoolean('active');
@@ -86,7 +85,6 @@ export default new Command({
 					reason: '/configure was excuted.',
 				});
 			}
-
 			if (module && (channel || active !== null)) {
 				await configModel.findByIdAndUpdate('logging', {
 					$set: {
@@ -97,7 +95,7 @@ export default new Command({
 									? channel.id === data.logging[module].channelId
 										? data.logging[module].channelId
 										: channel.id
-									: data[module].channelId,
+									: data.logging[module].channelId,
 								webhook: channel
 									? channel.id === data.logging[module].channelId
 										? data.logging[module].webhook
@@ -112,17 +110,25 @@ export default new Command({
 				await client.config.updateLogs();
 			}
 
-			const embed = new EmbedBuilder()
-				.setTitle('Logging Configuration')
-				.setColor(client.cc.ultimates)
-				.addFields([
-					await formatLogField('mod'),
-					await formatLogField('message'),
-					await formatLogField('modmail'),
-					await formatLogField('servergate'),
-				]);
+			if (!module) {
+				const embed = new EmbedBuilder()
+					.setTitle('Logging Configuration')
+					.setColor(client.cc.ultimates)
+					.addFields([
+						await formatLogField('mod'),
+						await formatLogField('message'),
+						await formatLogField('modmail'),
+						await formatLogField('servergate'),
+					]);
 
-			await interaction.followUp({ embeds: [embed] });
+				await interaction.followUp({ embeds: [embed] });
+			} else {
+				const embed = new EmbedBuilder()
+					.setColor(client.cc.ultimates)
+					.addFields([await formatLogField(module)]);
+
+				await interaction.followUp({ embeds: [embed] });
+			}
 
 			// Functions
 			async function formatLogField(module: 'mod' | 'message' | 'modmail' | 'servergate') {
@@ -151,6 +157,7 @@ export default new Command({
 				| 'spam'
 				| 'capitals'
 				| 'urls';
+
 			const active = options.getBoolean('active');
 			var data = await configModel.findById('automod');
 			if (!data) {
@@ -175,99 +182,105 @@ export default new Command({
 			if (module && active !== null) {
 				await configModel.findByIdAndUpdate('automod', {
 					$set: {
-						automod: {
-							modules: {
-								...(await configModel.findById('automod')).modules,
-								[module]: active,
-							},
+						modules: {
+							...(await configModel.findById('automod')).modules,
+							[module]: active,
 						},
 					},
 				});
 				await client.config.updateAutomod();
 			}
 
-			const embed = new EmbedBuilder()
-				.setTitle('Automod Configuration')
-				.setColor(client.cc.ultimates)
-				.setDescription(
-					[
-						await formatDescription('badwords'),
-						await formatDescription('invites'),
-						await formatDescription('largeMessage'),
-						await formatDescription('massMention'),
-						await formatDescription('massEmoji'),
-						await formatDescription('spam'),
-						await formatDescription('capitals'),
-						await formatDescription('urls'),
-					].join('\n')
-				);
+			if (!module) {
+				const embed = new EmbedBuilder()
+					.setTitle('Automod Configuration')
+					.setColor(client.cc.ultimates)
+					.setDescription(
+						[
+							await formatDescription('badwords'),
+							await formatDescription('invites'),
+							await formatDescription('largeMessage'),
+							await formatDescription('massMention'),
+							await formatDescription('massEmoji'),
+							await formatDescription('spam'),
+							await formatDescription('capitals'),
+							await formatDescription('urls'),
+						].join('\n')
+					);
 
-			if (data.filteredWords.length)
-				embed.addFields([
-					{
-						name: 'Filtered Words',
-						value: client.util.splitText(
-							data.filteredWords
-								.map((word: string) => word.toLowerCase())
-								.join(', '),
-							{ splitFor: 'Embed Field Value' }
-						),
-					},
-				]);
-
-			const button = new ActionRowBuilder<ButtonBuilder>().addComponents([
-				new ButtonBuilder()
-					.setLabel('Add filtered words')
-					.setStyle(ButtonStyle.Secondary)
-					.setCustomId('badwords'),
-			]);
-
-			const sentInteraction = (await interaction.followUp({
-				embeds: [embed],
-				components: [button],
-			})) as Message;
-
-			const collector = sentInteraction.createMessageComponentCollector({
-				componentType: ComponentType.Button,
-				time: 1000 * 60 * 1,
-			});
-
-			collector.on('collect', async (collected): Promise<any> => {
-				if (collected.user.id !== interaction.user.id)
-					return collected.reply({
-						content: 'You can not use this.',
-						ephemeral: true,
-					});
-				if (collected.customId !== 'badwords') return;
-
-				const modal = new ModalBuilder()
-					.setTitle('Add filtered words')
-					.setCustomId('add-badwords')
-					.addComponents([
+				if (data.filteredWords.length)
+					embed.addFields([
 						{
-							type: ComponentType.ActionRow,
-							components: [
-								{
-									type: ComponentType.TextInput,
-									custom_id: 'input',
-									label: 'Separate words with commas',
-									style: TextInputStyle.Paragraph,
-									required: true,
-									max_length: 4000,
-									min_length: 1,
-									placeholder:
-										'badword1, frick, pizza, cake - type an existing word to remove it',
-								},
-							],
+							name: 'Filtered Words',
+							value: client.util.splitText(
+								data.filteredWords
+									.map((word: string) => word.toLowerCase())
+									.join(', '),
+								{ splitFor: 'Embed Field Value' }
+							),
 						},
 					]);
-				await collected.showModal(modal);
-				collector.stop();
-			});
 
-			collector.on('end', () => {
-				interaction.editReply({ components: [] });
-			});
+				const button = new ActionRowBuilder<ButtonBuilder>().addComponents([
+					new ButtonBuilder()
+						.setLabel('Add filtered words')
+						.setStyle(ButtonStyle.Secondary)
+						.setCustomId('badwords'),
+				]);
+
+				const sentInteraction = (await interaction.followUp({
+					embeds: [embed],
+					components: [button],
+				})) as Message;
+
+				const collector = sentInteraction.createMessageComponentCollector({
+					componentType: ComponentType.Button,
+					time: 1000 * 60 * 1,
+				});
+
+				collector.on('collect', async (collected): Promise<any> => {
+					if (collected.user.id !== interaction.user.id)
+						return collected.reply({
+							content: 'You can not use this.',
+							ephemeral: true,
+						});
+					if (collected.customId !== 'badwords') return;
+
+					const modal = new ModalBuilder()
+						.setTitle('Add filtered words')
+						.setCustomId('add-badwords')
+						.addComponents([
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'input',
+										label: 'Separate words with commas',
+										style: TextInputStyle.Paragraph,
+										required: true,
+										max_length: 4000,
+										min_length: 1,
+										placeholder:
+											'badword1, frick, pizza, cake - type an existing word to remove it',
+									},
+								],
+							},
+						]);
+					await collected.showModal(modal);
+					collector.stop();
+				});
+
+				collector.on('end', () => {
+					interaction.editReply({ components: [] });
+				});
+			} else {
+				const embed = new EmbedBuilder()
+					.setColor(client.cc.ultimates)
+					.setDescription(await formatDescription(module));
+
+				await interaction.followUp({ embeds: [embed] });
+			}
 
 			// Functions
 			async function formatDescription(
