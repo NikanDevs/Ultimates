@@ -126,7 +126,7 @@ export default new Command({
 			async function formatLogField(module: 'mod' | 'message' | 'modmail' | 'servergate') {
 				const data = await configModel.findById('logging');
 				let channel = (await client.channels
-					.fetch(data[module].channelId)
+					.fetch(data.logging[module].channelId)
 					.catch(() => {})) as TextChannel;
 				return {
 					name: logsNames[module],
