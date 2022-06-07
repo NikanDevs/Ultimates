@@ -2,7 +2,6 @@ import { client } from '../..';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Event } from '../../structures/Event';
-import { reasons } from '../../json/moderation.json';
 import { GuildMember } from 'discord.js';
 import { convertTime } from '../../functions/convertTime';
 
@@ -135,15 +134,18 @@ export default new Event('interactionCreate', async (interaction) => {
 	if (getReasonsFocus?.name === 'reason') {
 		switch (interaction.commandName) {
 			case interaction.commandName:
-				const availableReasons = [...new Set(reasons[interaction.commandName])];
+				const availableReasons = [
+					...new Set(client.config.moderation.reasons[interaction.commandName]),
+				];
 				const filteredReasons = availableReasons
 					.filter((reason: string) =>
 						reason.startsWith(getReasonsFocus.value as string)
 					)
-					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data);
+					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
+					.slice(0, 25);
 
 				if (
-					!reasons[interaction.commandName].length &&
+					!client.config.moderation.reasons[interaction.commandName].length &&
 					!getReasonsFocus.value.toString().length
 				)
 					return interaction.respond([
@@ -152,7 +154,7 @@ export default new Event('interactionCreate', async (interaction) => {
 								'⭐️' +
 								' • ' +
 								'No inbuilt reasons were found, type a reason...',
-							value: 'No reason provided.',
+							value: client.config.moderation.default.reason,
 						},
 					]);
 

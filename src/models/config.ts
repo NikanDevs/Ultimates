@@ -40,6 +40,7 @@ type T = {
 		ban: string[];
 		softban: string[];
 		unban: string[];
+		kick: string[];
 	};
 	// Automod
 	filteredWords: string[];

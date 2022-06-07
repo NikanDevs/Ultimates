@@ -70,6 +70,7 @@ export class clientConfig {
 			ban: [] as string[],
 			softban: [] as string[],
 			unban: [] as string[],
+			kick: [] as string[],
 		},
 	};
 
@@ -178,6 +179,7 @@ export class clientConfig {
 				ban: data.reasons.ban,
 				softban: data.reasons.softban,
 				unban: data.reasons.unban,
+				kick: data.reasons.kick,
 			},
 		};
 	}
