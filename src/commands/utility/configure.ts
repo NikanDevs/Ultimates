@@ -54,7 +54,7 @@ export default new Command({
 			const data = await configModel.findById('logging');
 			if (!data) {
 				const newData = new configModel({
-					_id: 'logs',
+					_id: 'logging',
 					logging: {
 						mod: { channelId: null, webhook: null, active: null },
 						modmail: { channelId: null, webhook: null, active: null },
@@ -136,7 +136,7 @@ export default new Command({
 									? '<:online:886215547249913856>'
 									: '<:offline:906867114126770186>'
 						  } • ${channel ? channel : "The logs channel wasn't found."}`
-						: '<:idle:906867112612601866> • This module is ✖︎',
+						: '<:idle:906867112612601866> • This module is not set, yet...',
 				};
 			}
 		} else if (subcommand === 'automod') {
