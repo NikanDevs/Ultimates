@@ -93,16 +93,17 @@ export default new Command({
 						logging: {
 							[module]: {
 								channelId: channel
-									? channel.id === data[module].channelId
-										? data[module].channelId
+									? channel.id === data.logging[module].channelId
+										? data.logging[module].channelId
 										: channel.id
 									: data[module].channelId,
 								webhook: channel
-									? channel.id === data[module].channelId
-										? data[module].webhook
+									? channel.id === data.logging[module].channelId
+										? data.logging[module].webhook
 										: newWebhook.url
-									: data[module].webhook,
-								active: active === null ? data[module].active : active,
+									: data.logging[module].webhook,
+								active:
+									active === null ? data.logging[module].active : active,
 							},
 						},
 					},
