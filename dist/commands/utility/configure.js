@@ -39,11 +39,11 @@ exports.default = new Command_1.Command({
                 const newData = new config_1.configModel({
                     _id: 'logging',
                     logging: {
-                        mod: { channelId: null, webhook: null, active: null },
-                        modmail: { channelId: null, webhook: null, active: null },
-                        message: { channelId: null, webhook: null, active: null },
-                        servergate: { channelId: null, webhook: null, active: null },
-                        error: { channelId: null, webhook: null, active: null },
+                        mod: { channelId: null, webhook: null, active: false },
+                        modmail: { channelId: null, webhook: null, active: false },
+                        message: { channelId: null, webhook: null, active: false },
+                        servergate: { channelId: null, webhook: null, active: false },
+                        error: { channelId: null, webhook: null, active: false },
                     },
                 });
                 await newData.save();
@@ -72,6 +72,7 @@ exports.default = new Command_1.Command({
                 await config_1.configModel.findByIdAndUpdate('logging', {
                     $set: {
                         logging: {
+                            ...(await config_1.configModel.findById('logging')).logging,
                             [module]: {
                                 channelId: channel
                                     ? channel.id === data.logging[module].channelId

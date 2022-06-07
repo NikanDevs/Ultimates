@@ -16,6 +16,6 @@ const schema = new mongoose_1.default.Schema({
     filteredWords: { type: Array, required: false },
     modules: { type: Object, required: false },
     // Logging
-    logging: { type: Object, required: false },
+    logging: { type: Object },
 });
 exports.configModel = mongoose_1.default.model('config', schema);

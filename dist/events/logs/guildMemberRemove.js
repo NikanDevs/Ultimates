@@ -8,8 +8,6 @@ const checkActivity_1 = require("../../functions/logs/checkActivity");
 const config_json_1 = require("../../json/config.json");
 const discord_js_1 = require("discord.js");
 exports.default = new Event_1.Event('guildMemberRemove', async (member) => {
-    if (!(0, checkActivity_1.logActivity)('servergate'))
-        return;
     if (member.guild.id !== config_json_1.guild.id)
         return;
     const roles = member.roles.cache
@@ -35,6 +33,7 @@ exports.default = new Event_1.Event('guildMemberRemove', async (member) => {
             expire: constants_1.leftMemberExpiry,
         }).save();
     }
-    // Sending the left message
-    __1.client.config.webhooks.servergate?.send({ embeds: [embed] });
+    if ((0, checkActivity_1.logActivity)('servergate'))
+        // Sending the left message
+        __1.client.config.webhooks.servergate?.send({ embeds: [embed] });
 });

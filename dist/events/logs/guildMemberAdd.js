@@ -7,8 +7,6 @@ const checkActivity_1 = require("../../functions/logs/checkActivity");
 const config_json_1 = require("../../json/config.json");
 const discord_js_1 = require("discord.js");
 exports.default = new Event_1.Event('guildMemberAdd', async (member) => {
-    if (!(0, checkActivity_1.logActivity)('servergate'))
-        return;
     if (member.guild.id !== config_json_1.guild.id)
         return;
     // If the member has any previous experience joining the server
@@ -29,6 +27,7 @@ exports.default = new Event_1.Event('guildMemberAdd', async (member) => {
         `• **Member Count:** ${member.guild.memberCount}`,
         `\n${findData ? 'A user has joined back!' : 'A user has joined!'}`,
     ].join('\n'));
-    // Sending the member joined message.
-    __1.client.config.webhooks.servergate?.send({ embeds: [embed] });
+    if ((0, checkActivity_1.logActivity)('servergate'))
+        // Sending the member joined message.
+        __1.client.config.webhooks.servergate?.send({ embeds: [embed] });
 });
