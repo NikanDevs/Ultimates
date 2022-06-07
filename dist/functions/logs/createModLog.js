@@ -7,7 +7,6 @@ const logs_1 = require("../../models/logs");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const modCase_1 = require("../cases/modCase");
 const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp");
-const moderation_json_1 = require("../../json/moderation.json");
 const checkActivity_1 = require("./checkActivity");
 const config_json_1 = require("../../json/config.json");
 const convertTime_1 = require("../convertTime");
@@ -55,7 +54,7 @@ async function createModLog(options) {
             ? `${options.moderator.tag} • ${options.moderator.id}`
             : 'Automatic'}`,
         `• **Date:** ${(0, generateDiscordTimestamp_1.generateDiscordTimestamp)(new Date(), 'Short Date/Time')}`,
-        `• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${options.reason || moderation_json_1.default_config.reason}`,
+        `• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${options.reason || __1.client.config.moderation.default.reason}`,
     ]
         .join('\n')
         .replaceAll('\nLINE_BREAK', ''));

@@ -5,7 +5,6 @@ const discord_js_1 = require("discord.js");
 const __1 = require("..");
 const PunishmentType_1 = require("../typings/PunishmentType");
 const generateDiscordTimestamp_1 = require("./generateDiscordTimestamp");
-const moderation_json_1 = require("../json/moderation.json");
 async function sendModDM(member, options) {
     let pastForm;
     (function (pastForm) {
@@ -56,7 +55,7 @@ async function sendModDM(member, options) {
         },
         {
             name: 'Reason',
-            value: options.punishment.reason || moderation_json_1.default_config.reason,
+            value: options.punishment.reason || __1.client.config.moderation.default.reason,
             inline: false,
         },
     ]);

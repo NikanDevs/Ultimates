@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertTime = void 0;
+exports.convertToTimestamp = exports.isValidDuration = exports.convertTime = void 0;
 const regxp = /^(?<value>-?(?:\d+)?\.?\d+) *(?<type>seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|months?|month?|mo|mon|mons|years?|yrs?|y)?$/g;
 function convertTime(time) {
     if (/^\d+$/.test(time.toString())) {
@@ -14,10 +14,10 @@ function convertTime(time) {
             // Calculating each value
             const yearsTimestamp = Math.floor(time / (365 * 24 * 60 * 60 * 1000));
             time -= yearsTimestamp * 365 * 24 * 60 * 60 * 1000;
-            const monthsTimestamp = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
-            time -= monthsTimestamp * 30 * 24 * 60 * 60 * 1000;
-            const weeksTimestamp = Math.floor(time / (7 * 24 * 60 * 60 * 1000));
-            time -= weeksTimestamp * 7 * 24 * 60 * 60 * 1000;
+            // const monthsTimestamp = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
+            // time -= monthsTimestamp * 30 * 24 * 60 * 60 * 1000;
+            // const weeksTimestamp = Math.floor(time / (7 * 24 * 60 * 60 * 1000));
+            // time -= weeksTimestamp * 7 * 24 * 60 * 60 * 1000;
             const daysTimestamp = Math.floor(time / (24 * 60 * 60 * 1000));
             time -= daysTimestamp * 24 * 60 * 60 * 1000;
             const hoursTimestamp = Math.floor(time / (60 * 60 * 1000));
@@ -28,12 +28,12 @@ function convertTime(time) {
             const yearS = !yearsTimestamp
                 ? ''
                 : `${yearsTimestamp} year` + (yearsTimestamp === 1 ? '' : 's');
-            const monthS = !monthsTimestamp
-                ? ''
-                : `${monthsTimestamp} month` + (monthsTimestamp === 1 ? '' : 's');
-            const weekS = !weeksTimestamp
-                ? ''
-                : `${weeksTimestamp} week` + (weeksTimestamp === 1 ? '' : 's');
+            // const monthS = !monthsTimestamp
+            // 	? ''
+            // 	: `${monthsTimestamp} month` + (monthsTimestamp === 1 ? '' : 's');
+            // const weekS = !weeksTimestamp
+            // 	? ''
+            // 	: `${weeksTimestamp} week` + (weeksTimestamp === 1 ? '' : 's');
             const dayS = !daysTimestamp
                 ? ''
                 : `${daysTimestamp} day` + (daysTimestamp === 1 ? '' : 's');
@@ -46,7 +46,7 @@ function convertTime(time) {
             const secondS = !secondsTimestamp
                 ? ''
                 : `${secondsTimestamp} second` + (secondsTimestamp === 1 ? '' : 's');
-            const result = [yearS, monthS, weekS, dayS, hourS, minuteS, secondS].filter((item) => item !== '');
+            const result = [yearS, /**monthS, weekS,**/ dayS, hourS, minuteS, secondS].filter((item) => item !== '');
             return result.join(' and ');
         case 'string':
             let miliseconds = 0;
@@ -120,3 +120,21 @@ function convertTime(time) {
     }
 }
 exports.convertTime = convertTime;
+function isValidDuration(v) {
+    if (/^\d+$/.test(v.toString()))
+        return true;
+    if (convertTime(v) === undefined)
+        return false;
+    else
+        return true;
+}
+exports.isValidDuration = isValidDuration;
+function convertToTimestamp(v) {
+    if (/^\d+$/.test(v.toString()))
+        return parseInt(v.toString());
+    if (convertTime(v) === undefined)
+        return undefined;
+    else
+        return +convertTime(v);
+}
+exports.convertToTimestamp = convertToTimestamp;

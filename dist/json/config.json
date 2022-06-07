@@ -13,10 +13,5 @@
         "memberRoleId": "923612909370769438",
         "generalChannelId": "888378608593276938",
         "modmailCategoryId": "948232668611506248"
-    },
-    "enabledModules": {
-        "automod": true,
-        "modmail": true,
-        "verification": true
     }
 }

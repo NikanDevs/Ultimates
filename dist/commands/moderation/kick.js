@@ -9,13 +9,12 @@ const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const sendModDM_1 = require("../../utils/sendModDM");
-const moderation_json_1 = require("../../json/moderation.json");
 const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.kick,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
-        const reason = options.getString('reason') || moderation_json_1.default_config.reason;
+        const reason = options.getString('reason') || client.config.moderation.default.reason;
         if (!member)
             return interaction.reply({
                 embeds: [client.embeds.error('I could not find that member in this server.')],

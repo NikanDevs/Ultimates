@@ -10,7 +10,6 @@ const modCase_1 = require("../../functions/cases/modCase");
 const createModLog_1 = require("../../functions/logs/createModLog");
 const timeoutMember_1 = require("../../utils/timeoutMember");
 const ignore_1 = require("../../functions/ignore");
-const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
 const interactions_1 = require("../../interactions");
 const convertTime_1 = require("../../functions/convertTime");
@@ -18,15 +17,13 @@ exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.timeout,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
-        const durationO = options.getString('duration') || moderation_json_1.default_config.timeout_duration;
-        const duration = /^\d+$/.test(durationO)
-            ? parseInt(durationO)
-            : +(0, convertTime_1.convertTime)(durationO);
-        const reason = options.getString('reason') || moderation_json_1.default_config.reason;
+        const durationO = options.getString('duration') || client.config.moderation.default.timeout;
+        const duration = (0, convertTime_1.convertToTimestamp)(durationO);
+        const reason = options.getString('reason') || client.config.moderation.default.reason;
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Timeout }))
             return;
         // Guess: moderator is trying to unmute
-        if (['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(durationO.toLowerCase()))
+        if (['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(options.getString('duration').toLowerCase()))
             return interaction.reply({
                 embeds: [
                     client.embeds.attention("If you're trying to unmute a member, try using `/punishment revoke`"),
@@ -38,17 +35,17 @@ exports.default = new Command_1.Command({
                 embeds: [client.embeds.error('This member is already timed out.')],
                 ephemeral: true,
             });
-        if (duration === undefined)
+        if (!(0, convertTime_1.isValidDuration)(durationO))
             return interaction.reply({
                 embeds: [
                     client.embeds.error('The provided duration is not valid, use the autocomplete for a better result.'),
                 ],
                 ephemeral: true,
             });
-        if (duration > 1000 * 60 * 60 * 24 * 27 || duration < 10000)
+        if (duration > constants_1.MAX_TIMEOUT_DURATION || duration < constants_1.MIN_TIMEOUT_DURATION)
             return interaction.reply({
                 embeds: [
-                    client.embeds.attention('The duration must be between 10 seconds and 27 days.'),
+                    client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_TIMEOUT_DURATION)} and ${(0, convertTime_1.convertTime)(constants_1.MAX_TIMEOUT_DURATION)}.`),
                 ],
                 ephemeral: true,
             });

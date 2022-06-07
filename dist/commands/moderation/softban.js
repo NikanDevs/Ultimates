@@ -9,7 +9,6 @@ const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const durations_1 = require("../../models/durations");
-const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
 const interactions_1 = require("../../interactions");
 const convertTime_1 = require("../../functions/convertTime");
@@ -18,10 +17,10 @@ exports.default = new Command_1.Command({
     excute: async ({ client, interaction, options }) => {
         const user = options.getUser('user');
         const member = options.getMember('user');
-        const reason = options.getString('reason') || moderation_json_1.default_config.reason;
-        const delete_messages = options.getNumber('delete_messages') || moderation_json_1.default_config.ban_delete_messages;
-        const durationO = options.getString('duration') || moderation_json_1.default_config.softban_duration;
-        const duration = /^\d+$/.test(durationO) ? parseInt(durationO) : +(0, convertTime_1.convertTime)(durationO);
+        const reason = options.getString('reason') || client.config.moderation.default.reason;
+        const delete_messages = options.getNumber('delete_messages') || client.config.moderation.default.msgs;
+        const durationO = options.getString('duration') || client.config.moderation.default.softban;
+        const duration = (0, convertTime_1.convertToTimestamp)(durationO);
         if (member)
             if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Softban }))
                 return;
@@ -37,10 +36,10 @@ exports.default = new Command_1.Command({
                 ],
                 ephemeral: true,
             });
-        if (duration > 1000 * 60 * 60 * 24 * 365 || duration < 60000)
+        if (duration > constants_1.MAX_SOFTBAN_DURATION || duration < constants_1.MIN_SOFTBAN_DURATION)
             return interaction.reply({
                 embeds: [
-                    client.embeds.attention('The duration must be between 1 minute and 1 year.'),
+                    client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_SOFTBAN_DURATION)}and ${(0, convertTime_1.convertTime)(constants_1.MAX_SOFTBAN_DURATION)}.`),
                 ],
                 ephemeral: true,
             });

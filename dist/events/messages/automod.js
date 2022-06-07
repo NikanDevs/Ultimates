@@ -14,7 +14,6 @@ const createModLog_1 = require("../../functions/logs/createModLog");
 const timeoutMember_1 = require("../../utils/timeoutMember");
 const sendModDM_1 = require("../../utils/sendModDM");
 const config_json_1 = require("../../json/config.json");
-const convertTime_1 = require("../../functions/convertTime");
 const config = __1.client.config.automod;
 const bypassRoleId = automod_json_1.ignore['bypass-roleId'];
 const categoryIgnores = automod_json_1.ignore['categoryIds'];
@@ -366,11 +365,10 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             type: PunishmentType_1.PunishmentType.Warn,
         });
         const punishmentCount = punishmentFind.length;
-        if (punishmentCount == 2) {
-            const timeoutDurationAt2 = +(0, convertTime_1.convertTime)(automod_json_1.amounts.timeoutDurationAt2Warns);
+        if (punishmentCount % __1.client.config.moderation.count.automod === 0) {
             await (0, timeoutMember_1.timeoutMember)(message.member, {
-                reason: 'Reaching 2 automod warnings.',
-                duration: timeoutDurationAt2,
+                reason: `Reaching ${punishmentCount} automod warnings.`,
+                duration: __1.client.config.moderation.duration.automod,
             });
             const data = new automod_1.automodModel({
                 _id: (0, generatePunishmentId_1.generateAutomodId)(),
@@ -379,13 +377,13 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                 userId: message.author.id,
                 date: new Date(),
                 expire: constants_1.automodPunishmentExpiry,
-                reason: 'Reaching 2 automod warnings.',
+                reason: `Reaching ${punishmentCount} automod warnings.`,
             });
             data.save();
             (0, sendModDM_1.sendModDM)(message.member, {
                 action: PunishmentType_1.PunishmentType.Timeout,
                 punishment: data,
-                expire: new Date(Date.now() + timeoutDurationAt2),
+                expire: new Date(Date.now() + __1.client.config.moderation.duration.automod),
                 automod: true,
             });
             await (0, createModLog_1.createModLog)({
@@ -393,40 +391,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                 punishmentId: data._id,
                 user: message.author,
                 moderator: __1.client.user,
-                duration: timeoutDurationAt2,
-                reason: 'Reaching 2 automod warnings.',
-                referencedPunishment: warnData,
-                expire: constants_1.automodPunishmentExpiry,
-            });
-        }
-        else if (punishmentCount > 2) {
-            const timeoutDurationAtmore2 = +(0, convertTime_1.convertTime)(automod_json_1.amounts['timeoutDurationAt+2Warns']);
-            await (0, timeoutMember_1.timeoutMember)(message.member, {
-                reason: `Reaching ${punishmentCount} automod warnings.`,
-                duration: timeoutDurationAtmore2,
-            });
-            const data = new automod_1.automodModel({
-                _id: (0, generatePunishmentId_1.generateAutomodId)(),
-                case: await (0, modCase_1.getModCase)(),
-                type: PunishmentType_1.PunishmentType.Timeout,
-                userId: message.author.id,
-                date: new Date(),
-                expire: constants_1.automodPunishmentExpiry,
-                reason: `Reaching ${punishmentCount} automod warnings.`,
-            });
-            data.save();
-            await (0, sendModDM_1.sendModDM)(message.member, {
-                action: PunishmentType_1.PunishmentType.Timeout,
-                punishment: data,
-                expire: new Date(Date.now() + timeoutDurationAtmore2),
-                automod: true,
-            });
-            await (0, createModLog_1.createModLog)({
-                action: PunishmentType_1.PunishmentType.Timeout,
-                punishmentId: data._id,
-                user: message.author,
-                moderator: __1.client.user,
-                duration: timeoutDurationAtmore2,
+                duration: __1.client.config.moderation.duration.automod,
                 reason: `Reaching ${punishmentCount} automod warnings.`,
                 referencedPunishment: warnData,
                 expire: constants_1.automodPunishmentExpiry,

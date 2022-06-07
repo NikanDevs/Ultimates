@@ -447,19 +447,21 @@ exports.default = new Command_1.Command({
                                 ],
                                 ephemeral: true,
                             });
-                        if (duration > 1000 * 60 * 60 * 24 * 27 ||
-                            (duration < 10000 && punishment.type === PunishmentType_1.PunishmentType.Timeout))
+                        if (duration > constants_1.MAX_TIMEOUT_DURATION ||
+                            (duration < constants_1.MIN_TIMEOUT_DURATION &&
+                                punishment.type === PunishmentType_1.PunishmentType.Timeout))
                             return interaction.followUp({
                                 embeds: [
-                                    client.embeds.attention('The duration must be between 10 seconds and 27 days.'),
+                                    client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_TIMEOUT_DURATION)} and ${(0, convertTime_1.convertTime)(constants_1.MAX_TIMEOUT_DURATION)}.`),
                                 ],
                                 ephemeral: true,
                             });
-                        if (duration > 1000 * 60 * 60 * 24 * 365 ||
-                            (duration < 60000 && punishment.type === PunishmentType_1.PunishmentType.Softban))
+                        if (duration > constants_1.MAX_SOFTBAN_DURATION ||
+                            (duration < constants_1.MIN_SOFTBAN_DURATION &&
+                                punishment.type === PunishmentType_1.PunishmentType.Softban))
                             return interaction.followUp({
                                 embeds: [
-                                    client.embeds.attention('The duration must be between 1 minute and 1 year.'),
+                                    client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_SOFTBAN_DURATION)}and ${(0, convertTime_1.convertTime)(constants_1.MAX_SOFTBAN_DURATION)}.`),
                                 ],
                                 ephemeral: true,
                             });

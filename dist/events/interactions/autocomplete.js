@@ -6,7 +6,6 @@ const punishments_1 = require("../../models/punishments");
 const Event_1 = require("../../structures/Event");
 const moderation_json_1 = require("../../json/moderation.json");
 const convertTime_1 = require("../../functions/convertTime");
-const moderation_json_2 = require("../../json/moderation.json");
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
     if (!interaction)
         return;
@@ -150,11 +149,11 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
                             name: '⭐️' +
                                 ' • ' +
                                 (0, convertTime_1.convertTime)(+(0, convertTime_1.convertTime)(interaction.commandName === 'softban'
-                                    ? moderation_json_2.default_config.softban_duration
-                                    : moderation_json_2.default_config.timeout_duration)),
+                                    ? __1.client.config.moderation.default.softban
+                                    : __1.client.config.moderation.default.timeout)),
                             value: (0, convertTime_1.convertTime)(interaction.commandName === 'softban'
-                                ? moderation_json_2.default_config.softban_duration
-                                : moderation_json_2.default_config.timeout_duration),
+                                ? __1.client.config.moderation.default.softban
+                                : __1.client.config.moderation.default.timeout),
                         },
                     ]);
                 if ((0, convertTime_1.convertTime)(getDurationsFocus.value) === undefined)

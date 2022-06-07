@@ -47,6 +47,29 @@ class clientConfig {
             modmailCategoryId: null,
         },
     };
+    /** The config for the moderation system. */
+    moderation = {
+        count: { automod: null, timeout1: null, timeout2: null, ban: null },
+        duration: {
+            timeout1: null,
+            timeout2: null,
+            ban: null,
+            automod: null,
+        },
+        default: {
+            timeout: null,
+            softban: null,
+            msgs: null,
+            reason: null,
+        },
+        reasons: {
+            warn: [],
+            timeout: [],
+            ban: [],
+            softban: [],
+            unban: [],
+        },
+    };
     async updateLogs() {
         const data = await config_1.configModel.findById('logging');
         if (!data)
@@ -113,6 +136,38 @@ class clientConfig {
                 appealLink: data.guild.appealLink,
                 memberRoleId: data.guild.memberRoleId,
                 modmailCategoryId: data.guild.modmailCategoryId,
+            },
+        };
+    }
+    async updateModeration() {
+        const data = await config_1.configModel.findById('moderation');
+        if (!data)
+            return;
+        this.moderation = {
+            count: {
+                automod: data.count.automod,
+                timeout1: data.count.timeout1,
+                timeout2: data.count.timeout2,
+                ban: data.count.timeout2,
+            },
+            duration: {
+                timeout1: data.duration.timeout1,
+                timeout2: data.duration.timeout2,
+                ban: data.duration.ban,
+                automod: data.duration.automod,
+            },
+            default: {
+                timeout: data.default.timeout,
+                softban: data.default.softban,
+                msgs: data.default.msgs,
+                reason: data.default.reason,
+            },
+            reasons: {
+                warn: data.reasons.warn,
+                timeout: data.reasons.timeout,
+                ban: data.reasons.ban,
+                softban: data.reasons.softban,
+                unban: data.reasons.unban,
             },
         };
     }

@@ -7,13 +7,12 @@ const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
-const moderation_json_1 = require("../../json/moderation.json");
 const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.unban,
     excute: async ({ client, interaction, options }) => {
         const userId = options.getString('user');
-        const reason = options.getString('reason') || moderation_json_1.default_config.reason;
+        const reason = options.getString('reason') || client.config.moderation.default.reason;
         const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => { });
         if (!bannedMember)
             return interaction.reply({

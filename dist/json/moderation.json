@@ -1,14 +1,4 @@
 {
-    "auto_mute": {
-        "2": "2h",
-        "4": "6h"
-    },
-    "default_config": {
-        "timeout_duration": "6h",
-        "softban_duration": "90d",
-        "ban_delete_messages": 0,
-        "reason": "No reason was provided."
-    },
     "reasons": {
         "warn": [
             "Spamming after verbal warnings.",

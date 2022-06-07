@@ -8,7 +8,6 @@ const punishments_1 = require("../../models/punishments");
 const Command_1 = require("../../structures/Command");
 const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
-const moderation_json_1 = require("../../json/moderation.json");
 const sendModDM_1 = require("../../utils/sendModDM");
 const interactions_1 = require("../../interactions");
 exports.default = new Command_1.Command({
@@ -16,8 +15,8 @@ exports.default = new Command_1.Command({
     excute: async ({ client, interaction, options }) => {
         const user = options.getUser('user');
         const member = options.getMember('user');
-        const reason = options.getString('reason') || moderation_json_1.default_config.reason;
-        const delete_messages = options.getNumber('delete_messages') || moderation_json_1.default_config.ban_delete_messages;
+        const reason = options.getString('reason') || client.config.moderation.default.reason;
+        const delete_messages = options.getNumber('delete_messages') || client.config.moderation.default.msgs;
         if (member)
             if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Ban }))
                 return;

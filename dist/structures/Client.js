@@ -28,7 +28,6 @@ const discord_js_1 = require("discord.js");
 const glob_1 = require("glob");
 const util_1 = require("util");
 const mongoose_1 = require("mongoose");
-const config_json_1 = require("../json/config.json");
 const clientUtil_1 = require("../functions/client/clientUtil");
 const properties_1 = require("../functions/client/properties");
 const logger_1 = require("../logger");
@@ -72,6 +71,7 @@ class Ultimates extends discord_js_1.Client {
         await this.config.updateLogs();
         await this.config.updateAutomod();
         await this.config.updateGeneral();
+        await this.config.updateModeration();
         await this.registerModules();
         await this.login(process.env.DISCORD_TOKEN).then(() => {
             this.handlerErrors();
@@ -84,22 +84,13 @@ class Ultimates extends discord_js_1.Client {
     async registerModules() {
         // Commands
         const slashFiles = await globPromise(`${__dirname}/../commands/**/*{.ts,.js}`);
-        slashFiles
-            .filter((file) => (!config_json_1.enabledModules.modmail ? !file.includes('modmail') : true))
-            .forEach(async (filePaths) => {
+        slashFiles.forEach(async (filePaths) => {
             const command = await this.importFiles(filePaths);
             this.commands.set(command.interaction.name, command);
         });
         const eventFiles = (await globPromise(`${__dirname}/../events/**/*{.ts,.js}`)) ||
             (await globPromise(`${__dirname}/../events/**{.ts,.js}`));
-        eventFiles
-            // automod
-            .filter((file) => (!config_json_1.enabledModules.automod ? !file.includes('automod') : true))
-            // modmail
-            .filter((file) => (!config_json_1.enabledModules.modmail ? !file.includes('modmail') : true))
-            // verification
-            .filter((file) => !config_json_1.enabledModules.verification ? !file.includes('verify') : true)
-            .forEach(async (filePaths) => {
+        eventFiles.forEach(async (filePaths) => {
             const event = await this.importFiles(filePaths);
             this.on(event.event, event.run);
         });

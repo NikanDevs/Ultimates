@@ -10,25 +10,18 @@ const PunishmentType_1 = require("../../typings/PunishmentType");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const timeoutMember_1 = require("../../utils/timeoutMember");
 const sendModDM_1 = require("../../utils/sendModDM");
-const moderation_json_1 = require("../../json/moderation.json");
 const interactions_1 = require("../../interactions");
-const convertTime_1 = require("../../functions/convertTime");
 var reasons;
 (function (reasons) {
-    reasons["two"] = "Reaching 2 manual warnings.";
-    reasons["four"] = "Reaching 4 manual warnings.";
-    reasons["six"] = "Reaching 6 manual warnings.";
+    reasons["two"] = "Reaching 2 warnings.";
+    reasons["four"] = "Reaching 4 warnings.";
+    reasons["six"] = "Reaching 6 warnings.";
 })(reasons || (reasons = {}));
-var durations;
-(function (durations) {
-    durations[durations["two"] = +(0, convertTime_1.convertTime)(moderation_json_1.auto_mute[2])] = "two";
-    durations[durations["four"] = +(0, convertTime_1.convertTime)(moderation_json_1.auto_mute[4])] = "four";
-})(durations || (durations = {}));
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.warn,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
-        const reason = options.getString('reason') || moderation_json_1.default_config.reason;
+        const reason = options.getString('reason') || client.config.moderation.default.reason;
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Warn }))
             return;
         const warnData = new punishments_1.punishmentModel({
@@ -71,9 +64,9 @@ exports.default = new Command_1.Command({
             });
             const warningsCount = findWarnings.length;
             switch (warningsCount) {
-                case 2:
+                case client.config.moderation.count.timeout1:
                     await (0, timeoutMember_1.timeoutMember)(member, {
-                        duration: durations['two'],
+                        duration: client.config.moderation.duration.timeout1,
                         reason: reasons['two'],
                     });
                     const data = new punishments_1.punishmentModel({
@@ -82,9 +75,10 @@ exports.default = new Command_1.Command({
                         type: PunishmentType_1.PunishmentType.Timeout,
                         userId: member.id,
                         moderatorId: client.user.id,
-                        reason: reasons['two'],
+                        reason: reasons.two,
                         date: new Date(),
-                        expire: new Date(constants_1.warningExpiry.getTime() + durations.two),
+                        expire: new Date(constants_1.warningExpiry.getTime() +
+                            client.config.moderation.duration.timeout1),
                     });
                     data.save();
                     await (0, createModLog_1.createModLog)({
@@ -93,18 +87,18 @@ exports.default = new Command_1.Command({
                         user: member.user,
                         moderator: client.user,
                         reason: reasons['two'],
-                        duration: durations['two'],
+                        duration: client.config.moderation.duration.timeout1,
                         referencedPunishment: warnData,
                     });
                     (0, sendModDM_1.sendModDM)(member, {
                         action: PunishmentType_1.PunishmentType.Timeout,
                         punishment: data,
-                        expire: new Date(Date.now() + durations.two),
+                        expire: new Date(Date.now() + client.config.moderation.duration.timeout1),
                     });
                     break;
-                case 4:
+                case client.config.moderation.count.timeout2:
                     await (0, timeoutMember_1.timeoutMember)(member, {
-                        duration: durations['four'],
+                        duration: client.config.moderation.duration.timeout2,
                         reason: reasons['four'],
                     });
                     const data2 = new punishments_1.punishmentModel({
@@ -115,7 +109,8 @@ exports.default = new Command_1.Command({
                         moderatorId: client.user.id,
                         reason: reasons['four'],
                         date: new Date(),
-                        expire: new Date(constants_1.warningExpiry.getTime() + durations.two),
+                        expire: new Date(constants_1.warningExpiry.getTime() +
+                            client.config.moderation.duration.timeout2),
                     });
                     data2.save();
                     await (0, createModLog_1.createModLog)({
@@ -124,16 +119,16 @@ exports.default = new Command_1.Command({
                         user: member.user,
                         moderator: client.user,
                         reason: reasons['four'],
-                        duration: durations['four'],
+                        duration: client.config.moderation.duration.timeout2,
                         referencedPunishment: warnData,
                     });
                     (0, sendModDM_1.sendModDM)(member, {
                         action: PunishmentType_1.PunishmentType.Timeout,
                         punishment: data2,
-                        expire: new Date(Date.now() + durations.four),
+                        expire: new Date(Date.now() + client.config.moderation.duration.timeout2),
                     });
                     break;
-                case 6:
+                case client.config.moderation.count.ban:
                     const data3 = new punishments_1.punishmentModel({
                         _id: (0, generatePunishmentId_1.generateManualId)(),
                         case: await (0, modCase_1.getModCase)(),
@@ -160,7 +155,7 @@ exports.default = new Command_1.Command({
                     });
                     await member.ban({
                         reason: reasons['six'],
-                        deleteMessageDays: moderation_json_1.default_config.ban_delete_messages,
+                        deleteMessageDays: client.config.moderation.default.msgs,
                     });
                     break;
             }

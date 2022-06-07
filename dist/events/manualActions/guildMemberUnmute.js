@@ -9,8 +9,8 @@ const durations_1 = require("../../models/durations");
 const modCase_1 = require("../../functions/cases/modCase");
 const generatePunishmentId_1 = require("../../utils/generatePunishmentId");
 const createModLog_1 = require("../../functions/logs/createModLog");
-const moderation_json_1 = require("../../json/moderation.json");
 const config_json_1 = require("../../json/config.json");
+const __1 = require("../..");
 exports.default = new Event_1.Event('guildMemberUpdate', async (oldMember, newMember) => {
     if (newMember.guild.id !== config_json_1.guild.id)
         return;
@@ -39,7 +39,7 @@ exports.default = new Event_1.Event('guildMemberUpdate', async (oldMember, newMe
             type: PunishmentType_1.PunishmentType.Unmute,
             userId: newMember.user.id,
             moderatorId: executor.id,
-            reason: reason || moderation_json_1.default_config.reason,
+            reason: reason || __1.client.config.moderation.default.reason,
             date: new Date(),
             expire: constants_1.warningExpiry,
         });

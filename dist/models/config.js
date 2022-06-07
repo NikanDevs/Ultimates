@@ -12,10 +12,15 @@ const schema = new mongoose_1.default.Schema({
     error: { type: String, required: false },
     attention: { type: String, required: false },
     guild: { type: Object, required: false },
+    // Moderation
+    count: { type: Object, required: false },
+    duration: { type: Object, required: false },
+    default: { type: Object, required: false },
+    reasons: { type: Object, required: false },
     // Automod
     filteredWords: { type: Array, required: false },
     modules: { type: Object, required: false },
     // Logging
-    logging: { type: Object },
+    logging: { type: Object, required: false },
 });
 exports.configModel = mongoose_1.default.model('config', schema);
