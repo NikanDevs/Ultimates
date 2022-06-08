@@ -65,6 +65,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		await configModel.findByIdAndUpdate('moderation', {
 			$set: {
 				reasons: {
+					...(await configModel.findById('moderation')).reasons,
 					[module]: currentReasons.concat(input),
 				},
 			},
