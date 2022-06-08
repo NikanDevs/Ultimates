@@ -10,6 +10,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
+import { durationsModel } from '../../models/durations';
 enum reasons {
 	'two' = 'Reaching 2 warnings.',
 	'four' = 'Reaching 4 warnings.',
@@ -148,32 +149,79 @@ export default new Command({
 					});
 					break;
 				case client.config.moderation.count.ban:
-					const data3 = new punishmentModel({
-						_id: generateManualId(),
-						case: await getModCase(),
-						type: PunishmentType.Ban,
-						userId: member.id,
-						moderatorId: client.user.id,
-						reason: reasons['six'],
-						date: new Date(),
-						expire: punishmentExpiry,
-					});
-					data3.save();
+					switch (client.config.moderation.duration.ban) {
+						case null:
+							const data3 = new punishmentModel({
+								_id: generateManualId(),
+								case: await getModCase(),
+								type: PunishmentType.Ban,
+								userId: member.id,
+								moderatorId: client.user.id,
+								reason: reasons['six'],
+								date: new Date(),
+								expire: punishmentExpiry,
+							});
+							data3.save();
 
-					await createModLog({
-						action: PunishmentType.Ban,
-						punishmentId: data3._id,
-						user: member.user,
-						moderator: client.user,
-						reason: reasons['six'],
-						referencedPunishment: warnData,
-						expire: punishmentExpiry,
-					});
+							await createModLog({
+								action: PunishmentType.Ban,
+								punishmentId: data3._id,
+								user: member.user,
+								moderator: client.user,
+								reason: reasons['six'],
+								referencedPunishment: warnData,
+								expire: punishmentExpiry,
+							});
 
-					await sendModDM(member, {
-						action: PunishmentType.Ban,
-						punishment: data3,
-					});
+							await sendModDM(member, {
+								action: PunishmentType.Ban,
+								punishment: data3,
+							});
+							break;
+						default:
+							const data4 = new punishmentModel({
+								_id: generateManualId(),
+								case: await getModCase(),
+								type: PunishmentType.Softban,
+								userId: member.id,
+								moderatorId: client.user.id,
+								reason: reasons['six'],
+								date: new Date(),
+								expire: new Date(
+									punishmentExpiry.getTime() +
+										client.config.moderation.duration.ban
+								),
+							});
+							data4.save();
+
+							await createModLog({
+								action: PunishmentType.Softban,
+								punishmentId: data4._id,
+								user: member.user,
+								moderator: client.user,
+								reason: reasons['six'],
+								duration: client.config.moderation.duration.ban,
+								referencedPunishment: warnData,
+								expire: punishmentExpiry,
+							});
+
+							await sendModDM(member, {
+								action: PunishmentType.Softban,
+								punishment: data4,
+								expire: new Date(client.config.moderation.duration.ban),
+							});
+
+							const durationData = new durationsModel({
+								case: await getModCase(),
+								type: PunishmentType.Softban,
+								userId: member.user.id,
+								date: new Date(),
+								endsAt: client.config.moderation.duration.ban,
+							});
+							await durationData.save();
+							break;
+					}
+
 					await member.ban({
 						reason: reasons['six'],
 						deleteMessageDays: client.config.moderation.default.msgs,
