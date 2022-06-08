@@ -149,7 +149,7 @@ class clientConfig {
                 automod: data.count.automod,
                 timeout1: data.count.timeout1,
                 timeout2: data.count.timeout2,
-                ban: data.count.timeout2,
+                ban: data.count.ban,
             },
             duration: {
                 timeout1: data.duration.timeout1,
