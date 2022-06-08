@@ -36,7 +36,7 @@ exports.default = new Event_1.Event('ready', () => {
         // Unbans
         const findSoftbans = await durations_1.durationsModel.find({ type: PunishmentType_1.PunishmentType.Softban });
         const filterSoftbans = findSoftbans?.filter((c) => Date.now() > c.date.getTime() + c.duration);
-        let reason = discord_js_1.Formatters.strikethrough('Unbanned due to softban duration') + 'Already unbanned.';
+        let reason = discord_js_1.Formatters.strikethrough('Unbanned due to softban duration') + ' Already unbanned.';
         if (!filterTimeout)
             return;
         filterSoftbans.forEach(async (data) => {

@@ -189,6 +189,15 @@ export default new Command({
 							});
 							data4.save();
 
+							const durationData = new durationsModel({
+								case: await getModCase(),
+								type: PunishmentType.Softban,
+								userId: member.user.id,
+								date: new Date(),
+								duration: client.config.moderation.duration.ban,
+							});
+							await durationData.save();
+
 							await createModLog({
 								action: PunishmentType.Softban,
 								punishmentId: data4._id,
@@ -207,15 +216,6 @@ export default new Command({
 									Date.now() + client.config.moderation.duration.ban
 								),
 							});
-
-							const durationData = new durationsModel({
-								case: await getModCase(),
-								type: PunishmentType.Softban,
-								userId: member.user.id,
-								date: new Date(),
-								duration: client.config.moderation.duration.ban,
-							});
-							await durationData.save();
 							break;
 					}
 

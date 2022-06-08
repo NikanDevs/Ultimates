@@ -164,6 +164,14 @@ exports.default = new Command_1.Command({
                                     client.config.moderation.duration.ban),
                             });
                             data4.save();
+                            const durationData = new durations_1.durationsModel({
+                                case: await (0, modCase_1.getModCase)(),
+                                type: PunishmentType_1.PunishmentType.Softban,
+                                userId: member.user.id,
+                                date: new Date(),
+                                duration: client.config.moderation.duration.ban,
+                            });
+                            await durationData.save();
                             await (0, createModLog_1.createModLog)({
                                 action: PunishmentType_1.PunishmentType.Softban,
                                 punishmentId: data4._id,
@@ -179,14 +187,6 @@ exports.default = new Command_1.Command({
                                 punishment: data4,
                                 expire: new Date(Date.now() + client.config.moderation.duration.ban),
                             });
-                            const durationData = new durations_1.durationsModel({
-                                case: await (0, modCase_1.getModCase)(),
-                                type: PunishmentType_1.PunishmentType.Softban,
-                                userId: member.user.id,
-                                date: new Date(),
-                                duration: client.config.moderation.duration.ban,
-                            });
-                            await durationData.save();
                             break;
                     }
                     await member.ban({

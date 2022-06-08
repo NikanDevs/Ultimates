@@ -42,7 +42,7 @@ export default new Event('ready', () => {
 			(c) => Date.now() > (c.date as Date).getTime() + c.duration
 		);
 		let reason =
-			Formatters.strikethrough('Unbanned due to softban duration') + 'Already unbanned.';
+			Formatters.strikethrough('Unbanned due to softban duration') + ' Already unbanned.';
 		if (!filterTimeout) return;
 
 		filterSoftbans.forEach(async (data) => {
