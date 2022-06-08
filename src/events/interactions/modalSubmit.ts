@@ -8,19 +8,20 @@ export default new Event('interactionCreate', async (interaction) => {
 
 	if (interaction.customId === 'add-badwords') {
 		const words = interaction.fields.getTextInputValue('input');
-		const currentWords = (await configModel.findById('automod')).filteredWords as string[];
-		const removed: string[] = [];
+		const currentWords = (await configModel.findById('automod')).filteredWords;
+		let removed: number = 0;
 		const input = words
 			.split(',')
+			.map((word) => word.trim().toUpperCase())
 			.map((word) => {
-				if (currentWords.includes(word.trim().toUpperCase())) {
-					currentWords.splice(currentWords.indexOf(word.trim().toUpperCase()));
-					removed.push(word);
+				if (currentWords.includes(word)) {
+					currentWords.splice(currentWords.indexOf(word), 1);
 					word = null;
+					removed++;
 				}
-				return word !== null ? word?.trim()?.toUpperCase() : 'null';
+				return word;
 			})
-			.filter((word) => word !== 'null');
+			.filter((word) => word);
 
 		await configModel.findByIdAndUpdate('automod', {
 			$set: {
@@ -32,7 +33,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.reply({
 			embeds: [
 				new EmbedBuilder({
-					description: `Added **${input.length}** and removed **${removed.length}** words.`,
+					description: `Added **${input.length}** and removed **${removed}** words.`,
 					color: client.cc.successC,
 				}),
 			],
@@ -45,25 +46,20 @@ export default new Event('interactionCreate', async (interaction) => {
 		const currentReasons: string[] = (await configModel.findById('moderation')).reasons[
 			module
 		];
-		const removed: string[] = [];
+		let removed: number = 0;
 		const input = words
 			.split('--')
+			.map((reason) => reason.trim())
 			.map((reason) => {
 				// Checking if a reason already exists
-				if (
-					currentReasons
-						.map((r) => r.toUpperCase())
-						.includes(reason.trim().toUpperCase())
-				) {
-					currentReasons
-						.map((r) => r.toUpperCase())
-						.splice(currentReasons.indexOf(reason.trim().toUpperCase()));
-					removed.push(reason);
+				if (currentReasons.includes(reason)) {
+					currentReasons.splice(currentReasons.indexOf(reason), 1);
+					removed++;
 					reason = null;
 				}
-				return reason !== null ? reason?.trim() : 'null';
+				return reason;
 			})
-			.filter((word) => word !== 'null');
+			.filter((word) => word);
 
 		await configModel.findByIdAndUpdate('moderation', {
 			$set: {
@@ -78,7 +74,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.reply({
 			embeds: [
 				new EmbedBuilder({
-					description: `Added **${input.length}** and removed **${removed.length}** reasons.`,
+					description: `Added **${input.length}** and removed **${removed}** reasons.`,
 					color: client.cc.successC,
 				}),
 			],
