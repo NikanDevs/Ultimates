@@ -10,18 +10,19 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
     if (interaction.customId === 'add-badwords') {
         const words = interaction.fields.getTextInputValue('input');
         const currentWords = (await config_1.configModel.findById('automod')).filteredWords;
-        const removed = [];
+        let removed = 0;
         const input = words
             .split(',')
+            .map((word) => word.trim().toUpperCase())
             .map((word) => {
-            if (currentWords.includes(word.trim().toUpperCase())) {
-                currentWords.splice(currentWords.indexOf(word.trim().toUpperCase()));
-                removed.push(word);
+            if (currentWords.includes(word)) {
+                currentWords.splice(currentWords.indexOf(word), 1);
                 word = null;
+                removed++;
             }
-            return word !== null ? word?.trim()?.toUpperCase() : 'null';
+            return word;
         })
-            .filter((word) => word !== 'null');
+            .filter((word) => word);
         await config_1.configModel.findByIdAndUpdate('automod', {
             $set: {
                 filteredWords: currentWords.concat(input),
@@ -31,7 +32,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         await interaction.reply({
             embeds: [
                 new discord_js_1.EmbedBuilder({
-                    description: `Added **${input.length}** and removed **${removed.length}** words.`,
+                    description: `Added **${input.length}** and removed **${removed}** words.`,
                     color: __1.client.cc.successC,
                 }),
             ],
@@ -42,23 +43,20 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         const words = interaction.fields.getTextInputValue('input');
         const module = interaction.customId.replaceAll('add-reason-', '');
         const currentReasons = (await config_1.configModel.findById('moderation')).reasons[module];
-        const removed = [];
+        let removed = 0;
         const input = words
             .split('--')
+            .map((reason) => reason.trim())
             .map((reason) => {
             // Checking if a reason already exists
-            if (currentReasons
-                .map((r) => r.toUpperCase())
-                .includes(reason.trim().toUpperCase())) {
-                currentReasons
-                    .map((r) => r.toUpperCase())
-                    .splice(currentReasons.indexOf(reason.trim().toUpperCase()));
-                removed.push(reason);
+            if (currentReasons.includes(reason)) {
+                currentReasons.splice(currentReasons.indexOf(reason), 1);
+                removed++;
                 reason = null;
             }
-            return reason !== null ? reason?.trim() : 'null';
+            return reason;
         })
-            .filter((word) => word !== 'null');
+            .filter((word) => word);
         await config_1.configModel.findByIdAndUpdate('moderation', {
             $set: {
                 reasons: {
@@ -71,7 +69,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         await interaction.reply({
             embeds: [
                 new discord_js_1.EmbedBuilder({
-                    description: `Added **${input.length}** and removed **${removed.length}** reasons.`,
+                    description: `Added **${input.length}** and removed **${removed}** reasons.`,
                     color: __1.client.cc.successC,
                 }),
             ],
