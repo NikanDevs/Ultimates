@@ -49,12 +49,15 @@ export default new Event('interactionCreate', async (interaction) => {
 		const input = words
 			.split('--')
 			.map((reason) => {
+				// Checking if a reason already exists
 				if (
 					currentReasons
 						.map((r) => r.toUpperCase())
 						.includes(reason.trim().toUpperCase())
 				) {
-					currentReasons.splice(currentReasons.indexOf(reason.trim().toUpperCase()));
+					currentReasons
+						.map((r) => r.toUpperCase())
+						.splice(currentReasons.indexOf(reason.trim().toUpperCase()));
 					removed.push(reason);
 					reason = null;
 				}
