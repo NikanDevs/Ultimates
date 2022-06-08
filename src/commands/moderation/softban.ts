@@ -68,7 +68,7 @@ export default new Command({
 			await sendModDM(member, {
 				action: PunishmentType.Softban,
 				punishment: data,
-				expire: new Date(duration),
+				expire: new Date(Date.now() + duration),
 			});
 		await interaction.guild.members.ban(user, {
 			deleteMessageDays: delete_messages,
@@ -80,7 +80,7 @@ export default new Command({
 			type: PunishmentType.Softban,
 			userId: user.id,
 			date: new Date(),
-			endsAt: duration,
+			duration: duration,
 		});
 		await durationData.save();
 
