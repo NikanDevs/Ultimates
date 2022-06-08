@@ -32,15 +32,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.reply({
 			embeds: [
 				new EmbedBuilder({
-					description: [
-						input.length
-							? '**Added filtered words:**\n' + input.join(', ').toLowerCase()
-							: '',
-						removed.length
-							? '\n\n**Removed filtered words:**\n' +
-							  removed.map((word) => word.toLowerCase()).join(', ')
-							: '',
-					].join('\n'),
+					description: `Added **${input.length}** and removed **${removed.length}** words.`,
 					color: client.cc.successC,
 				}),
 			],
@@ -57,10 +49,12 @@ export default new Event('interactionCreate', async (interaction) => {
 		const input = words
 			.split('--')
 			.map((reason) => {
-				if (currentReasons.includes(reason.trim().toUpperCase())) {
+				if (
 					currentReasons
 						.map((r) => r.toUpperCase())
-						.splice(currentReasons.indexOf(reason.trim().toUpperCase()));
+						.includes(reason.trim().toUpperCase())
+				) {
+					currentReasons.splice(currentReasons.indexOf(reason.trim().toUpperCase()));
 					removed.push(reason);
 					reason = null;
 				}
@@ -80,15 +74,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.reply({
 			embeds: [
 				new EmbedBuilder({
-					description: [
-						input.length
-							? '**Added reasons:**\n' + input.join('\n').toLowerCase()
-							: '',
-						removed.length
-							? '\n\n**Removed reasons:**\n' +
-							  removed.map((word) => word.toLowerCase()).join('\n')
-							: '',
-					].join('\n'),
+					description: `Added **${input.length}** and removed **${removed.length}** reasons.`,
 					color: client.cc.successC,
 				}),
 			],

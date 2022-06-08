@@ -597,7 +597,7 @@ export default new Command({
 					.setCustomId('reasons')
 					.setMaxValues(1)
 					.setMinValues(1)
-					.setPlaceholder('Select a command to edit reasons for...')
+					.setPlaceholder('Edit autocomplete reasons for...')
 					.setOptions([
 						{ label: '/warn', value: 'warn' },
 						{ label: '/timeout', value: 'timeout' },
