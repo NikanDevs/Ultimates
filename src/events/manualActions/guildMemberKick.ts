@@ -25,7 +25,7 @@ export default new Event('guildMemberRemove', async (member) => {
 	if (executor.bot) return;
 
 	const data_ = new punishmentModel({
-		_id: generateManualId(),
+		_id: await generateManualId(),
 		case: await getModCase(),
 		type: PunishmentType.Kick,
 		userId: member.id,

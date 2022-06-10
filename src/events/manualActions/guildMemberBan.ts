@@ -26,7 +26,7 @@ export default new Event('guildBanAdd', async (ban) => {
 	if (executor.bot) return;
 
 	const data_ = new punishmentModel({
-		_id: generateManualId(),
+		_id: await generateManualId(),
 		case: await getModCase(),
 		type: PunishmentType.Ban,
 		userId: ban.user.id,

@@ -35,7 +35,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		await timeoutMember(newMember, { duration: duration, reason: reason });
 
 		const data_ = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Timeout,
 			userId: newMember.user.id,

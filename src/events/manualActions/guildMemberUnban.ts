@@ -24,7 +24,7 @@ export default new Event('guildBanRemove', async (ban) => {
 	if (executor.bot) return;
 
 	const data_ = new punishmentModel({
-		_id: generateManualId(),
+		_id: await generateManualId(),
 		case: await getModCase(),
 		type: PunishmentType.Unban,
 		userId: ban.user.id,

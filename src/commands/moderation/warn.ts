@@ -21,7 +21,7 @@ export default new Command({
 		if (ignore(member, { interaction, action: PunishmentType.Warn })) return;
 
 		const warnData = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: member.id,
@@ -72,7 +72,7 @@ export default new Command({
 					});
 
 					const data = new punishmentModel({
-						_id: generateManualId(),
+						_id: await generateManualId(),
 						case: await getModCase(),
 						type: PunishmentType.Timeout,
 						userId: member.id,
@@ -111,7 +111,7 @@ export default new Command({
 					});
 
 					const data2 = new punishmentModel({
-						_id: generateManualId(),
+						_id: await generateManualId(),
 						case: await getModCase(),
 						type: PunishmentType.Timeout,
 						userId: member.id,
@@ -147,7 +147,7 @@ export default new Command({
 					switch (client.config.moderation.duration.ban) {
 						case null:
 							const data3 = new punishmentModel({
-								_id: generateManualId(),
+								_id: await generateManualId(),
 								case: await getModCase(),
 								type: PunishmentType.Ban,
 								userId: member.id,
@@ -175,7 +175,7 @@ export default new Command({
 							break;
 						default:
 							const data4 = new punishmentModel({
-								_id: generateManualId(),
+								_id: await generateManualId(),
 								case: await getModCase(),
 								type: PunishmentType.Softban,
 								userId: member.id,

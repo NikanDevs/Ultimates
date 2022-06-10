@@ -1,4 +1,4 @@
-import { EmbedBuilder, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -27,7 +27,7 @@ export default new Command({
 			});
 
 		const data = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Ban,
 			userId: user.id,
@@ -43,6 +43,7 @@ export default new Command({
 				action: PunishmentType.Ban,
 				punishment: data,
 			});
+
 		await interaction.guild.members.ban(user, {
 			deleteMessageDays: delete_messages,
 			reason: reason,

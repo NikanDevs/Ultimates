@@ -22,8 +22,15 @@ export default new Command({
 				ephemeral: true,
 			});
 
+		await interaction.guild.bans.remove(userId);
+		if (bannedMember.user.bot)
+			return interaction.reply({
+				embeds: [client.embeds.success(`**${bannedMember.user.tag}** was unbanned.`)],
+				ephemeral: true,
+			});
+
 		const data = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Unban,
 			userId: userId,
@@ -34,7 +41,6 @@ export default new Command({
 		});
 		await data.save();
 
-		await interaction.guild.bans.remove(userId);
 		await interaction.reply({
 			embeds: [
 				client.embeds.moderation(`**${bannedMember.user.tag}**`, {

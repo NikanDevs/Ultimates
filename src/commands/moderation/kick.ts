@@ -25,7 +25,7 @@ export default new Command({
 		if (ignore(member, { interaction, action: PunishmentType.Kick })) return;
 
 		const data = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Kick,
 			userId: member.id,

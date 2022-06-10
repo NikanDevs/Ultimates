@@ -67,7 +67,7 @@ export default new Command({
 		await timeoutMember(member, { duration: duration, reason: reason });
 
 		const data = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Timeout,
 			userId: member.id,

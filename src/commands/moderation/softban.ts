@@ -53,7 +53,7 @@ export default new Command({
 			});
 
 		const data = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Softban,
 			userId: user.id,

@@ -81,7 +81,7 @@ export default new Event('messageCreate', async (message) => {
 			);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -124,7 +124,7 @@ export default new Event('messageCreate', async (message) => {
 			);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -163,7 +163,7 @@ export default new Event('messageCreate', async (message) => {
 			);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -206,7 +206,7 @@ export default new Event('messageCreate', async (message) => {
 			);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -245,7 +245,7 @@ export default new Event('messageCreate', async (message) => {
 			);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -288,7 +288,7 @@ export default new Event('messageCreate', async (message) => {
 			);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -331,7 +331,7 @@ export default new Event('messageCreate', async (message) => {
 			);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -379,7 +379,7 @@ export default new Event('messageCreate', async (message) => {
 		await textChannel.bulkDelete(filteredMessage, true);
 
 		const data = new automodModel({
-			_id: generateAutomodId(),
+			_id: await generateAutomodId(),
 			case: await getModCase(),
 			type: PunishmentType.Warn,
 			userId: message.author.id,
@@ -435,7 +435,7 @@ export default new Event('messageCreate', async (message) => {
 				duration: client.config.moderation.duration.automod,
 			});
 			const data = new automodModel({
-				_id: generateAutomodId(),
+				_id: await generateAutomodId(),
 				case: await getModCase(),
 				type: PunishmentType.Timeout,
 				userId: message.author.id,

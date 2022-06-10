@@ -36,7 +36,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		});
 
 		const data_ = new punishmentModel({
-			_id: generateManualId(),
+			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentType.Unmute,
 			userId: newMember.user.id,

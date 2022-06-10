@@ -21,7 +21,7 @@ interface options {
 	update?: 'duration' | 'reason';
 }
 
-export async function getUrlFromCase(tofindCase: string | number) {
+export async function getUrlFromCase(tofindCase: string | number): Promise<string> {
 	const data = await logsModel.findById(`${tofindCase}`);
 
 	return data ? data.url : 'https://discord.com/404';
@@ -42,6 +42,7 @@ export async function createModLog(options: options) {
 	const update: boolean = options.update ? true : false;
 	const currentCase = await getModCase();
 	if (logActivity('mod')) await addModCase();
+
 	const embed = new EmbedBuilder()
 		.setAuthor({
 			name: ` ${

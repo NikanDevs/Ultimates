@@ -1,4 +1,4 @@
-import { Colors, EmbedBuilder, User, Util } from 'discord.js';
+import { Colors, EmbedBuilder, Formatters, User, Util } from 'discord.js';
 import { client } from '../..';
 import { PunishmentType } from '../../typings/PunishmentType';
 
@@ -43,7 +43,9 @@ export const clientEmbeds = {
 		}
 		const embed = new EmbedBuilder()
 			.setDescription(
-				`${user} was **${pastForm[options['action']]}**  • ID: \`${options['id']}\``
+				`${Formatters.bold(user.toString())} was ${
+					pastForm[options['action']]
+				}  • ID: \`${options['id']}\``
 			)
 			.setColor(client.cc.moderation);
 		return embed;
