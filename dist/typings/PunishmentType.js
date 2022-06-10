@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PunishmentType = void 0;
+/**
+ * @description The types of the available punishments.
+ * @returns The unique code for each punishment.
+ * */
 var PunishmentType;
 (function (PunishmentType) {
     PunishmentType["Warn"] = "WARN";

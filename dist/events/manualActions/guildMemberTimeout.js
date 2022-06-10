@@ -33,7 +33,7 @@ exports.default = new Event_1.Event('guildMemberUpdate', async (oldMember, newMe
         const duration = ~~(Math.ceil(rawDuration / 1000 / 10) * 10) * 1000; // Rounding up to 10s -> 58 secs to 60 secs
         await (0, timeoutMember_1.timeoutMember)(newMember, { duration: duration, reason: reason });
         const data_ = new punishments_1.punishmentModel({
-            _id: (0, generatePunishmentId_1.generateManualId)(),
+            _id: await (0, generatePunishmentId_1.generateManualId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Timeout,
             userId: newMember.user.id,

@@ -21,8 +21,14 @@ exports.default = new Command_1.Command({
                 ],
                 ephemeral: true,
             });
+        await interaction.guild.bans.remove(userId);
+        if (bannedMember.user.bot)
+            return interaction.reply({
+                embeds: [client.embeds.success(`**${bannedMember.user.tag}** was unbanned.`)],
+                ephemeral: true,
+            });
         const data = new punishments_1.punishmentModel({
-            _id: (0, generatePunishmentId_1.generateManualId)(),
+            _id: await (0, generatePunishmentId_1.generateManualId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Unban,
             userId: userId,
@@ -32,7 +38,6 @@ exports.default = new Command_1.Command({
             expire: constants_1.punishmentExpiry,
         });
         await data.save();
-        await interaction.guild.bans.remove(userId);
         await interaction.reply({
             embeds: [
                 client.embeds.moderation(`**${bannedMember.user.tag}**`, {

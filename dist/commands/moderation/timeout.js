@@ -51,7 +51,7 @@ exports.default = new Command_1.Command({
             });
         await (0, timeoutMember_1.timeoutMember)(member, { duration: duration, reason: reason });
         const data = new punishments_1.punishmentModel({
-            _id: (0, generatePunishmentId_1.generateManualId)(),
+            _id: await (0, generatePunishmentId_1.generateManualId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Timeout,
             userId: member.id,

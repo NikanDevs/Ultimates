@@ -20,7 +20,7 @@ exports.default = new Command_1.Command({
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Warn }))
             return;
         const warnData = new punishments_1.punishmentModel({
-            _id: (0, generatePunishmentId_1.generateManualId)(),
+            _id: await (0, generatePunishmentId_1.generateManualId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: member.id,
@@ -65,7 +65,7 @@ exports.default = new Command_1.Command({
                         reason: `Reaching ${client.config.moderation.count.timeout1} warnings.`,
                     });
                     const data = new punishments_1.punishmentModel({
-                        _id: (0, generatePunishmentId_1.generateManualId)(),
+                        _id: await (0, generatePunishmentId_1.generateManualId)(),
                         case: await (0, modCase_1.getModCase)(),
                         type: PunishmentType_1.PunishmentType.Timeout,
                         userId: member.id,
@@ -97,7 +97,7 @@ exports.default = new Command_1.Command({
                         reason: `Reaching ${client.config.moderation.count.timeout2} warnings.`,
                     });
                     const data2 = new punishments_1.punishmentModel({
-                        _id: (0, generatePunishmentId_1.generateManualId)(),
+                        _id: await (0, generatePunishmentId_1.generateManualId)(),
                         case: await (0, modCase_1.getModCase)(),
                         type: PunishmentType_1.PunishmentType.Timeout,
                         userId: member.id,
@@ -127,7 +127,7 @@ exports.default = new Command_1.Command({
                     switch (client.config.moderation.duration.ban) {
                         case null:
                             const data3 = new punishments_1.punishmentModel({
-                                _id: (0, generatePunishmentId_1.generateManualId)(),
+                                _id: await (0, generatePunishmentId_1.generateManualId)(),
                                 case: await (0, modCase_1.getModCase)(),
                                 type: PunishmentType_1.PunishmentType.Ban,
                                 userId: member.id,
@@ -153,7 +153,7 @@ exports.default = new Command_1.Command({
                             break;
                         default:
                             const data4 = new punishments_1.punishmentModel({
-                                _id: (0, generatePunishmentId_1.generateManualId)(),
+                                _id: await (0, generatePunishmentId_1.generateManualId)(),
                                 case: await (0, modCase_1.getModCase)(),
                                 type: PunishmentType_1.PunishmentType.Softban,
                                 userId: member.id,

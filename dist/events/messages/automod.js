@@ -67,7 +67,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             msg?.delete();
         }, 7000));
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -104,7 +104,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             msg?.delete();
         }, 7000));
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -139,7 +139,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             msg?.delete();
         }, 7000));
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -176,7 +176,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             msg?.delete();
         }, 7000));
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -211,7 +211,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             msg?.delete();
         }, 7000));
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -248,7 +248,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             msg?.delete();
         }, 7000));
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -285,7 +285,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
             msg?.delete();
         }, 7000));
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -324,7 +324,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
         var filteredMessage = fetchMessage.filter((msg) => !msg.pinned && msg.author.id === message.author.id);
         await textChannel.bulkDelete(filteredMessage, true);
         const data = new automod_1.automodModel({
-            _id: (0, generatePunishmentId_1.generateAutomodId)(),
+            _id: await (0, generatePunishmentId_1.generateAutomodId)(),
             case: await (0, modCase_1.getModCase)(),
             type: PunishmentType_1.PunishmentType.Warn,
             userId: message.author.id,
@@ -371,7 +371,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
                 duration: __1.client.config.moderation.duration.automod,
             });
             const data = new automod_1.automodModel({
-                _id: (0, generatePunishmentId_1.generateAutomodId)(),
+                _id: await (0, generatePunishmentId_1.generateAutomodId)(),
                 case: await (0, modCase_1.getModCase)(),
                 type: PunishmentType_1.PunishmentType.Timeout,
                 userId: message.author.id,

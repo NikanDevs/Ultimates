@@ -43,7 +43,7 @@ exports.clientEmbeds = {
             pastForm["SOFTBAN"] = "soft banned";
         })(pastForm || (pastForm = {}));
         const embed = new discord_js_1.EmbedBuilder()
-            .setDescription(`${user} was **${pastForm[options['action']]}**  • ID: \`${options['id']}\``)
+            .setDescription(`${discord_js_1.Formatters.bold(user.toString())} was ${pastForm[options['action']]}  • ID: \`${options['id']}\``)
             .setColor(__1.client.cc.moderation);
         return embed;
     },
