@@ -25,7 +25,7 @@ exports.default = new Event_1.Event('messageCreate', async (message) => {
     const textChannel = message.channel;
     // Main Reqs
     if (!message.guild ||
-        message.guildId !== config_json_1.guild.id ||
+        message.guildId !== config_json_1.guildId ||
         message.author.bot ||
         !message.content ||
         member.roles.cache.has(bypassRoleId))

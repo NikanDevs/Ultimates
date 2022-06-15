@@ -7,7 +7,7 @@ const checkActivity_1 = require("../../functions/logs/checkActivity");
 const config_json_1 = require("../../json/config.json");
 const discord_js_1 = require("discord.js");
 exports.default = new Event_1.Event('guildMemberAdd', async (member) => {
-    if (member.guild.id !== config_json_1.guild.id)
+    if (member.guild.id !== config_json_1.guildId)
         return;
     // If the member has any previous experience joining the server
     const findData = await leftMembers_1.leftMembersModel.findOne({ userId: member.user.id });

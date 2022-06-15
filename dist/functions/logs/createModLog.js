@@ -64,7 +64,7 @@ async function createModLog(options) {
         return;
     var logMessage = await __1.client.config.webhooks.mod.send({ embeds: [embed] });
     if (update)
-        return `https://discord.com/channels/${config_json_1.guild.id}/${logMessage.channel_id}/${logMessage.id}`;
+        return `https://discord.com/channels/${config_json_1.guildId}/${logMessage.channel_id}/${logMessage.id}`;
     if (options.action === PunishmentType_1.PunishmentType.Unmute ||
         options.action === PunishmentType_1.PunishmentType.Unban ||
         revoke ||

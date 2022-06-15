@@ -20,7 +20,7 @@ exports.default = new Event_1.Event('messageUpdate', async (oldMessage, newMessa
     const channel = newMessage?.channel;
     const member = newMessage.member;
     if (!newMessage?.guild ||
-        newMessage?.guildId !== config_json_1.guild.id ||
+        newMessage?.guildId !== config_json_1.guildId ||
         newMessage.author?.bot ||
         ignore.category.includes(channel?.parentId) ||
         ignore.channel.includes(channel?.id) ||

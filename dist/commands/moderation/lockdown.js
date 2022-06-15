@@ -1,22 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const lockdowns_1 = require("../../models/lockdowns");
 const Command_1 = require("../../structures/Command");
-const config_json_1 = require("../../json/config.json");
 const interactions_1 = require("../../interactions");
 const constants_1 = require("../../constants");
-const messageIdsArray = [];
-let messageId;
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.lockdown,
     excute: async ({ client, interaction, options }) => {
         const getSubCommand = options.getSubcommand();
+        const role = client.config.general.guild.memberRoleId
+            ? client.config.general.guild.memberRoleId
+            : interaction.guild.roles.everyone;
         if (getSubCommand === 'channel') {
             const channel = (options.getChannel('channel') ||
                 interaction.channel);
             const alreadyLocked = channel
-                .permissionsFor(client.config.general.guild.memberRoleId)
+                .permissionsFor(role)
                 .toArray()
                 .includes('SendMessages' || 'Connect')
                 ? false
@@ -39,31 +38,21 @@ exports.default = new Command_1.Command({
                 ]);
             switch (channel.type) {
                 case discord_js_1.ChannelType.GuildText:
-                    await channel.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
+                    await channel.permissionOverwrites.edit(role, {
                         SendMessages: alreadyLocked ? null : false,
                         SendMessagesInThreads: alreadyLocked ? null : false,
                         CreatePrivateThreads: alreadyLocked ? null : false,
                         CreatePublicThreads: alreadyLocked ? null : false,
+                        UseApplicationCommands: alreadyLocked ? null : false,
                     });
-                    if (!alreadyLocked) {
-                        var msg = (await channel.send({
-                            embeds: [embed],
-                        }));
-                        messageId = msg.id;
-                    }
                     break;
                 case discord_js_1.ChannelType.GuildVoice:
                 case discord_js_1.ChannelType.GuildStageVoice:
-                    if (!alreadyLocked) {
-                        await channel.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
-                            Connect: false,
-                        });
-                    }
-                    else if (alreadyLocked) {
-                        await channel.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
-                            SendMessages: true,
-                        });
-                    }
+                    await channel.permissionOverwrites.edit(role, {
+                        Connect: alreadyLocked ? null : false,
+                        SendMessages: alreadyLocked ? null : false,
+                        UseApplicationCommands: alreadyLocked ? null : false,
+                    });
                     break;
                 default:
                     return interaction.reply({
@@ -78,69 +67,48 @@ exports.default = new Command_1.Command({
                     client.embeds.success(`${channel} was ${!alreadyLocked ? 'locked' : 'unlocked'}.`),
                 ],
             });
-            if (!alreadyLocked) {
-                var data = new lockdowns_1.lockdownsModel({
-                    type: 'CHANNEL',
-                    channelId: channel.id,
-                    messageId: messageId,
-                });
-                await data.save();
-            }
-            else if (alreadyLocked) {
-                const data = await lockdowns_1.lockdownsModel.findOne({
-                    type: 'CHANNEL',
-                    channelId: channel.id,
-                });
-                if (!data)
-                    channel.send({ embeds: [embed] });
-                const getMessage = (await channel.messages
-                    .fetch(data.messageId)
-                    .catch(() => { }));
-                getMessage.edit({
-                    embeds: [embed],
-                });
-                await data.delete();
-            }
+            if (channel.isText())
+                channel.send({ embeds: [embed] });
         }
         else if (getSubCommand === 'server') {
             await interaction.deferReply();
-            const generalChannel = (await interaction.guild.channels.fetch(config_json_1.guild.generalChannelId));
-            const alreadyLocked = generalChannel
-                .permissionsFor(client.config.general.guild.memberRoleId)
+            await interaction.guild.channels.fetch();
+            const alreadyLocked = interaction.guild.channels.cache
+                .filter((ch) => ch.type === discord_js_1.ChannelType.GuildText ||
+                ch.type === discord_js_1.ChannelType.GuildVoice ||
+                ch.type === discord_js_1.ChannelType.GuildStageVoice)
+                .filter((ch) => ch.permissionsFor(role).toArray().includes('ViewChannel'))
+                .random()
+                .permissionsFor(role)
                 .toArray()
                 .includes('SendMessages')
                 ? false
                 : true;
-            (await interaction.guild.channels.fetch())
+            interaction.guild.channels.cache
                 .filter((ch) => ch.type === discord_js_1.ChannelType.GuildText ||
                 ch.type === discord_js_1.ChannelType.GuildVoice ||
                 ch.type === discord_js_1.ChannelType.GuildStageVoice)
-                .filter((ch) => ch
-                .permissionsFor(client.config.general.guild.memberRoleId)
-                .toArray()
-                .includes('ViewChannel'))
+                .filter((ch) => ch.permissionsFor(role).toArray().includes('ViewChannel'))
                 .filter((ch) => !alreadyLocked
-                ? ch
-                    .permissionsFor(interaction.guild.roles.everyone)
-                    .toArray()
-                    .includes('SendMessages')
+                ? ch.permissionsFor(role).toArray().includes('SendMessages')
                 : true)
                 .forEach(async (ch) => {
                 switch (ch.type) {
                     case discord_js_1.ChannelType.GuildText:
-                        await ch.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
+                        await ch.permissionOverwrites.edit(role, {
                             SendMessages: alreadyLocked ? null : false,
                             SendMessagesInThreads: alreadyLocked ? null : false,
                             CreatePrivateThreads: alreadyLocked ? null : false,
                             CreatePublicThreads: alreadyLocked ? null : false,
+                            UseApplicationCommands: alreadyLocked ? null : false,
                         });
-                        if (ch.id !== generalChannel.id)
-                            messageIdsArray.push({ channelId: ch.id, messageId: null });
                         break;
                     case discord_js_1.ChannelType.GuildVoice:
                     case discord_js_1.ChannelType.GuildStageVoice:
-                        await ch.permissionOverwrites.edit(client.config.general.guild.memberRoleId, {
+                        await ch.permissionOverwrites.edit(role, {
                             Connect: alreadyLocked ? null : false,
+                            SendMessages: alreadyLocked ? null : false,
+                            UseApplicationCommands: alreadyLocked ? null : false,
                         });
                         break;
                 }
@@ -161,7 +129,7 @@ exports.default = new Command_1.Command({
                         value: client.util.splitText(options.getString('reason'), constants_1.MAX_FIELD_VALUE_LENGTH),
                     },
                 ]);
-            generalChannel.send({
+            interaction.channel.send({
                 embeds: [embed],
             });
             await interaction.followUp({
@@ -169,48 +137,6 @@ exports.default = new Command_1.Command({
                     client.embeds.success(`${interaction.guild.name} was ${!alreadyLocked ? 'locked' : 'unlocked'}.`),
                 ],
             });
-            // Sending messages in all needed channels.
-            if (!alreadyLocked) {
-                var count = 0;
-                messageIdsArray
-                    .filter((ch) => ch.channelId !== interaction.channelId)
-                    .forEach(async (data, _index, array) => {
-                    const getChannel = interaction.guild.channels.cache.get(data.channelId);
-                    var msg = (await getChannel.send({
-                        content: `This server is currently on a lockdown, visit ${generalChannel} for more information!`,
-                    }));
-                    data.messageId = msg.id;
-                    count++;
-                    if (count === array.length)
-                        saveInDB();
-                });
-                function saveInDB() {
-                    const data = new lockdowns_1.lockdownsModel({
-                        type: 'SERVER',
-                        messagesArray: messageIdsArray,
-                    });
-                    data.save();
-                }
-            }
-            else if (alreadyLocked) {
-                const findData = await lockdowns_1.lockdownsModel.findOne({ type: 'SERVER' });
-                if (!findData)
-                    return;
-                const array = findData.messagesArray;
-                let count = 0;
-                array.forEach(async (data, _index, array) => {
-                    const getChannel = (await interaction.guild.channels
-                        .fetch(data.channelId)
-                        .catch(() => { }));
-                    const getMessage = (await getChannel.messages
-                        .fetch(data.messageId)
-                        .catch(() => { }));
-                    getMessage?.delete().catch(() => { });
-                    count++;
-                    if (count === array.length)
-                        await findData.delete();
-                });
-            }
         }
     },
 });

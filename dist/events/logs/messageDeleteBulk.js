@@ -15,7 +15,7 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
     const randomMessage = messages.random();
     const channel = randomMessage?.channel;
     if (!randomMessage?.guild ||
-        randomMessage?.guildId !== config_json_1.guild.id ||
+        randomMessage?.guildId !== config_json_1.guildId ||
         ignore.category.includes(channel?.parentId) ||
         ignore.channel.includes(channel?.id) ||
         ignore.roles.some((role) => randomMessage?.member?.roles?.cache.has(role)))

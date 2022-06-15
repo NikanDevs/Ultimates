@@ -11,7 +11,7 @@ const createModLog_1 = require("../../functions/logs/createModLog");
 const config_json_1 = require("../../json/config.json");
 const __1 = require("../..");
 exports.default = new Event_1.Event('guildBanAdd', async (ban) => {
-    if (ban.guild.id !== config_json_1.guild.id)
+    if (ban.guild.id !== config_json_1.guildId)
         return;
     if (ban.user.bot)
         return;

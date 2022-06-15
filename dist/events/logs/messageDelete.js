@@ -16,7 +16,7 @@ exports.default = new Event_1.Event('messageDelete', async (message) => {
         return;
     const channel = message?.channel;
     if (!message?.guild ||
-        message?.guildId !== config_json_1.guild.id ||
+        message?.guildId !== config_json_1.guildId ||
         message?.author?.bot ||
         ignore.category.includes(channel?.parentId) ||
         ignore.channel.includes(channel?.id) ||

@@ -13,7 +13,7 @@ const sendModDM_1 = require("../../utils/sendModDM");
 const config_json_1 = require("../../json/config.json");
 const __1 = require("../..");
 exports.default = new Event_1.Event('guildMemberUpdate', async (oldMember, newMember) => {
-    if (newMember.guild.id !== config_json_1.guild.id)
+    if (newMember.guild.id !== config_json_1.guildId)
         return;
     if (newMember.user.bot)
         return;

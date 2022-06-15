@@ -16,8 +16,7 @@ let confirmationExists = false;
 let canDM = true;
 let canSend = true;
 exports.default = new Event_1.Event('messageCreate', async (message) => {
-    const guild = __1.client.guilds.cache.get(config_json_1.guild.id) ||
-        (await __1.client.guilds.fetch(config_json_1.guild.id));
+    const guild = __1.client.guilds.cache.get(config_json_1.guildId) || (await __1.client.guilds.fetch(config_json_1.guildId));
     if (!message?.guild && message.channel.type === discord_js_1.ChannelType.DM && !message.author?.bot) {
         // Checking for blacklist
         const data = await modmail_1.modmailModel.findById(message.author.id);

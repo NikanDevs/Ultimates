@@ -16,11 +16,10 @@ exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.modmail,
     excute: async ({ client, interaction, options }) => {
         const subCommands = options.getSubcommand();
-        const guild = client.guilds.cache.get(config_json_1.guild.id) ||
-            (await client.guilds.fetch(config_json_1.guild.id));
+        const guild = client.guilds.cache.get(config_json_1.guildId) || (await client.guilds.fetch(config_json_1.guildId));
         if (subCommands === 'close') {
             const currentTextChannel = interaction.channel;
-            if (currentTextChannel.guildId !== config_json_1.guild.id ||
+            if (currentTextChannel.guildId !== config_json_1.guildId ||
                 currentTextChannel.parentId !== client.config.general.guild.modmailCategoryId ||
                 currentTextChannel.id === '885266382235795477' ||
                 currentTextChannel.id === '880538350740725850')
@@ -165,7 +164,7 @@ exports.default = new Command_1.Command({
                 });
             // Checking already exists
             const guildCategory = client.guilds.cache
-                .get(config_json_1.guild.id)
+                .get(config_json_1.guildId)
                 .channels.cache.get(client.config.general.guild.modmailCategoryId);
             const findExisting = guildCategory.children.cache.find(
             /* child? sus af */ (child) => child.topic?.slice(child.topic?.length - client.user.id.length) ===

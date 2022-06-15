@@ -9,7 +9,7 @@ const config_json_1 = require("../json/config.json");
 const PunishmentType_1 = require("../typings/PunishmentType");
 exports.default = new Event_1.Event('ready', () => {
     setInterval(async () => {
-        const guild = await __1.client.guilds.fetch(config_json_1.guild.id);
+        const guild = await __1.client.guilds.fetch(config_json_1.guildId);
         // Unmutes
         const findTimeouts = await durations_1.durationsModel.find({ type: PunishmentType_1.PunishmentType.Timeout });
         const filterTimeout = findTimeouts?.filter((c) => Date.now() > c?.date?.getTime() + c.duration);

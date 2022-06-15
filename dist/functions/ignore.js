@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ignore = void 0;
-const config_json_1 = require("../json/config.json");
 const __1 = require("..");
 const PunishmentType_1 = require("../typings/PunishmentType");
 function ignore(member, options) {
@@ -25,7 +24,7 @@ function ignore(member, options) {
         });
         return true;
     }
-    if (member.id === config_json_1.ownerId) {
+    if (member.id === __1.client.config.general.ownerId) {
         interaction.reply({
             embeds: [
                 __1.client.embeds.error("You don't have permissions to perform an action on the owner."),

@@ -6,8 +6,7 @@ const Event_1 = require("../../structures/Event");
 const config_json_1 = require("../../json/config.json");
 exports.default = new Event_1.Event('typingStart', async (typing) => {
     await typing.channel?.fetch().catch(() => { });
-    const guild = __1.client.guilds.cache.get(config_json_1.guild.id) ||
-        (await __1.client.guilds.fetch(config_json_1.guild.id));
+    const guild = __1.client.guilds.cache.get(config_json_1.guildId) || (await __1.client.guilds.fetch(config_json_1.guildId));
     if (typing.user.bot)
         return;
     if (typing.guild) {

@@ -5,8 +5,7 @@ const discord_js_1 = require("discord.js");
 const __1 = require("..");
 const config_json_1 = require("../json/config.json");
 async function generateModmailInfoEmbed(user) {
-    const guild = __1.client.guilds.cache.get(config_json_1.guild.id) ||
-        (await __1.client.guilds.fetch(config_json_1.guild.id));
+    const guild = __1.client.guilds.cache.get(config_json_1.guildId) || (await __1.client.guilds.fetch(config_json_1.guildId));
     const guildMember = (await guild.members.fetch(user.id));
     return new discord_js_1.EmbedBuilder()
         .setAuthor({
