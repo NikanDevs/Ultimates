@@ -1,6 +1,6 @@
 import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { punishmentExpiry } from '../../constants';
+import { MAX_REASON_LENGTH, punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -14,7 +14,9 @@ export default new Command({
 	interaction: interactions.kick,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason = options.getString('reason') || client.config.moderation.default.reason;
+		const reason =
+			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			client.config.moderation.default.reason;
 
 		if (!member)
 			return interaction.reply({

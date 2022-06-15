@@ -11,6 +11,7 @@ import { ignores } from '../../json/logs.json';
 import { create } from 'sourcebin';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { guild as guildConfig } from '../../json/config.json';
+import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
 const ignore = ignores.MessageDeleteBulk;
 
 export default new Event('messageDeleteBulk', async (messages) => {
@@ -34,9 +35,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 		.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
 		.map((msg) => {
 			return `**${msg.author?.tag}**: ${
-				msg.content
-					? client.util.splitText(msg.content, { splitCustom: 100 })
-					: 'No Content'
+				msg.content ? client.util.splitText(msg.content, 50) : 'No Content'
 			}`;
 		})
 		.slice(0, messagesToShow);
@@ -67,7 +66,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 			},
 		]);
 	logEmbed.setDescription(
-		`${client.util.splitText(messagesMapped.join('\n'), { splitFor: 'Embed Description' })}`
+		`${client.util.splitText(messagesMapped.join('\n'), EMBED_DESCRIPTION_MAX_LENGTH)}`
 	);
 
 	if (messages.size > 10) {

@@ -1,6 +1,11 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { MAX_SOFTBAN_DURATION, MIN_SOFTBAN_DURATION, punishmentExpiry } from '../../constants';
+import {
+	MAX_REASON_LENGTH,
+	MAX_SOFTBAN_DURATION,
+	MIN_SOFTBAN_DURATION,
+	punishmentExpiry,
+} from '../../constants';
 import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -17,7 +22,9 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
-		const reason = options.getString('reason') || client.config.moderation.default.reason;
+		const reason =
+			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			client.config.moderation.default.reason;
 		const delete_messages =
 			options.getNumber('delete_messages') || client.config.moderation.default.msgs;
 		const durationO =

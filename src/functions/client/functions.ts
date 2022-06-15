@@ -1,5 +1,4 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
 
 // Capitalize
 export function capitalizeFunction(str: string) {
@@ -14,42 +13,10 @@ export function capitalizeFunction(str: string) {
 }
 
 // Split Text
-type splitForTypes =
-	| 'Embed Field Value'
-	| 'Embed Description'
-	| 'Message Content'
-	| 'Embed Field Name';
-
-interface splitOptions {
-	splitFor?: splitForTypes;
-	splitCustom?: number;
-	endsWith?: string;
-}
-
-export function splitTextFunction(text: string, options?: splitOptions) {
-	const splitFor = options?.splitFor;
-	const splitCustom = options?.splitCustom;
-	const endsWith = options?.endsWith ? options?.endsWith : '...';
-	let splitValue: number;
-
-	if (splitFor) {
-		switch (splitFor) {
-			case 'Embed Description':
-				splitValue = EMBED_DESCRIPTION_MAX_LENGTH - endsWith.length;
-				break;
-			case 'Message Content':
-				splitValue = 4000 - endsWith.length;
-				break;
-			case 'Embed Field Value':
-				splitValue = 1024 - endsWith.length;
-				break;
-			case 'Embed Field Name':
-				splitValue = 256 - endsWith.length;
-				break;
-		}
-	} else if (!splitFor) {
-		splitValue = splitCustom - endsWith.length;
-	}
+export function splitTextFunction(text: string, length: number): string {
+	if (!text) return null;
+	const endsWith = '...';
+	const splitValue: number = length - endsWith.length;
 
 	if (text.length > splitValue) text = text.slice(0, splitValue) + endsWith;
 	return text;

@@ -11,6 +11,7 @@ import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { convertTime } from '../../functions/convertTime';
 import {
 	AUTOMOD_ID_LENGTH,
+	MAX_REASON_LENGTH,
 	MAX_SOFTBAN_DURATION,
 	MAX_TIMEOUT_DURATION,
 	MIN_SOFTBAN_DURATION,
@@ -25,7 +26,9 @@ export default new Command({
 
 		if (getSubCommand === 'revoke') {
 			const warnId = options.getString('id');
-			const reason = options.getString('reason') || 'No reason was provided.';
+			const reason =
+				client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+				client.config.moderation.default.reason;
 
 			const data =
 				warnId.length == AUTOMOD_ID_LENGTH
@@ -473,7 +476,7 @@ export default new Command({
 		} else if (getSubCommand === 'update') {
 			const value = options.getNumber('value');
 			const id = options.getString('id');
-			const newvalue = options.getString('new-value');
+			let newvalue = options.getString('new-value');
 			let punishment: any = null;
 
 			await interaction.deferReply({ ephemeral: true });
@@ -622,6 +625,7 @@ export default new Command({
 							],
 						});
 
+					newvalue = client.util.splitText(newvalue, MAX_REASON_LENGTH);
 					switch (id.length) {
 						case PUNISHMENT_ID_LENGTH:
 							punishment = await punishmentModel.findByIdAndUpdate(id, {

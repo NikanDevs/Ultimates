@@ -1,5 +1,5 @@
 import { getModCase } from '../../functions/cases/modCase';
-import { punishmentExpiry } from '../../constants';
+import { MAX_REASON_LENGTH, punishmentExpiry } from '../../constants';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
@@ -11,7 +11,9 @@ export default new Command({
 	interaction: interactions.unban,
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user');
-		const reason = options.getString('reason') || client.config.moderation.default.reason;
+		const reason =
+			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			client.config.moderation.default.reason;
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
 		if (!bannedMember)

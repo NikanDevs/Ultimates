@@ -4,6 +4,7 @@ import { punishmentModel } from '../../models/punishments';
 import { Event } from '../../structures/Event';
 import { GuildMember } from 'discord.js';
 import { convertTime } from '../../functions/convertTime';
+import { MAX_AUTOCOMPLETE_LENGTH } from '../../constants';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction) return;
@@ -86,7 +87,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 				await interaction.respond(
 					warnings.map((choice: string) => ({
-						name: client.util.splitText(choice, { splitCustom: 100 }),
+						name: client.util.splitText(choice, MAX_AUTOCOMPLETE_LENGTH),
 						value: choice.split(' • ')[1].startsWith('Automod')
 							? choice.split(' • ')[3].slice(4)
 							: choice.split(' • ')[3].slice(4),
@@ -122,7 +123,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 			await interaction.respond(
 				filteredBannedMembers.map((data: string) => ({
-					name: client.util.splitText(data, { splitCustom: 100 }),
+					name: client.util.splitText(data, MAX_AUTOCOMPLETE_LENGTH),
 					value: data.split(' • ')[2],
 				}))
 			);
@@ -132,47 +133,47 @@ export default new Event('interactionCreate', async (interaction) => {
 	// Reason autocomplete
 	const getReasonsFocus = interaction.options.getFocused(true);
 	if (getReasonsFocus?.name === 'reason') {
-		switch (interaction.commandName) {
-			case interaction.commandName:
-				const availableReasons = [
-					...new Set(client.config.moderation.reasons[interaction.commandName]),
-				];
-				const filteredReasons = availableReasons
-					.filter((reason: string) =>
-						reason.startsWith(getReasonsFocus.value as string)
-					)
-					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
-					.slice(0, 25);
+		const availableReasons = [
+			...new Set(client.config.moderation.reasons[interaction.commandName]),
+		];
+		const filteredReasons = availableReasons
+			.filter((reason: string) => reason.startsWith(getReasonsFocus.value as string))
+			.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
+			.slice(0, 25);
 
-				if (
-					!client.config.moderation.reasons[interaction.commandName].length &&
-					!getReasonsFocus.value.toString().length
-				)
-					return interaction.respond([
-						{
-							name:
-								'⭐️' +
-								' • ' +
-								'No inbuilt reasons were found, type a reason...',
-							value: client.config.moderation.default.reason,
-						},
-					]);
+		if (
+			!client.config.moderation.reasons[interaction.commandName].length &&
+			!getReasonsFocus.value.toString().length
+		)
+			return interaction.respond([
+				{
+					name: '⭐️' + ' • ' + 'No inbuilt reasons were found, type a reason...',
+					value: client.config.moderation.default.reason,
+				},
+			]);
 
-				if (filteredReasons.length === 0)
-					return interaction.respond([
-						{
-							name: '⭐️' + ' • ' + getReasonsFocus.value.toString(),
-							value: getReasonsFocus.value.toString(),
-						},
-					]);
-				await interaction.respond(
-					filteredReasons.map((reason: string) => ({
-						name: client.util.splitText(reason, { splitCustom: 100 }),
-						value: reason.split(' • ')[1],
-					}))
-				);
-				break;
-		}
+		if (filteredReasons.length === 0)
+			return interaction.respond([
+				{
+					name:
+						'⭐️' +
+						' • ' +
+						client.util.splitText(
+							getReasonsFocus.value.toString(),
+							MAX_AUTOCOMPLETE_LENGTH - 4
+						),
+					value: client.util.splitText(
+						getReasonsFocus.value.toString(),
+						MAX_AUTOCOMPLETE_LENGTH
+					),
+				},
+			]);
+		await interaction.respond(
+			filteredReasons.map((reason: string) => ({
+				name: client.util.splitText(reason, MAX_AUTOCOMPLETE_LENGTH),
+				value: reason.split(' • ')[1],
+			}))
+		);
 	}
 
 	// Duration autocomplete

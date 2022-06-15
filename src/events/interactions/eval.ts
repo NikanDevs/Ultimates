@@ -34,9 +34,10 @@ export default new Event('interactionCreate', async (interaction) => {
 				const sucessEmbed = new EmbedBuilder()
 					.setColor(client.cc.successC)
 					.setDescription(
-						`**Evaluation succeded:**\n\`\`\`ts\n${client.util.splitText(code, {
-							splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 40,
-						})}\n\`\`\``
+						`**Evaluation succeded:**\n\`\`\`ts\n${client.util.splitText(
+							code,
+							EMBED_DESCRIPTION_MAX_LENGTH - 40
+						)}\n\`\`\``
 					);
 				interaction.reply({ embeds: [sucessEmbed], ephemeral: silent });
 				break;
@@ -44,9 +45,10 @@ export default new Event('interactionCreate', async (interaction) => {
 				let resultEmbed = new EmbedBuilder()
 					.setColor(client.cc.successC)
 					.setDescription(
-						`**Output:**\`\`\`ts\n${client.util.splitText(evaled, {
-							splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 30,
-						})}\n\`\`\``
+						`**Output:**\`\`\`ts\n${client.util.splitText(
+							evaled,
+							EMBED_DESCRIPTION_MAX_LENGTH - 30
+						)}\n\`\`\``
 					);
 				if (evaled.length < EMBED_DESCRIPTION_MAX_LENGTH - 25)
 					return interaction.reply({ embeds: [resultEmbed], ephemeral: silent });
@@ -62,11 +64,14 @@ export default new Event('interactionCreate', async (interaction) => {
 				break;
 		}
 	} catch (error) {
-		const errorEmbed = new EmbedBuilder().setColor(client.cc.errorC).setDescription(
-			`**An error has occured**\n\`\`\`xl\n${client.util.splitText(error?.message, {
-				splitCustom: EMBED_DESCRIPTION_MAX_LENGTH - 40,
-			})}\n\`\`\``
-		);
+		const errorEmbed = new EmbedBuilder()
+			.setColor(client.cc.errorC)
+			.setDescription(
+				`**An error has occured**\n\`\`\`xl\n${client.util.splitText(
+					error?.message,
+					EMBED_DESCRIPTION_MAX_LENGTH - 40
+				)}\n\`\`\``
+			);
 
 		await interaction.reply({ embeds: [errorEmbed], ephemeral: silent });
 	}

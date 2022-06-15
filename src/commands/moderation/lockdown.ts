@@ -10,6 +10,7 @@ import { lockdownsModel } from '../../models/lockdowns';
 import { Command } from '../../structures/Command';
 import { guild as guildConfig } from '../../json/config.json';
 import { interactions } from '../../interactions';
+import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
 interface messageIdInterface {
 	channelId: Snowflake;
 	messageId: Snowflake | null;
@@ -48,7 +49,10 @@ export default new Command({
 				embed.addFields([
 					{
 						name: 'Reason',
-						value: options.getString('reason'),
+						value: client.util.splitText(
+							options.getString('reason'),
+							MAX_FIELD_VALUE_LENGTH
+						),
 					},
 				]);
 
@@ -206,7 +210,10 @@ export default new Command({
 				embed.addFields([
 					{
 						name: 'Reason',
-						value: options.getString('reason'),
+						value: client.util.splitText(
+							options.getString('reason'),
+							MAX_FIELD_VALUE_LENGTH
+						),
 					},
 				]);
 			generalChannel.send({

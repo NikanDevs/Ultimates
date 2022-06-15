@@ -9,6 +9,7 @@ import { ModmailActionType } from '../../typings/Modmail';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { guild as guildConfig } from '../../json/config.json';
 import { interactions } from '../../interactions';
+import { MAX_FIELD_VALUE_LENGTH, MAX_REASON_LENGTH } from '../../constants';
 
 export default new Command({
 	interaction: interactions.modmail,
@@ -145,7 +146,10 @@ export default new Command({
 				const blacklistAdd = new modmailModel({
 					_id: user.id,
 					moderatorId: interaction.id,
-					reason: options.getString('reason'),
+					reason: client.util.splitText(
+						options.getString('reason'),
+						MAX_REASON_LENGTH
+					),
 					url: null,
 				});
 				blacklistAdd.save();
@@ -163,7 +167,10 @@ export default new Command({
 					action: ModmailActionType.BlacklistAdd,
 					user: user,
 					moderator: interaction.user,
-					reason: options.getString('reason'),
+					reason: client.util.splitText(
+						options.getString('reason'),
+						MAX_REASON_LENGTH
+					),
 				});
 			} else if (findData) {
 				await findData.delete();
@@ -181,7 +188,10 @@ export default new Command({
 					action: ModmailActionType.BlacklistRemove,
 					user: user,
 					moderator: interaction.user,
-					reason: options.getString('reason'),
+					reason: client.util.splitText(
+						options.getString('reason'),
+						MAX_REASON_LENGTH
+					),
 					referencedCaseUrl: findData.url,
 				});
 			}
@@ -316,7 +326,10 @@ export default new Command({
 								user: member.user,
 								moderator: interaction.user,
 								ticket: { type: 'DIRECT', channel: threadChannel },
-								reason: options.getString('reason'),
+								reason: client.util.splitText(
+									options.getString('reason'),
+									MAX_REASON_LENGTH
+								),
 							});
 							break;
 					}

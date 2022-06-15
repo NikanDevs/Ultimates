@@ -4,6 +4,7 @@ import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { guild as guildConfig } from '../../json/config.json';
+import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
 const ignore = ignores.MessageUpdate;
 
 export default new Event('messageUpdate', async (oldMessage, newMessage) => {
@@ -40,15 +41,11 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		logEmbed.addFields([
 			{
 				name: 'Old message ',
-				value: client.util.splitText(oldMessage?.content, {
-					splitFor: 'Embed Field Value',
-				}),
+				value: client.util.splitText(oldMessage?.content, MAX_FIELD_VALUE_LENGTH),
 			},
 			{
 				name: 'New content',
-				value: client.util.splitText(newMessage?.content, {
-					splitFor: 'Embed Field Value',
-				}),
+				value: client.util.splitText(newMessage?.content, MAX_FIELD_VALUE_LENGTH),
 			},
 		]);
 	}

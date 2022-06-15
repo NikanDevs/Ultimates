@@ -7,6 +7,7 @@ import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
 import { guild as guildConfig } from '../../json/config.json';
 import { convertTime } from '../convertTime';
+import { MAX_REASON_LENGTH } from '../../constants';
 
 interface options {
 	action: PunishmentType;
@@ -82,7 +83,8 @@ export async function createModLog(options: options) {
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
 				`• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${
-					options.reason || client.config.moderation.default.reason
+					client.util.splitText(options.reason, MAX_REASON_LENGTH) ||
+					client.config.moderation.default.reason
 				}`,
 			]
 				.join('\n')

@@ -13,6 +13,8 @@ import {
 	Webhook,
 } from 'discord.js';
 import {
+	MAX_FIELD_VALUE_LENGTH,
+	MAX_REASON_LENGTH,
 	MAX_SOFTBAN_DURATION,
 	MAX_TIMEOUT_DURATION,
 	MIN_SOFTBAN_DURATION,
@@ -224,7 +226,7 @@ export default new Command({
 								data.filteredWords
 									.map((word: string) => word.toLowerCase())
 									.join(', '),
-								{ splitFor: 'Embed Field Value' }
+								MAX_FIELD_VALUE_LENGTH
 							),
 						},
 					]);
@@ -441,6 +443,7 @@ export default new Command({
 						ban: [],
 						softban: [],
 						unban: [],
+						kick: [],
 					},
 				});
 				await newData.save();
@@ -534,7 +537,7 @@ export default new Command({
 								...(await configModel.findById('moderation')).default,
 								[module]:
 									module === 'reason'
-										? value
+										? client.util.splitText(value, MAX_REASON_LENGTH)
 										: module === 'msgs'
 										? parseInt(value)
 										: convertToTimestamp(value),

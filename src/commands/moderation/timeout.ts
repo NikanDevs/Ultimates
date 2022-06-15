@@ -1,7 +1,12 @@
 import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { punishmentModel } from '../../models/punishments';
-import { MAX_TIMEOUT_DURATION, MIN_TIMEOUT_DURATION, warningExpiry } from '../../constants';
+import {
+	MAX_REASON_LENGTH,
+	MAX_TIMEOUT_DURATION,
+	MIN_TIMEOUT_DURATION,
+	warningExpiry,
+} from '../../constants';
 import { durationsModel } from '../../models/durations';
 import { PunishmentType } from '../../typings/PunishmentType';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -20,7 +25,9 @@ export default new Command({
 		const durationO =
 			options.getString('duration') || client.config.moderation.default.timeout;
 		const duration: number = convertToTimestamp(durationO);
-		const reason = options.getString('reason') || client.config.moderation.default.reason;
+		const reason =
+			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			client.config.moderation.default.reason;
 
 		if (ignore(member, { interaction, action: PunishmentType.Timeout })) return;
 
