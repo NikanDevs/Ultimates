@@ -17,7 +17,8 @@ exports.default = new Command_1.Command({
     excute: async ({ client, interaction, options }) => {
         const user = options.getUser('user');
         const member = options.getMember('user');
-        const reason = options.getString('reason') || client.config.moderation.default.reason;
+        const reason = client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH) ||
+            client.config.moderation.default.reason;
         const delete_messages = options.getNumber('delete_messages') || client.config.moderation.default.msgs;
         const durationO = options.getString('duration') || client.config.moderation.default.softban;
         const duration = (0, convertTime_1.convertToTimestamp)(durationO);

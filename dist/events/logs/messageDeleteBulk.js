@@ -7,6 +7,7 @@ const logs_json_1 = require("../../json/logs.json");
 const sourcebin_1 = require("sourcebin");
 const checkActivity_1 = require("../../functions/logs/checkActivity");
 const config_json_1 = require("../../json/config.json");
+const constants_1 = require("../../constants");
 const ignore = logs_json_1.ignores.MessageDeleteBulk;
 exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
     if (!(0, checkActivity_1.logActivity)('message'))
@@ -25,9 +26,7 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
     const messagesMapped = messages
         .sort((a, b) => a.createdTimestamp - b.createdTimestamp)
         .map((msg) => {
-        return `**${msg.author?.tag}**: ${msg.content
-            ? __1.client.util.splitText(msg.content, { splitCustom: 100 })
-            : 'No Content'}`;
+        return `**${msg.author?.tag}**: ${msg.content ? __1.client.util.splitText(msg.content, 50) : 'No Content'}`;
     })
         .slice(0, messagesToShow);
     // Creating the embed!
@@ -55,7 +54,7 @@ exports.default = new Event_1.Event('messageDeleteBulk', async (messages) => {
             inline: true,
         },
     ]);
-    logEmbed.setDescription(`${__1.client.util.splitText(messagesMapped.join('\n'), { splitFor: 'Embed Description' })}`);
+    logEmbed.setDescription(`${__1.client.util.splitText(messagesMapped.join('\n'), constants_1.EMBED_DESCRIPTION_MAX_LENGTH)}`);
     if (messages.size > 10) {
         const webHookMsg = await __1.client.config.webhooks.message.send({
             content: 'Preparing the bulk message delete logs...',

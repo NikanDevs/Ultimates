@@ -11,6 +11,7 @@ const Modmail_1 = require("../../typings/Modmail");
 const generateModmailInfoEmbed_1 = require("../../utils/generateModmailInfoEmbed");
 const config_json_1 = require("../../json/config.json");
 const interactions_1 = require("../../interactions");
+const constants_1 = require("../../constants");
 exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.modmail,
     excute: async ({ client, interaction, options }) => {
@@ -112,7 +113,7 @@ exports.default = new Command_1.Command({
                 const blacklistAdd = new modmail_1.modmailModel({
                     _id: user.id,
                     moderatorId: interaction.id,
-                    reason: options.getString('reason'),
+                    reason: client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH),
                     url: null,
                 });
                 blacklistAdd.save();
@@ -126,7 +127,7 @@ exports.default = new Command_1.Command({
                     action: Modmail_1.ModmailActionType.BlacklistAdd,
                     user: user,
                     moderator: interaction.user,
-                    reason: options.getString('reason'),
+                    reason: client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH),
                 });
             }
             else if (findData) {
@@ -141,7 +142,7 @@ exports.default = new Command_1.Command({
                     action: Modmail_1.ModmailActionType.BlacklistRemove,
                     user: user,
                     moderator: interaction.user,
-                    reason: options.getString('reason'),
+                    reason: client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH),
                     referencedCaseUrl: findData.url,
                 });
             }
@@ -247,7 +248,7 @@ exports.default = new Command_1.Command({
                             user: member.user,
                             moderator: interaction.user,
                             ticket: { type: 'DIRECT', channel: threadChannel },
-                            reason: options.getString('reason'),
+                            reason: client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH),
                         });
                         break;
                 }

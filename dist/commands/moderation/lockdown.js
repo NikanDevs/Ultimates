@@ -5,6 +5,7 @@ const lockdowns_1 = require("../../models/lockdowns");
 const Command_1 = require("../../structures/Command");
 const config_json_1 = require("../../json/config.json");
 const interactions_1 = require("../../interactions");
+const constants_1 = require("../../constants");
 const messageIdsArray = [];
 let messageId;
 exports.default = new Command_1.Command({
@@ -33,7 +34,7 @@ exports.default = new Command_1.Command({
                 embed.addFields([
                     {
                         name: 'Reason',
-                        value: options.getString('reason'),
+                        value: client.util.splitText(options.getString('reason'), constants_1.MAX_FIELD_VALUE_LENGTH),
                     },
                 ]);
             switch (channel.type) {
@@ -157,7 +158,7 @@ exports.default = new Command_1.Command({
                 embed.addFields([
                     {
                         name: 'Reason',
-                        value: options.getString('reason'),
+                        value: client.util.splitText(options.getString('reason'), constants_1.MAX_FIELD_VALUE_LENGTH),
                     },
                 ]);
             generalChannel.send({

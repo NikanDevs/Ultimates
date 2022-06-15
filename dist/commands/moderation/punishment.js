@@ -18,7 +18,8 @@ exports.default = new Command_1.Command({
         const getSubCommand = options.getSubcommand();
         if (getSubCommand === 'revoke') {
             const warnId = options.getString('id');
-            const reason = options.getString('reason') || 'No reason was provided.';
+            const reason = client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH) ||
+                client.config.moderation.default.reason;
             const data = warnId.length == constants_1.AUTOMOD_ID_LENGTH
                 ? await automod_1.automodModel.findById(warnId).catch(() => { })
                 : await punishments_1.punishmentModel.findById(warnId).catch(() => { });
@@ -406,7 +407,7 @@ exports.default = new Command_1.Command({
         else if (getSubCommand === 'update') {
             const value = options.getNumber('value');
             const id = options.getString('id');
-            const newvalue = options.getString('new-value');
+            let newvalue = options.getString('new-value');
             let punishment = null;
             await interaction.deferReply({ ephemeral: true });
             switch (id.length) {
@@ -507,6 +508,7 @@ exports.default = new Command_1.Command({
                                 client.embeds.attention('Try updating the reason to a value that is not the same as the current one.'),
                             ],
                         });
+                    newvalue = client.util.splitText(newvalue, constants_1.MAX_REASON_LENGTH);
                     switch (id.length) {
                         case constants_1.PUNISHMENT_ID_LENGTH:
                             punishment = await punishments_1.punishmentModel.findByIdAndUpdate(id, {

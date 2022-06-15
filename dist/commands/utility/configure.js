@@ -179,7 +179,7 @@ exports.default = new Command_1.Command({
                             name: 'Filtered Words',
                             value: client.util.splitText(data.filteredWords
                                 .map((word) => word.toLowerCase())
-                                .join(', '), { splitFor: 'Embed Field Value' }),
+                                .join(', '), constants_1.MAX_FIELD_VALUE_LENGTH),
                         },
                     ]);
                 const button = new discord_js_1.ActionRowBuilder().addComponents([
@@ -356,6 +356,7 @@ exports.default = new Command_1.Command({
                         ban: [],
                         softban: [],
                         unban: [],
+                        kick: [],
                     },
                 });
                 await newData.save();
@@ -428,7 +429,7 @@ exports.default = new Command_1.Command({
                             default: {
                                 ...(await config_1.configModel.findById('moderation')).default,
                                 [module]: module === 'reason'
-                                    ? value
+                                    ? client.util.splitText(value, constants_1.MAX_REASON_LENGTH)
                                     : module === 'msgs'
                                         ? parseInt(value)
                                         : (0, convertTime_1.convertToTimestamp)(value),

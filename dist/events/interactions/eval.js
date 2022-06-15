@@ -32,17 +32,13 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             case 'Promise { <pending> }':
                 const sucessEmbed = new discord_js_1.EmbedBuilder()
                     .setColor(client.cc.successC)
-                    .setDescription(`**Evaluation succeded:**\n\`\`\`ts\n${client.util.splitText(code, {
-                    splitCustom: constants_1.EMBED_DESCRIPTION_MAX_LENGTH - 40,
-                })}\n\`\`\``);
+                    .setDescription(`**Evaluation succeded:**\n\`\`\`ts\n${client.util.splitText(code, constants_1.EMBED_DESCRIPTION_MAX_LENGTH - 40)}\n\`\`\``);
                 interaction.reply({ embeds: [sucessEmbed], ephemeral: silent });
                 break;
             default:
                 let resultEmbed = new discord_js_1.EmbedBuilder()
                     .setColor(client.cc.successC)
-                    .setDescription(`**Output:**\`\`\`ts\n${client.util.splitText(evaled, {
-                    splitCustom: constants_1.EMBED_DESCRIPTION_MAX_LENGTH - 30,
-                })}\n\`\`\``);
+                    .setDescription(`**Output:**\`\`\`ts\n${client.util.splitText(evaled, constants_1.EMBED_DESCRIPTION_MAX_LENGTH - 30)}\n\`\`\``);
                 if (evaled.length < constants_1.EMBED_DESCRIPTION_MAX_LENGTH - 25)
                     return interaction.reply({ embeds: [resultEmbed], ephemeral: silent });
                 // If the result is too big to be shown in a single embed
@@ -54,9 +50,9 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
         }
     }
     catch (error) {
-        const errorEmbed = new discord_js_1.EmbedBuilder().setColor(client.cc.errorC).setDescription(`**An error has occured**\n\`\`\`xl\n${client.util.splitText(error?.message, {
-            splitCustom: constants_1.EMBED_DESCRIPTION_MAX_LENGTH - 40,
-        })}\n\`\`\``);
+        const errorEmbed = new discord_js_1.EmbedBuilder()
+            .setColor(client.cc.errorC)
+            .setDescription(`**An error has occured**\n\`\`\`xl\n${client.util.splitText(error?.message, constants_1.EMBED_DESCRIPTION_MAX_LENGTH - 40)}\n\`\`\``);
         await interaction.reply({ embeds: [errorEmbed], ephemeral: silent });
     }
 });

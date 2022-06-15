@@ -10,6 +10,7 @@ const generateDiscordTimestamp_1 = require("../../utils/generateDiscordTimestamp
 const checkActivity_1 = require("./checkActivity");
 const config_json_1 = require("../../json/config.json");
 const convertTime_1 = require("../convertTime");
+const constants_1 = require("../../constants");
 async function getUrlFromCase(tofindCase) {
     const data = await logs_1.logsModel.findById(`${tofindCase}`);
     return data ? data.url : 'https://discord.com/404';
@@ -54,7 +55,8 @@ async function createModLog(options) {
             ? `${options.moderator.tag} • ${options.moderator.id}`
             : 'Automatic'}`,
         `• **Date:** ${(0, generateDiscordTimestamp_1.generateDiscordTimestamp)(new Date(), 'Short Date/Time')}`,
-        `• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${options.reason || __1.client.config.moderation.default.reason}`,
+        `• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${__1.client.util.splitText(options.reason, constants_1.MAX_REASON_LENGTH) ||
+            __1.client.config.moderation.default.reason}`,
     ]
         .join('\n')
         .replaceAll('\nLINE_BREAK', ''));

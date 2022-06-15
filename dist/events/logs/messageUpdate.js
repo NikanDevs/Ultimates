@@ -6,6 +6,7 @@ const Event_1 = require("../../structures/Event");
 const logs_json_1 = require("../../json/logs.json");
 const checkActivity_1 = require("../../functions/logs/checkActivity");
 const config_json_1 = require("../../json/config.json");
+const constants_1 = require("../../constants");
 const ignore = logs_json_1.ignores.MessageUpdate;
 exports.default = new Event_1.Event('messageUpdate', async (oldMessage, newMessage) => {
     if (!(0, checkActivity_1.logActivity)('message'))
@@ -38,15 +39,11 @@ exports.default = new Event_1.Event('messageUpdate', async (oldMessage, newMessa
         logEmbed.addFields([
             {
                 name: 'Old message ',
-                value: __1.client.util.splitText(oldMessage?.content, {
-                    splitFor: 'Embed Field Value',
-                }),
+                value: __1.client.util.splitText(oldMessage?.content, constants_1.MAX_FIELD_VALUE_LENGTH),
             },
             {
                 name: 'New content',
-                value: __1.client.util.splitText(newMessage?.content, {
-                    splitFor: 'Embed Field Value',
-                }),
+                value: __1.client.util.splitText(newMessage?.content, constants_1.MAX_FIELD_VALUE_LENGTH),
             },
         ]);
     }

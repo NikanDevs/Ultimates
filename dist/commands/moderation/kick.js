@@ -14,7 +14,8 @@ exports.default = new Command_1.Command({
     interaction: interactions_1.interactions.kick,
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
-        const reason = options.getString('reason') || client.config.moderation.default.reason;
+        const reason = client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH) ||
+            client.config.moderation.default.reason;
         if (!member)
             return interaction.reply({
                 embeds: [client.embeds.error('I could not find that member in this server.')],

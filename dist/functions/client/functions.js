@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildPaginationButtons = exports.buildConfirmationButtons = exports.splitTextFunction = exports.capitalizeFunction = void 0;
 const discord_js_1 = require("discord.js");
-const constants_1 = require("../../constants");
 // Capitalize
 function capitalizeFunction(str) {
     str = str.replace(/\_/g, ' ');
@@ -15,30 +14,12 @@ function capitalizeFunction(str) {
     return splitFixed.join(' ');
 }
 exports.capitalizeFunction = capitalizeFunction;
-function splitTextFunction(text, options) {
-    const splitFor = options?.splitFor;
-    const splitCustom = options?.splitCustom;
-    const endsWith = options?.endsWith ? options?.endsWith : '...';
-    let splitValue;
-    if (splitFor) {
-        switch (splitFor) {
-            case 'Embed Description':
-                splitValue = constants_1.EMBED_DESCRIPTION_MAX_LENGTH - endsWith.length;
-                break;
-            case 'Message Content':
-                splitValue = 4000 - endsWith.length;
-                break;
-            case 'Embed Field Value':
-                splitValue = 1024 - endsWith.length;
-                break;
-            case 'Embed Field Name':
-                splitValue = 256 - endsWith.length;
-                break;
-        }
-    }
-    else if (!splitFor) {
-        splitValue = splitCustom - endsWith.length;
-    }
+// Split Text
+function splitTextFunction(text, length) {
+    if (!text)
+        return null;
+    const endsWith = '...';
+    const splitValue = length - endsWith.length;
     if (text.length > splitValue)
         text = text.slice(0, splitValue) + endsWith;
     return text;

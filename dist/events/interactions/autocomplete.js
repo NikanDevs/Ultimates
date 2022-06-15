@@ -5,6 +5,7 @@ const automod_1 = require("../../models/automod");
 const punishments_1 = require("../../models/punishments");
 const Event_1 = require("../../structures/Event");
 const convertTime_1 = require("../../functions/convertTime");
+const constants_1 = require("../../constants");
 exports.default = new Event_1.Event('interactionCreate', async (interaction) => {
     if (!interaction)
         return;
@@ -70,7 +71,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
                         { name: 'No Punishments Found!', value: 'null' },
                     ]);
                 await interaction.respond(warnings.map((choice) => ({
-                    name: __1.client.util.splitText(choice, { splitCustom: 100 }),
+                    name: __1.client.util.splitText(choice, constants_1.MAX_AUTOCOMPLETE_LENGTH),
                     value: choice.split(' • ')[1].startsWith('Automod')
                         ? choice.split(' • ')[3].slice(4)
                         : choice.split(' • ')[3].slice(4),
@@ -99,7 +100,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
                     { name: 'No banned members were found!', value: 'null' },
                 ]);
             await interaction.respond(filteredBannedMembers.map((data) => ({
-                name: __1.client.util.splitText(data, { splitCustom: 100 }),
+                name: __1.client.util.splitText(data, constants_1.MAX_AUTOCOMPLETE_LENGTH),
                 value: data.split(' • ')[2],
             })));
             break;
@@ -107,38 +108,34 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
     // Reason autocomplete
     const getReasonsFocus = interaction.options.getFocused(true);
     if (getReasonsFocus?.name === 'reason') {
-        switch (interaction.commandName) {
-            case interaction.commandName:
-                const availableReasons = [
-                    ...new Set(__1.client.config.moderation.reasons[interaction.commandName]),
-                ];
-                const filteredReasons = availableReasons
-                    .filter((reason) => reason.startsWith(getReasonsFocus.value))
-                    .map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
-                    .slice(0, 25);
-                if (!__1.client.config.moderation.reasons[interaction.commandName].length &&
-                    !getReasonsFocus.value.toString().length)
-                    return interaction.respond([
-                        {
-                            name: '⭐️' +
-                                ' • ' +
-                                'No inbuilt reasons were found, type a reason...',
-                            value: __1.client.config.moderation.default.reason,
-                        },
-                    ]);
-                if (filteredReasons.length === 0)
-                    return interaction.respond([
-                        {
-                            name: '⭐️' + ' • ' + getReasonsFocus.value.toString(),
-                            value: getReasonsFocus.value.toString(),
-                        },
-                    ]);
-                await interaction.respond(filteredReasons.map((reason) => ({
-                    name: __1.client.util.splitText(reason, { splitCustom: 100 }),
-                    value: reason.split(' • ')[1],
-                })));
-                break;
-        }
+        const availableReasons = [
+            ...new Set(__1.client.config.moderation.reasons[interaction.commandName]),
+        ];
+        const filteredReasons = availableReasons
+            .filter((reason) => reason.startsWith(getReasonsFocus.value))
+            .map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
+            .slice(0, 25);
+        if (!__1.client.config.moderation.reasons[interaction.commandName].length &&
+            !getReasonsFocus.value.toString().length)
+            return interaction.respond([
+                {
+                    name: '⭐️' + ' • ' + 'No inbuilt reasons were found, type a reason...',
+                    value: __1.client.config.moderation.default.reason,
+                },
+            ]);
+        if (filteredReasons.length === 0)
+            return interaction.respond([
+                {
+                    name: '⭐️' +
+                        ' • ' +
+                        __1.client.util.splitText(getReasonsFocus.value.toString(), constants_1.MAX_AUTOCOMPLETE_LENGTH - 4),
+                    value: __1.client.util.splitText(getReasonsFocus.value.toString(), constants_1.MAX_AUTOCOMPLETE_LENGTH),
+                },
+            ]);
+        await interaction.respond(filteredReasons.map((reason) => ({
+            name: __1.client.util.splitText(reason, constants_1.MAX_AUTOCOMPLETE_LENGTH),
+            value: reason.split(' • ')[1],
+        })));
     }
     // Duration autocomplete
     const getDurationsFocus = interaction.options.getFocused(true);
