@@ -1,5 +1,4 @@
 import { CommandInteraction, GuildMember } from 'discord.js';
-import { ownerId } from '../json/config.json';
 import { client } from '..';
 import { PunishmentType } from '../typings/PunishmentType';
 
@@ -34,7 +33,7 @@ export function ignore(member: GuildMember, options: options): boolean {
 		});
 		return true;
 	}
-	if (member.id === ownerId) {
+	if (member.id === client.config.general.ownerId) {
 		interaction.reply({
 			embeds: [
 				client.embeds.error(

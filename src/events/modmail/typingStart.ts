@@ -1,14 +1,13 @@
 import { ChannelType, DMChannel, Guild, GuildBasedChannel, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
-import { guild as guildConfig } from '../../json/config.json';
+import { guildId } from '../../json/config.json';
 
 export default new Event('typingStart', async (typing) => {
 	await typing.channel?.fetch().catch(() => {});
 
 	const guild =
-		client.guilds.cache.get(guildConfig.id) ||
-		((await client.guilds.fetch(guildConfig.id)) as Guild);
+		client.guilds.cache.get(guildId) || ((await client.guilds.fetch(guildId)) as Guild);
 	if (typing.user.bot) return;
 
 	if (typing.guild) {

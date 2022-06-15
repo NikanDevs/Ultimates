@@ -6,12 +6,12 @@ import { punishmentExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
-import { guild as guildConfig } from '../../json/config.json';
+import { guildId } from '../../json/config.json';
 import { User } from 'discord.js';
 import { client } from '../..';
 
 export default new Event('guildBanAdd', async (ban) => {
-	if (ban.guild.id !== guildConfig.id) return;
+	if (ban.guild.id !== guildId) return;
 	if (ban.user.bot) return;
 
 	const auditLogs = await ban.guild.fetchAuditLogs({

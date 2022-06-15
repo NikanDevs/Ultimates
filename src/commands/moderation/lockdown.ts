@@ -1,33 +1,21 @@
-import {
-	ChannelType,
-	EmbedBuilder,
-	GuildChannel,
-	Message,
-	Snowflake,
-	TextChannel,
-} from 'discord.js';
-import { lockdownsModel } from '../../models/lockdowns';
+import { ChannelType, EmbedBuilder, GuildChannel } from 'discord.js';
 import { Command } from '../../structures/Command';
-import { guild as guildConfig } from '../../json/config.json';
 import { interactions } from '../../interactions';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
-interface messageIdInterface {
-	channelId: Snowflake;
-	messageId: Snowflake | null;
-}
-const messageIdsArray: messageIdInterface[] = [];
-let messageId: Snowflake;
 
 export default new Command({
 	interaction: interactions.lockdown,
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand() as 'channel' | 'server';
+		const role = client.config.general.guild.memberRoleId
+			? client.config.general.guild.memberRoleId
+			: interaction.guild.roles.everyone;
 
 		if (getSubCommand === 'channel') {
 			const channel = (options.getChannel('channel') ||
 				interaction.channel) as GuildChannel;
 			const alreadyLocked = channel
-				.permissionsFor(client.config.general.guild.memberRoleId)
+				.permissionsFor(role)
 				.toArray()
 				.includes('SendMessages' || 'Connect')
 				? false
@@ -58,40 +46,21 @@ export default new Command({
 
 			switch (channel.type) {
 				case ChannelType.GuildText:
-					await channel.permissionOverwrites.edit(
-						client.config.general.guild.memberRoleId,
-						{
-							SendMessages: alreadyLocked ? null : false,
-							SendMessagesInThreads: alreadyLocked ? null : false,
-							CreatePrivateThreads: alreadyLocked ? null : false,
-							CreatePublicThreads: alreadyLocked ? null : false,
-						}
-					);
-					if (!alreadyLocked) {
-						var msg = (await (channel as TextChannel).send({
-							embeds: [embed],
-						})) as Message;
-						messageId = msg.id;
-					}
+					await channel.permissionOverwrites.edit(role, {
+						SendMessages: alreadyLocked ? null : false,
+						SendMessagesInThreads: alreadyLocked ? null : false,
+						CreatePrivateThreads: alreadyLocked ? null : false,
+						CreatePublicThreads: alreadyLocked ? null : false,
+						UseApplicationCommands: alreadyLocked ? null : false,
+					});
 					break;
-
 				case ChannelType.GuildVoice:
 				case ChannelType.GuildStageVoice:
-					if (!alreadyLocked) {
-						await channel.permissionOverwrites.edit(
-							client.config.general.guild.memberRoleId,
-							{
-								Connect: false,
-							}
-						);
-					} else if (alreadyLocked) {
-						await channel.permissionOverwrites.edit(
-							client.config.general.guild.memberRoleId,
-							{
-								SendMessages: true,
-							}
-						);
-					}
+					await channel.permissionOverwrites.edit(role, {
+						Connect: alreadyLocked ? null : false,
+						SendMessages: alreadyLocked ? null : false,
+						UseApplicationCommands: alreadyLocked ? null : false,
+					});
 					break;
 				default:
 					return interaction.reply({
@@ -112,85 +81,56 @@ export default new Command({
 				],
 			});
 
-			if (!alreadyLocked) {
-				var data = new lockdownsModel({
-					type: 'CHANNEL',
-					channelId: channel.id,
-					messageId: messageId,
-				});
-				await data.save();
-			} else if (alreadyLocked) {
-				const data = await lockdownsModel.findOne({
-					type: 'CHANNEL',
-					channelId: channel.id,
-				});
-				if (!data) (channel as TextChannel).send({ embeds: [embed] });
-
-				const getMessage = (await (channel as TextChannel).messages
-					.fetch(data.messageId)
-					.catch(() => {})) as Message;
-				getMessage.edit({
-					embeds: [embed],
-				});
-
-				await data.delete();
-			}
+			if (channel.isText()) channel.send({ embeds: [embed] });
 		} else if (getSubCommand === 'server') {
 			await interaction.deferReply();
-			const generalChannel = (await interaction.guild.channels.fetch(
-				guildConfig.generalChannelId
-			)) as TextChannel;
-			const alreadyLocked = generalChannel
-				.permissionsFor(client.config.general.guild.memberRoleId)
-				.toArray()
-				.includes('SendMessages')
-				? false
-				: true;
-
-			(await interaction.guild.channels.fetch())
+			await interaction.guild.channels.fetch();
+			const alreadyLocked = interaction.guild.channels.cache
 				.filter(
 					(ch) =>
 						ch.type === ChannelType.GuildText ||
 						ch.type === ChannelType.GuildVoice ||
 						ch.type === ChannelType.GuildStageVoice
 				)
-				.filter((ch) =>
-					ch
-						.permissionsFor(client.config.general.guild.memberRoleId)
-						.toArray()
-						.includes('ViewChannel')
+				.filter((ch) => ch.permissionsFor(role).toArray().includes('ViewChannel'))
+				.random()
+				.permissionsFor(role)
+				.toArray()
+				.includes('SendMessages')
+				? false
+				: true;
+
+			interaction.guild.channels.cache
+				.filter(
+					(ch) =>
+						ch.type === ChannelType.GuildText ||
+						ch.type === ChannelType.GuildVoice ||
+						ch.type === ChannelType.GuildStageVoice
 				)
+				.filter((ch) => ch.permissionsFor(role).toArray().includes('ViewChannel'))
 				.filter((ch) =>
 					!alreadyLocked
-						? ch
-								.permissionsFor(interaction.guild.roles.everyone)
-								.toArray()
-								.includes('SendMessages')
+						? ch.permissionsFor(role).toArray().includes('SendMessages')
 						: true
 				)
 				.forEach(async (ch) => {
 					switch (ch.type) {
 						case ChannelType.GuildText:
-							await ch.permissionOverwrites.edit(
-								client.config.general.guild.memberRoleId,
-								{
-									SendMessages: alreadyLocked ? null : false,
-									SendMessagesInThreads: alreadyLocked ? null : false,
-									CreatePrivateThreads: alreadyLocked ? null : false,
-									CreatePublicThreads: alreadyLocked ? null : false,
-								}
-							);
-							if (ch.id !== generalChannel.id)
-								messageIdsArray.push({ channelId: ch.id, messageId: null });
+							await ch.permissionOverwrites.edit(role, {
+								SendMessages: alreadyLocked ? null : false,
+								SendMessagesInThreads: alreadyLocked ? null : false,
+								CreatePrivateThreads: alreadyLocked ? null : false,
+								CreatePublicThreads: alreadyLocked ? null : false,
+								UseApplicationCommands: alreadyLocked ? null : false,
+							});
 							break;
 						case ChannelType.GuildVoice:
 						case ChannelType.GuildStageVoice:
-							await ch.permissionOverwrites.edit(
-								client.config.general.guild.memberRoleId,
-								{
-									Connect: alreadyLocked ? null : false,
-								}
-							);
+							await ch.permissionOverwrites.edit(role, {
+								Connect: alreadyLocked ? null : false,
+								SendMessages: alreadyLocked ? null : false,
+								UseApplicationCommands: alreadyLocked ? null : false,
+							});
 							break;
 					}
 				});
@@ -216,7 +156,7 @@ export default new Command({
 						),
 					},
 				]);
-			generalChannel.send({
+			interaction.channel.send({
 				embeds: [embed],
 			});
 			await interaction.followUp({
@@ -228,53 +168,6 @@ export default new Command({
 					),
 				],
 			});
-
-			// Sending messages in all needed channels.
-			if (!alreadyLocked) {
-				var count = 0;
-				messageIdsArray
-					.filter((ch) => ch.channelId !== interaction.channelId)
-					.forEach(async (data, _index, array) => {
-						const getChannel = interaction.guild.channels.cache.get(
-							data.channelId
-						) as TextChannel;
-						var msg = (await getChannel.send({
-							content: `This server is currently on a lockdown, visit ${generalChannel} for more information!`,
-						})) as Message;
-
-						data.messageId = msg.id;
-						count++;
-
-						if (count === array.length) saveInDB();
-					});
-
-				function saveInDB() {
-					const data = new lockdownsModel({
-						type: 'SERVER',
-						messagesArray: messageIdsArray,
-					});
-					data.save();
-				}
-			} else if (alreadyLocked) {
-				const findData = await lockdownsModel.findOne({ type: 'SERVER' });
-				if (!findData) return;
-				const array: messageIdInterface[] = findData.messagesArray;
-
-				let count = 0;
-				array.forEach(async (data, _index, array) => {
-					const getChannel = (await interaction.guild.channels
-						.fetch(data.channelId)
-						.catch(() => {})) as TextChannel;
-					const getMessage = (await getChannel.messages
-						.fetch(data.messageId)
-						.catch(() => {})) as Message;
-
-					getMessage?.delete().catch(() => {});
-					count++;
-
-					if (count === array.length) await findData.delete();
-				});
-			}
 		}
 	},
 });

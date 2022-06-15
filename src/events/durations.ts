@@ -3,12 +3,12 @@ import { Event } from '../structures/Event';
 import { client } from '..';
 import { createModLog } from '../functions/logs/createModLog';
 import { durationsModel } from '../models/durations';
-import { guild as guildConfig } from '../json/config.json';
+import { guildId } from '../json/config.json';
 import { PunishmentType } from '../typings/PunishmentType';
 
 export default new Event('ready', () => {
 	setInterval(async () => {
-		const guild = await client.guilds.fetch(guildConfig.id);
+		const guild = await client.guilds.fetch(guildId);
 		// Unmutes
 		const findTimeouts = await durationsModel.find({ type: PunishmentType.Timeout });
 		const filterTimeout = findTimeouts?.filter(

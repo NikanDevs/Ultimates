@@ -1,11 +1,10 @@
 import { EmbedBuilder, Guild, GuildMember, User } from 'discord.js';
 import { client } from '..';
-import { guild as guildConfig } from '../json/config.json';
+import { guildId } from '../json/config.json';
 
 export async function generateModmailInfoEmbed(user: User) {
 	const guild =
-		client.guilds.cache.get(guildConfig.id) ||
-		((await client.guilds.fetch(guildConfig.id)) as Guild);
+		client.guilds.cache.get(guildId) || ((await client.guilds.fetch(guildId)) as Guild);
 	const guildMember = (await guild.members.fetch(user.id)) as GuildMember;
 
 	return new EmbedBuilder()

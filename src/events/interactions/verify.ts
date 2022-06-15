@@ -13,7 +13,7 @@ import {
 import { client } from '../..';
 import { verificationCollection } from '../../constants';
 import { Event } from '../../structures/Event';
-import { guild as guildConfig } from '../../json/config.json';
+import { guildId } from '../../json/config.json';
 import { convertTime } from '../../functions/convertTime';
 const characters = '0123456789';
 let key1 = '';

@@ -5,7 +5,7 @@ import { PunishmentType } from '../../typings/PunishmentType';
 import { addModCase, getModCase } from '../cases/modCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
-import { guild as guildConfig } from '../../json/config.json';
+import { guildId } from '../../json/config.json';
 import { convertTime } from '../convertTime';
 import { MAX_REASON_LENGTH } from '../../constants';
 
@@ -94,7 +94,7 @@ export async function createModLog(options: options) {
 	if (!logActivity('mod')) return;
 	var logMessage = await client.config.webhooks.mod.send({ embeds: [embed] });
 	if (update)
-		return `https://discord.com/channels/${guildConfig.id}/${logMessage.channel_id}/${logMessage.id}`;
+		return `https://discord.com/channels/${guildId}/${logMessage.channel_id}/${logMessage.id}`;
 
 	if (
 		options.action === PunishmentType.Unmute ||
