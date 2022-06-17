@@ -15,7 +15,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { durationsModel } from '../../models/durations';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
-import { convertTime, convertToTimestamp } from '../../functions/convertTime';
+import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 
 export default new Command({
 	interaction: interactions.softban,
@@ -29,7 +29,7 @@ export default new Command({
 			options.getNumber('delete_messages') || client.config.moderation.default.msgs;
 		const durationO =
 			options.getString('duration') || client.config.moderation.default.softban;
-		const duration = convertToTimestamp(durationO);
+		const duration = convertToTime(durationO);
 
 		if (member) if (ignore(member, { interaction, action: PunishmentType.Softban })) return;
 		if (await interaction.guild.bans.fetch(user.id).catch(() => {}))
@@ -38,7 +38,7 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		if (duration === undefined)
+		if (!isValidTime(durationO))
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(

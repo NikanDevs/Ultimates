@@ -51,8 +51,16 @@ export default new Command({
 							userId: data.userId,
 						})
 					) {
-						if (getMember)
-							getMember.timeout(null, 'Mute ended based on the duration.');
+						if (!getMember)
+							return interaction.followUp({
+								embeds: [
+									client.embeds.error(
+										'The punished user is not in the server. I can not revoke the timeout.'
+									),
+								],
+							});
+
+						await getMember.timeout(null, 'Mute ended based on the duration.');
 
 						await interaction.followUp({
 							embeds: [

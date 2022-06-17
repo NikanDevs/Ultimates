@@ -3,7 +3,7 @@ import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Event } from '../../structures/Event';
 import { GuildMember } from 'discord.js';
-import { convertTime } from '../../functions/convertTime';
+import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { MAX_AUTOCOMPLETE_LENGTH } from '../../constants';
 
 export default new Event('interactionCreate', async (interaction) => {
@@ -19,17 +19,17 @@ export default new Event('interactionCreate', async (interaction) => {
 			{ name: "You don't have permissions to intract with this.", value: 'NO_PERM' },
 		]);
 
+	const focus = interaction.options.getFocused(true);
+
 	// Auto completes
 	switch (interaction.commandName) {
 		case 'punishment':
-			const punishmentFocus = interaction.options.getFocused(true);
-
 			if (
 				interaction.options.getSubcommand() === 'search' ||
 				interaction.options.getSubcommand() === 'revoke' ||
 				interaction.options.getSubcommand() === 'update'
 			) {
-				if (punishmentFocus?.name !== 'id') return;
+				if (focus?.name !== 'id') return;
 
 				let warnings: string[] = (await punishmentModel.find())
 					.map((data) => {
@@ -65,17 +65,15 @@ export default new Event('interactionCreate', async (interaction) => {
 								? choice
 										.split(' • ')[2]
 										.slice(4)
-										.startsWith(punishmentFocus.value as string)
+										.startsWith(focus.value as string)
 								: choice
 										.split(' • ')[2]
 										.slice(4)
-										.startsWith(punishmentFocus.value as string)) ||
-							choice
-								.split(' • ')[1]
-								.startsWith(punishmentFocus.value as string) ||
+										.startsWith(focus.value as string)) ||
+							choice.split(' • ')[1].startsWith(focus.value as string) ||
 							client.users.cache
 								.find((user) => user.tag === choice.split(' • ')[1])
-								?.id?.startsWith(punishmentFocus.value as string)
+								?.id?.startsWith(focus.value as string)
 					)
 					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
 					.slice(0, 25);
@@ -96,8 +94,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			}
 			break;
 		case 'unban':
-			const unbanFocus = interaction.options.getFocused(true);
-			if (unbanFocus?.name !== 'user') return;
+			if (focus?.name !== 'user') return;
 
 			const mapBans = (await interaction.guild.bans.fetch()).map((ban) => {
 				return [
@@ -110,8 +107,8 @@ export default new Event('interactionCreate', async (interaction) => {
 			const filteredBannedMembers = availableBannedMembers
 				.filter(
 					(data) =>
-						data.split(' • ')[0].startsWith(unbanFocus.value as string) ||
-						data.split(' • ')[1].startsWith(unbanFocus.value as string)
+						data.split(' • ')[0].startsWith(focus.value as string) ||
+						data.split(' • ')[1].startsWith(focus.value as string)
 				)
 				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
 				.slice(0, 25);
@@ -131,19 +128,18 @@ export default new Event('interactionCreate', async (interaction) => {
 	}
 
 	// Reason autocomplete
-	const getReasonsFocus = interaction.options.getFocused(true);
-	if (getReasonsFocus?.name === 'reason') {
+	if (focus?.name === 'reason') {
 		const availableReasons = [
 			...new Set(client.config.moderation.reasons[interaction.commandName]),
 		];
 		const filteredReasons = availableReasons
-			.filter((reason: string) => reason.startsWith(getReasonsFocus.value as string))
+			.filter((reason: string) => reason.startsWith(focus.value as string))
 			.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
 			.slice(0, 25);
 
 		if (
 			!client.config.moderation.reasons[interaction.commandName].length &&
-			!getReasonsFocus.value.toString().length
+			!focus.value.toString().length
 		)
 			return interaction.respond([
 				{
@@ -159,11 +155,11 @@ export default new Event('interactionCreate', async (interaction) => {
 						'⭐️' +
 						' • ' +
 						client.util.splitText(
-							getReasonsFocus.value.toString(),
+							focus.value.toString(),
 							MAX_AUTOCOMPLETE_LENGTH - 4
 						),
 					value: client.util.splitText(
-						getReasonsFocus.value.toString(),
+						focus.value.toString(),
 						MAX_AUTOCOMPLETE_LENGTH
 					),
 				},
@@ -177,48 +173,38 @@ export default new Event('interactionCreate', async (interaction) => {
 	}
 
 	// Duration autocomplete
-	const getDurationsFocus = interaction.options.getFocused(true);
-	if (getDurationsFocus?.name == 'duration') {
-		switch (interaction.commandName) {
-			case interaction.commandName:
-				if (!(getDurationsFocus.value as string))
-					return interaction.respond([
-						{
-							name:
-								'⭐️' +
-								' • ' +
-								convertTime(
-									+convertTime(
-										interaction.commandName === 'softban'
-											? client.config.moderation.default.softban
-											: client.config.moderation.default.timeout
-									)
-								),
-							value: convertTime(
-								interaction.commandName === 'softban'
-									? client.config.moderation.default.softban
-									: client.config.moderation.default.timeout
-							),
-						},
-					]);
+	if (focus?.name == 'duration') {
+		if (!focus.value.toString().trim().length)
+			return interaction.respond([
+				{
+					name: convertTime(
+						interaction.commandName === 'softban'
+							? client.config.moderation.default.softban
+							: client.config.moderation.default.timeout
+					),
+					value: convertTime(
+						interaction.commandName === 'softban'
+							? client.config.moderation.default.softban
+							: client.config.moderation.default.timeout
+					),
+				},
+			]);
 
-				if (convertTime(getDurationsFocus.value as string) === undefined)
-					return interaction
-						.respond([
-							{
-								name: 'Please provide a valid duration. 10s, 10m, 10h, 10w, 10mo, 10y',
-								value: 'null',
-							},
-						])
-						.catch(() => {});
-
-				await interaction.respond([
+		if (!isValidTime(focus.value as string))
+			return interaction
+				.respond([
 					{
-						name: convertTime(+convertTime(getDurationsFocus.value)),
-						value: convertTime(getDurationsFocus.value as string),
+						name: 'Please provide a valid duration. 10s, 10m, 10h, 10w, 10mo, 10y',
+						value: 'null',
 					},
-				]);
-				break;
-		}
+				])
+				.catch(() => {});
+
+		await interaction.respond([
+			{
+				name: convertTime(convertToTime(focus.value)),
+				value: convertToTime(focus.value).toString(),
+			},
+		]);
 	}
 });

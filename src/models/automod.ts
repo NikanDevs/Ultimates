@@ -23,4 +23,6 @@ const schema = new mongoose.Schema({
 	expire: Date,
 });
 
+schema.index({ expire: 1 }, { expireAfterSeconds: 0 });
+
 export const automodModel = mongoose.model<T>('automod', schema);

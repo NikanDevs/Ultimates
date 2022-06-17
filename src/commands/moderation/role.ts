@@ -12,7 +12,14 @@ export default new Command({
 		if (getSubCommand === 'edit') {
 			const member = options.getMember('member') as GuildMember;
 			const role = options.getRole('role') as Role;
-			var alreadyHas: boolean = false;
+
+			if (!member)
+				return interaction.reply({
+					embeds: [
+						client.embeds.error('I could not find that member in this server.'),
+					],
+					ephemeral: true,
+				});
 
 			if (ignore(member, { interaction, action: PunishmentType.Unknown })) return;
 			if (
@@ -27,7 +34,6 @@ export default new Command({
 					],
 					ephemeral: true,
 				});
-			if (member.roles.cache.has(role.id)) alreadyHas = true;
 			if (
 				[
 					'ManageMessages',
@@ -43,28 +49,24 @@ export default new Command({
 					embeds: [
 						client.embeds.error(
 							`Woah! That role has some moderation powers, try ${
-								alreadyHas ? 'removing' : 'adding'
+								member.roles.cache.has(role.id) ? 'removing' : 'adding'
 							} it yourself.`
 						),
 					],
 					ephemeral: true,
 				});
 
-			switch (alreadyHas) {
+			switch (member.roles.cache.has(role.id)) {
 				case false:
 					await member.roles.add(role);
 					await interaction.reply({
-						embeds: [
-							client.embeds.success(`${member} was added the role ${role}`),
-						],
+						embeds: [client.embeds.success(`${role} was added to ${member}`)],
 					});
 					break;
 				case true:
 					await member.roles.remove(role);
 					await interaction.reply({
-						embeds: [
-							client.embeds.success(`${member} was removed the role ${role}`),
-						],
+						embeds: [client.embeds.success(`${role} was removed from ${member}`)],
 					});
 					break;
 			}

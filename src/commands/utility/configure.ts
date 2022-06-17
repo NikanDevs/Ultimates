@@ -21,7 +21,7 @@ import {
 	MIN_TIMEOUT_DURATION,
 	WEBHOOK_NAMES,
 } from '../../constants';
-import { convertTime, convertToTimestamp, isValidDuration } from '../../functions/convertTime';
+import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
 import { Command } from '../../structures/Command';
@@ -473,9 +473,9 @@ export default new Command({
 				if (
 					!module.startsWith('count') &&
 					(module.includes('timeout') || module.includes('automod')) &&
-					(!isValidDuration(value) ||
-						convertToTimestamp(value) > MAX_TIMEOUT_DURATION ||
-						convertToTimestamp(value) < MIN_TIMEOUT_DURATION)
+					(!isValidTime(value) ||
+						convertToTime(value) > MAX_TIMEOUT_DURATION ||
+						convertToTime(value) < MIN_TIMEOUT_DURATION)
 				)
 					return interaction.followUp({
 						embeds: [
@@ -490,9 +490,9 @@ export default new Command({
 				if (
 					module.startsWith('default') &&
 					module.includes('ban') &&
-					(!isValidDuration(value) ||
-						convertToTimestamp(value) > MAX_SOFTBAN_DURATION ||
-						convertToTimestamp(value) < MIN_SOFTBAN_DURATION)
+					(!isValidTime(value) ||
+						convertToTime(value) > MAX_SOFTBAN_DURATION ||
+						convertToTime(value) < MIN_SOFTBAN_DURATION)
 				)
 					return interaction.followUp({
 						embeds: [
@@ -522,10 +522,10 @@ export default new Command({
 								...(await configModel.findById('moderation')).duration,
 								[module]:
 									module === 'duration_ban'
-										? convertToTimestamp(value) === undefined
+										? convertToTime(value) === undefined
 											? null
-											: convertToTimestamp(value)
-										: convertToTimestamp(value),
+											: convertToTime(value)
+										: convertToTime(value),
 							},
 						},
 					});
@@ -540,7 +540,7 @@ export default new Command({
 										? client.util.splitText(value, MAX_REASON_LENGTH)
 										: module === 'msgs'
 										? parseInt(value)
-										: convertToTimestamp(value),
+										: convertToTime(value),
 							},
 						},
 					});

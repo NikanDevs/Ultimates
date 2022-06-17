@@ -1,5 +1,5 @@
-const regxp =
-	/^(?<value>-?(?:\d+)?\.?\d+) *(?<type>seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|months?|month?|mo|mon|mons|years?|yrs?|y)?$/g;
+export const timeFormatRegxp =
+	/^(?<value>-?(?:\d+)?\.?\d+) *(?<type>seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|months?|month?|mo|mon|mons|years?|yrs?|y)?$/gi;
 
 export function convertTime(time: number | string): string {
 	if (/^\d+$/.test(time.toString())) {
@@ -58,17 +58,17 @@ export function convertTime(time: number | string): string {
 				.map((foo) => foo.trim());
 
 			for (const item of values) {
-				if (!regxp.test(item) || /^\d+$/.test(item)) {
+				if (!timeFormatRegxp.test(item) || /^\d+$/.test(item)) {
 					miliseconds = 0;
 					break;
 				}
-				switch (item.replaceAll(/[0-9]/g, '').trim()) {
+				switch (item.replaceAll(/[0-9]/g, '').trim().toLowerCase()) {
 					case 'years':
 					case 'year':
 					case 'yrs':
 					case 'yr':
 					case 'y':
-						item.replaceAll(regxp, '').trim();
+						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 360 * 24 * 60 * 60;
 						break;
 					case 'months':
@@ -76,19 +76,19 @@ export function convertTime(time: number | string): string {
 					case 'mon':
 					case 'mons':
 					case 'mo':
-						item.replaceAll(regxp, '').trim();
+						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 30 * 24 * 60 * 60;
 						break;
 					case 'weeks':
 					case 'week':
 					case 'w':
-						item.replaceAll(regxp, '').trim();
+						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 7 * 24 * 60 * 60;
 						break;
 					case 'days':
 					case 'day':
 					case 'd':
-						item.replaceAll(regxp, '').trim();
+						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 24 * 60 * 60;
 						break;
 					case 'hours':
@@ -96,7 +96,7 @@ export function convertTime(time: number | string): string {
 					case 'hrs':
 					case 'hr':
 					case 'h':
-						item.replaceAll(regxp, '').trim();
+						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 60 * 60;
 						break;
 					case 'minutes':
@@ -104,7 +104,7 @@ export function convertTime(time: number | string): string {
 					case 'mins':
 					case 'min':
 					case 'm':
-						item.replaceAll(regxp, '').trim();
+						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 60;
 						break;
 					case 'seconds':
@@ -112,7 +112,7 @@ export function convertTime(time: number | string): string {
 					case 'secs':
 					case 'sec':
 					case 's':
-						item.replaceAll(regxp, '').trim();
+						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item);
 						break;
 					default:
@@ -124,15 +124,19 @@ export function convertTime(time: number | string): string {
 	}
 }
 
-export function isValidDuration(v: string | number): boolean {
-	if (/^\d+$/.test(v.toString())) return true;
-	if (convertTime(v as string) === undefined) return false;
+export function isValidTime(v: string | number): boolean {
+	if (typeof v === 'number') return true;
+	if (/^\d+$/.test(v.toString().trim())) return true;
+
+	if (convertTime(v.toString().trim()) === undefined) return false;
 	else return true;
 }
 
-export function convertToTimestamp(v: string | number): number {
-	if (/^\d+$/.test(v.toString())) return parseInt(v.toString());
-	if (convertTime(v as string) === undefined) return undefined;
-	else return +convertTime(v as string);
+export function convertToTime(v: string | number): number {
+	if (typeof v === 'number') return v;
+	if (/^\d+$/.test(v.toString())) return parseInt(v);
+
+	if (!isValidTime(v)) return undefined;
+	else return +convertTime(v);
 }
 

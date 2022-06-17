@@ -60,7 +60,7 @@ export async function createModmailLog(options: options) {
 					  }`
 					: 'LINE_BREAK',
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason:** ${options.reason || 'No reason provided'}`,
+				`• **Reason:** ${options.reason || client.config.moderation.default.reason}`,
 				`\n${
 					!options.referencedCaseUrl
 						? ''

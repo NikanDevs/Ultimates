@@ -16,7 +16,7 @@ import { timeoutMember } from '../../utils/timeoutMember';
 import { ignore } from '../../functions/ignore';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
-import { convertTime, convertToTimestamp, isValidDuration } from '../../functions/convertTime';
+import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 
 export default new Command({
 	interaction: interactions.timeout,
@@ -24,10 +24,16 @@ export default new Command({
 		const member = options.getMember('member') as GuildMember;
 		const durationO =
 			options.getString('duration') || client.config.moderation.default.timeout;
-		const duration: number = convertToTimestamp(durationO);
+		const duration: number = convertToTime(durationO);
 		const reason =
 			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
 			client.config.moderation.default.reason;
+
+		if (!member)
+			return interaction.reply({
+				embeds: [client.embeds.error('I could not find that member in this server.')],
+				ephemeral: true,
+			});
 
 		if (ignore(member, { interaction, action: PunishmentType.Timeout })) return;
 
@@ -50,7 +56,7 @@ export default new Command({
 				embeds: [client.embeds.error('This member is already timed out.')],
 				ephemeral: true,
 			});
-		if (!isValidDuration(durationO))
+		if (!isValidTime(durationO))
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
