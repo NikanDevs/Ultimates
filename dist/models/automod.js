@@ -13,4 +13,5 @@ const schema = new mongoose_1.default.Schema({
     date: Date,
     expire: Date,
 });
+schema.index({ expire: 1 }, { expireAfterSeconds: 0 });
 exports.automodModel = mongoose_1.default.model('automod', schema);

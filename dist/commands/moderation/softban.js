@@ -21,7 +21,7 @@ exports.default = new Command_1.Command({
             client.config.moderation.default.reason;
         const delete_messages = options.getNumber('delete_messages') || client.config.moderation.default.msgs;
         const durationO = options.getString('duration') || client.config.moderation.default.softban;
-        const duration = (0, convertTime_1.convertToTimestamp)(durationO);
+        const duration = (0, convertTime_1.convertToTime)(durationO);
         if (member)
             if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Softban }))
                 return;
@@ -30,7 +30,7 @@ exports.default = new Command_1.Command({
                 embeds: [client.embeds.error('This user is already banned from the server.')],
                 ephemeral: true,
             });
-        if (duration === undefined)
+        if (!(0, convertTime_1.isValidTime)(durationO))
             return interaction.reply({
                 embeds: [
                     client.embeds.error('The provided duration is not valid, use the autocomplete for a better result.'),

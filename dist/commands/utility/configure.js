@@ -378,9 +378,9 @@ exports.default = new Command_1.Command({
                     });
                 if (!module.startsWith('count') &&
                     (module.includes('timeout') || module.includes('automod')) &&
-                    (!(0, convertTime_1.isValidDuration)(value) ||
-                        (0, convertTime_1.convertToTimestamp)(value) > constants_1.MAX_TIMEOUT_DURATION ||
-                        (0, convertTime_1.convertToTimestamp)(value) < constants_1.MIN_TIMEOUT_DURATION))
+                    (!(0, convertTime_1.isValidTime)(value) ||
+                        (0, convertTime_1.convertToTime)(value) > constants_1.MAX_TIMEOUT_DURATION ||
+                        (0, convertTime_1.convertToTime)(value) < constants_1.MIN_TIMEOUT_DURATION))
                     return interaction.followUp({
                         embeds: [
                             client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_TIMEOUT_DURATION)} and ${(0, convertTime_1.convertTime)(constants_1.MAX_TIMEOUT_DURATION)}.`),
@@ -388,9 +388,9 @@ exports.default = new Command_1.Command({
                     });
                 if (module.startsWith('default') &&
                     module.includes('ban') &&
-                    (!(0, convertTime_1.isValidDuration)(value) ||
-                        (0, convertTime_1.convertToTimestamp)(value) > constants_1.MAX_SOFTBAN_DURATION ||
-                        (0, convertTime_1.convertToTimestamp)(value) < constants_1.MIN_SOFTBAN_DURATION))
+                    (!(0, convertTime_1.isValidTime)(value) ||
+                        (0, convertTime_1.convertToTime)(value) > constants_1.MAX_SOFTBAN_DURATION ||
+                        (0, convertTime_1.convertToTime)(value) < constants_1.MIN_SOFTBAN_DURATION))
                     return interaction.followUp({
                         embeds: [
                             client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_SOFTBAN_DURATION)} and ${(0, convertTime_1.convertTime)(constants_1.MAX_SOFTBAN_DURATION)}.`),
@@ -414,10 +414,10 @@ exports.default = new Command_1.Command({
                             duration: {
                                 ...(await config_1.configModel.findById('moderation')).duration,
                                 [module]: module === 'duration_ban'
-                                    ? (0, convertTime_1.convertToTimestamp)(value) === undefined
+                                    ? (0, convertTime_1.convertToTime)(value) === undefined
                                         ? null
-                                        : (0, convertTime_1.convertToTimestamp)(value)
-                                    : (0, convertTime_1.convertToTimestamp)(value),
+                                        : (0, convertTime_1.convertToTime)(value)
+                                    : (0, convertTime_1.convertToTime)(value),
                             },
                         },
                     });
@@ -432,7 +432,7 @@ exports.default = new Command_1.Command({
                                     ? client.util.splitText(value, constants_1.MAX_REASON_LENGTH)
                                     : module === 'msgs'
                                         ? parseInt(value)
-                                        : (0, convertTime_1.convertToTimestamp)(value),
+                                        : (0, convertTime_1.convertToTime)(value),
                             },
                         },
                     });

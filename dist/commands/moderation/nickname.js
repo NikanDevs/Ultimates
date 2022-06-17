@@ -18,15 +18,14 @@ exports.default = new Command_1.Command({
                 ephemeral: true,
             });
         if (newNick) {
-            // Expect err
+            // Set a new nickname
             if (newNick.length > 32)
                 return interaction.reply({
                     embeds: [
-                        client.embeds.error('The nickname must be 32 of fewer in length.'),
+                        client.embeds.error('The nickname must be 32 or fewer in length.'),
                     ],
                     ephemeral: true,
                 });
-            // Set the nickname
             member.setNickname(newNick, auditLogReason);
             interaction.reply({
                 embeds: [
@@ -35,7 +34,7 @@ exports.default = new Command_1.Command({
             });
         }
         else if (!newNick && !member.nickname) {
-            // Moderates the nickname
+            // Moderate the nickname
             function generateNick() {
                 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
                 let nickname = '';
@@ -52,7 +51,7 @@ exports.default = new Command_1.Command({
             });
         }
         else if (!newNick && member.nickname) {
-            // Resets the nickname
+            // Reset the nickname
             member.setNickname(null, auditLogReason);
             interaction.reply({
                 embeds: [client.embeds.success(`**${member.user.tag}** nickname was reset.`)],

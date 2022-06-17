@@ -18,9 +18,14 @@ exports.default = new Command_1.Command({
     excute: async ({ client, interaction, options }) => {
         const member = options.getMember('member');
         const durationO = options.getString('duration') || client.config.moderation.default.timeout;
-        const duration = (0, convertTime_1.convertToTimestamp)(durationO);
+        const duration = (0, convertTime_1.convertToTime)(durationO);
         const reason = client.util.splitText(options.getString('reason'), constants_1.MAX_REASON_LENGTH) ||
             client.config.moderation.default.reason;
+        if (!member)
+            return interaction.reply({
+                embeds: [client.embeds.error('I could not find that member in this server.')],
+                ephemeral: true,
+            });
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Timeout }))
             return;
         // Guess: moderator is trying to unmute
@@ -36,7 +41,7 @@ exports.default = new Command_1.Command({
                 embeds: [client.embeds.error('This member is already timed out.')],
                 ephemeral: true,
             });
-        if (!(0, convertTime_1.isValidDuration)(durationO))
+        if (!(0, convertTime_1.isValidTime)(durationO))
             return interaction.reply({
                 embeds: [
                     client.embeds.error('The provided duration is not valid, use the autocomplete for a better result.'),

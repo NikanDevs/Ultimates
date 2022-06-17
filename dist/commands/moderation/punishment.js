@@ -37,8 +37,13 @@ exports.default = new Command_1.Command({
                         type: PunishmentType_1.PunishmentType.Timeout,
                         userId: data.userId,
                     })) {
-                        if (getMember)
-                            getMember.timeout(null, 'Mute ended based on the duration.');
+                        if (!getMember)
+                            return interaction.followUp({
+                                embeds: [
+                                    client.embeds.error('The punished user is not in the server. I can not revoke the timeout.'),
+                                ],
+                            });
+                        await getMember.timeout(null, 'Mute ended based on the duration.');
                         await interaction.followUp({
                             embeds: [
                                 client.embeds.success(`Punishment **${warnId}** was revoked.`),

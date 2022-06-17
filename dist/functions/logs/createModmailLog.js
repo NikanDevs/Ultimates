@@ -41,7 +41,7 @@ async function createModmailLog(options) {
                 : 'Automatic'}`
             : 'LINE_BREAK',
         `• **Date:** ${(0, generateDiscordTimestamp_1.generateDiscordTimestamp)(new Date(), 'Short Date/Time')}`,
-        `• **Reason:** ${options.reason || 'No reason provided'}`,
+        `• **Reason:** ${options.reason || __1.client.config.moderation.default.reason}`,
         `\n${!options.referencedCaseUrl
             ? ''
             : options.action === Modmail_1.ModmailActionType.Close

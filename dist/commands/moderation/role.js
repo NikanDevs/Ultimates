@@ -11,7 +11,13 @@ exports.default = new Command_1.Command({
         if (getSubCommand === 'edit') {
             const member = options.getMember('member');
             const role = options.getRole('role');
-            var alreadyHas = false;
+            if (!member)
+                return interaction.reply({
+                    embeds: [
+                        client.embeds.error('I could not find that member in this server.'),
+                    ],
+                    ephemeral: true,
+                });
             if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Unknown }))
                 return;
             if (role.position > interaction.guild.members.me.roles.highest.position ||
@@ -22,8 +28,6 @@ exports.default = new Command_1.Command({
                     ],
                     ephemeral: true,
                 });
-            if (member.roles.cache.has(role.id))
-                alreadyHas = true;
             if ([
                 'ManageMessages',
                 'ModerateMembers',
@@ -35,25 +39,21 @@ exports.default = new Command_1.Command({
             ].some((permission) => role.permissions.has(permission)))
                 return interaction.reply({
                     embeds: [
-                        client.embeds.error(`Woah! That role has some moderation powers, try ${alreadyHas ? 'removing' : 'adding'} it yourself.`),
+                        client.embeds.error(`Woah! That role has some moderation powers, try ${member.roles.cache.has(role.id) ? 'removing' : 'adding'} it yourself.`),
                     ],
                     ephemeral: true,
                 });
-            switch (alreadyHas) {
+            switch (member.roles.cache.has(role.id)) {
                 case false:
                     await member.roles.add(role);
                     await interaction.reply({
-                        embeds: [
-                            client.embeds.success(`${member} was added the role ${role}`),
-                        ],
+                        embeds: [client.embeds.success(`${role} was added to ${member}`)],
                     });
                     break;
                 case true:
                     await member.roles.remove(role);
                     await interaction.reply({
-                        embeds: [
-                            client.embeds.success(`${member} was removed the role ${role}`),
-                        ],
+                        embeds: [client.embeds.success(`${role} was removed from ${member}`)],
                     });
                     break;
             }
