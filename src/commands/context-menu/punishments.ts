@@ -1,11 +1,4 @@
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	ComponentType,
-	EmbedBuilder,
-	Message,
-} from 'discord.js';
+import { ComponentType, EmbedBuilder, Message } from 'discord.js';
 import { buildPaginationButtons } from '../../functions/client/functions';
 import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';

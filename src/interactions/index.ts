@@ -1,4 +1,5 @@
 import { punishmentsContextmenu } from './context-menu/Punishments';
+import { userinfoContextmenu } from './context-menu/User Info';
 import { evalCommand } from './developer/eval';
 import { banCommand } from './moderation/ban';
 import { kickCommand } from './moderation/kick';
@@ -21,6 +22,7 @@ import { userinfoCommand } from './utility/userinfo';
 
 export const interactions = {
 	Punishments: punishmentsContextmenu,
+	UserInfo: userinfoContextmenu,
 	eval: evalCommand,
 	ban: banCommand,
 	kick: kickCommand,
