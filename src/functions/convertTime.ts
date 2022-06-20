@@ -71,20 +71,20 @@ export function convertTime(time: number | string): string {
 						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 360 * 24 * 60 * 60;
 						break;
-					case 'months':
-					case 'month':
-					case 'mon':
-					case 'mons':
-					case 'mo':
-						item.replaceAll(timeFormatRegxp, '').trim();
-						miliseconds = miliseconds + parseInt(item) * 30 * 24 * 60 * 60;
-						break;
-					case 'weeks':
-					case 'week':
-					case 'w':
-						item.replaceAll(timeFormatRegxp, '').trim();
-						miliseconds = miliseconds + parseInt(item) * 7 * 24 * 60 * 60;
-						break;
+					// case 'months':
+					// case 'month':
+					// case 'mon':
+					// case 'mons':
+					// case 'mo':
+					// 	item.replaceAll(timeFormatRegxp, '').trim();
+					// 	miliseconds = miliseconds + parseInt(item) * 30 * 24 * 60 * 60;
+					// 	break;
+					// case 'weeks':
+					// case 'week':
+					// case 'w':
+					// 	item.replaceAll(timeFormatRegxp, '').trim();
+					// 	miliseconds = miliseconds + parseInt(item) * 7 * 24 * 60 * 60;
+					// 	break;
 					case 'days':
 					case 'day':
 					case 'd':

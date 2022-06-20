@@ -26,7 +26,7 @@ export function ignore(member: GuildMember, options: options): boolean {
 		interaction.reply({
 			embeds: [
 				client.embeds.error(
-					"That doesn't work, maybe try listening to some music now [:)](https://takeb1nzyto.space/)"
+					"You can't perform that action on yourself[.](https://takeb1nzyto.space/)"
 				),
 			],
 			ephemeral: true,

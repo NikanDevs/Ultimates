@@ -21,11 +21,11 @@ import { convertTime, convertToTime, isValidTime } from '../../functions/convert
 export default new Command({
 	interaction: interactions.timeout,
 	excute: async ({ client, interaction, options }) => {
-		const member = options.getMember('member') as GuildMember;
-		const durationO =
+		const member: GuildMember = options.getMember('member') as GuildMember;
+		const durationO: string | number =
 			options.getString('duration') || client.config.moderation.default.timeout;
 		const duration: number = convertToTime(durationO);
-		const reason =
+		const reason: string =
 			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
 			client.config.moderation.default.reason;
 
@@ -39,8 +39,8 @@ export default new Command({
 
 		// Guess: moderator is trying to unmute
 		if (
-			['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(
-				options.getString('duration').toLowerCase()
+			['off', 'end', 'expire', 'null', 'zero', 'remove'].includes(
+				durationO.toString().toLowerCase()
 			)
 		)
 			return interaction.reply({

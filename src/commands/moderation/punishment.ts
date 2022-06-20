@@ -566,7 +566,7 @@ export default new Command({
 									client.embeds.attention(
 										`The duration must be between ${convertTime(
 											MIN_SOFTBAN_DURATION
-										)}and ${convertTime(MAX_SOFTBAN_DURATION)}.`
+										)} and ${convertTime(MAX_SOFTBAN_DURATION)}.`
 									),
 								],
 								ephemeral: true,
@@ -602,9 +602,11 @@ export default new Command({
 							{ $set: { date: new Date(), duration: duration } }
 						);
 
-						await (
-							await interaction.guild.members.fetch(punishment.userId)
-						).timeout(duration, 'Punishment duration updated.');
+						if (punishment.type === PunishmentType.Timeout)
+							await (
+								await interaction.guild.members.fetch(punishment.userId)
+							).timeout(duration, 'Punishment duration updated.');
+
 						await interaction.followUp({
 							embeds: [
 								client.embeds.success(
