@@ -29,7 +29,7 @@ exports.default = new Command_1.Command({
         if ((0, ignore_1.ignore)(member, { interaction, action: PunishmentType_1.PunishmentType.Timeout }))
             return;
         // Guess: moderator is trying to unmute
-        if (['off', 'end', 'expire', 'null', '0', 'zero', 'remove'].includes(options.getString('duration').toLowerCase()))
+        if (['off', 'end', 'expire', 'null', 'zero', 'remove'].includes(durationO.toString().toLowerCase()))
             return interaction.reply({
                 embeds: [
                     client.embeds.attention("If you're trying to unmute a member, try using `/punishment revoke`"),

@@ -467,7 +467,7 @@ exports.default = new Command_1.Command({
                                 punishment.type === PunishmentType_1.PunishmentType.Softban))
                             return interaction.followUp({
                                 embeds: [
-                                    client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_SOFTBAN_DURATION)}and ${(0, convertTime_1.convertTime)(constants_1.MAX_SOFTBAN_DURATION)}.`),
+                                    client.embeds.attention(`The duration must be between ${(0, convertTime_1.convertTime)(constants_1.MIN_SOFTBAN_DURATION)} and ${(0, convertTime_1.convertTime)(constants_1.MAX_SOFTBAN_DURATION)}.`),
                                 ],
                                 ephemeral: true,
                             });
@@ -490,7 +490,8 @@ exports.default = new Command_1.Command({
                         await durations_1.durationsModel.findOneAndUpdate({
                             case: punishment.case,
                         }, { $set: { date: new Date(), duration: duration } });
-                        await (await interaction.guild.members.fetch(punishment.userId)).timeout(duration, 'Punishment duration updated.');
+                        if (punishment.type === PunishmentType_1.PunishmentType.Timeout)
+                            await (await interaction.guild.members.fetch(punishment.userId)).timeout(duration, 'Punishment duration updated.');
                         await interaction.followUp({
                             embeds: [
                                 client.embeds.success(`Duration was updated to **${(0, convertTime_1.convertTime)(duration)}**.`),

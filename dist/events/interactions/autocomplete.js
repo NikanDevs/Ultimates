@@ -150,7 +150,7 @@ exports.default = new Event_1.Event('interactionCreate', async (interaction) => 
             return interaction
                 .respond([
                 {
-                    name: 'Please provide a valid duration. 10s, 10m, 10h, 10w, 10mo, 10y',
+                    name: 'Please provide a valid duration. 10s, 10m, 10h, 10d, 10y',
                     value: 'null',
                 },
             ])

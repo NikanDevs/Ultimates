@@ -18,7 +18,7 @@ function ignore(member, options) {
     if (interaction.user.id === member.user.id) {
         interaction.reply({
             embeds: [
-                __1.client.embeds.error("That doesn't work, maybe try listening to some music now [:)](https://takeb1nzyto.space/)"),
+                __1.client.embeds.error("You can't perform that action on yourself[.](https://takeb1nzyto.space/)"),
             ],
             ephemeral: true,
         });

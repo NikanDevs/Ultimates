@@ -4,7 +4,7 @@ exports.softbanCommand = void 0;
 const discord_js_1 = require("discord.js");
 exports.softbanCommand = {
     name: 'softban',
-    description: "Softban a user and they will be able to join once it's the duration is finished",
+    description: 'Softban a user and they will be able to join once the duration is finished',
     directory: 'moderation',
     cooldown: 3000,
     permission: ['BanMembers'],
