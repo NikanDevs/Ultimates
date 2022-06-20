@@ -1,4 +1,4 @@
-import { Collection, GuildMember, Message, TextChannel } from 'discord.js';
+import { Collection, Message, TextChannel } from 'discord.js';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 const fifteenDays = 1000 * 60 * 60 * 24 * 15;

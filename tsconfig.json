@@ -2,11 +2,11 @@
 	"compilerOptions": {
 		// Type checks
 		"allowUnreachableCode": false,
-		// "allowUnusedLabels": false,
+		"allowUnusedLabels": false,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitOverride": true,
-		// "noUnusedLocals": true,
-		// "noUnusedParameters": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 		// Library
 		"lib": ["ESNext"],
 		"module": "commonjs",

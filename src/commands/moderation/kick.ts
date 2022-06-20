@@ -1,4 +1,4 @@
-import { EmbedBuilder, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { MAX_REASON_LENGTH, punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';

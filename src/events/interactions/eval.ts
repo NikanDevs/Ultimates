@@ -1,4 +1,4 @@
-import { EmbedBuilder, TextChannel, Util } from 'discord.js';
+import { EmbedBuilder, TextChannel } from 'discord.js';
 import { inspect } from 'node:util';
 import { client as C } from '../..';
 import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
@@ -10,6 +10,7 @@ export default new Event('interactionCreate', async (interaction) => {
 	if (interaction.customId !== 'eval') return;
 
 	const client = C;
+	// @ts-ignore
 	const logger = L;
 
 	const code = interaction.fields.getTextInputValue('eval');
