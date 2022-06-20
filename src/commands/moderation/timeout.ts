@@ -37,20 +37,6 @@ export default new Command({
 
 		if (ignore(member, { interaction, action: PunishmentType.Timeout })) return;
 
-		// Guess: moderator is trying to unmute
-		if (
-			['off', 'end', 'expire', 'null', 'zero', 'remove'].includes(
-				durationO.toString().toLowerCase()
-			)
-		)
-			return interaction.reply({
-				embeds: [
-					client.embeds.attention(
-						"If you're trying to unmute a member, try using `/punishment revoke`"
-					),
-				],
-				ephemeral: true,
-			});
 		if (await durationsModel.findOne({ userId: member.id }))
 			return interaction.reply({
 				embeds: [client.embeds.error('This member is already timed out.')],
