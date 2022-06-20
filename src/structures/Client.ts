@@ -1,3 +1,4 @@
+require('dotenv').config();
 import { Client, Collection, ClientEvents, Partials } from 'discord.js';
 import { interactionType } from '../typings/Command';
 import { glob } from 'glob';
@@ -13,11 +14,11 @@ import { clientConfig } from '../functions/client/clientConfig';
 const globPromise = promisify(glob);
 
 export class Ultimates extends Client {
-	commands = new Collection() as Collection<string, interactionType>;
-	util = new clientUtil();
-	config = new clientConfig();
-	embeds = clientEmbeds;
-	cc = cc;
+	public commands = new Collection() as Collection<string, interactionType>;
+	public util = new clientUtil();
+	public config = new clientConfig();
+	public embeds = clientEmbeds;
+	public cc = cc;
 
 	// Constructor
 	constructor() {
@@ -37,10 +38,12 @@ export class Ultimates extends Client {
 				status: 'idle',
 			},
 		});
+
+		this.born();
 	}
 
 	/** Registers the modules, connects mongoDB and logs into the bot if called. */
-	async born() {
+	private async born() {
 		// Connecting to mongoDB
 		const mongoDBConnection = process.env.MONGODB;
 		if (!mongoDBConnection) return;
@@ -60,12 +63,12 @@ export class Ultimates extends Client {
 		});
 	}
 
-	async importFiles(filePath: string) {
+	private async importFiles(filePath: string) {
 		return (await import(filePath as string))?.default;
 	}
 
 	/** Registers commands and events if called. */
-	async registerModules() {
+	private async registerModules() {
 		// Commands
 		const slashFiles = await globPromise(`${__dirname}/../commands/**/*{.ts,.js}`);
 		slashFiles.forEach(async (filePaths) => {
@@ -84,7 +87,7 @@ export class Ultimates extends Client {
 	}
 
 	/** Handles process errors and exits if called. */
-	handlerErrors() {
+	private handlerErrors() {
 		enum betterTexts {
 			'unhandledRejection' = 'Unhandled Rejection',
 			'uncaughtException' = 'Uncaught Exception',
@@ -111,7 +114,7 @@ export class Ultimates extends Client {
 		});
 	}
 
-	async checkSubstance() {
+	private async checkSubstance() {
 		const logs = await logsModel.findById('substance');
 		const modmail = await modmailModel.findById('substance');
 

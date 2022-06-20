@@ -7,12 +7,11 @@ import { durationsModel } from '../../models/durations';
 import { getModCase } from '../../functions/cases/modCase';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { createModLog } from '../../functions/logs/createModLog';
-import { guildId } from '../../json/config.json';
 import { User } from 'discord.js';
 import { client } from '../..';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
-	if (newMember.guild.id !== guildId) return;
+	if (newMember.guild.id !== process.env.GUILD_ID) return;
 	if (newMember.user.bot) return;
 
 	await oldMember.fetch().catch(() => {});

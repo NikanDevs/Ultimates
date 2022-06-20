@@ -3,11 +3,10 @@ import { Event } from '../../structures/Event';
 import { leftMembersModel } from '../../models/leftMembers';
 import { leftMemberExpiry } from '../../constants';
 import { logActivity } from '../../functions/logs/checkActivity';
-import { guildId } from '../../json/config.json';
 import { EmbedBuilder } from 'discord.js';
 
 export default new Event('guildMemberRemove', async (member) => {
-	if (member.guild.id !== guildId) return;
+	if (member.guild.id !== process.env.GUILD_ID) return;
 
 	const roles = member.roles.cache
 		.filter((r) => r.id !== member.guild.id)

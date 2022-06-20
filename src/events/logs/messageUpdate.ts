@@ -3,7 +3,6 @@ import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
 import { logActivity } from '../../functions/logs/checkActivity';
-import { guildId } from '../../json/config.json';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
 const ignore = ignores.MessageUpdate;
 
@@ -19,7 +18,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 
 	if (
 		!newMessage?.guild ||
-		newMessage?.guildId !== guildId ||
+		newMessage?.guildId !== process.env.GUILD_ID ||
 		newMessage.author?.bot ||
 		ignore.category.includes(channel?.parentId) ||
 		ignore.channel.includes(channel?.id) ||

@@ -3,7 +3,6 @@ import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { ignores } from '../../json/logs.json';
 import { logActivity } from '../../functions/logs/checkActivity';
-import { guildId } from '../../json/config.json';
 const ignore = ignores.messageDelete;
 
 export default new Event('messageDelete', async (message: Message) => {
@@ -15,7 +14,7 @@ export default new Event('messageDelete', async (message: Message) => {
 	const channel = message?.channel as TextChannel;
 	if (
 		!message?.guild ||
-		message?.guildId !== guildId ||
+		message?.guildId !== process.env.GUILD_ID ||
 		message?.author?.bot ||
 		ignore.category.includes(channel?.parentId) ||
 		ignore.channel.includes(channel?.id) ||

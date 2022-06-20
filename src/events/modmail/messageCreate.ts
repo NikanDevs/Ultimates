@@ -14,7 +14,6 @@ import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { ModmailActionType } from '../../typings/Modmail';
 import { getModmailTicket } from '../../functions/cases/ModmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
-import { guildId } from '../../json/config.json';
 import { convertTime } from '../../functions/convertTime';
 export const modmailCooldown: Collection<string, number> = new Collection();
 let confirmationExists: boolean = false;
@@ -23,7 +22,8 @@ let canSend: boolean = true;
 
 export default new Event('messageCreate', async (message) => {
 	const guild =
-		client.guilds.cache.get(guildId) || ((await client.guilds.fetch(guildId)) as Guild);
+		client.guilds.cache.get(process.env.GUILD_ID) ||
+		((await client.guilds.fetch(process.env.GUILD_ID)) as Guild);
 
 	if (!message?.guild && message.channel.type === ChannelType.DM && !message.author?.bot) {
 		// Checking for blacklist

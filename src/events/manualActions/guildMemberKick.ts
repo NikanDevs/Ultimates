@@ -6,12 +6,11 @@ import { punishmentExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
-import { guildId } from '../../json/config.json';
 import { User } from 'discord.js';
 import { client } from '../..';
 
 export default new Event('guildMemberRemove', async (member) => {
-	if (member.guild.id !== guildId) return;
+	if (member.guild.id !== process.env.GUILD_ID) return;
 	if (member.user.bot) return;
 	if (await member.guild.bans.fetch(member.user).catch(() => {})) return;
 

@@ -11,25 +11,22 @@ interface options {
 }
 
 export class Logger {
-	timezone = 'en-US';
-	current = new Date().toLocaleTimeString(this.timezone, {
+	private timezone = 'en-US';
+	private current = new Date().toLocaleTimeString(this.timezone, {
 		timeZoneName: 'long',
 		weekday: 'long',
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric',
 	});
-	support = chalk.Level === 0 ? false : true;
+	public support = chalk.Level === 0 ? false : true;
 
 	constructor(options: Options) {
 		this.timezone = options.timezone;
-	}
-
-	born() {
 		this.info('Logger started', { showDate: false });
 	}
 
-	error(options: options): boolean | null {
+	public error(options: options): boolean | null {
 		const current = chalk.gray.italic(this.current);
 		const header = chalk.redBright.bold('[ERROR]');
 		const source = chalk.blueBright(options.source);
@@ -39,7 +36,7 @@ export class Logger {
 		return true;
 	}
 
-	warn(options: options): boolean | null {
+	public warn(options: options): boolean | null {
 		const current = chalk.gray.italic(this.current);
 		const header = chalk.yellowBright.bold('[WARN]');
 		const source = chalk.blueBright(options.source);
@@ -49,7 +46,7 @@ export class Logger {
 		return true;
 	}
 
-	info(message: string, options?: options): boolean | null {
+	public info(message: string, options?: options): boolean | null {
 		const current = chalk.gray.italic(this.current);
 		const header = chalk.yellowBright.bold('[INFO]');
 		const source = chalk.blueBright(options?.source);
@@ -69,7 +66,7 @@ export class Logger {
 		return true;
 	}
 
-	formatReason(reason: Error) {
+	private formatReason(reason: Error) {
 		const name = reason.name;
 		const message = reason.message.replaceAll(name, '');
 		const stack = reason.stack

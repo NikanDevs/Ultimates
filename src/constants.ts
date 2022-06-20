@@ -32,10 +32,3 @@ export const MAX_TIMEOUT_DURATION = 1000 * 60 * 60 * 24 * 27; // 27 days
 export const MAX_REASON_LENGTH = 100;
 export const MAX_FIELD_VALUE_LENGTH = 1024;
 export const MAX_AUTOCOMPLETE_LENGTH = 100;
-export enum WEBHOOK_NAMES {
-	'mod' = 'Mod-Logs',
-	'message' = 'Message-Logs',
-	'modmail' = 'Modmail-Logs',
-	'servergate' = 'Server Gate',
-	'error' = 'Errors',
-}

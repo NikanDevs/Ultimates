@@ -2,11 +2,10 @@ import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { leftMembersModel } from '../../models/leftMembers';
 import { logActivity } from '../../functions/logs/checkActivity';
-import { guildId } from '../../json/config.json';
 import { EmbedBuilder } from 'discord.js';
 
 export default new Event('guildMemberAdd', async (member) => {
-	if (member.guild.id !== guildId) return;
+	if (member.guild.id !== process.env.GUILD_ID) return;
 
 	// If the member has any previous experience joining the server
 	const findData = await leftMembersModel.findOne({ userId: member.user.id });

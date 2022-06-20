@@ -30,65 +30,31 @@ Make a file called `.env` in your preject's main directory `(/.env)`. Paste the 
 ```
 DISCORD_TOKEN=your_client_token
 MONGODB=your_mongoDB_connection_string
+GUILD_ID=your_guild_id
+CLIENT_ID=your_client_id
 ```
 
 ## Step Two:
 
-Head over to `/src/json/config.json` to edit your own config.
-
-• prefix: The prefix of legacy developer commands.
-
-• owner: The ID of the owner of the bot.
-
-• membeRoleId: The id of the member role in your server, only needed for verification.
-
-• generalChannelId: The if of the main channel of your server, needed for `/lockdown` command.
+Use `npm run register` to register the slash commands to your guild.
 
 ## Step Three:
 
-run `npm run setup` in your terminal, then follow as it says in your terminal and type `SETUP START [args]` in a channel the bot has access seeing it.
-
-Format: first 6 arguments are channel mentions, and the 3 arguments at the end are emojis.
-
-```
-
-SETUP START [errors] - [mod-logs] - [message-logs] - [modmail-logs] - [join-leaves-logs] - | [sucess] | [error] | [attention]
-
-```
-
-<img src="assets/examples/setup-1.png" width="1000" align="center" style="border-radius: 10px; margin:10px 0px"/>
-
-After you type this, the bot sends a code to you which you should paste in your `/src/json/database.json`.
-
--    Note: If you don't need the modmail/serverGateLogs feature(s), please still set them.
+After the slash commands are registered, use the `/configure` command to setup everything for your server and bot.
 
 ## Step Four:
 
--    Skip this step if you have the automod module disabled
+-    Skip this step if you have the all automod modules disabled (/configure automod)
 
 Head over to `/src/config/automod.json` and edit your own configs in.
-
-• enabledModules: Disabled/Enable automod modules which gets triggered.
-
-• badwords: There are already some default bad words, if you want to add any, make sure it's in capitals.
 
 • ignore: Set channel-names, category Ids, role Ids and permission for each automod module to ignore.
 
 ## Step Five:
 
--    Skip this step if you have the logging module disabled
+-    Skip this step if you have the all logging modules disabled (/configure logs)
 
 Head over to `/src/config/logs.json` and edit your own configs in.
 
-• enabledModules: Disabled/Enable logging modules which gets triggered.
-
 • ignore: Set channel-ids, category Ids and role Ids for each logging module to ignore.
-
-## Step Six:
-
-Head over to `/src/config/moderation.json` and edit your own configs in.
-
-• lengths: The length of automod and manual punishment Ids, and moderated nicknames.
-
-• reason: The inbuilt reasons for each commands based of server rules.
 

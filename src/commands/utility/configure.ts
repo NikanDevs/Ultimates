@@ -19,7 +19,6 @@ import {
 	MAX_TIMEOUT_DURATION,
 	MIN_SOFTBAN_DURATION,
 	MIN_TIMEOUT_DURATION,
-	WEBHOOK_NAMES,
 } from '../../constants';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { interactions } from '../../interactions';
@@ -41,6 +40,13 @@ enum automodModulesNames {
 	'spam' = 'Spam',
 	'capitals' = 'Too many caps',
 	'urls' = 'Urls and links',
+}
+enum WEBHOOK_NAMES {
+	'mod' = 'Mod-Logs',
+	'message' = 'Message-Logs',
+	'modmail' = 'Modmail-Logs',
+	'servergate' = 'Server Gate',
+	'error' = 'Errors',
 }
 
 export default new Command({

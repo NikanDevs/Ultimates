@@ -7,7 +7,6 @@ import { modmailModel } from '../../models/modmail';
 import { Command } from '../../structures/Command';
 import { ModmailActionType } from '../../typings/Modmail';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
-import { guildId } from '../../json/config.json';
 import { interactions } from '../../interactions';
 import { MAX_REASON_LENGTH } from '../../constants';
 
@@ -15,13 +14,15 @@ export default new Command({
 	interaction: interactions.modmail,
 	excute: async ({ client, interaction, options }) => {
 		const subCommands = options.getSubcommand();
-		const guild = client.guilds.cache.get(guildId) || (await client.guilds.fetch(guildId));
+		const guild =
+			client.guilds.cache.get(process.env.GUILD_ID) ||
+			(await client.guilds.fetch(process.env.GUILD_ID));
 
 		if (subCommands === 'close') {
 			const currentTextChannel = interaction.channel as TextChannel;
 
 			if (
-				currentTextChannel.guildId !== guildId ||
+				currentTextChannel.guildId !== process.env.GUILD_ID ||
 				currentTextChannel.parentId !== client.config.general.guild.modmailCategoryId ||
 				currentTextChannel.id === '885266382235795477' ||
 				currentTextChannel.id === '880538350740725850'
@@ -214,7 +215,7 @@ export default new Command({
 
 			// Checking already exists
 			const guildCategory = client.guilds.cache
-				.get(guildId)
+				.get(process.env.GUILD_ID)
 				.channels.cache.get(
 					client.config.general.guild.modmailCategoryId
 				) as CategoryChannel;

@@ -8,12 +8,11 @@ import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
-import { guildId } from '../../json/config.json';
 import { User } from 'discord.js';
 import { client } from '../..';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
-	if (newMember.guild.id !== guildId) return;
+	if (newMember.guild.id !== process.env.GUILD_ID) return;
 	if (newMember.user.bot) return;
 
 	await oldMember.fetch().catch(() => {});
