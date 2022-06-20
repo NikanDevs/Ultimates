@@ -36,7 +36,8 @@ exports.default = new Command_1.Command({
             statuses["online"] = "<:online:886215547249913856>";
             statuses["idle"] = "<:idle:906867112612601866>";
             statuses["dnd"] = "<:dnd:906867112222531614>";
-            statuses["offline"] = "<:invisible:983325305273995334>";
+            // note: offline doesn't always mean invisible
+            statuses["offline"] = "<:offline:906867114126770186>";
             statuses["undefined"] = "<:offline:906867114126770186>";
         })(statuses || (statuses = {}));
         const embed = new discord_js_1.EmbedBuilder()

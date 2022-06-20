@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.interactions = void 0;
 const Punishments_1 = require("./context-menu/Punishments");
+const User_Info_1 = require("./context-menu/User Info");
 const eval_1 = require("./developer/eval");
 const ban_1 = require("./moderation/ban");
 const kick_1 = require("./moderation/kick");
@@ -23,6 +24,7 @@ const staff_1 = require("./utility/staff");
 const userinfo_1 = require("./utility/userinfo");
 exports.interactions = {
     Punishments: Punishments_1.punishmentsContextmenu,
+    UserInfo: User_Info_1.userinfoContextmenu,
     eval: eval_1.evalCommand,
     ban: ban_1.banCommand,
     kick: kick_1.kickCommand,
