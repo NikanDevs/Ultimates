@@ -409,7 +409,9 @@ export default new Event('messageCreate', async (message) => {
 	function getsIgnored(type: types) {
 		if (
 			member.permissions?.has('Administrator') ||
-			channelIgnores[type.toString()].includes(textChannel.name) ||
+			channelIgnores[type.toString()].some((ch: string) =>
+				textChannel.name.includes(ch)
+			) ||
 			categoryIgnores[type.toString()].includes(textChannel.parentId) ||
 			roleIgnores[type.toString()].some((roleId: string) =>
 				member.roles.cache.get(roleId)
