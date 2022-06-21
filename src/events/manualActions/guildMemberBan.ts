@@ -14,7 +14,7 @@ export default new Event('guildBanAdd', async (ban) => {
 	if (ban.user.bot) return;
 
 	const auditLogs = await ban.guild.fetchAuditLogs({
-		limit: 10,
+		limit: 1,
 		type: AuditLogEvent.MemberBanAdd,
 	});
 

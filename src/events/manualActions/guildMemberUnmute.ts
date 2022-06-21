@@ -17,7 +17,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	await oldMember.fetch().catch(() => {});
 	if (oldMember.communicationDisabledUntil && !newMember.communicationDisabledUntil) {
 		const auditLogs = await newMember.guild.fetchAuditLogs({
-			limit: 10,
+			limit: 1,
 			type: AuditLogEvent.MemberUpdate,
 		});
 
