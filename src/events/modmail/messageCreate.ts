@@ -214,7 +214,7 @@ export default new Event('messageCreate', async (message) => {
 								[
 									'The ticket you requested has been created.',
 									'Please consider asking your question and wait for a staff member to respond.',
-									`\n• If your message wasn't reacted with ${client.cc.successC}, it was not sent.`,
+									`\n• If your message wasn't reacted with ${client.config.general.success}, it was not sent.`,
 								].join('\n')
 							);
 						msg?.delete();
