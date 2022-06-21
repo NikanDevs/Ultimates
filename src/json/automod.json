@@ -1,15 +1,15 @@
 {
 	"ignore": {
-		"bypass-roleId": "881628276735483955",
+		"bypass-roleId": "",
 		"channelNames": {
-			"badwords": ["friend"],
-			"invites": ["advertis", "friend", "partner"],
-			"large-message": ["friend"],
-			"mass-mention": ["friend"],
-			"mass-emoji": ["friend", "spam"],
-			"spam": ["friend", "spam"],
-			"capitals": ["friend", "spam"],
-			"urls": ["friend", "spam", "advertis", "partner", "video", "link"]
+			"badwords": [],
+			"invites": [],
+			"large-message": [],
+			"mass-mention": [],
+			"mass-emoji": [],
+			"spam": [],
+			"capitals": [],
+			"urls": []
 		},
 		"categoryIds": {
 			"badwords": [],
@@ -32,14 +32,14 @@
 			"urls": []
 		},
 		"permissions": {
-			"badwords": ["Administrator"],
-			"invites": ["Administrator", "ManageMessages"],
-			"large-message": ["Administrator", "ManageGuild"],
-			"mass-mention": ["Administrator", "ManageGuild"],
-			"mass-emoji": ["ManageMessages", "Administrator"],
-			"spam": ["Administrator", "ManageMessages"],
-			"capitals": ["Administrator", "ManageMessages"],
-			"urls": ["ManageMessages"]
+			"badwords": [],
+			"invites": [],
+			"large-message": [],
+			"mass-mention": [],
+			"mass-emoji": [],
+			"spam": [],
+			"capitals": [],
+			"urls": []
 		}
 	}
 }
