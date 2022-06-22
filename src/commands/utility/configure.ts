@@ -1,5 +1,6 @@
 import {
 	ActionRowBuilder,
+	APIEmbedField,
 	ButtonBuilder,
 	ButtonStyle,
 	ComponentType,
@@ -657,6 +658,169 @@ export default new Command({
 					]);
 				await collected.showModal(modal);
 			});
+		} else if (subcommand === 'ignores') {
+			const module = options.getString('module');
+			const channel = options.getChannel('channel');
+			const role = options.getRole('role');
+			const target = module
+				? module?.startsWith('automod')
+					? 'automod'
+					: module?.startsWith('logs')
+					? 'logs'
+					: null
+				: null;
+
+			const data = await configModel.findById('ignores');
+			if (!data) {
+				const newData = new configModel({
+					_id: 'ignores',
+					automod: {
+						badwords: { channelIds: [], roleIds: [] },
+						invites: { channelIds: [], roleIds: [] },
+						largeMessage: { channelIds: [], roleIds: [] },
+						massMention: { channelIds: [], roleIds: [] },
+						massEmoji: { channelIds: [], roleIds: [] },
+						spam: { channelIds: [], roleIds: [] },
+						capitals: { channelIds: [], roleIds: [] },
+						urls: { channelIds: [], roleIds: [] },
+					},
+					logs: {
+						message: {
+							channelIds: [],
+							roleIds: [],
+						},
+					},
+				});
+				newData.save();
+			}
+
+			if (module && (channel || role)) {
+				const values = (await configModel.findById('ignores'))[target][
+					module.replaceAll('automod:', '').replaceAll('logs:', '')
+				];
+
+				let channelIds: string[] = values.channelIds;
+				let roleIds: string[] = values.roleIds;
+
+				if (channel && channelIds.includes(channel.id)) {
+					channelIds.splice(channelIds.indexOf(channel.id));
+				} else if (channel && !channelIds.includes(channel.id)) {
+					channelIds = channelIds.concat([channel.id]);
+				}
+
+				if (role && roleIds.includes(role.id)) {
+					roleIds.splice(roleIds.indexOf(role.id));
+				} else if (role && !roleIds.includes(role.id)) {
+					roleIds = roleIds.concat([role.id]);
+				}
+
+				switch (target) {
+					case 'logs':
+						await configModel.findByIdAndUpdate('ignores', {
+							$set: {
+								automod: {
+									...(await configModel.findById('ignores')).automod,
+								},
+								logs: {
+									...(await configModel.findById('ignores')).logs,
+									[module.replaceAll('logs:', '')]: {
+										channelIds: channelIds,
+										roleIds: roleIds,
+									},
+								},
+							},
+						});
+						break;
+					case 'automod':
+						await configModel.findByIdAndUpdate('ignores', {
+							$set: {
+								automod: {
+									...(await configModel.findById('ignores')).automod,
+									[module.replaceAll('automod:', '')]: {
+										channelIds: channelIds,
+										roleIds: roleIds,
+									},
+								},
+								logs: {
+									...(await configModel.findById('ignores')).logs,
+								},
+							},
+						});
+						break;
+				}
+				await client.config.updateIgnores();
+			}
+			if (!module) {
+				const embed = new EmbedBuilder()
+					.setTitle('Ignore List Configuration')
+					.setColor(client.cc.ultimates)
+					.addFields([
+						await formatIgnores('automod:badwords'),
+						await formatIgnores('automod:invites'),
+						await formatIgnores('automod:largeMessage'),
+						await formatIgnores('automod:massMention'),
+						await formatIgnores('automod:massEmoji'),
+						await formatIgnores('automod:spam'),
+						await formatIgnores('automod:capitals'),
+						await formatIgnores('automod:urls'),
+						await formatIgnores('logs:message'),
+					]);
+
+				await interaction.followUp({
+					embeds: [embed],
+				});
+			} else if (module) {
+				const embed = new EmbedBuilder()
+					.setColor(client.cc.ultimates)
+					.addFields([await formatIgnores(module)]);
+
+				await interaction.followUp({
+					embeds: [embed],
+				});
+			}
+
+			async function formatIgnores(module: string): Promise<APIEmbedField> {
+				const theTarget = module
+					? module?.startsWith('automod')
+						? 'automod'
+						: module?.startsWith('logs')
+						? 'logs'
+						: null
+					: null;
+				const getValues = (await configModel.findById('ignores'))[theTarget][
+					module.replaceAll('automod:', '').replaceAll('logs:', '')
+				];
+				return {
+					name: `${module.startsWith('automod') ? 'Automod:' : 'Logging:'} ${
+						module.startsWith('automod')
+							? automodModulesNames[module.replaceAll('automod:', '')]
+							: logsNames[module.replaceAll('logs:', '')]
+					}`,
+					value: [
+						`• ${Formatters.bold('Channels:')} ${
+							getValues.channelIds.length
+								? getValues.channelIds
+										.map(
+											(id: string) =>
+												client.channels.cache.get(id) || id
+										)
+										.join(' ')
+								: 'No ignores'
+						}`,
+						`• ${Formatters.bold('Roles:')} ${
+							getValues.roleIds.length
+								? getValues.roleIds
+										.map(
+											(id: string) =>
+												interaction.guild.roles.cache.get(id) ||
+												id
+										)
+										.join(' ')
+								: 'No ignores'
+						}`,
+					].join('\n'),
+				};
+			}
 		}
 	},
 });

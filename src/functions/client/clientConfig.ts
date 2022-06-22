@@ -3,7 +3,7 @@ import { configModel } from '../../models/config';
 
 export class clientConfig {
 	/** Logging system webhook clients */
-	webhooks = {
+	public webhooks = {
 		mod: null as WebhookClient,
 		message: null as WebhookClient,
 		modmail: null as WebhookClient,
@@ -11,7 +11,7 @@ export class clientConfig {
 	};
 
 	/** Logging system active status */
-	logging = {
+	public logging = {
 		mod: null as boolean,
 		message: null as boolean,
 		modmail: null as boolean,
@@ -19,7 +19,7 @@ export class clientConfig {
 	};
 
 	/** Automod data */
-	automod = {
+	public automod = {
 		/** Automod activity status */
 		modules: {
 			badwords: null as boolean,
@@ -36,7 +36,7 @@ export class clientConfig {
 	};
 
 	/** General data */
-	general = {
+	public general = {
 		ownerId: null as string,
 		developers: [] as string[],
 		success: '' as string,
@@ -50,7 +50,7 @@ export class clientConfig {
 	};
 
 	/** The config for the moderation system. */
-	moderation = {
+	public moderation = {
 		count: { automod: null, timeout1: null, timeout2: null, ban: null },
 		duration: {
 			timeout1: null as number,
@@ -74,7 +74,27 @@ export class clientConfig {
 		},
 	};
 
-	async updateLogs() {
+	/** The config for the ignore list for modules */
+	public ignores = {
+		automod: {
+			badwords: { channelIds: [], roleIds: [] },
+			invites: { channelIds: [], roleIds: [] },
+			largeMessage: { channelIds: [], roleIds: [] },
+			massMention: { channelIds: [], roleIds: [] },
+			massEmoji: { channelIds: [], roleIds: [] },
+			spam: { channelIds: [], roleIds: [] },
+			capitals: { channelIds: [], roleIds: [] },
+			urls: { channelIds: [], roleIds: [] },
+		},
+		logs: {
+			message: {
+				channelIds: [],
+				roleIds: [],
+			},
+		},
+	};
+
+	public async updateLogs() {
 		const data = await configModel.findById('logging');
 		if (!data) return;
 
@@ -114,7 +134,7 @@ export class clientConfig {
 		};
 	}
 
-	async updateAutomod() {
+	public async updateAutomod() {
 		const data = await configModel.findById('automod');
 		if (!data) return;
 
@@ -132,7 +152,7 @@ export class clientConfig {
 		this.automod.filteredWords = data.filteredWords;
 	}
 
-	async updateGeneral() {
+	public async updateGeneral() {
 		const data = await configModel.findById('general');
 		if (!data) return;
 
@@ -150,7 +170,7 @@ export class clientConfig {
 		};
 	}
 
-	async updateModeration() {
+	public async updateModeration() {
 		const data = await configModel.findById('moderation');
 		if (!data) return;
 
@@ -180,6 +200,54 @@ export class clientConfig {
 				softban: data.reasons.softban,
 				unban: data.reasons.unban,
 				kick: data.reasons.kick,
+			},
+		};
+	}
+
+	public async updateIgnores() {
+		const data = await configModel.findById('ignores');
+		if (!data) return;
+
+		this.ignores = {
+			automod: {
+				badwords: {
+					channelIds: data.automod.badwords.channelIds,
+					roleIds: data.automod.badwords.roleIds,
+				},
+				invites: {
+					channelIds: data.automod.invites.channelIds,
+					roleIds: data.automod.invites.roleIds,
+				},
+				largeMessage: {
+					channelIds: data.automod.largeMessage.channelIds,
+					roleIds: data.automod.largeMessage.roleIds,
+				},
+				massMention: {
+					channelIds: data.automod.massMention.channelIds,
+					roleIds: data.automod.massMention.roleIds,
+				},
+				massEmoji: {
+					channelIds: data.automod.massEmoji.channelIds,
+					roleIds: data.automod.massEmoji.roleIds,
+				},
+				spam: {
+					channelIds: data.automod.spam.channelIds,
+					roleIds: data.automod.spam.roleIds,
+				},
+				capitals: {
+					channelIds: data.automod.capitals.channelIds,
+					roleIds: data.automod.capitals.roleIds,
+				},
+				urls: {
+					channelIds: data.automod.urls.channelIds,
+					roleIds: data.automod.urls.roleIds,
+				},
+			},
+			logs: {
+				message: {
+					channelIds: data.logs.message.channelIds,
+					roleIds: data.logs.message.roleIds,
+				},
 			},
 		};
 	}

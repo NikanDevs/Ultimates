@@ -7,11 +7,9 @@ import {
 } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
-import { ignores } from '../../json/logs.json';
 import { create } from 'sourcebin';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
-const ignore = ignores.MessageDeleteBulk;
 
 export default new Event('messageDeleteBulk', async (messages) => {
 	if (!logActivity('message')) return;
@@ -21,9 +19,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 	if (
 		!randomMessage?.guild ||
 		randomMessage?.guildId !== process.env.GUILD_ID ||
-		ignore.category.includes(channel?.parentId) ||
-		ignore.channel.includes(channel?.id) ||
-		ignore.roles.some((role) => randomMessage?.member?.roles?.cache.has(role))
+		client.config.ignores.logs.message.channelIds.includes(channel?.id)
 	)
 		return;
 

@@ -1,4 +1,4 @@
-import { GuildMember, Message, PermissionResolvable, TextChannel, Util } from 'discord.js';
+import { GuildMember, Message, TextChannel, Util } from 'discord.js';
 import { client } from '../..';
 import {
 	automodPunishmentExpiry,
@@ -7,7 +7,6 @@ import {
 	AUTOMOD_SPAM_COUNT,
 } from '../../constants';
 import { Event } from '../../structures/Event';
-import { ignore } from '../../json/automod.json';
 import { automodModel } from '../../models/automod';
 import { automodSpamCollection } from '../../constants';
 import { PunishmentType } from '../../typings/PunishmentType';
@@ -17,11 +16,6 @@ import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 const config = client.config.automod;
-const bypassRoleId = ignore['bypass-roleId'];
-const categoryIgnores = ignore['categoryIds'];
-const channelIgnores = ignore['channelNames'];
-const roleIgnores = ignore['roleIds'];
-const permissionIgnores = ignore['permissions'];
 
 export default new Event('messageCreate', async (message) => {
 	const member = message.member as GuildMember;
@@ -33,7 +27,7 @@ export default new Event('messageCreate', async (message) => {
 		message.guildId !== process.env.GUILD_ID ||
 		message.author.bot ||
 		!message.content ||
-		member.roles.cache.has(bypassRoleId)
+		member.permissions?.has('Administrator')
 	)
 		return;
 
@@ -65,7 +59,7 @@ export default new Event('messageCreate', async (message) => {
 	if (
 		message.content.length > 550 &&
 		config.modules.largeMessage &&
-		!getsIgnored('large-message')
+		!getsIgnored('largeMessage')
 	) {
 		message?.delete();
 		textChannel
@@ -190,7 +184,7 @@ export default new Event('messageCreate', async (message) => {
 	} else if (
 		message.mentions?.members.size > 4 &&
 		config.modules.massMention &&
-		!getsIgnored('mass-mention')
+		!getsIgnored('massMention')
 	) {
 		message?.delete();
 		textChannel
@@ -272,7 +266,7 @@ export default new Event('messageCreate', async (message) => {
 	} else if (
 		mostIsEmojis(message.content) &&
 		config.modules.massEmoji &&
-		!getsIgnored('mass-emoji')
+		!getsIgnored('massEmoji')
 	) {
 		message?.delete();
 		textChannel
@@ -408,16 +402,9 @@ export default new Event('messageCreate', async (message) => {
 	// Functions
 	function getsIgnored(type: types) {
 		if (
-			member.permissions?.has('Administrator') ||
-			channelIgnores[type.toString()].some((ch: string) =>
-				textChannel.name.includes(ch)
-			) ||
-			categoryIgnores[type.toString()].includes(textChannel.parentId) ||
-			roleIgnores[type.toString()].some((roleId: string) =>
-				member.roles.cache.get(roleId)
-			) ||
-			permissionIgnores[type.toString()].some((permission: string) =>
-				member.permissions.has(permission as PermissionResolvable)
+			client.config.ignores.automod[type.toString()].channelIds.includes(textChannel.id) ||
+			client.config.ignores.automod[type.toString()].roleIds.some((roleId: string) =>
+				member.roles.cache.has(roleId)
 			)
 		)
 			return true;
@@ -518,18 +505,18 @@ type types =
 	| 'badwords'
 	| 'links'
 	| 'invites'
-	| 'mass-mention'
-	| 'mass-emoji'
-	| 'large-message'
+	| 'massMention'
+	| 'massEmoji'
+	| 'largeMessage'
 	| 'spam'
 	| 'capitals'
 	| 'urls';
 enum reasons {
 	'badwords' = 'Sending filtered words in the chat.',
 	'invites' = 'Sending discord invite links in the chat.',
-	'large-message' = 'Sending a large message in content.',
-	'mass-mention' = 'Mentioning more than 4 people.',
-	'mass-emoji' = 'Sending too many emojis at once.',
+	'largeMessage' = 'Sending a large message in content.',
+	'massMention' = 'Mentioning more than 4 people.',
+	'massEmoji' = 'Sending too many emojis at once.',
 	'spam' = 'Sending messages too quickly.',
 	'capitals' = 'Using too many capital letters.',
 	'urls' = 'Sending links and urls.',

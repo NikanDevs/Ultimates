@@ -62,6 +62,23 @@ type T = {
 		servergate: { channelId: string; webhook: string; active: boolean };
 		error: { channelId: string; webhook: string; active: boolean };
 	};
+	// Ignores
+	automod: {
+		badwords: { channelIds: string[]; roleIds: string[] };
+		invites: { channelIds: string[]; roleIds: string[] };
+		largeMessage: { channelIds: string[]; roleIds: string[] };
+		massMention: { channelIds: string[]; roleIds: string[] };
+		massEmoji: { channelIds: string[]; roleIds: string[] };
+		spam: { channelIds: string[]; roleIds: string[] };
+		capitals: { channelIds: string[]; roleIds: string[] };
+		urls: { channelIds: string[]; roleIds: string[] };
+	};
+	logs: {
+		message: {
+			channelIds: string[];
+			roleIds: string[];
+		};
+	};
 };
 
 const schema = new mongoose.Schema({
@@ -83,6 +100,9 @@ const schema = new mongoose.Schema({
 	modules: { type: Object, required: false },
 	// Logging
 	logging: { type: Object, required: false },
+	// Ignores
+	automod: { type: Object, required: false },
+	logs: { type: Object, required: true },
 });
 
 export const configModel = mongoose.model<T>('config', schema);

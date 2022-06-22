@@ -147,6 +147,43 @@ export const configureCommand = {
 				},
 			],
 		},
+		{
+			name: 'ignores',
+			description: 'Configure the ignore values for diffrent modules',
+			type: ApplicationCommandOptionType.Subcommand,
+			options: [
+				{
+					name: 'module',
+					description: 'The module you want to configure ignores for',
+					type: ApplicationCommandOptionType.String,
+					required: false,
+					choices: [
+						{ name: 'Automod: Filtered words', value: 'automod:badwords' },
+						{ name: 'Automod: Discord invites', value: 'automod:invites' },
+						{ name: 'Automod: Large messages', value: 'automod:largeMessage' },
+						{ name: 'Automod: Mass mentions', value: 'automod:massMention' },
+						{ name: 'Automod: Mass emoji', value: 'automod:massEmoji' },
+						{ name: 'Automod: Spam', value: 'automod:spam' },
+						{ name: 'Automod: Too many capitals', value: 'automod:capitals' },
+						{ name: 'Automod: Urls and links', value: 'automod:urls' },
+						{ name: 'Logging: Message logs', value: 'logs:message' },
+					],
+				},
+				{
+					name: 'channel',
+					description: 'Add or remove a channel to/from the ignore list',
+					type: ApplicationCommandOptionType.Channel,
+					required: false,
+					channel_types: [ChannelType.GuildText, ChannelType.GuildVoice],
+				},
+				{
+					name: 'role',
+					description: 'Add or remove a role to/from the ignore list.',
+					type: ApplicationCommandOptionType.Role,
+					required: false,
+				},
+			],
+		},
 	],
 } as interactionOptions;
 

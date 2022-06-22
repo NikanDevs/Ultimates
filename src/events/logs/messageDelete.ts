@@ -1,9 +1,7 @@
 import { EmbedBuilder, Message, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
-import { ignores } from '../../json/logs.json';
 import { logActivity } from '../../functions/logs/checkActivity';
-const ignore = ignores.messageDelete;
 
 export default new Event('messageDelete', async (message: Message) => {
 	if (!logActivity('message')) return;
@@ -16,9 +14,10 @@ export default new Event('messageDelete', async (message: Message) => {
 		!message?.guild ||
 		message?.guildId !== process.env.GUILD_ID ||
 		message?.author?.bot ||
-		ignore.category.includes(channel?.parentId) ||
-		ignore.channel.includes(channel?.id) ||
-		ignore.roles.some((role) => message?.member?.roles?.cache.has(role))
+		client.config.ignores.logs.message.channelIds.includes(channel?.id) ||
+		client.config.ignores.logs.message.roleIds.some((role) =>
+			message?.member?.roles?.cache.has(role)
+		)
 	)
 		return;
 
