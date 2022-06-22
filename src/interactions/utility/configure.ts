@@ -174,7 +174,11 @@ export const configureCommand = {
 					description: 'Add or remove a channel to/from the ignore list',
 					type: ApplicationCommandOptionType.Channel,
 					required: false,
-					channel_types: [ChannelType.GuildText, ChannelType.GuildVoice],
+					channel_types: [
+						ChannelType.GuildText,
+						ChannelType.GuildVoice,
+						ChannelType.GuildNews,
+					],
 				},
 				{
 					name: 'role',
