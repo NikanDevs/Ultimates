@@ -94,36 +94,36 @@ export default new Event('interactionCreate', async (interaction) => {
 			}
 			break;
 		case 'unban':
-			if (focus?.name !== 'user') return;
+			if (focus?.name === 'user') {
+				const mapBans = (await interaction.guild.bans.fetch()).map((ban) => {
+					return [
+						`${ban.user.tag}`,
+						`${ban.user.id}`,
+						`${ban.reason || 'No reason provided.'}`,
+					].join(' • ');
+				});
+				const availableBannedMembers = [...new Set(mapBans)];
+				const filteredBannedMembers = availableBannedMembers
+					.filter(
+						(data) =>
+							data.split(' • ')[0].startsWith(focus.value as string) ||
+							data.split(' • ')[1].startsWith(focus.value as string)
+					)
+					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
+					.slice(0, 25);
 
-			const mapBans = (await interaction.guild.bans.fetch()).map((ban) => {
-				return [
-					`${ban.user.tag}`,
-					`${ban.user.id}`,
-					`${ban.reason || 'No reason provided.'}`,
-				].join(' • ');
-			});
-			const availableBannedMembers = [...new Set(mapBans)];
-			const filteredBannedMembers = availableBannedMembers
-				.filter(
-					(data) =>
-						data.split(' • ')[0].startsWith(focus.value as string) ||
-						data.split(' • ')[1].startsWith(focus.value as string)
-				)
-				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
-				.slice(0, 25);
+				if (!filteredBannedMembers.length)
+					return interaction.respond([
+						{ name: 'No banned members were found!', value: 'null' },
+					]);
 
-			if (!filteredBannedMembers.length)
-				return interaction.respond([
-					{ name: 'No banned members were found!', value: 'null' },
-				]);
-
-			await interaction.respond(
-				filteredBannedMembers.map((data: string) => ({
-					name: client.util.splitText(data, MAX_AUTOCOMPLETE_LENGTH),
-					value: data.split(' • ')[2],
-				}))
-			);
+				await interaction.respond(
+					filteredBannedMembers.map((data: string) => ({
+						name: client.util.splitText(data, MAX_AUTOCOMPLETE_LENGTH),
+						value: data.split(' • ')[2],
+					}))
+				);
+			}
 			break;
 	}
 
