@@ -55,7 +55,7 @@ export class Ultimates extends Client {
 		await this.config.updateAutomod();
 		await this.config.updateGeneral();
 		await this.config.updateModeration();
-
+		await this.config.updateIgnores();
 		await this.registerModules();
 
 		await this.login(process.env.DISCORD_TOKEN).then(() => {
