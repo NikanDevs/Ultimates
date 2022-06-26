@@ -51,11 +51,7 @@ export class Ultimates extends Client {
 			logger.info('MongoDB connected', { showDate: false })
 		);
 		await this.checkSubstance();
-		await this.config.updateLogs();
-		await this.config.updateAutomod();
-		await this.config.updateGeneral();
-		await this.config.updateModeration();
-		await this.config.updateIgnores();
+		await this.config.setConfig();
 		await this.registerModules();
 
 		await this.login(process.env.DISCORD_TOKEN).then(() => {

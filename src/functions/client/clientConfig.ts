@@ -251,5 +251,13 @@ export class clientConfig {
 			},
 		};
 	}
+
+	public async setConfig() {
+		await this.updateLogs();
+		await this.updateAutomod();
+		await this.updateGeneral();
+		await this.updateModeration();
+		await this.updateIgnores();
+	}
 }
 
