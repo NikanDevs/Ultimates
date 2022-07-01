@@ -2,16 +2,15 @@ import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { ignore } from '../../functions/ignore';
 import { interactions } from '../../interactions';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 
 export default new Command({
 	interaction: interactions.nickname,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const newNick = options.getString('nickname');
-		let auditLogReason = '/nickname was excuted by a moderator.';
 
-		if (ignore(member, { interaction, action: PunishmentType.Unknown })) return;
+		if (ignore(member, { interaction, action: PunishmentTypes.Unknown })) return;
 		if (!member)
 			return interaction.reply({
 				embeds: [client.embeds.error('I could not find that member in this server.')],
@@ -28,7 +27,7 @@ export default new Command({
 					ephemeral: true,
 				});
 
-			member.setNickname(newNick, auditLogReason);
+			member.setNickname(newNick);
 			interaction.reply({
 				embeds: [
 					client.embeds.success(
@@ -50,7 +49,7 @@ export default new Command({
 				return nickname;
 			}
 
-			member.setNickname(`Moderated Nickname ` + generateNick(), auditLogReason);
+			member.setNickname(`Moderated Nickname ` + generateNick());
 			interaction.reply({
 				embeds: [
 					client.embeds.success(`**${member.user.tag}** nickname was moderated.`),
@@ -58,7 +57,7 @@ export default new Command({
 			});
 		} else if (!newNick && member.nickname) {
 			// Reset the nickname
-			member.setNickname(null, auditLogReason);
+			member.setNickname(null);
 			interaction.reply({
 				embeds: [client.embeds.success(`**${member.user.tag}** nickname was reset.`)],
 			});

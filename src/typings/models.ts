@@ -1,15 +1,19 @@
 import { type Snowflake } from 'discord.js';
-import { PunishmentType } from './PunishmentType';
+import { PunishmentTypes } from '.';
+
+// Automod
 
 export type AutomodSchemaType = {
 	_id: string;
 	case: number;
-	type: PunishmentType;
+	type: PunishmentTypes;
 	userId: Snowflake;
 	reason?: string;
 	date: Date;
 	expire: Date;
 };
+
+// Config
 
 type configIds = 'general' | 'moderation' | 'automod' | 'logging' | 'ignores';
 export type ConfigSchemaType = {
@@ -97,13 +101,17 @@ export type ConfigSchemaType = {
 	};
 };
 
+// Durations
+
 export type DurationsSchemaType = {
 	case: number;
-	type: PunishmentType;
+	type: PunishmentTypes;
 	userId: Snowflake;
 	date: Date;
 	duration: number;
 };
+
+// Left Members
 
 export type LeftMembersSchemaType = {
 	userId: Snowflake;
@@ -111,12 +119,16 @@ export type LeftMembersSchemaType = {
 	expire: Date;
 };
 
+// Logs
+
 export type LogsSchemaType = {
 	_id: string;
 	currentCase: number;
 	url: string;
 	expire?: Date;
 };
+
+// Modmail
 
 type ModmailTicketTypes = 'REQUEST' | 'DIRECT';
 interface ModmailTicket {
@@ -135,10 +147,12 @@ export type ModmailSchemaType = {
 	url?: string;
 };
 
+// Punishments
+
 export type PunishmentsSchemaType = {
 	_id: string;
 	case: number;
-	type: PunishmentType;
+	type: PunishmentTypes;
 	userId: Snowflake;
 	moderatorId: Snowflake;
 	reason: string;

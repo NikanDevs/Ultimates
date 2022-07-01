@@ -3,7 +3,7 @@ import { Event } from '../../structures/Event';
 import { leftMembersModel } from '../../models/leftMembers';
 import { leftMemberExpiry } from '../../constants';
 import { logActivity } from '../../functions/logs/checkActivity';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, Util } from 'discord.js';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (member.guild.id !== process.env.GUILD_ID) return;
@@ -14,7 +14,7 @@ export default new Event('guildMemberRemove', async (member) => {
 
 	const embed = new EmbedBuilder()
 		.setAuthor({ name: member.guild.name, iconURL: member.guild.iconURL() })
-		.setColor(client.util.resolve.color('#b55c4e'))
+		.setColor(Util.resolveColor('#b55c4e'))
 		.setDescription(
 			[
 				`• **Mention:** ${member}\n`,

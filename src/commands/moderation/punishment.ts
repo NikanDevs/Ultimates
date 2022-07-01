@@ -1,12 +1,21 @@
-import { ComponentType, EmbedBuilder, Message, TextChannel, User } from 'discord.js';
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ComponentType,
+	EmbedBuilder,
+	Message,
+	TextChannel,
+	User,
+} from 'discord.js';
 import { durationsModel } from '../../models/durations';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { automodModel } from '../../models/automod';
 import { logsModel } from '../../models/logs';
 import { interactions } from '../../interactions';
-import { PunishmentType } from '../../typings/PunishmentType';
-import { createModLog, getUrlFromCase } from '../../functions/logs/createModLog';
+import { PunishmentTypes } from '../../typings';
+import { createModLog } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { convertTime } from '../../functions/convertTime';
 import {
@@ -18,6 +27,9 @@ import {
 	MIN_TIMEOUT_DURATION,
 	PUNISHMENT_ID_LENGTH,
 } from '../../constants';
+import { getUrlFromCase } from '../../functions/cases/getURL';
+import { capitalize } from '../../functions/other/capitalize';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.punishment,
@@ -27,7 +39,7 @@ export default new Command({
 		if (getSubCommand === 'revoke') {
 			const warnId = options.getString('id');
 			const reason =
-				client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+				splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
 				client.config.moderation.default.reason;
 
 			const data =
@@ -44,10 +56,10 @@ export default new Command({
 			const getMember = interaction.guild.members.cache.get(data.userId);
 			const fetchUser = await client.users.fetch(data.userId);
 			switch (data.type) {
-				case PunishmentType.Timeout:
+				case PunishmentTypes.Timeout:
 					if (
 						await durationsModel.findOne({
-							type: PunishmentType.Timeout,
+							type: PunishmentTypes.Timeout,
 							userId: data.userId,
 						})
 					) {
@@ -71,14 +83,14 @@ export default new Command({
 						});
 
 						await createModLog({
-							action: PunishmentType.Unmute,
+							action: PunishmentTypes.Unmute,
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
 							referencedPunishment: data,
 						}).then(async () => {
 							await durationsModel.findOneAndDelete({
-								type: PunishmentType.Timeout,
+								type: PunishmentTypes.Timeout,
 								case: data.case,
 							});
 							await logsModel.findByIdAndDelete(data.case);
@@ -94,7 +106,7 @@ export default new Command({
 						});
 
 						await createModLog({
-							action: data.type as PunishmentType,
+							action: data.type as PunishmentTypes,
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
@@ -106,14 +118,14 @@ export default new Command({
 						});
 					}
 					break;
-				case PunishmentType.Ban:
-				case PunishmentType.Softban:
+				case PunishmentTypes.Ban:
+				case PunishmentTypes.Softban:
 					if (await interaction.guild.bans.fetch(data.userId).catch(() => {})) {
 						interaction.guild.members.unban(fetchUser, reason);
 
-						if (data.type === PunishmentType.Softban)
+						if (data.type === PunishmentTypes.Softban)
 							await durationsModel.findOneAndDelete({
-								type: PunishmentType.Softban,
+								type: PunishmentTypes.Softban,
 								case: data.case,
 							});
 
@@ -126,7 +138,7 @@ export default new Command({
 						});
 
 						await createModLog({
-							action: PunishmentType.Unban,
+							action: PunishmentTypes.Unban,
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
@@ -145,7 +157,7 @@ export default new Command({
 						});
 
 						await createModLog({
-							action: data.type as PunishmentType,
+							action: data.type as PunishmentTypes,
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
@@ -165,7 +177,7 @@ export default new Command({
 					});
 
 					await createModLog({
-						action: data.type as PunishmentType,
+						action: data.type as PunishmentTypes,
 						user: fetchUser,
 						moderator: interaction.user,
 						reason: reason,
@@ -202,9 +214,7 @@ export default new Command({
 						.addFields([
 							{
 								name: 'Type',
-								value: `Automod ${client.util.capitalize(
-									automodWarn.type
-								)}`,
+								value: `Automod ${capitalize(automodWarn.type)}`,
 								inline: true,
 							},
 							{
@@ -264,7 +274,7 @@ export default new Command({
 						.addFields([
 							{
 								name: 'Type',
-								value: `Manual ${client.util.capitalize(manualWarn.type)}`,
+								value: `Manual ${capitalize(manualWarn.type)}`,
 								inline: true,
 							},
 							{
@@ -342,9 +352,9 @@ export default new Command({
 				.map((data) => {
 					warnCounter = warnCounter + 1;
 					return [
-						`\`${warnCounter}\` **${client.util.capitalize(
-							data.type
-						)}** | **ID: ${data._id}**`,
+						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${
+							data._id
+						}**`,
 						`• **Date:** ${generateDiscordTimestamp(
 							data.date,
 							'Short Date/Time'
@@ -368,7 +378,7 @@ export default new Command({
 					findWarningsAutomod.map((data) => {
 						warnCounter = warnCounter + 1;
 						return [
-							`\`${warnCounter}\` **${client.util.capitalize(
+							`\`${warnCounter}\` **${capitalize(
 								data.type
 							)}** | Auto Moderation`,
 							`• **Date:** ${generateDiscordTimestamp(
@@ -420,9 +430,21 @@ export default new Command({
 				warningsEmbed
 					.setDescription(sliced.join('\n\n'))
 					.setFooter({ text: `Page ${currentPage}/${totalPages}` });
+
+				const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
+					new ButtonBuilder()
+						.setCustomId('1')
+						.setEmoji({ name: '◀️' })
+						.setStyle(ButtonStyle.Primary),
+					new ButtonBuilder()
+						.setCustomId('2')
+						.setEmoji({ name: '▶️' })
+						.setStyle(ButtonStyle.Primary),
+				]);
+
 				var sentInteraction = (await interaction.followUp({
 					embeds: [warningsEmbed],
-					components: [client.util.build.paginator()],
+					components: [buttons],
 				})) as Message;
 
 				const collector = sentInteraction.createMessageComponentCollector({
@@ -512,7 +534,7 @@ export default new Command({
 						!(await interaction.guild.members
 							.fetch(punishment.userId)
 							.catch(() => {})) &&
-						punishment.type === PunishmentType.Timeout
+						punishment.type === PunishmentTypes.Timeout
 					)
 						return interaction.followUp({
 							embeds: [
@@ -523,15 +545,15 @@ export default new Command({
 						});
 
 					if (
-						punishment.type == PunishmentType.Timeout ||
-						punishment.type === PunishmentType.Softban
+						punishment.type == PunishmentTypes.Timeout ||
+						punishment.type === PunishmentTypes.Softban
 					) {
 						if (duration === undefined)
 							return interaction.followUp({
 								embeds: [
 									client.embeds.error(
 										`The provided duration must be in ${
-											punishment.type === PunishmentType.Softban
+											punishment.type === PunishmentTypes.Softban
 												? `1y, 1mo, 1w, 1h, 1m`
 												: `1w, 1h, 1d, 1m, 10s`
 										} format.`
@@ -543,7 +565,7 @@ export default new Command({
 						if (
 							duration > MAX_TIMEOUT_DURATION ||
 							(duration < MIN_TIMEOUT_DURATION &&
-								punishment.type === PunishmentType.Timeout)
+								punishment.type === PunishmentTypes.Timeout)
 						)
 							return interaction.followUp({
 								embeds: [
@@ -559,7 +581,7 @@ export default new Command({
 						if (
 							duration > MAX_SOFTBAN_DURATION ||
 							(duration < MIN_SOFTBAN_DURATION &&
-								punishment.type === PunishmentType.Softban)
+								punishment.type === PunishmentTypes.Softban)
 						)
 							return interaction.followUp({
 								embeds: [
@@ -602,7 +624,7 @@ export default new Command({
 							{ $set: { date: new Date(), duration: duration } }
 						);
 
-						if (punishment.type === PunishmentType.Timeout)
+						if (punishment.type === PunishmentTypes.Timeout)
 							await (
 								await interaction.guild.members.fetch(punishment.userId)
 							).timeout(duration, 'Punishment duration updated.');
@@ -635,7 +657,7 @@ export default new Command({
 							],
 						});
 
-					newvalue = client.util.splitText(newvalue, MAX_REASON_LENGTH);
+					newvalue = splitText(newvalue, MAX_REASON_LENGTH);
 					switch (id.length) {
 						case PUNISHMENT_ID_LENGTH:
 							punishment = await punishmentModel.findByIdAndUpdate(id, {
@@ -658,7 +680,7 @@ export default new Command({
 			}
 
 			const updateLog = await createModLog({
-				action: punishment.type as PunishmentType,
+				action: punishment.type as PunishmentTypes,
 				user: await client.users.fetch(punishment.userId),
 				moderator: interaction.user,
 				reason: value === 2 ? newvalue : punishment.reason,

@@ -1,43 +1,21 @@
-import { EmbedBuilder, TextChannel, User, Util } from 'discord.js';
+import { EmbedBuilder, TextChannel, Util } from 'discord.js';
 import { client } from '../..';
 import { logsModel } from '../../models/logs';
-import { PunishmentType } from '../../typings/PunishmentType';
+import {
+	type createModLogOptions,
+	PunishmentTypes,
+	punishmentTypeEmbedColors,
+} from '../../typings';
 import { addModCase, getModCase } from '../cases/modCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
 import { convertTime } from '../convertTime';
 import { MAX_REASON_LENGTH } from '../../constants';
+import { getUrlFromCase } from '../cases/getURL';
+import { capitalize } from '../other/capitalize';
+import { splitText } from '../other/splitText';
 
-interface options {
-	action: PunishmentType;
-	punishmentId?: string;
-	user: User;
-	moderator: User;
-	reason: string;
-	duration?: number;
-	referencedPunishment?: any;
-	expire?: Date;
-	revoke?: boolean;
-	update?: 'duration' | 'reason';
-}
-
-export async function getUrlFromCase(tofindCase: string | number): Promise<string> {
-	const data = await logsModel.findById(`${tofindCase}`);
-
-	return data ? data.url : 'https://discord.com/404';
-}
-
-export async function createModLog(options: options) {
-	enum colors {
-		'WARN' = '#d4c03f',
-		'TIMEOUT' = '#f5a742',
-		'BAN' = '#cc423d',
-		'KICK' = '#db644f',
-		'UNMUTE' = '#2F3136',
-		'UNBAN' = '#68b7bd',
-		'SOFTBAN' = '#f07046',
-	}
-
+export async function createModLog(options: createModLogOptions) {
 	const revoke: boolean = options.revoke ? options.revoke : false;
 	const update: boolean = options.update ? true : false;
 	const currentCase = await getModCase();
@@ -46,7 +24,7 @@ export async function createModLog(options: options) {
 	const embed = new EmbedBuilder()
 		.setAuthor({
 			name: ` ${
-				revoke ? 'Revoke' : update ? 'Update' : client.util.capitalize(options.action)
+				revoke ? 'Revoke' : update ? 'Update' : capitalize(options.action)
 			} | Case: #${revoke ? options.referencedPunishment.case : currentCase}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
@@ -55,7 +33,7 @@ export async function createModLog(options: options) {
 				? Util.resolveColor('#b04d46')
 				: update
 				? client.cc.invisible
-				: Util.resolveColor(colors[options.action])
+				: Util.resolveColor(punishmentTypeEmbedColors[options.action])
 		)
 		.setDescription(
 			[
@@ -66,7 +44,7 @@ export async function createModLog(options: options) {
 								options.referencedPunishment.case
 						  }](${await getUrlFromCase(options.referencedPunishment.case)})`
 				}\n`,
-				`• **Action:** ${client.util.capitalize(options.action)}`,
+				`• **Action:** ${capitalize(options.action)}`,
 				`${
 					options.duration
 						? `• **Duration${
@@ -82,7 +60,7 @@ export async function createModLog(options: options) {
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
 				`• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${
-					client.util.splitText(options.reason, MAX_REASON_LENGTH) ||
+					splitText(options.reason, MAX_REASON_LENGTH) ||
 					client.config.moderation.default.reason
 				}`,
 			]
@@ -96,8 +74,8 @@ export async function createModLog(options: options) {
 		return `https://discord.com/channels/${process.env.GUILD_ID}/${logMessage.channel_id}/${logMessage.id}`;
 
 	if (
-		options.action === PunishmentType.Unmute ||
-		options.action === PunishmentType.Unban ||
+		options.action === PunishmentTypes.Unmute ||
+		options.action === PunishmentTypes.Unban ||
 		revoke ||
 		update
 	)

@@ -1,7 +1,7 @@
 import { Event } from '../../structures/Event';
 import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { punishmentExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
@@ -25,7 +25,7 @@ export default new Event('guildBanRemove', async (ban) => {
 	const data_ = new punishmentModel({
 		_id: await generateManualId(),
 		case: await getModCase(),
-		type: PunishmentType.Unban,
+		type: PunishmentTypes.Unban,
 		userId: ban.user.id,
 		moderatorId: executor.id,
 		reason: reason || client.config.moderation.default.reason,
@@ -35,7 +35,7 @@ export default new Event('guildBanRemove', async (ban) => {
 	await data_.save();
 
 	await createModLog({
-		action: PunishmentType.Unban,
+		action: PunishmentTypes.Unban,
 		punishmentId: data_._id,
 		user: ban.user,
 		moderator: executor,

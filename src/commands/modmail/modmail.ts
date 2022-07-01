@@ -1,14 +1,22 @@
-import { ChannelType, GuildMember, TextChannel, CategoryChannel, EmbedBuilder } from 'discord.js';
+import {
+	ChannelType,
+	GuildMember,
+	TextChannel,
+	CategoryChannel,
+	EmbedBuilder,
+	Colors,
+} from 'discord.js';
 import { create } from 'sourcebin';
 import { modmailCooldown } from '../../events/modmail/messageCreate';
 import { getModmailTicket } from '../../functions/cases/ModmailCase';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { modmailModel } from '../../models/modmail';
 import { Command } from '../../structures/Command';
-import { ModmailActionType } from '../../typings/Modmail';
+import { ModmailActionTypes } from '../../typings';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { interactions } from '../../interactions';
 import { MAX_REASON_LENGTH } from '../../constants';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.modmail,
@@ -94,7 +102,7 @@ export default new Command({
 			);
 
 			createModmailLog({
-				action: ModmailActionType.Close,
+				action: ModmailActionTypes.Close,
 				user: await client.users.fetch(userId),
 				moderator: interaction.user,
 				referencedCaseUrl: ticketData.url,
@@ -121,7 +129,7 @@ export default new Command({
 							.setDescription(
 								'Your ticket was closed by a staff member. If you got other questions in the future, feel free to ask them!'
 							)
-							.setColor(client.util.resolve.color('Red'));
+							.setColor(Colors.Red);
 						user?.send({ embeds: [closedEmbed] }).catch(() => {});
 
 						modmailCooldown.set(`open_${user?.id}`, Date.now() + 600000);
@@ -145,10 +153,7 @@ export default new Command({
 				const blacklistAdd = new modmailModel({
 					_id: user.id,
 					moderatorId: interaction.id,
-					reason: client.util.splitText(
-						options.getString('reason'),
-						MAX_REASON_LENGTH
-					),
+					reason: splitText(options.getString('reason'), MAX_REASON_LENGTH),
 					url: null,
 				});
 				blacklistAdd.save();
@@ -163,13 +168,10 @@ export default new Command({
 				});
 
 				createModmailLog({
-					action: ModmailActionType.BlacklistAdd,
+					action: ModmailActionTypes.BlacklistAdd,
 					user: user,
 					moderator: interaction.user,
-					reason: client.util.splitText(
-						options.getString('reason'),
-						MAX_REASON_LENGTH
-					),
+					reason: splitText(options.getString('reason'), MAX_REASON_LENGTH),
 				});
 			} else if (findData) {
 				await findData.delete();
@@ -184,13 +186,10 @@ export default new Command({
 				});
 
 				createModmailLog({
-					action: ModmailActionType.BlacklistRemove,
+					action: ModmailActionTypes.BlacklistRemove,
 					user: user,
 					moderator: interaction.user,
-					reason: client.util.splitText(
-						options.getString('reason'),
-						MAX_REASON_LENGTH
-					),
+					reason: splitText(options.getString('reason'), MAX_REASON_LENGTH),
 					referencedCaseUrl: findData.url,
 				});
 			}
@@ -251,7 +250,7 @@ export default new Command({
 			const openedModmailEmbed = new EmbedBuilder()
 				.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 				.setTitle('Modmail opened')
-				.setColor(client.util.resolve.color('Yellow'))
+				.setColor(Colors.Yellow)
 				.setDescription(
 					[
 						'**A wild ticket has appeared!**',
@@ -320,12 +319,12 @@ export default new Command({
 							});
 
 							createModmailLog({
-								action: ModmailActionType.Open,
+								action: ModmailActionTypes.Open,
 								ticketId: await getModmailTicket(),
 								user: member.user,
 								moderator: interaction.user,
 								ticket: { type: 'DIRECT', channel: threadChannel },
-								reason: client.util.splitText(
+								reason: splitText(
 									options.getString('reason'),
 									MAX_REASON_LENGTH
 								),

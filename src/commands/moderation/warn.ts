@@ -5,19 +5,20 @@ import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { durationsModel } from '../../models/durations';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.warn,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason =
-			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
 			client.config.moderation.default.reason;
 
 		if (!member)
@@ -26,12 +27,12 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		if (ignore(member, { interaction, action: PunishmentType.Warn })) return;
+		if (ignore(member, { interaction, action: PunishmentTypes.Warn })) return;
 
 		const warnData = new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: member.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
@@ -43,7 +44,7 @@ export default new Command({
 		interaction.reply({
 			embeds: [
 				client.embeds.moderation(member.user, {
-					action: PunishmentType.Warn,
+					action: PunishmentTypes.Warn,
 					id: warnData._id,
 				}),
 			],
@@ -51,13 +52,13 @@ export default new Command({
 		});
 
 		sendModDM(member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			expire: warnData.expire,
 			punishment: warnData,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: warnData._id,
 			user: member.user,
 			moderator: interaction.user,
@@ -68,7 +69,7 @@ export default new Command({
 
 			const findWarnings = await punishmentModel.find({
 				userId: member.id,
-				type: PunishmentType.Warn,
+				type: PunishmentTypes.Warn,
 			});
 			const warningsCount = findWarnings.length;
 
@@ -82,7 +83,7 @@ export default new Command({
 					const data = new punishmentModel({
 						_id: await generateManualId(),
 						case: await getModCase(),
-						type: PunishmentType.Timeout,
+						type: PunishmentTypes.Timeout,
 						userId: member.id,
 						moderatorId: client.user.id,
 						reason: `Reaching ${client.config.moderation.count.timeout1} warnings.`,
@@ -95,7 +96,7 @@ export default new Command({
 					data.save();
 
 					await createModLog({
-						action: PunishmentType.Timeout,
+						action: PunishmentTypes.Timeout,
 						punishmentId: data._id,
 						user: member.user,
 						moderator: client.user,
@@ -105,7 +106,7 @@ export default new Command({
 					});
 
 					sendModDM(member, {
-						action: PunishmentType.Timeout,
+						action: PunishmentTypes.Timeout,
 						punishment: data,
 						expire: new Date(
 							Date.now() + client.config.moderation.duration.timeout1
@@ -121,7 +122,7 @@ export default new Command({
 					const data2 = new punishmentModel({
 						_id: await generateManualId(),
 						case: await getModCase(),
-						type: PunishmentType.Timeout,
+						type: PunishmentTypes.Timeout,
 						userId: member.id,
 						moderatorId: client.user.id,
 						reason: `Reaching ${client.config.moderation.count.timeout2} warnings.`,
@@ -134,7 +135,7 @@ export default new Command({
 					data2.save();
 
 					await createModLog({
-						action: PunishmentType.Timeout,
+						action: PunishmentTypes.Timeout,
 						punishmentId: data2._id,
 						user: member.user,
 						moderator: client.user,
@@ -144,7 +145,7 @@ export default new Command({
 					});
 
 					sendModDM(member, {
-						action: PunishmentType.Timeout,
+						action: PunishmentTypes.Timeout,
 						punishment: data2,
 						expire: new Date(
 							Date.now() + client.config.moderation.duration.timeout2
@@ -157,7 +158,7 @@ export default new Command({
 							const data3 = new punishmentModel({
 								_id: await generateManualId(),
 								case: await getModCase(),
-								type: PunishmentType.Ban,
+								type: PunishmentTypes.Ban,
 								userId: member.id,
 								moderatorId: client.user.id,
 								reason: `Reaching ${client.config.moderation.count.ban} warnings.`,
@@ -167,7 +168,7 @@ export default new Command({
 							data3.save();
 
 							await createModLog({
-								action: PunishmentType.Ban,
+								action: PunishmentTypes.Ban,
 								punishmentId: data3._id,
 								user: member.user,
 								moderator: client.user,
@@ -177,7 +178,7 @@ export default new Command({
 							});
 
 							await sendModDM(member, {
-								action: PunishmentType.Ban,
+								action: PunishmentTypes.Ban,
 								punishment: data3,
 							});
 							break;
@@ -185,7 +186,7 @@ export default new Command({
 							const data4 = new punishmentModel({
 								_id: await generateManualId(),
 								case: await getModCase(),
-								type: PunishmentType.Softban,
+								type: PunishmentTypes.Softban,
 								userId: member.id,
 								moderatorId: client.user.id,
 								reason: `Reaching ${client.config.moderation.count.ban} warnings.`,
@@ -199,7 +200,7 @@ export default new Command({
 
 							const durationData = new durationsModel({
 								case: await getModCase(),
-								type: PunishmentType.Softban,
+								type: PunishmentTypes.Softban,
 								userId: member.user.id,
 								date: new Date(),
 								duration: client.config.moderation.duration.ban,
@@ -207,7 +208,7 @@ export default new Command({
 							await durationData.save();
 
 							await createModLog({
-								action: PunishmentType.Softban,
+								action: PunishmentTypes.Softban,
 								punishmentId: data4._id,
 								user: member.user,
 								moderator: client.user,
@@ -218,7 +219,7 @@ export default new Command({
 							});
 
 							await sendModDM(member, {
-								action: PunishmentType.Softban,
+								action: PunishmentTypes.Softban,
 								punishment: data4,
 								expire: new Date(
 									Date.now() + client.config.moderation.duration.ban

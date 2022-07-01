@@ -2,6 +2,7 @@ import { ChannelType, EmbedBuilder, GuildChannel } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.lockdown,
@@ -37,10 +38,7 @@ export default new Command({
 				embed.addFields([
 					{
 						name: 'Reason',
-						value: client.util.splitText(
-							options.getString('reason'),
-							MAX_FIELD_VALUE_LENGTH
-						),
+						value: splitText(options.getString('reason'), MAX_FIELD_VALUE_LENGTH),
 					},
 				]);
 
@@ -150,10 +148,7 @@ export default new Command({
 				embed.addFields([
 					{
 						name: 'Reason',
-						value: client.util.splitText(
-							options.getString('reason'),
-							MAX_FIELD_VALUE_LENGTH
-						),
+						value: splitText(options.getString('reason'), MAX_FIELD_VALUE_LENGTH),
 					},
 				]);
 			interaction.channel.send({

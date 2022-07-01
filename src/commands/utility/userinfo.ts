@@ -9,6 +9,7 @@ import {
 	ButtonBuilder,
 	EmbedBuilder,
 } from 'discord.js';
+import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
@@ -198,9 +199,7 @@ export default new Command({
 					{
 						name: `Presence`,
 						value: [
-							`• **Status:** ${client.util.capitalize(
-								member?.presence?.status
-							)}`,
+							`• **Status:** ${capitalize(member?.presence?.status)}`,
 							`• **Devices [${
 								Object.entries(devices).length
 							}]:** ${Object.entries(devices)

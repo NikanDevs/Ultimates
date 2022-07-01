@@ -1,3 +1,3 @@
-import { Ultimates } from './structures/Client';
+import { UltimatesClient } from './structures/Client';
 
-export const client = new Ultimates();
+export const client = new UltimatesClient();

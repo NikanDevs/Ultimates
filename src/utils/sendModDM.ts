@@ -6,33 +6,11 @@ import {
 	GuildMember,
 } from 'discord.js';
 import { client } from '..';
-import { PunishmentType } from '../typings/PunishmentType';
+import { punishmentTypeNames, punismentTypeNamesSuffixes, sendModDMOptions } from '../typings';
+import { PunishmentTypes } from '../typings';
 import { generateDiscordTimestamp } from './generateDiscordTimestamp';
 
-interface options {
-	action: PunishmentType;
-	expire?: Date;
-	punishment: any;
-	automod?: boolean;
-}
-export async function sendModDM(member: GuildMember, options: options) {
-	enum pastForm {
-		'WARN' = 'warned',
-		'BAN' = 'banned',
-		'KICK' = 'kicked',
-		'TIMEOUT' = 'timed out',
-		'UNBAN' = 'unbanned',
-		'SOFTBAN' = 'soft banned',
-	}
-	enum suffix {
-		'WARN' = 'in',
-		'BAN' = 'from',
-		'KICK' = 'from',
-		'TIMEOUT' = 'in',
-		'UNBAN' = 'from',
-		'SOFTBAN' = 'from',
-	}
-
+export async function sendModDM(member: GuildMember, options: sendModDMOptions) {
 	const automod = options.automod ? true : false;
 
 	const embed = new EmbedBuilder()
@@ -41,7 +19,9 @@ export async function sendModDM(member: GuildMember, options: options) {
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setTitle(
-			`You were ${pastForm[options.action]} ${suffix[options.action]} ` + member.guild.name
+			`You were ${punishmentTypeNames[options.action]} ${
+				punismentTypeNamesSuffixes[options.action]
+			} ` + member.guild.name
 		)
 		.setColor(client.cc.invisible)
 		.addFields([
@@ -57,11 +37,11 @@ export async function sendModDM(member: GuildMember, options: options) {
 						inline: true,
 				  },
 			{
-				name: options.action === PunishmentType.Timeout ? 'Ends' : 'Expires',
+				name: options.action === PunishmentTypes.Timeout ? 'Ends' : 'Expires',
 				value: `${
 					options.expire
 						? generateDiscordTimestamp(options.expire)
-						: options.action === PunishmentType.Kick
+						: options.action === PunishmentTypes.Kick
 						? 'You can join back'
 						: 'Permanent'
 				}`,
@@ -82,7 +62,7 @@ export async function sendModDM(member: GuildMember, options: options) {
 	]);
 	let appealComponent: ActionRowBuilder<ButtonBuilder>[] = [];
 	if (
-		(options.action === PunishmentType.Ban || options.action === PunishmentType.Softban) &&
+		(options.action === PunishmentTypes.Ban || options.action === PunishmentTypes.Softban) &&
 		client.config.general.guild.appealLink?.length !== undefined
 	)
 		appealComponent = [appealButton];

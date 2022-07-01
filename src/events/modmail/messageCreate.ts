@@ -1,6 +1,10 @@
 import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
 	ChannelType,
 	Collection,
+	Colors,
 	ComponentType,
 	DMChannel,
 	EmbedBuilder,
@@ -11,7 +15,7 @@ import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import { Event } from '../../structures/Event';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
-import { ModmailActionType } from '../../typings/Modmail';
+import { ModmailActionTypes } from '../../typings';
 import { getModmailTicket } from '../../functions/cases/ModmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { convertTime } from '../../functions/convertTime';
@@ -111,7 +115,7 @@ export default new Event('messageCreate', async (message) => {
 						const attachmentEmbed = new EmbedBuilder()
 							.setAuthor({ name: `Attachment #${attachmentCounter}` })
 							.setImage(attachment.proxyURL)
-							.setColor(client.util.resolve.color('Orange'));
+							.setColor(Colors.Orange);
 
 						finalEmbeds.push(attachmentEmbed);
 						attachmentCounter = attachmentCounter + 1;
@@ -150,9 +154,20 @@ export default new Event('messageCreate', async (message) => {
 					].join(' ')
 				);
 
+			const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
+				new ButtonBuilder()
+					.setLabel('Create')
+					.setStyle(ButtonStyle.Success)
+					.setCustomId('1'),
+				new ButtonBuilder()
+					.setLabel('Cancel')
+					.setStyle(ButtonStyle.Danger)
+					.setCustomId('2'),
+			]);
+
 			let msg = await (message.channel as DMChannel).send({
 				embeds: [confirmationEmbed],
-				components: [client.util.build.confirmationButtons('Create', 'Cancel')],
+				components: [buttons],
 			});
 
 			confirmationExists = true;
@@ -196,7 +211,7 @@ export default new Event('messageCreate', async (message) => {
 						});
 
 						createModmailLog({
-							action: ModmailActionType.Open,
+							action: ModmailActionTypes.Open,
 							user: message.author,
 							ticket: {
 								type: 'REQUEST',
@@ -209,7 +224,7 @@ export default new Event('messageCreate', async (message) => {
 						const createdEmbed = new EmbedBuilder()
 							.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 							.setTitle('Ticket created')
-							.setColor(client.util.resolve.color('Green'))
+							.setColor(Colors.Green)
 							.setDescription(
 								[
 									'The ticket you requested has been created.',
@@ -268,7 +283,7 @@ export default new Event('messageCreate', async (message) => {
 					const attachmentEmbed = new EmbedBuilder()
 						.setAuthor({ name: `Attachment #${attachmentCounter}` })
 						.setImage(attachment.proxyURL)
-						.setColor(client.util.resolve.color('Orange'));
+						.setColor(Colors.Orange);
 
 					finalEmbeds.push(attachmentEmbed);
 					attachmentCounter = attachmentCounter + 1;

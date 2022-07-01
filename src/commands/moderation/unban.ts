@@ -3,16 +3,17 @@ import { MAX_REASON_LENGTH, punishmentExpiry } from '../../constants';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { interactions } from '../../interactions';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.unban,
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user');
 		const reason =
-			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
 			client.config.moderation.default.reason;
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
@@ -34,7 +35,7 @@ export default new Command({
 		const data = new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
-			type: PunishmentType.Unban,
+			type: PunishmentTypes.Unban,
 			userId: userId,
 			moderatorId: interaction.user.id,
 			reason: reason,
@@ -46,7 +47,7 @@ export default new Command({
 		await interaction.reply({
 			embeds: [
 				client.embeds.moderation(`**${bannedMember.user.tag}**`, {
-					action: PunishmentType.Unban,
+					action: PunishmentTypes.Unban,
 					id: data._id,
 				}),
 			],
@@ -54,7 +55,7 @@ export default new Command({
 		});
 
 		await createModLog({
-			action: PunishmentType.Unban,
+			action: PunishmentTypes.Unban,
 			punishmentId: data._id,
 			user: bannedMember.user,
 			moderator: interaction.user,

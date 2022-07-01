@@ -2,6 +2,7 @@ import { EmbedBuilder, TextChannel } from 'discord.js';
 import { inspect } from 'node:util';
 import { client as C } from '../..';
 import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
+import { splitText } from '../../functions/other/splitText';
 import { logger as L } from '../../logger';
 import { Event } from '../../structures/Event';
 
@@ -35,7 +36,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				const sucessEmbed = new EmbedBuilder()
 					.setColor(client.cc.successC)
 					.setDescription(
-						`**Evaluation succeded:**\n\`\`\`ts\n${client.util.splitText(
+						`**Evaluation succeded:**\n\`\`\`ts\n${splitText(
 							code,
 							EMBED_DESCRIPTION_MAX_LENGTH - 40
 						)}\n\`\`\``
@@ -46,7 +47,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				let resultEmbed = new EmbedBuilder()
 					.setColor(client.cc.successC)
 					.setDescription(
-						`**Output:**\`\`\`ts\n${client.util.splitText(
+						`**Output:**\`\`\`ts\n${splitText(
 							evaled,
 							EMBED_DESCRIPTION_MAX_LENGTH - 30
 						)}\n\`\`\``
@@ -57,7 +58,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				// If the result is too big to be shown in a single embed
 				const split = evaled.match(/.{1,1935}/g);
 				split.forEach(
-					async (result) =>
+					async (result: string) =>
 						await (interaction.channel as TextChannel).send({
 							content: `\`\`\`ts\n${result}\n\`\`\``,
 						})
@@ -68,7 +69,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		const errorEmbed = new EmbedBuilder()
 			.setColor(client.cc.errorC)
 			.setDescription(
-				`**An error has occured**\n\`\`\`xl\n${client.util.splitText(
+				`**An error has occured**\n\`\`\`xl\n${splitText(
 					error?.message,
 					EMBED_DESCRIPTION_MAX_LENGTH - 40
 				)}\n\`\`\``

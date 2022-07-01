@@ -8,7 +8,7 @@ import {
 	warningExpiry,
 } from '../../constants';
 import { durationsModel } from '../../models/durations';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
@@ -17,16 +17,17 @@ import { ignore } from '../../functions/ignore';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.timeout,
 	excute: async ({ client, interaction, options }) => {
 		const member: GuildMember = options.getMember('member') as GuildMember;
 		const durationO: string | number =
-			options.getString('duration') || client.config.moderation.default.timeout;
-		const duration: number = convertToTime(durationO);
+			options.getString('duration') ?? client.config.moderation.default.timeout;
+		const duration = convertToTime(durationO);
 		const reason: string =
-			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
 			client.config.moderation.default.reason;
 
 		if (!member)
@@ -35,7 +36,7 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		if (ignore(member, { interaction, action: PunishmentType.Timeout })) return;
+		if (ignore(member, { interaction, action: PunishmentTypes.Timeout })) return;
 
 		if (await durationsModel.findOne({ userId: member.id }))
 			return interaction.reply({
@@ -68,7 +69,7 @@ export default new Command({
 		const data = new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
-			type: PunishmentType.Timeout,
+			type: PunishmentTypes.Timeout,
 			userId: member.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
@@ -80,7 +81,7 @@ export default new Command({
 		await interaction.reply({
 			embeds: [
 				client.embeds.moderation(member.user, {
-					action: PunishmentType.Timeout,
+					action: PunishmentTypes.Timeout,
 					id: data._id,
 				}),
 			],
@@ -88,13 +89,13 @@ export default new Command({
 		});
 
 		await sendModDM(member, {
-			action: PunishmentType.Timeout,
+			action: PunishmentTypes.Timeout,
 			punishment: data,
 			expire: new Date(Date.now() + duration),
 		});
 
 		await createModLog({
-			action: PunishmentType.Timeout,
+			action: PunishmentTypes.Timeout,
 			punishmentId: data._id,
 			duration: duration,
 			user: member.user,

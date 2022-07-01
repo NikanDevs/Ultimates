@@ -1,4 +1,4 @@
-import { interactionOptions } from '../../typings/Command';
+import { interactionOptions } from '../../typings';
 
 // @ts-ignore
 export const punishmentsContextmenu = {

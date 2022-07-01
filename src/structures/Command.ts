@@ -1,7 +1,7 @@
-import { interactionType } from '../typings/Command';
+import { commandType } from '../typings';
 
 export class Command {
-	constructor(interaction: interactionType) {
+	constructor(interaction: commandType) {
 		Object.assign(this, interaction);
 	}
 }

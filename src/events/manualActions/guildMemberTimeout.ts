@@ -1,7 +1,7 @@
 import { Event } from '../../structures/Event';
 import { AuditLogEvent } from 'discord-api-types/v9';
 import { punishmentModel } from '../../models/punishments';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { warningExpiry } from '../../constants';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
@@ -36,7 +36,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		const data_ = new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
-			type: PunishmentType.Timeout,
+			type: PunishmentTypes.Timeout,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
 			reason: reason || client.config.moderation.default.reason,
@@ -46,13 +46,13 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 		await data_.save();
 
 		await sendModDM(newMember, {
-			action: PunishmentType.Timeout,
+			action: PunishmentTypes.Timeout,
 			expire: new Date(duration),
 			punishment: data_,
 		});
 
 		await createModLog({
-			action: PunishmentType.Timeout,
+			action: PunishmentTypes.Timeout,
 			punishmentId: data_._id,
 			user: newMember.user,
 			moderator: executor,

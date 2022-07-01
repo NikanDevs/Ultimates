@@ -1,6 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { ConnectionStates, connection } from 'mongoose';
 import { convertTime } from '../../functions/convertTime';
+import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 
@@ -15,7 +16,7 @@ export default new Command({
 			.setColor(client.cc.ultimates)
 			.setDescription(
 				[
-					`<:mongoDB:983328317929316392> **MongoDB** - ${client.util.capitalize(
+					`<:mongoDB:983328317929316392> **MongoDB** - ${capitalize(
 						ConnectionStates[connection.readyState]
 					)}`,
 					`${pingEmoji(client.ws.ping)} **Websocket** - ${client.ws.ping}ms`,

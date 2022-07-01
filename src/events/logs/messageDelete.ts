@@ -1,4 +1,4 @@
-import { EmbedBuilder, Message, TextChannel } from 'discord.js';
+import { EmbedBuilder, Message, TextChannel, Util } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
@@ -28,7 +28,7 @@ export default new Event('messageDelete', async (message: Message) => {
 		})
 		.setTitle('Message Deleted')
 		.setDescription(message.content || 'No content.')
-		.setColor(client.util.resolve.color('#b59190'))
+		.setColor(Util.resolveColor('#b59190'))
 		.setFooter({ text: 'Message ID: ' + message.id })
 		.addFields([
 			{

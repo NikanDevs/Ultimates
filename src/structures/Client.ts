@@ -1,22 +1,20 @@
 require('dotenv').config();
 import { Client, Collection, ClientEvents, Partials } from 'discord.js';
-import { interactionType } from '../typings/Command';
+import { commandType } from '../typings';
 import { glob } from 'glob';
 import { promisify } from 'util';
 import { connect } from 'mongoose';
 import { Event } from './Event';
-import { clientUtil } from '../functions/client/clientUtil';
-import { cc, clientEmbeds } from '../functions/client/properties';
+import { cc, clientEmbeds } from '../functions/other/client';
 import { logger } from '../logger';
 import { logsModel } from '../models/logs';
 import { modmailModel } from '../models/modmail';
-import { clientConfig } from '../functions/client/clientConfig';
+import { Config } from './Config';
 const globPromise = promisify(glob);
 
-export class Ultimates extends Client {
-	public commands = new Collection() as Collection<string, interactionType>;
-	public util = new clientUtil();
-	public config = new clientConfig();
+export class UltimatesClient extends Client {
+	public commands: Collection<string, commandType> = new Collection();
+	public config = new Config();
 	public embeds = clientEmbeds;
 	public cc = cc;
 
@@ -42,7 +40,6 @@ export class Ultimates extends Client {
 		this.born();
 	}
 
-	/** Registers the modules, connects mongoDB and logs into the bot if called. */
 	private async born() {
 		// Connecting to mongoDB
 		const mongoDBConnection = process.env.MONGODB;
@@ -68,7 +65,7 @@ export class Ultimates extends Client {
 		// Commands
 		const slashFiles = await globPromise(`${__dirname}/../commands/**/*{.ts,.js}`);
 		slashFiles.forEach(async (filePaths) => {
-			const command: interactionType = await this.importFiles(filePaths);
+			const command: commandType = await this.importFiles(filePaths);
 
 			this.commands.set(command.interaction.name, command);
 		});
@@ -84,20 +81,14 @@ export class Ultimates extends Client {
 
 	/** Handles process errors and exits if called. */
 	private handlerErrors() {
-		enum betterTexts {
-			'unhandledRejection' = 'Unhandled Rejection',
-			'uncaughtException' = 'Uncaught Exception',
-			'warning' = 'Warning',
-		}
-
 		process.on('unhandledRejection', (reason: Error) => {
-			logger.error({ source: betterTexts.unhandledRejection, reason: reason });
+			logger.error({ source: 'unhandledRejection', reason: reason });
 		});
 		process.on('uncaughtException', (reason: Error) => {
-			logger.error({ source: betterTexts.unhandledRejection, reason: reason });
+			logger.error({ source: 'unhandledRejection', reason: reason });
 		});
 		process.on('warning', (reason: Error) => {
-			logger.error({ source: betterTexts.warning, reason: reason });
+			logger.error({ source: 'warning', reason: reason });
 		});
 		process.on('disconnect', () => {
 			this.destroy();

@@ -1,20 +1,20 @@
-import { GuildMember, Message, TextChannel, Util } from 'discord.js';
+import { GuildMember, Message, TextChannel } from 'discord.js';
 import { client } from '../..';
-import {
-	automodPunishmentExpiry,
-	AUTOMOD_MAX_CAPS,
-	AUTOMOD_MAX_EMOJI_COUNT,
-	AUTOMOD_SPAM_COUNT,
-} from '../../constants';
+import { automodPunishmentExpiry, AUTOMOD_SPAM_COUNT } from '../../constants';
 import { Event } from '../../structures/Event';
 import { automodModel } from '../../models/automod';
 import { automodSpamCollection } from '../../constants';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { generateAutomodId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
+import { isURL } from '../../functions/automod/isURL';
+import { isDiscordInvite } from '../../functions/automod/isDiscordInvite';
+import { mostIsCap } from '../../functions/automod/mostIsCaps';
+import { mostIsEmojis } from '../../functions/automod/mostIsEmojis';
+import { type AutomodModules, automodModuleReasons } from '../../typings';
 const config = client.config.automod;
 
 export default new Event('messageCreate', async (message) => {
@@ -76,27 +76,27 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['large-message'],
+			reason: automodModuleReasons.largeMessage,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['large-message'],
+			reason: automodModuleReasons.largeMessage,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -119,27 +119,27 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['invites'],
+			reason: automodModuleReasons.invites,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['invites'],
+			reason: automodModuleReasons.invites,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (isURL(message.content) && config.modules.urls && !getsIgnored('urls')) {
@@ -158,27 +158,27 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['urls'],
+			reason: automodModuleReasons.urls,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['urls'],
+			reason: automodModuleReasons.urls,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -201,27 +201,27 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['mass-mention'],
+			reason: automodModuleReasons.massMention,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['mass-mention'],
+			reason: automodModuleReasons.massMention,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (mostIsCap(message.content) && config.modules.capitals && !getsIgnored('capitals')) {
@@ -240,27 +240,27 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['capitals'],
+			reason: automodModuleReasons.capitals,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['capitals'],
+			reason: automodModuleReasons.capitals,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -283,27 +283,27 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['mass-emoji'],
+			reason: automodModuleReasons.massEmoji,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['mass-emoji'],
+			reason: automodModuleReasons.massEmoji,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -326,27 +326,27 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['badwords'],
+			reason: automodModuleReasons.badwords,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['badwords'],
+			reason: automodModuleReasons.badwords,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -374,33 +374,33 @@ export default new Event('messageCreate', async (message) => {
 		const data = new automodModel({
 			_id: await generateAutomodId(),
 			case: await getModCase(),
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: reasons['spam'],
+			reason: automodModuleReasons.spam,
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
 		await data.save();
 
 		sendModDM(message.member, {
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishment: data,
 			expire: automodPunishmentExpiry,
 			automod: true,
 		});
 
 		await createModLog({
-			action: PunishmentType.Warn,
+			action: PunishmentTypes.Warn,
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: reasons['spam'],
+			reason: automodModuleReasons.spam,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	}
 
 	// Functions
-	function getsIgnored(type: types) {
+	function getsIgnored(type: AutomodModules) {
 		if (
 			client.config.ignores.automod[type.toString()].channelIds.includes(textChannel.id) ||
 			client.config.ignores.automod[type.toString()].roleIds.some((roleId: string) =>
@@ -413,7 +413,7 @@ export default new Event('messageCreate', async (message) => {
 	async function checkForAutoPunish(warnData: any) {
 		const punishmentFind = await automodModel.find({
 			userId: message.author.id,
-			type: PunishmentType.Warn,
+			type: PunishmentTypes.Warn,
 		});
 		const punishmentCount = punishmentFind.length;
 
@@ -425,7 +425,7 @@ export default new Event('messageCreate', async (message) => {
 			const data = new automodModel({
 				_id: await generateAutomodId(),
 				case: await getModCase(),
-				type: PunishmentType.Timeout,
+				type: PunishmentTypes.Timeout,
 				userId: message.author.id,
 				date: new Date(),
 				expire: automodPunishmentExpiry,
@@ -434,14 +434,14 @@ export default new Event('messageCreate', async (message) => {
 			data.save();
 
 			sendModDM(message.member, {
-				action: PunishmentType.Timeout,
+				action: PunishmentTypes.Timeout,
 				punishment: data,
 				expire: new Date(Date.now() + client.config.moderation.duration.automod),
 				automod: true,
 			});
 
 			await createModLog({
-				action: PunishmentType.Timeout,
+				action: PunishmentTypes.Timeout,
 				punishmentId: data._id,
 				user: message.author,
 				moderator: client.user,
@@ -453,71 +453,3 @@ export default new Event('messageCreate', async (message) => {
 		}
 	}
 });
-
-// Functions
-function isDiscordInvite(str: string) {
-	var res = str.match(
-		/(https?:\/\/)?(www.)?(discord.(gg|io|me|li|link|plus)|discorda?pp?.com\/invite|invite.gg|dsc.gg|urlcord.cf)\/[^\s/]+?(?=\b)/
-	);
-	return res !== null;
-}
-function isURL(str: string) {
-	var res = str.match(
-		/(?:https?:\/\/)(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*/gi
-	);
-	return res !== null;
-}
-function mostIsCap(str: string) {
-	if (str.length <= 30) return false;
-	const capitals: string[] = [],
-		nonCapitals: string[] = [],
-		allStr = str
-			.replaceAll(' ', '')
-			.split('')
-			.filter((foo) => foo.match(/^[A-Za-z]+$/));
-
-	if (!allStr) return false;
-	allStr.forEach((str) => {
-		if (str === str.toUpperCase()) capitals.push(str);
-		else if (str === str.toLowerCase()) nonCapitals.push(str);
-	});
-
-	if (capitals.length > nonCapitals.length) {
-		if ((capitals.length / nonCapitals.length) * 100 > AUTOMOD_MAX_CAPS) return true;
-		else return false;
-	} else return false;
-}
-function mostIsEmojis(str: string) {
-	const countEmojis = [];
-	for (const rawStr of str.trim().split(/ +/g)) {
-		const parseEmoji = Util.parseEmoji(rawStr);
-		if (parseEmoji?.id) countEmojis.push(rawStr);
-	}
-	if (countEmojis.length > AUTOMOD_MAX_EMOJI_COUNT) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-// Typings
-type types =
-	| 'badwords'
-	| 'links'
-	| 'invites'
-	| 'massMention'
-	| 'massEmoji'
-	| 'largeMessage'
-	| 'spam'
-	| 'capitals'
-	| 'urls';
-enum reasons {
-	'badwords' = 'Sending filtered words in the chat.',
-	'invites' = 'Sending discord invite links in the chat.',
-	'largeMessage' = 'Sending a large message in content.',
-	'massMention' = 'Mentioning more than 4 people.',
-	'massEmoji' = 'Sending too many emojis at once.',
-	'spam' = 'Sending messages too quickly.',
-	'capitals' = 'Using too many capital letters.',
-	'urls' = 'Sending links and urls.',
-}

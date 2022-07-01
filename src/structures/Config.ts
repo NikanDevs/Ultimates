@@ -1,7 +1,7 @@
 import { WebhookClient } from 'discord.js';
-import { configModel } from '../../models/config';
+import { configModel } from '../models/config';
 
-export class clientConfig {
+export class Config {
 	/** Logging system webhook clients */
 	public webhooks = {
 		mod: null as WebhookClient,

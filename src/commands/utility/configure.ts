@@ -22,33 +22,17 @@ import {
 	MIN_TIMEOUT_DURATION,
 } from '../../constants';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
+import { splitText } from '../../functions/other/splitText';
 import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
 import { Command } from '../../structures/Command';
-enum logsNames {
-	'mod' = 'Moderation Logging',
-	'message' = 'Message Logging',
-	'modmail' = 'Modmail Logging',
-	'servergate' = 'Joins and Leaves',
-	'error' = 'Errors Loggings',
-}
-enum automodModulesNames {
-	'badwords' = 'Filtered words',
-	'invites' = 'Discord invites',
-	'largeMessage' = 'Large messages',
-	'massMention' = 'Mass mentions',
-	'massEmoji' = 'Mass emoji',
-	'spam' = 'Spam',
-	'capitals' = 'Too many caps',
-	'urls' = 'Urls and links',
-}
-enum WEBHOOK_NAMES {
-	'mod' = 'Mod-Logs',
-	'message' = 'Message-Logs',
-	'modmail' = 'Modmail-Logs',
-	'servergate' = 'Server Gate',
-	'error' = 'Errors',
-}
+import {
+	type AutomodModules,
+	automodModulesNames,
+	loggingModulesNames,
+	loggingWebhookNames,
+	LoggingModules,
+} from '../../typings';
 
 export default new Command({
 	interaction: interactions.configure,
@@ -57,11 +41,7 @@ export default new Command({
 		await interaction.deferReply({ ephemeral: true });
 
 		if (subcommand === 'logs') {
-			const module = options.getString('module') as
-				| 'mod'
-				| 'modmail'
-				| 'message'
-				| 'servergate';
+			const module = options.getString('module') as LoggingModules;
 
 			const channel = options.getChannel('channel') as TextChannel;
 			const active = options.getBoolean('active');
@@ -97,7 +77,7 @@ export default new Command({
 						await client.config.webhooks.servergate?.delete().catch(() => {});
 						break;
 				}
-				newWebhook = await channel.createWebhook(WEBHOOK_NAMES[module], {
+				newWebhook = await channel.createWebhook(loggingWebhookNames[module], {
 					avatar: client.user.displayAvatarURL({ extension: 'png' }),
 					reason: '/configure was excuted.',
 				});
@@ -148,13 +128,13 @@ export default new Command({
 			}
 
 			// Functions
-			async function formatLogField(module: 'mod' | 'message' | 'modmail' | 'servergate') {
+			async function formatLogField(module: LoggingModules) {
 				const data = await configModel.findById('logging');
 				let channel = (await client.channels
 					.fetch(data.logging[module].channelId)
 					.catch(() => {})) as TextChannel;
 				return {
-					name: logsNames[module],
+					name: loggingModulesNames[module],
 					value: data.logging[module].webhook
 						? `${
 								data.logging[module].active
@@ -165,15 +145,7 @@ export default new Command({
 				};
 			}
 		} else if (subcommand === 'automod') {
-			const module = options.getString('module') as
-				| 'badwords'
-				| 'invites'
-				| 'largeMessage'
-				| 'massMention'
-				| 'massEmoji'
-				| 'spam'
-				| 'capitals'
-				| 'urls';
+			const module = options.getString('module') as AutomodModules;
 
 			const active = options.getBoolean('active');
 			var data = await configModel.findById('automod');
@@ -229,7 +201,7 @@ export default new Command({
 					embed.addFields([
 						{
 							name: 'Filtered Words',
-							value: client.util.splitText(
+							value: splitText(
 								data.filteredWords
 									.map((word: string) => word.toLowerCase())
 									.join(', '),
@@ -300,17 +272,7 @@ export default new Command({
 			}
 
 			// Functions
-			async function formatDescription(
-				module:
-					| 'badwords'
-					| 'invites'
-					| 'largeMessage'
-					| 'massMention'
-					| 'massEmoji'
-					| 'spam'
-					| 'capitals'
-					| 'urls'
-			) {
+			async function formatDescription(module: AutomodModules) {
 				const data = await configModel.findById('automod');
 				return `${
 					data.modules[module]
@@ -544,7 +506,7 @@ export default new Command({
 								...(await configModel.findById('moderation')).default,
 								[module]:
 									module === 'reason'
-										? client.util.splitText(value, MAX_REASON_LENGTH)
+										? splitText(value, MAX_REASON_LENGTH)
 										: module === 'msgs'
 										? parseInt(value)
 										: convertToTime(value),
@@ -794,7 +756,7 @@ export default new Command({
 					name: `${module.startsWith('automod') ? 'Automod:' : 'Logging:'} ${
 						module.startsWith('automod')
 							? automodModulesNames[module.replaceAll('automod:', '')]
-							: logsNames[module.replaceAll('logs:', '')]
+							: loggingModulesNames[module.replaceAll('logs:', '')]
 					}`,
 					value: [
 						`• ${Formatters.bold('Channels:')} ${

@@ -1,32 +1,23 @@
 import chalk from 'chalk';
-
-interface Options {
-	timezone: string;
-}
-interface options {
-	source?: 'unhandledRejection' | 'uncaughtException' | 'warning' | any;
-	reason?: Error;
-	showDate?: boolean;
-	space?: boolean;
-}
+import { LoggerClientOptions, LoggerDataOptions } from '../typings';
 
 export class Logger {
 	private timezone = 'en-US';
-	private current = new Date().toLocaleTimeString(this.timezone, {
+	private readonly current = new Date().toLocaleTimeString(this.timezone, {
 		timeZoneName: 'long',
 		weekday: 'long',
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric',
 	});
-	public support = chalk.Level === 0 ? false : true;
+	public readonly support = chalk.Level === 0 ? false : true;
 
-	constructor(options: Options) {
+	constructor(options: LoggerClientOptions) {
 		this.timezone = options.timezone;
 		this.info('Logger started', { showDate: false });
 	}
 
-	public error(options: options): boolean | null {
+	public error(options: LoggerDataOptions): boolean | null {
 		const current = chalk.gray.italic(this.current);
 		const header = chalk.redBright.bold('[ERROR]');
 		const source = chalk.blueBright(options.source);
@@ -36,7 +27,7 @@ export class Logger {
 		return true;
 	}
 
-	public warn(options: options): boolean | null {
+	public warn(options: LoggerDataOptions): boolean | null {
 		const current = chalk.gray.italic(this.current);
 		const header = chalk.yellowBright.bold('[WARN]');
 		const source = chalk.blueBright(options.source);
@@ -46,12 +37,12 @@ export class Logger {
 		return true;
 	}
 
-	public info(message: string, options?: options): boolean | null {
+	public info(message: string, options?: LoggerDataOptions): boolean | null {
 		const current = chalk.gray.italic(this.current);
 		const header = chalk.yellowBright.bold('[INFO]');
 		const source = chalk.blueBright(options?.source);
 		const reason = chalk.whiteBright(message);
-		const showDate = options.showDate !== null ? options.showDate : true;
+		const showDate = !options ? true : options.showDate;
 
 		console.log(
 			[

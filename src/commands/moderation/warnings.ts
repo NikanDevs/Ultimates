@@ -1,9 +1,18 @@
-import { ComponentType, EmbedBuilder, Message, User } from 'discord.js';
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ComponentType,
+	EmbedBuilder,
+	Message,
+	User,
+} from 'discord.js';
+import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
@@ -29,14 +38,14 @@ export default new Command({
 				warnCounter = warnCounter + 1;
 				warningsMap.push(
 					[
-						`\`${warnCounter}\` **${client.util.capitalize(
-							data.type
-						)}** | **ID: ${data._id}**`,
+						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${
+							data._id
+						}**`,
 						`• **Date:** ${generateDiscordTimestamp(
 							data.date,
 							'Short Date/Time'
 						)}`,
-						data.type === PunishmentType.Warn
+						data.type === PunishmentTypes.Warn
 							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 							: 'LINE_BREAK',
 						`• **Reason:** ${data.reason}`,
@@ -49,14 +58,12 @@ export default new Command({
 				warnCounter = warnCounter + 1;
 				warningsMap.push(
 					[
-						`\`${warnCounter}\` **${client.util.capitalize(
-							data.type
-						)}** | Auto Moderation`,
+						`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
 						`• **Date:** ${generateDiscordTimestamp(
 							data.date,
 							'Short Date/Time'
 						)}`,
-						data.type === PunishmentType.Warn
+						data.type === PunishmentTypes.Warn
 							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 							: 'LINE_BREAK',
 						`• **Reason:** ${data.reason}`,
@@ -73,11 +80,9 @@ export default new Command({
 			warningsMap = findWarningsNormal.map((data) => {
 				warnCounter = warnCounter + 1;
 				return [
-					`\`${warnCounter}\` **${client.util.capitalize(data.type)}** | **ID: ${
-						data._id
-					}**`,
+					`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${data._id}**`,
 					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
-					data.type === PunishmentType.Warn
+					data.type === PunishmentTypes.Warn
 						? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 						: 'LINE_BREAK',
 					`• **Reason:** ${data.reason}`,
@@ -92,11 +97,9 @@ export default new Command({
 			warningsMap = findWarningsAutomod.map((data) => {
 				warnCounter = warnCounter + 1;
 				return [
-					`\`${warnCounter}\` **${client.util.capitalize(
-						data.type
-					)}** | Auto Moderation`,
+					`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
 					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
-					data.type === PunishmentType.Warn
+					data.type === PunishmentTypes.Warn
 						? `• **Expire:** ${generateDiscordTimestamp(data.date)}`
 						: 'LINE_BREAK',
 					`• **Reason:** ${data.reason}`,
@@ -138,9 +141,21 @@ export default new Command({
 			warningsEmbed
 				.setDescription(sliced.join('\n\n'))
 				.setFooter({ text: `Page ${currentPage}/${totalPages}` });
+
+			const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
+				new ButtonBuilder()
+					.setCustomId('1')
+					.setEmoji({ name: '◀️' })
+					.setStyle(ButtonStyle.Primary),
+				new ButtonBuilder()
+					.setCustomId('2')
+					.setEmoji({ name: '▶️' })
+					.setStyle(ButtonStyle.Primary),
+			]);
+
 			var sentInteraction = (await interaction.followUp({
 				embeds: [warningsEmbed],
-				components: [client.util.build.paginator()],
+				components: [buttons],
 			})) as Message;
 
 			const collector = sentInteraction.createMessageComponentCollector({

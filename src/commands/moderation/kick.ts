@@ -5,17 +5,18 @@ import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.kick,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason =
-			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
 			client.config.moderation.default.reason;
 
 		if (!member)
@@ -24,12 +25,12 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		if (ignore(member, { interaction, action: PunishmentType.Kick })) return;
+		if (ignore(member, { interaction, action: PunishmentTypes.Kick })) return;
 
 		const data = new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
-			type: PunishmentType.Kick,
+			type: PunishmentTypes.Kick,
 			userId: member.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
@@ -39,7 +40,7 @@ export default new Command({
 		await data.save();
 
 		await sendModDM(member, {
-			action: PunishmentType.Kick,
+			action: PunishmentTypes.Kick,
 			punishment: data,
 		});
 		await member.kick(reason);
@@ -47,7 +48,7 @@ export default new Command({
 		await interaction.reply({
 			embeds: [
 				client.embeds.moderation(member.user, {
-					action: PunishmentType.Kick,
+					action: PunishmentTypes.Kick,
 					id: data._id,
 				}),
 			],
@@ -55,7 +56,7 @@ export default new Command({
 		});
 
 		await createModLog({
-			action: PunishmentType.Kick,
+			action: PunishmentTypes.Kick,
 			punishmentId: data._id,
 			user: member.user,
 			moderator: interaction.user,

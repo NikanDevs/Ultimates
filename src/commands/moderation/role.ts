@@ -2,7 +2,7 @@ import { GuildMember, PermissionResolvable, Role } from 'discord.js';
 import { ignore } from '../../functions/ignore';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 
 export default new Command({
 	interaction: interactions.role,
@@ -21,7 +21,7 @@ export default new Command({
 					ephemeral: true,
 				});
 
-			if (ignore(member, { interaction, action: PunishmentType.Unknown })) return;
+			if (ignore(member, { interaction, action: PunishmentTypes.Unknown })) return;
 			if (
 				role.position > interaction.guild.members.me.roles.highest.position ||
 				role.managed

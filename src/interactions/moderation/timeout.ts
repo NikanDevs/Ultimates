@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
-import { interactionOptions } from '../../typings/Command';
+import { interactionOptions } from '../../typings';
 
 export const timeoutCommand = {
 	name: 'timeout',

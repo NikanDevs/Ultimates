@@ -5,6 +5,8 @@ import { Event } from '../../structures/Event';
 import { GuildMember } from 'discord.js';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { MAX_AUTOCOMPLETE_LENGTH } from '../../constants';
+import { capitalize } from '../../functions/other/capitalize';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction) return;
@@ -24,74 +26,66 @@ export default new Event('interactionCreate', async (interaction) => {
 	// Auto completes
 	switch (interaction.commandName) {
 		case 'punishment':
-			if (
-				interaction.options.getSubcommand() === 'search' ||
-				interaction.options.getSubcommand() === 'revoke' ||
-				interaction.options.getSubcommand() === 'update'
-			) {
-				if (focus?.name !== 'id') return;
+			if (focus?.name !== 'id') return;
 
-				let warnings: string[] = (await punishmentModel.find())
-					.map((data) => {
+			let warnings: string[] = (await punishmentModel.find())
+				.map((data) => {
+					return [
+						`Manual | ${capitalize(data.type)}`,
+						`${
+							client.users.cache.get(data.userId) === undefined
+								? `${data.userId}`
+								: client.users.cache.get(data.userId).tag
+						}`,
+						`ID: ${data._id}`,
+					].join(' • ');
+				})
+				.concat(
+					(await automodModel.find()).map((data) => {
 						return [
-							`Manual | ${client.util.capitalize(data.type)}`,
+							`Automod | ${capitalize(data.type)}`,
 							`${
 								client.users.cache.get(data.userId) === undefined
 									? `${data.userId}`
 									: client.users.cache.get(data.userId).tag
 							}`,
 							`ID: ${data._id}`,
+							`${data.reason}`,
 						].join(' • ');
 					})
-					.concat(
-						(await automodModel.find()).map((data) => {
-							return [
-								`Automod | ${client.util.capitalize(data.type)}`,
-								`${
-									client.users.cache.get(data.userId) === undefined
-										? `${data.userId}`
-										: client.users.cache.get(data.userId).tag
-								}`,
-								`ID: ${data._id}`,
-								`${data.reason}`,
-							].join(' • ');
-						})
-					);
-
-				warnings = warnings
-					.filter(
-						(choice) =>
-							(choice.split(' • ')[1].startsWith('Automod')
-								? choice
-										.split(' • ')[2]
-										.slice(4)
-										.startsWith(focus.value as string)
-								: choice
-										.split(' • ')[2]
-										.slice(4)
-										.startsWith(focus.value as string)) ||
-							choice.split(' • ')[1].startsWith(focus.value as string) ||
-							client.users.cache
-								.find((user) => user.tag === choice.split(' • ')[1])
-								?.id?.startsWith(focus.value as string)
-					)
-					.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
-					.slice(0, 25);
-
-				if (warnings.length === 0)
-					return interaction.respond([
-						{ name: 'No Punishments Found!', value: 'null' },
-					]);
-
-				await interaction.respond(
-					warnings.map((choice: string) => ({
-						name: client.util.splitText(choice, MAX_AUTOCOMPLETE_LENGTH),
-						value: choice.split(' • ')[1].startsWith('Automod')
-							? choice.split(' • ')[3].slice(4)
-							: choice.split(' • ')[3].slice(4),
-					}))
 				);
-			}
+
+			warnings = warnings
+				.filter(
+					(choice) =>
+						(choice.split(' • ')[1].startsWith('Automod')
+							? choice
+									.split(' • ')[2]
+									.slice(4)
+									.startsWith(focus.value as string)
+							: choice
+									.split(' • ')[2]
+									.slice(4)
+									.startsWith(focus.value as string)) ||
+						choice.split(' • ')[1].startsWith(focus.value as string) ||
+						client.users.cache
+							.find((user) => user.tag === choice.split(' • ')[1])
+							?.id?.startsWith(focus.value as string)
+				)
+				.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
+				.slice(0, 25);
+
+			if (warnings.length === 0)
+				return interaction.respond([{ name: 'No Punishments Found!', value: 'null' }]);
+
+			await interaction.respond(
+				warnings.map((choice: string) => ({
+					name: splitText(choice, MAX_AUTOCOMPLETE_LENGTH),
+					value: choice.split(' • ')[1].startsWith('Automod')
+						? choice.split(' • ')[3].slice(4)
+						: choice.split(' • ')[3].slice(4),
+				}))
+			);
 			break;
 		case 'unban':
 			if (focus?.name === 'user') {
@@ -119,7 +113,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 				await interaction.respond(
 					filteredBannedMembers.map((data: string) => ({
-						name: client.util.splitText(data, MAX_AUTOCOMPLETE_LENGTH),
+						name: splitText(data, MAX_AUTOCOMPLETE_LENGTH),
 						value: data.split(' • ')[2],
 					}))
 				);
@@ -154,19 +148,13 @@ export default new Event('interactionCreate', async (interaction) => {
 					name:
 						'⭐️' +
 						' • ' +
-						client.util.splitText(
-							focus.value.toString(),
-							MAX_AUTOCOMPLETE_LENGTH - 4
-						),
-					value: client.util.splitText(
-						focus.value.toString(),
-						MAX_AUTOCOMPLETE_LENGTH
-					),
+						splitText(focus.value.toString(), MAX_AUTOCOMPLETE_LENGTH - 4),
+					value: splitText(focus.value.toString(), MAX_AUTOCOMPLETE_LENGTH),
 				},
 			]);
 		await interaction.respond(
 			filteredReasons.map((reason: string) => ({
-				name: client.util.splitText(reason, MAX_AUTOCOMPLETE_LENGTH),
+				name: splitText(reason, MAX_AUTOCOMPLETE_LENGTH),
 				value: reason.split(' • ')[1],
 			}))
 		);

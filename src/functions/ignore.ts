@@ -1,13 +1,8 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { GuildMember } from 'discord.js';
 import { client } from '..';
-import { PunishmentType } from '../typings/PunishmentType';
+import { type ignoreFunctionOptions, PunishmentTypes } from '../typings';
 
-interface options {
-	interaction: CommandInteraction;
-	action: PunishmentType;
-}
-
-export function ignore(member: GuildMember, options: options): boolean {
+export function ignore(member: GuildMember, options: ignoreFunctionOptions): boolean {
 	const interaction = options.interaction;
 	const action = options.action;
 
@@ -53,21 +48,24 @@ export function ignore(member: GuildMember, options: options): boolean {
 		});
 		return true;
 	}
-	if ((action === PunishmentType.Ban || action === PunishmentType.Softban) && !member.bannable) {
+	if (
+		(action === PunishmentTypes.Ban || action === PunishmentTypes.Softban) &&
+		!member.bannable
+	) {
 		interaction.reply({
 			embeds: [client.embeds.error("This member can't be banned.")],
 			ephemeral: true,
 		});
 		return true;
 	}
-	if (action === PunishmentType.Kick && !member.kickable) {
+	if (action === PunishmentTypes.Kick && !member.kickable) {
 		interaction.reply({
 			embeds: [client.embeds.error("This member can't be kicked.")],
 			ephemeral: true,
 		});
 		return true;
 	}
-	if (action === PunishmentType.Timeout && !member.moderatable) {
+	if (action === PunishmentTypes.Timeout && !member.moderatable) {
 		interaction.reply({
 			embeds: [
 				client.embeds.error(

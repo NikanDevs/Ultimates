@@ -10,12 +10,13 @@ import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { durationsModel } from '../../models/durations';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.softban,
@@ -23,15 +24,15 @@ export default new Command({
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
 		const reason =
-			client.util.splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
 			client.config.moderation.default.reason;
 		const delete_messages =
-			options.getNumber('delete_messages') || client.config.moderation.default.msgs;
+			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
 		const durationO =
-			options.getString('duration') || client.config.moderation.default.softban;
+			options.getString('duration') ?? client.config.moderation.default.softban;
 		const duration = convertToTime(durationO);
 
-		if (member) if (ignore(member, { interaction, action: PunishmentType.Softban })) return;
+		if (member) if (ignore(member, { interaction, action: PunishmentTypes.Softban })) return;
 		if (await interaction.guild.bans.fetch(user.id).catch(() => {}))
 			return interaction.reply({
 				embeds: [client.embeds.error('This user is already banned from the server.')],
@@ -53,7 +54,7 @@ export default new Command({
 					client.embeds.attention(
 						`The duration must be between ${convertTime(
 							MIN_SOFTBAN_DURATION
-						)}and ${convertTime(MAX_SOFTBAN_DURATION)}.`
+						)} and ${convertTime(MAX_SOFTBAN_DURATION)}.`
 					),
 				],
 				ephemeral: true,
@@ -62,7 +63,7 @@ export default new Command({
 		const data = new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
-			type: PunishmentType.Softban,
+			type: PunishmentTypes.Softban,
 			userId: user.id,
 			moderatorId: interaction.user.id,
 			reason: reason,
@@ -73,7 +74,7 @@ export default new Command({
 
 		if (member)
 			await sendModDM(member, {
-				action: PunishmentType.Softban,
+				action: PunishmentTypes.Softban,
 				punishment: data,
 				expire: new Date(Date.now() + duration),
 			});
@@ -84,7 +85,7 @@ export default new Command({
 
 		const durationData = new durationsModel({
 			case: await getModCase(),
-			type: PunishmentType.Softban,
+			type: PunishmentTypes.Softban,
 			userId: user.id,
 			date: new Date(),
 			duration: duration,
@@ -94,7 +95,7 @@ export default new Command({
 		await interaction.reply({
 			embeds: [
 				client.embeds.moderation(member ? user : user.tag, {
-					action: PunishmentType.Softban,
+					action: PunishmentTypes.Softban,
 					id: data._id,
 				}),
 			],
@@ -102,7 +103,7 @@ export default new Command({
 		});
 
 		await createModLog({
-			action: PunishmentType.Softban,
+			action: PunishmentTypes.Softban,
 			punishmentId: data._id,
 			user: user,
 			duration: duration,

@@ -4,12 +4,14 @@ import {
 	ButtonStyle,
 	EmbedBuilder,
 	TextChannel,
+	Util,
 } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { create } from 'sourcebin';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { EMBED_DESCRIPTION_MAX_LENGTH } from '../../constants';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Event('messageDeleteBulk', async (messages) => {
 	if (!logActivity('message')) return;
@@ -30,7 +32,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 		.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
 		.map((msg) => {
 			return `**${msg.author?.tag}**: ${
-				msg.content ? client.util.splitText(msg.content, 50) : 'No Content'
+				msg.content ? splitText(msg.content, 50) : 'No Content'
 			}`;
 		})
 		.slice(0, messagesToShow);
@@ -42,7 +44,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 			iconURL: randomMessage.author.displayAvatarURL(),
 		})
 		.setTitle('Messages Bulk Deleted')
-		.setColor(client.util.resolve.color('#b59190'))
+		.setColor(Util.resolveColor('#b59190'))
 		.addFields([
 			{
 				name: 'Channel',
@@ -61,7 +63,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 			},
 		]);
 	logEmbed.setDescription(
-		`${client.util.splitText(messagesMapped.join('\n'), EMBED_DESCRIPTION_MAX_LENGTH)}`
+		`${splitText(messagesMapped.join('\n'), EMBED_DESCRIPTION_MAX_LENGTH)}`
 	);
 
 	if (messages.size > 10) {

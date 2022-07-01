@@ -6,7 +6,7 @@ const fifteenDays = 1000 * 60 * 60 * 24 * 15;
 export default new Command({
 	interaction: interactions.purge,
 	excute: async ({ client, interaction, options }) => {
-		let amount = Math.round(options.getNumber('amount'));
+		const amount = Math.round(options.getNumber('amount'));
 		const user = options.getUser('user');
 		const channel = interaction.channel as TextChannel;
 
@@ -42,6 +42,6 @@ export default new Command({
 			});
 
 		interaction.reply({ embeds: [client.embeds.success(descriptionText)] });
-		channel.bulkDelete(messagesToPurge, true);
+		await channel.bulkDelete(messagesToPurge, true);
 	},
 });

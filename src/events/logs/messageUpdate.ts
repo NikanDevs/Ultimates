@@ -1,8 +1,9 @@
-import { EmbedBuilder, GuildMember, TextChannel } from 'discord.js';
+import { EmbedBuilder, GuildMember, TextChannel, Util } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
+import { splitText } from '../../functions/other/splitText';
 
 export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 	if (!logActivity('message')) return;
@@ -30,18 +31,18 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		})
 		.setTitle('Message Edited')
 		.setURL(newMessage.url)
-		.setColor(client.util.resolve.color('#b59190'))
+		.setColor(Util.resolveColor('#b59190'))
 		.setFooter({ text: 'Message ID: ' + newMessage.id });
 
 	if (oldMessage.content !== newMessage.content) {
 		logEmbed.addFields([
 			{
 				name: 'Old message ',
-				value: client.util.splitText(oldMessage?.content, MAX_FIELD_VALUE_LENGTH),
+				value: splitText(oldMessage?.content, MAX_FIELD_VALUE_LENGTH),
 			},
 			{
 				name: 'New content',
-				value: client.util.splitText(newMessage?.content, MAX_FIELD_VALUE_LENGTH),
+				value: splitText(newMessage?.content, MAX_FIELD_VALUE_LENGTH),
 			},
 		]);
 	}

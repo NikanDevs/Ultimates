@@ -3,13 +3,13 @@ import { Event } from '../structures/Event';
 import { client } from '..';
 import { createModLog } from '../functions/logs/createModLog';
 import { durationsModel } from '../models/durations';
-import { PunishmentType } from '../typings/PunishmentType';
+import { PunishmentTypes } from '../typings';
 
 export default new Event('ready', () => {
 	setInterval(async () => {
 		const guild = await client.guilds.fetch(process.env.GUILD_ID);
 		// Unmutes
-		const findTimeouts = await durationsModel.find({ type: PunishmentType.Timeout });
+		const findTimeouts = await durationsModel.find({ type: PunishmentTypes.Timeout });
 		const filterTimeout = findTimeouts?.filter(
 			(c) => Date.now() > (c?.date as Date)?.getTime() + c.duration
 		);
@@ -27,7 +27,7 @@ export default new Event('ready', () => {
 			if (guildMember) guildMember.timeout(null, 'Timeout ended based on the duration.');
 
 			await createModLog({
-				action: PunishmentType.Unmute,
+				action: PunishmentTypes.Unmute,
 				user: findUser,
 				moderator: client.user,
 				reason: 'Timeout ended based on the duration.',
@@ -36,7 +36,7 @@ export default new Event('ready', () => {
 		});
 
 		// Unbans
-		const findSoftbans = await durationsModel.find({ type: PunishmentType.Softban });
+		const findSoftbans = await durationsModel.find({ type: PunishmentTypes.Softban });
 		const filterSoftbans = findSoftbans?.filter(
 			(c) => Date.now() > (c.date as Date).getTime() + c.duration
 		);
@@ -57,7 +57,7 @@ export default new Event('ready', () => {
 			}
 
 			await createModLog({
-				action: PunishmentType.Unban,
+				action: PunishmentTypes.Unban,
 				user: findUser,
 				moderator: client.user,
 				reason: reason,

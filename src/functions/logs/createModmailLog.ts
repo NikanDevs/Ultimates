@@ -1,55 +1,38 @@
-import { EmbedBuilder, TextChannel, User, Util } from 'discord.js';
+import { EmbedBuilder, TextChannel, Util } from 'discord.js';
 import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
-import { ModmailActionType, ModmailTicketData } from '../../typings/Modmail';
+import {
+	type createModmailLogOptions,
+	ModmailActionTypes,
+	modmailTicketData,
+	modmailActionTypeEmbedColors,
+} from '../../typings';
 import { addModmailTicket } from '../cases/ModmailCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
-
-interface ticketOptions {
-	type: 'DIRECT' | 'REQUEST';
-	channel: TextChannel;
-}
-interface options {
-	action: ModmailActionType;
-	ticketId?: Number;
-	user: User;
-	moderator?: User;
-	ticket?: ticketOptions;
-	reason?: string;
-	transcript?: string;
-	referencedCaseUrl?: string;
-}
+import { capitalize } from '../other/capitalize';
 
 /** Creates a new modmail log and post the log to the modmail webhook. */
-export async function createModmailLog(options: options) {
-	enum colors {
-		'OPEN' = '#95b874',
-		'CLOSE' = '#b89b74',
-		'BLACKLIST_ADD' = '#b04646',
-		'BLACKLIST_REMOVE' = '#60b3b1',
-	}
-
+export async function createModmailLog(options: createModmailLogOptions) {
 	const ticket = options.ticket;
-
 	const embed = new EmbedBuilder()
 		.setAuthor({
 			name: `Modmail | ${
-				options.action === ModmailActionType.Open
+				options.action === ModmailActionTypes.Open
 					? ticket.type === 'DIRECT'
 						? 'Direct Open'
 						: 'Open Request'
-					: client.util.capitalize(options.action)
+					: capitalize(options.action)
 			}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
-		.setColor(Util.resolveColor(colors[options.action]))
+		.setColor(Util.resolveColor(modmailActionTypeEmbedColors[options.action]))
 		.setDescription(
 			[
 				`${options.ticketId ? `• **Ticket:** #${options.ticketId}` : ''}\n`,
-				`• **Action:** ${client.util.capitalize(options.action)}`,
+				`• **Action:** ${capitalize(options.action)}`,
 				`• **Member:** ${options.user.tag} • ${options.user.id}`,
-				options.action === ModmailActionType.Open
+				options.action === ModmailActionTypes.Open
 					? `• **Channel:** ${ticket.channel}`
 					: 'LINE_BREAK',
 				options.moderator
@@ -64,9 +47,9 @@ export async function createModmailLog(options: options) {
 				`\n${
 					!options.referencedCaseUrl
 						? ''
-						: options.action === ModmailActionType.Close
+						: options.action === ModmailActionTypes.Close
 						? `[Take me to the creation](${options.referencedCaseUrl}) • [View transcript](${options.transcript})`
-						: options.action === ModmailActionType.BlacklistRemove
+						: options.action === ModmailActionTypes.BlacklistRemove
 						? `[Take me to the blacklist](${options.referencedCaseUrl})`
 						: ''
 				}`,
@@ -77,7 +60,7 @@ export async function createModmailLog(options: options) {
 	if (logActivity('modmail'))
 		var logMessage = await client.config.webhooks.modmail.send({ embeds: [embed] });
 
-	if (options.action === ModmailActionType.Open) {
+	if (options.action === ModmailActionTypes.Open) {
 		await addModmailTicket();
 
 		if (logActivity('modmail'))
@@ -96,15 +79,15 @@ export async function createModmailLog(options: options) {
 				},
 			},
 		});
-	} else if (options.action === ModmailActionType.BlacklistAdd && logActivity('modmail')) {
+	} else if (options.action === ModmailActionTypes.BlacklistAdd && logActivity('modmail')) {
 		let findMessage = await (
 			client.channels.cache.get(logMessage.channel_id) as TextChannel
 		).messages.fetch(logMessage.id);
 
 		await modmailModel.findByIdAndUpdate(options.user.id, { $set: { url: findMessage.url } });
-	} else if (options.action === ModmailActionType.Close) {
+	} else if (options.action === ModmailActionTypes.Close) {
 		const openedTickets = (await modmailModel.findById('substance')).openedTickets;
-		const ticketData = (openedTickets as ModmailTicketData[]).find(
+		const ticketData = (openedTickets as modmailTicketData[]).find(
 			(data) => data.userId === options.user.id
 		);
 

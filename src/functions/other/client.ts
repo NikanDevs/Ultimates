@@ -1,6 +1,7 @@
 import { Colors, EmbedBuilder, Formatters, User, Util } from 'discord.js';
 import { client } from '../..';
-import { PunishmentType } from '../../typings/PunishmentType';
+import { punishmentTypeNames } from '../../typings';
+import { PunishmentTypes } from '../../typings';
 
 export const cc = {
 	errorC: Colors.Red,
@@ -32,19 +33,11 @@ export const clientEmbeds = {
 			.setColor(Util.resolveColor('Red'));
 		return embed;
 	},
-	moderation: function (user: User | string, options: { action: PunishmentType; id: string }) {
-		enum pastForm {
-			'WARN' = 'warned',
-			'BAN' = 'banned',
-			'KICK' = 'kicked',
-			'TIMEOUT' = 'timed out',
-			'UNBAN' = 'unbanned',
-			'SOFTBAN' = 'soft banned',
-		}
+	moderation: function (user: User | string, options: { action: PunishmentTypes; id: string }) {
 		const embed = new EmbedBuilder()
 			.setDescription(
 				`${Formatters.bold(user.toString())} was ${
-					pastForm[options['action']]
+					punishmentTypeNames[options['action']]
 				}  • ID: \`${options['id']}\``
 			)
 			.setColor(client.cc.moderation);
