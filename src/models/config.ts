@@ -1,109 +1,29 @@
-import { Snowflake } from 'discord.js';
-import mongoose from 'mongoose';
+import { Schema, model, SchemaTypes } from 'mongoose';
+import type { ConfigSchemaType } from '../typings/models';
 
-type T = {
-	_id: 'moderation' | 'automod' | 'logging' | 'general' | 'ignore';
-	// General
-	ownerId: string;
-	developers: string[];
-	success: string;
-	error: string;
-	attention: string;
-	guild: {
-		id: string;
-		appealLink: string;
-		memberRoleId: string | Snowflake;
-		modmailCategoryId: string | Snowflake;
-	};
-	// Moderation
-	count: {
-		timeout1: number;
-		timeout2: number;
-		ban: number;
-		automod: number;
-	};
-	duration: {
-		timeout1: number;
-		timeout2: number;
-		ban: number;
-		automod: number;
-	};
-	default: {
-		timeout: number;
-		softban: number;
-		msgs: number;
-		reason: string;
-	};
-	reasons: {
-		warn: string[];
-		timeout: string[];
-		ban: string[];
-		softban: string[];
-		unban: string[];
-		kick: string[];
-	};
-	// Automod
-	filteredWords: string[];
-	modules: {
-		badwords: boolean;
-		invites: boolean;
-		largeMessage: boolean;
-		massMention: boolean;
-		massEmoji: boolean;
-		spam: boolean;
-		capitals: boolean;
-		urls: boolean;
-	};
-	// Logging
-	logging: {
-		mod: { channelId: string; webhook: string; active: boolean };
-		modmail: { channelId: string; webhook: string; active: boolean };
-		message: { channelId: string; webhook: string; active: boolean };
-		servergate: { channelId: string; webhook: string; active: boolean };
-		error: { channelId: string; webhook: string; active: boolean };
-	};
-	// Ignores
-	automod: {
-		badwords: { channelIds: string[]; roleIds: string[] };
-		invites: { channelIds: string[]; roleIds: string[] };
-		largeMessage: { channelIds: string[]; roleIds: string[] };
-		massMention: { channelIds: string[]; roleIds: string[] };
-		massEmoji: { channelIds: string[]; roleIds: string[] };
-		spam: { channelIds: string[]; roleIds: string[] };
-		capitals: { channelIds: string[]; roleIds: string[] };
-		urls: { channelIds: string[]; roleIds: string[] };
-	};
-	logs: {
-		message: {
-			channelIds: string[];
-			roleIds: string[];
-		};
-	};
-};
-
-const schema = new mongoose.Schema({
-	_id: String,
-	// General
-	ownerId: { type: String, required: false },
+const schema = new Schema({
+	_id: { type: SchemaTypes.String },
+	// general config
+	ownerId: { type: SchemaTypes.String, required: false },
 	developers: { type: Object, required: false },
-	success: { type: String, required: false },
-	error: { type: String, required: false },
-	attention: { type: String, required: false },
+	success: { type: SchemaTypes.String, required: false },
+	error: { type: SchemaTypes.String, required: false },
+	attention: { type: SchemaTypes.String, required: false },
 	guild: { type: Object, required: false },
-	// Moderation
+	// moderation config
 	count: { type: Object, required: false },
 	duration: { type: Object, required: false },
 	default: { type: Object, required: false },
 	reasons: { type: Object, required: false },
-	// Automod
-	filteredWords: { type: Array, required: false },
+	// automod config
+	filteredWords: { type: SchemaTypes.Array, required: false },
 	modules: { type: Object, required: false },
-	// Logging
+	// logging config
 	logging: { type: Object, required: false },
-	// Ignores
+	// ignores config
 	automod: { type: Object, required: false },
-	logs: { type: Object, required: true },
+	logs: { type: Object, required: false },
 });
 
-export const configModel = mongoose.model<T>('config', schema);
+export const configModel = model<ConfigSchemaType>('config', schema);
 

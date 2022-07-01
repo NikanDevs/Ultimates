@@ -1,17 +1,11 @@
-import { Snowflake } from 'discord.js';
-import mongoose from 'mongoose';
+import { Schema, model, SchemaTypes } from 'mongoose';
+import type { LeftMembersSchemaType } from '../typings/models';
 
-type T = {
-	userId: string | Snowflake;
-	roles: string[];
-	expire: Date;
-};
-const schema = new mongoose.Schema({
-	userId: String,
-	roles: Array,
-	expire: Date,
+const schema = new Schema({
+	userId: { type: SchemaTypes.String, required: true },
+	roles: { type: SchemaTypes.Array, required: true },
+	expire: { type: SchemaTypes.Date, required: true },
 });
 
-export const leftMembersModel = mongoose.model<T>('left-members', schema);
-
+export const leftMembersModel = model<LeftMembersSchemaType>('left-members', schema);
 schema.index({ expire: 1 }, { expireAfterSeconds: 0 });

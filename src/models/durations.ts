@@ -1,20 +1,12 @@
-import { Snowflake } from 'discord.js';
-import mongoose from 'mongoose';
-import { PunishmentType } from '../typings/PunishmentType';
+import { Schema, model, SchemaTypes } from 'mongoose';
+import type { DurationsSchemaType } from '../typings/models';
 
-type T = {
-	case: string;
-	type: PunishmentType;
-	userId: string | Snowflake;
-	date: Date;
-	duration: number;
-};
-const schema = new mongoose.Schema({
-	case: Number,
-	type: String,
-	userId: String,
-	date: Date,
-	duration: Number,
+const schema = new Schema({
+	case: { type: SchemaTypes.Number, required: true },
+	type: { type: SchemaTypes.String, required: true },
+	userId: { type: SchemaTypes.String, required: true },
+	date: { type: SchemaTypes.Date, required: true },
+	duration: { type: SchemaTypes.Number, required: true },
 });
 
-export const durationsModel = mongoose.model<T>('durations', schema);
+export const durationsModel = model<DurationsSchemaType>('durations', schema);

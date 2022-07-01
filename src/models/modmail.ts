@@ -1,28 +1,13 @@
-import { Snowflake } from 'discord.js';
-import mongoose from 'mongoose';
+import { Schema, model, SchemaTypes } from 'mongoose';
+import type { ModmailSchemaType } from '../typings/models';
 
-type T = {
-	_id: string;
-	currentTicket: number;
-	openedTickets: {
-		id: number;
-		userId: string | Snowflake;
-		type: 'REQUEST' | 'DIRECT';
-		createdAt: Date;
-		url: string;
-	}[];
-	moderatorId: string | Snowflake;
-	reason: string;
-	url: string;
-};
-
-const schema = new mongoose.Schema({
-	_id: { type: String },
-	currentTicket: { type: Number, required: false },
-	openedTickets: { type: Array, required: false, default: null },
-	moderatorId: { type: String, required: false },
-	reason: { type: String, required: false },
-	url: { type: String, required: false },
+const schema = new Schema({
+	_id: { type: SchemaTypes.String },
+	currentTicket: { type: SchemaTypes.Number, required: false },
+	openedTickets: { type: SchemaTypes.Array, required: false },
+	moderatorId: { type: SchemaTypes.String, required: false },
+	reason: { type: SchemaTypes.String, required: false },
+	url: { type: SchemaTypes.String, required: false },
 });
 
-export const modmailModel = mongoose.model<T>('modmail', schema);
+export const modmailModel = model<ModmailSchemaType>('modmail', schema);

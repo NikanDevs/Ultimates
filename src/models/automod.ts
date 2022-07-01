@@ -1,28 +1,19 @@
-import { Snowflake } from 'discord.js';
-import mongoose from 'mongoose';
+import { Schema, SchemaTypes, model } from 'mongoose';
 import { client } from '..';
-import { PunishmentType } from '../typings/PunishmentType';
+import type { AutomodSchemaType } from '../typings/models';
 
-type T = {
-	_id: string;
-	case: number;
-	type: PunishmentType;
-	userId: string | Snowflake;
-	reason: string;
-	date: Date;
-	expire: Date;
-};
-
-const schema = new mongoose.Schema({
-	_id: String,
-	case: Number,
-	type: String,
-	userId: String,
-	reason: { type: String, default: client.config.moderation.default.reason },
-	date: Date,
-	expire: Date,
+const schema = new Schema({
+	_id: { type: SchemaTypes.String, required: true },
+	case: { type: SchemaTypes.Number, required: true },
+	type: { type: SchemaTypes.Number, required: true },
+	userId: { type: SchemaTypes.String, required: true },
+	reason: {
+		type: SchemaTypes.String,
+		default: client.config.moderation.default.reason,
+	},
+	date: { type: SchemaTypes.Date, required: true },
+	expire: { type: SchemaTypes.Date, required: true },
 });
 
+export const automodModel = model<AutomodSchemaType>('automod', schema);
 schema.index({ expire: 1 }, { expireAfterSeconds: 0 });
-
-export const automodModel = mongoose.model<T>('automod', schema);

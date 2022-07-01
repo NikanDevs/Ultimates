@@ -1,30 +1,17 @@
-import { Snowflake } from 'discord.js';
-import mongoose from 'mongoose';
+import { Schema, model, SchemaTypes } from 'mongoose';
 import { client } from '..';
-import { PunishmentType } from '../typings/PunishmentType';
+import { PunishmentsSchemaType } from '../typings/models';
 
-type T = {
-	_id: string;
-	case: number;
-	type: PunishmentType;
-	userId: string | Snowflake;
-	moderatorId: string | Snowflake;
-	reason: string;
-	date: Date;
-	expire: Date;
-};
-
-const schema = new mongoose.Schema({
-	_id: String,
-	case: Number,
-	type: String,
-	userId: String,
-	moderatorId: String,
+const schema = new Schema({
+	_id: { type: SchemaTypes.String, required: true },
+	case: { type: SchemaTypes.Number, required: true },
+	type: { type: SchemaTypes.String, required: true },
+	userId: { type: SchemaTypes.String, required: true },
+	moderatorId: { type: SchemaTypes.String, required: true },
 	reason: { type: String, default: client.config.moderation.default.reason },
-	date: Date,
-	expire: Date,
+	date: { type: SchemaTypes.Date, required: true },
+	expire: { type: SchemaTypes.Date, required: true },
 });
 
-export const punishmentModel = mongoose.model<T>('punishment', schema);
-
+export const punishmentModel = model<PunishmentsSchemaType>('punishment', schema);
 schema.index({ expire: 1 }, { expireAfterSeconds: 0 });
