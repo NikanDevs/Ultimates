@@ -7,7 +7,7 @@ import {
 	modmailTicketData,
 	modmailActionTypeEmbedColors,
 } from '../../typings';
-import { addModmailTicket } from '../cases/ModmailCase';
+import { addModmailTicket } from '../cases/modmailCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
 import { capitalize } from '../other/capitalize';

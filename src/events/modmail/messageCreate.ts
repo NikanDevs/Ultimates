@@ -16,7 +16,7 @@ import { modmailModel } from '../../models/modmail';
 import { Event } from '../../structures/Event';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { ModmailActionTypes } from '../../typings';
-import { getModmailTicket } from '../../functions/cases/ModmailCase';
+import { getModmailTicket } from '../../functions/cases/modmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { convertTime } from '../../functions/convertTime';
 export const modmailCooldown: Collection<string, number> = new Collection();

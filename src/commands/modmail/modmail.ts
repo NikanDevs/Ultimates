@@ -8,7 +8,7 @@ import {
 } from 'discord.js';
 import { create } from 'sourcebin';
 import { modmailCooldown } from '../../events/modmail/messageCreate';
-import { getModmailTicket } from '../../functions/cases/ModmailCase';
+import { getModmailTicket } from '../../functions/cases/modmailCase';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { modmailModel } from '../../models/modmail';
 import { Command } from '../../structures/Command';
