@@ -42,19 +42,5 @@ Use `npm run register` to register the slash commands to your guild.
 
 After the slash commands are registered, use the `/configure` command to setup everything for your server and bot.
 
-## Step Four:
-
--    Skip this step if you have the all automod modules disabled (/configure automod)
-
-Head over to `/src/config/automod.json` and edit your own configs in.
-
-• ignore: Set channel-names, category Ids, role Ids and permission for each automod module to ignore.
-
-## Step Five:
-
--    Skip this step if you have the all logging modules disabled (/configure logs)
-
-Head over to `/src/config/logs.json` and edit your own configs in.
-
-• ignore: Set channel-ids, category Ids and role Ids for each logging module to ignore.
+-    **Note: Make sure to setup every config using `/configure` before starting to use the bot.**
 
