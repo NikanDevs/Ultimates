@@ -1,10 +1,4 @@
-import {
-	// ActionRowBuilder,
-	// ButtonBuilder,
-	// ButtonStyle,
-	// ComponentType,
-	EmbedBuilder,
-} from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';

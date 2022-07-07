@@ -41,7 +41,7 @@ export default new Command({
 					: await punishmentModel.findById(warnId).catch(() => {});
 			if (!data)
 				return interaction.reply({
-					embeds: [client.embeds.error('No punishment with that ID was found.')],
+					embeds: [client.embeds.error(t('common.$errors.invalidID'))],
 					ephemeral: true,
 				});
 
@@ -327,7 +327,7 @@ export default new Command({
 
 			if (!doesExist)
 				return interaction.reply({
-					embeds: [client.embeds.error('No punishment with that ID was found.')],
+					embeds: [client.embeds.error(t('common.$errors.invalidID'))],
 					ephemeral: true,
 				});
 
@@ -441,7 +441,7 @@ export default new Command({
 
 			if (!punishment || punishment === undefined)
 				return interaction.followUp({
-					embeds: [client.embeds.error('No punishment with that ID was found.')],
+					embeds: [client.embeds.error(t('common.$errors.invalidID'))],
 					ephemeral: true,
 				});
 

@@ -20,7 +20,10 @@ export default new Command({
 		if (!bannedMember)
 			return interaction.reply({
 				embeds: [
-					client.embeds.error("I wasn't able to find a banned member with that ID."),
+					client.embeds.error(
+						"I couldn't find that banned member. " +
+							t('common.errors.userAutocomplete')
+					),
 				],
 				ephemeral: true,
 			});

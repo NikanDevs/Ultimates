@@ -9,6 +9,7 @@ import {
 	ActionRowBuilder,
 	ButtonStyle,
 } from 'discord.js';
+import { t } from 'i18next';
 import type {
 	PaginatorInteractionTypes,
 	paginatorOptions,
@@ -85,7 +86,7 @@ export class Paginator {
 	private collect(collector: InteractionCollector<ButtonInteraction<CacheType>>) {
 		collector.on('collect', async (c): Promise<any> => {
 			if (c.user.id !== this.options.interaction.user.id)
-				return c.reply({ content: 'You can not use this.', ephemeral: true });
+				return c.reply({ content: t('common.errors.cannotInteract'), ephemeral: true });
 
 			await this.nextPage(c);
 			await this.previousPage(c);

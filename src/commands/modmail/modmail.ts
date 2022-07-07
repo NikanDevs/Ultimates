@@ -17,6 +17,7 @@ import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { interactions } from '../../interactions';
 import { MAX_REASON_LENGTH } from '../../constants';
 import { splitText } from '../../functions/other/splitText';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.modmail,
@@ -197,7 +198,7 @@ export default new Command({
 			const member = options.getMember('user') as GuildMember;
 			if (!member)
 				return interaction.reply({
-					embeds: [client.embeds.error("I couldn't find this user in the server.")],
+					embeds: [client.embeds.error(t('common.errors.invalidMember'))],
 					ephemeral: true,
 				});
 

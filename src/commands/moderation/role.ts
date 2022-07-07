@@ -1,4 +1,5 @@
 import { GuildMember, PermissionResolvable, Role } from 'discord.js';
+import { t } from 'i18next';
 import { ignore } from '../../functions/ignore';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
@@ -15,9 +16,7 @@ export default new Command({
 
 			if (!member)
 				return interaction.reply({
-					embeds: [
-						client.embeds.error('I could not find that member in this server.'),
-					],
+					embeds: [client.embeds.error(t('common.errors.invalidMember'))],
 					ephemeral: true,
 				});
 

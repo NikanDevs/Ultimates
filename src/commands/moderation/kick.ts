@@ -21,7 +21,7 @@ export default new Command({
 
 		if (!member)
 			return interaction.reply({
-				embeds: [client.embeds.error('I could not find that member in this server.')],
+				embeds: [client.embeds.error(t('common.errors.invalidMember'))],
 				ephemeral: true,
 			});
 

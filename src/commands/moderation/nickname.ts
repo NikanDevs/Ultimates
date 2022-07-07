@@ -3,6 +3,7 @@ import { Command } from '../../structures/Command';
 import { ignore } from '../../functions/ignore';
 import { interactions } from '../../interactions';
 import { PunishmentTypes } from '../../typings';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.nickname,
@@ -13,7 +14,7 @@ export default new Command({
 		if (ignore(member, { interaction, action: PunishmentTypes.Unknown })) return;
 		if (!member)
 			return interaction.reply({
-				embeds: [client.embeds.error('I could not find that member in this server.')],
+				embeds: [client.embeds.error(t('common.errors.invalidMember'))],
 				ephemeral: true,
 			});
 

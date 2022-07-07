@@ -91,7 +91,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 		const viewAllRow = new ActionRowBuilder<ButtonBuilder>().addComponents([
 			new ButtonBuilder()
 				.setLabel('View All Messages')
-				.setStyle(ButtonStyle['Link'])
+				.setStyle(ButtonStyle.Link)
 				.setURL(srcbin.url),
 		]);
 

@@ -8,6 +8,7 @@ import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { User } from 'discord.js';
 import { t } from 'i18next';
+import { durationsModel } from '../../models/durations';
 
 export default new Event('guildBanRemove', async (ban) => {
 	if (ban.guild.id !== process.env.GUILD_ID) return;
@@ -21,6 +22,12 @@ export default new Event('guildBanRemove', async (ban) => {
 	if (!findCase) return;
 	const { executor, reason } = findCase;
 	if (executor.bot) return;
+
+	// Finding the proper case
+	const findSoftban = await durationsModel.findOne({
+		type: PunishmentTypes.Unmute,
+		userId: ban.user.id,
+	});
 
 	const data_ = new punishmentModel({
 		_id: await generateManualId(),
@@ -40,5 +47,8 @@ export default new Event('guildBanRemove', async (ban) => {
 		user: ban.user,
 		moderator: executor,
 		reason: reason,
+	}).then(async () => {
+		if (!findSoftban || findSoftban === undefined) return;
+		await findSoftban.delete();
 	});
 });

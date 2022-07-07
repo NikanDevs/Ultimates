@@ -46,13 +46,7 @@ export default new Command({
 
 		if (!isValidTime(durationO))
 			return interaction.reply({
-				embeds: [
-					client.embeds.error(
-						t('common.errors.invalidDuration') +
-							' ' +
-							t('common.errors.useAutocomplete')
-					),
-				],
+				embeds: [client.embeds.error(t('common.$errors.invalidDuration'))],
 				ephemeral: true,
 			});
 

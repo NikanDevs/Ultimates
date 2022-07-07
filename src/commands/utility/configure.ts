@@ -13,6 +13,7 @@ import {
 	TextInputStyle,
 	Webhook,
 } from 'discord.js';
+import { t } from 'i18next';
 import {
 	MAX_FIELD_VALUE_LENGTH,
 	MAX_REASON_LENGTH,
@@ -230,7 +231,7 @@ export default new Command({
 				collector.on('collect', async (collected): Promise<any> => {
 					if (collected.user.id !== interaction.user.id)
 						return collected.reply({
-							content: 'You can not use this.',
+							content: t('common.errors.cannotInteract'),
 							ephemeral: true,
 						});
 					if (collected.customId !== 'badwords') return;
@@ -589,7 +590,7 @@ export default new Command({
 			collector.on('collect', async (collected): Promise<any> => {
 				if (collected.user.id !== interaction.user.id)
 					return interaction.reply({
-						content: 'You can not use this.',
+						content: t('common.errors.cannotInteract'),
 						ephemeral: true,
 					});
 

@@ -10,7 +10,7 @@ export async function timeoutMember(
 		duration: number;
 	}
 ) {
-	await member.timeout(options['duration'], options['reason']);
+	await member.timeout(options.duration, options.reason);
 
 	const data = new durationsModel({
 		case: await getModCase(),

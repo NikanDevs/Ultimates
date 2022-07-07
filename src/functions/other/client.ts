@@ -37,7 +37,7 @@ export const clientEmbeds = {
 		const embed = new EmbedBuilder()
 			.setDescription(
 				`${Formatters.bold(user.toString())} was ${
-					punishmentTypeNames[options['action']]
+					punishmentTypeNames[options.action]
 				}  • ID: \`${options['id']}\``
 			)
 			.setColor(client.cc.moderation);

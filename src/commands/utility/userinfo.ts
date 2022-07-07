@@ -9,6 +9,7 @@ import {
 	ButtonBuilder,
 	EmbedBuilder,
 } from 'discord.js';
+import { t } from 'i18next';
 import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
@@ -224,19 +225,19 @@ export default new Command({
 				new ActionRowBuilder<ButtonBuilder>().addComponents([
 					new ButtonBuilder()
 						.setLabel('Account')
-						.setStyle(ButtonStyle['Primary'])
+						.setStyle(ButtonStyle.Primary)
 						.setDisabled(options.disableAccount || false)
 						.setCustomId('1'),
 
 					new ButtonBuilder()
 						.setLabel('Guild')
-						.setStyle(ButtonStyle['Primary'])
+						.setStyle(ButtonStyle.Primary)
 						.setDisabled(options.disableGuild || false)
 						.setCustomId('2'),
 
 					new ButtonBuilder()
 						.setLabel('Roles')
-						.setStyle(ButtonStyle['Primary'])
+						.setStyle(ButtonStyle.Primary)
 						.setDisabled(options.disableRoles || false)
 						.setCustomId('3'),
 				]),
@@ -257,7 +258,7 @@ export default new Command({
 			userinfoCollector.on('collect', async (collected): Promise<any> => {
 				if (collected.user.id !== interaction.user.id)
 					return collected.reply({
-						content: 'You can not use this.',
+						content: t('common.errors.cannotInteract'),
 						ephemeral: true,
 					});
 

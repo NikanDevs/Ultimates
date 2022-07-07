@@ -14,9 +14,8 @@ export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction.isAutocomplete()) return;
 
 	// Checking for the member's permissions
-	const getPermissions = client.commands
-		.filter((cmd) => cmd.interaction.directory !== 'developer')
-		.get(interaction.commandName)?.interaction.permission;
+	const getPermissions = client.commands.get(interaction.commandName)?.interaction.permission;
+
 	if (!getPermissions.some((perm) => (interaction.member as GuildMember).permissions.has(perm)))
 		return await interaction.respond([
 			{ name: "You don't have permissions to intract with this.", value: 'NO_PERM' },
@@ -94,7 +93,7 @@ export default new Event('interactionCreate', async (interaction) => {
 					return [
 						`${ban.user.tag}`,
 						`${ban.user.id}`,
-						`${ban.reason || 'No reason provided.'}`,
+						`${ban.reason || t('common.noReason')}`,
 					].join(' • ');
 				});
 				const availableBannedMembers = [...new Set(mapBans)];
@@ -183,7 +182,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			return interaction
 				.respond([
 					{
-						name: 'Please provide a valid duration. 10s, 10m, 10h, 10d, 10y',
+						name: t('common.errors.invalidDuration'),
 						value: 'null',
 					},
 				])

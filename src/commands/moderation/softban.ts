@@ -41,20 +41,17 @@ export default new Command({
 
 		if (!isValidTime(durationO))
 			return interaction.reply({
-				embeds: [
-					client.embeds.error(
-						'The provided duration is not valid, use the autocomplete for a better result.'
-					),
-				],
+				embeds: [client.embeds.error(t('common.$errors.invalidDuration'))],
 				ephemeral: true,
 			});
 		if (duration > MAX_SOFTBAN_DURATION || duration < MIN_SOFTBAN_DURATION)
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
-						`The duration must be between ${convertTime(
-							MIN_SOFTBAN_DURATION
-						)} and ${convertTime(MAX_SOFTBAN_DURATION)}.`
+						t('common.errors.duration', {
+							min: convertTime(MIN_SOFTBAN_DURATION),
+							max: convertTime(MAX_SOFTBAN_DURATION),
+						})
 					),
 				],
 				ephemeral: true,

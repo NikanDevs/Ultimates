@@ -4,7 +4,13 @@
 			"useAutocomplete": "Use the autocomplete for better results.",
 			"invalidDuration": "The duration is not valid.",
 			"invalidMember": "I couldn't find that member in this server.",
-			"duration": "The duration must be between {min} and {max}."
+			"invalidID": "I couldn't find a punishment with that ID.",
+			"duration": "The duration must be between {min} and {max}.",
+			"cannotInteract": "You can not interact with this."
+		},
+		"$errors": {
+			"invalidDuration": "${common.errors.invalidDuration} ${common.errors.userAutocomplete}",
+			"invalidID": "${common.errors.invalidID} ${common.errors.userAutocomplete}"
 		},
 		"noReason": "No reason was provided."
 	}

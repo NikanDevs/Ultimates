@@ -58,7 +58,7 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 	const appealButton = new ActionRowBuilder<ButtonBuilder>().addComponents([
 		new ButtonBuilder()
 			.setURL(client.config.general.guild.appealLink)
-			.setStyle(ButtonStyle['Link'])
+			.setStyle(ButtonStyle.Link)
 			.setLabel('Appeal'),
 	]);
 	let appealComponent: ActionRowBuilder<ButtonBuilder>[] = [];

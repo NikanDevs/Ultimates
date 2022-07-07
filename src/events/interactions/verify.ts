@@ -148,11 +148,11 @@ export default new Event('interactionCreate', async (interaction) => {
 			new ButtonBuilder()
 				.setCustomId('verify-1')
 				.setLabel('Matching')
-				.setStyle(ButtonStyle['Success']),
+				.setStyle(ButtonStyle.Success),
 			new ButtonBuilder()
 				.setCustomId('verify-2')
 				.setLabel('Not Matching')
-				.setStyle(ButtonStyle['Danger']),
+				.setStyle(ButtonStyle.Danger),
 		]);
 
 		const msg = (await interaction.followUp({
