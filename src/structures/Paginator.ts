@@ -32,6 +32,7 @@ export class Paginator {
 			joinWith: options.joinWith,
 			time: options.time,
 			embed: options.embed,
+			ephemeral: options.ephemeral ?? false,
 			// searchButton: options.searchButton,
 		};
 		this.updateStatus(1);
@@ -131,18 +132,11 @@ export class Paginator {
 					.replaceAll('${{totalPages}}', this.status.totalPages.toString()),
 			});
 
-		if (this.options.interaction.replied) {
-			this.updateEmbed();
-			this.options = {
-				...this.options,
-				target: (await this.options.interaction.fetchReply()) as Message,
-			};
-			return;
-		}
 		if (this.options.interaction.deferred) {
 			const msg = (await this.options.interaction.followUp({
 				embeds: [newEmbed],
 				components: [this.buildButtons()],
+				ephemeral: this.options.ephemeral,
 			})) as Message;
 
 			this.options = {
@@ -153,6 +147,7 @@ export class Paginator {
 			const msg = (await this.options.interaction.reply({
 				embeds: [newEmbed],
 				components: [this.buildButtons()],
+				ephemeral: this.options.ephemeral,
 				fetchReply: true,
 			})) as Message;
 

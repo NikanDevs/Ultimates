@@ -41,7 +41,7 @@ export default new Command({
 
 		await interaction.showModal(modal);
 		const modalInteraction = (await interaction
-			.awaitModalSubmit({ time: 6000 * 5 })
+			.awaitModalSubmit({ time: 5000 * 50 })
 			.catch(() => {})) as ModalSubmitInteraction;
 
 		if (modalInteraction.customId !== 'eval') return;
@@ -98,6 +98,7 @@ export default new Command({
 							joinWith: null,
 							time: 5 * 6000,
 							embed: embed,
+							ephemeral: silent,
 						});
 					}
 					break;

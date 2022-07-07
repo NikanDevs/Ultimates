@@ -241,6 +241,7 @@ export interface paginatorOptions {
 	joinWith?: string;
 	time: number;
 	embed: EmbedBuilder;
+	ephemeral?: boolean;
 	// searchButton: boolean;
 }
 
