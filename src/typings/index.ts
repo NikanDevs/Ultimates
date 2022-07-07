@@ -6,6 +6,9 @@ import type {
 	CommandInteractionOptionResolver,
 	PermissionResolvable,
 	ChatInputApplicationCommandData,
+	EmbedBuilder,
+	UserContextMenuCommandInteraction,
+	ModalSubmitInteraction,
 } from 'discord.js';
 import type { UltimatesClient } from '../structures/Client';
 
@@ -223,6 +226,29 @@ export interface createModmailLogOptions {
 	reason?: string;
 	transcript?: string;
 	referencedCaseUrl?: string;
+}
+
+// Paginator
+
+export type PaginatorInteractionTypes =
+	| CommandInteraction
+	| UserContextMenuCommandInteraction
+	| ModalSubmitInteraction;
+
+export interface paginatorOptions {
+	array: any[];
+	itemPerPage: number;
+	joinWith?: string;
+	time: number;
+	embed: EmbedBuilder;
+	// searchButton: boolean;
+}
+
+export interface paginatorStatusOptions {
+	totalPages: number;
+	currentPage: number;
+	slice1: number;
+	slice2: number;
 }
 
 // Other

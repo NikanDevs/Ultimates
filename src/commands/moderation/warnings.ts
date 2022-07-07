@@ -1,17 +1,10 @@
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	ComponentType,
-	EmbedBuilder,
-	Message,
-	User,
-} from 'discord.js';
+import { EmbedBuilder, User } from 'discord.js';
 import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
+import { Paginator } from '../../structures/Paginator';
 import { PunishmentTypes } from '../../typings';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
@@ -19,7 +12,7 @@ export default new Command({
 	interaction: interactions.warnings,
 	excute: async ({ client, interaction, options }) => {
 		const user = interaction.user as User;
-		const warningsEmbed = new EmbedBuilder()
+		const embed = new EmbedBuilder()
 			.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
 			.setColor(client.cc.invisible)
 			.setThumbnail(user.displayAvatarURL());
@@ -125,93 +118,20 @@ export default new Command({
 
 		await interaction.deferReply();
 		if (warningsMap.length <= 3) {
-			warningsEmbed.setDescription(
-				warningsMap.map((data) => data.toString()).join('\n\n')
-			);
-			interaction.followUp({ embeds: [warningsEmbed] });
+			embed.setDescription(warningsMap.map((data) => data.toString()).join('\n\n'));
+			interaction.followUp({ embeds: [embed] });
 		} else if (warningsMap.length > 3) {
-			const totalPages = Math.ceil(warningsMap.length / 3);
-			let currentSlice1 = 0;
-			let currentSlice2 = 3;
-			let currentPage = 1;
-			let sliced = warningsMap
-				.map((data) => data.toString())
-				.slice(currentSlice1, currentSlice2);
-
-			warningsEmbed
-				.setDescription(sliced.join('\n\n'))
-				.setFooter({ text: `Page ${currentPage}/${totalPages}` });
-
-			const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
-				new ButtonBuilder()
-					.setCustomId('1')
-					.setEmoji({ name: '◀️' })
-					.setStyle(ButtonStyle.Primary),
-				new ButtonBuilder()
-					.setCustomId('2')
-					.setEmoji({ name: '▶️' })
-					.setStyle(ButtonStyle.Primary),
-			]);
-
-			var sentInteraction = (await interaction.followUp({
-				embeds: [warningsEmbed],
-				components: [buttons],
-			})) as Message;
-
-			const collector = sentInteraction.createMessageComponentCollector({
-				time: 60000,
-				componentType: ComponentType['Button'],
+			embed.setDescription('${{array}}').setFooter({
+				text: 'Page ${{currentPage}}/${{totalPages}}',
 			});
 
-			collector.on('collect', (collected): any => {
-				if (interaction.user.id !== collected.user.id)
-					return collected.reply({
-						content: 'You can not use this.',
-						ephemeral: true,
-					});
-
-				switch (collected.customId) {
-					case '1':
-						if (currentPage === 1) return collected.deferUpdate();
-
-						currentSlice1 = currentSlice1 - 3;
-						currentSlice2 = currentSlice2 - 3;
-						currentPage = currentPage - 1;
-						sliced = warningsMap
-							.map((data) => data.toString())
-							.slice(currentSlice1, currentSlice2);
-						warningsEmbed
-							.setDescription(
-								sliced.map((data) => data.toString()).join('\n\n')
-							)
-							.setFooter({ text: `Page ${currentPage}/${totalPages}` });
-
-						interaction.editReply({ embeds: [warningsEmbed] });
-						collected.deferUpdate();
-						break;
-					case '2':
-						if (currentPage === totalPages) return collected.deferUpdate();
-
-						currentSlice1 = currentSlice1 + 3;
-						currentSlice2 = currentSlice2 + 3;
-						currentPage = currentPage + 1;
-						sliced = warningsMap
-							.map((data) => data.toString())
-							.slice(currentSlice1, currentSlice2);
-						warningsEmbed
-							.setDescription(
-								sliced.map((data) => data.toString()).join('\n\n')
-							)
-							.setFooter({ text: `Page ${currentPage}/${totalPages}` });
-
-						interaction.editReply({ embeds: [warningsEmbed] });
-						collected.deferUpdate();
-						break;
-				}
-			});
-
-			collector.on('end', () => {
-				interaction.editReply({ components: [] });
+			const paginator = new Paginator();
+			paginator.start(interaction, {
+				array: warningsMap.map((data) => data.toString()),
+				itemPerPage: 3,
+				joinWith: '\n\n',
+				time: 60 * 1000,
+				embed: embed,
 			});
 		}
 	},
