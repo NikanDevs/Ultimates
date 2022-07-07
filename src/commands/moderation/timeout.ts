@@ -18,6 +18,7 @@ import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { splitText } from '../../functions/other/splitText';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.timeout,
@@ -27,12 +28,11 @@ export default new Command({
 			options.getString('duration') ?? client.config.moderation.default.timeout;
 		const duration = convertToTime(durationO);
 		const reason: string =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
-			client.config.moderation.default.reason;
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
 
 		if (!member)
 			return interaction.reply({
-				embeds: [client.embeds.error('I could not find that member in this server.')],
+				embeds: [client.embeds.error(t('common.errors.invalidMember'))],
 				ephemeral: true,
 			});
 
@@ -43,22 +43,27 @@ export default new Command({
 				embeds: [client.embeds.error('This member is already timed out.')],
 				ephemeral: true,
 			});
+
 		if (!isValidTime(durationO))
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						'The provided duration is not valid, use the autocomplete for a better result.'
+						t('common.errors.invalidDuration') +
+							' ' +
+							t('common.errors.useAutocomplete')
 					),
 				],
 				ephemeral: true,
 			});
+
 		if (duration > MAX_TIMEOUT_DURATION || duration < MIN_TIMEOUT_DURATION)
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
-						`The duration must be between ${convertTime(
-							MIN_TIMEOUT_DURATION
-						)} and ${convertTime(MAX_TIMEOUT_DURATION)}.`
+						t('common.errors.duration', {
+							min: convertTime(MIN_TIMEOUT_DURATION),
+							max: convertTime(MAX_TIMEOUT_DURATION),
+						})
 					),
 				],
 				ephemeral: true,

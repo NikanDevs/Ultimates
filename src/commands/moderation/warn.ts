@@ -12,14 +12,14 @@ import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { durationsModel } from '../../models/durations';
 import { splitText } from '../../functions/other/splitText';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.warn,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
 		const reason =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
-			client.config.moderation.default.reason;
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
 
 		if (!member)
 			return interaction.reply({

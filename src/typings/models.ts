@@ -49,7 +49,6 @@ export type ConfigSchemaType = {
 		timeout?: number;
 		softban?: number;
 		msgs?: number;
-		reason?: string;
 	};
 	reasons?: {
 		warn?: string[];

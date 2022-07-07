@@ -1,5 +1,5 @@
+import { t } from 'i18next';
 import { Schema, SchemaTypes, model } from 'mongoose';
-import { client } from '..';
 import type { AutomodSchemaType } from '../typings/models';
 
 const schema = new Schema({
@@ -9,7 +9,7 @@ const schema = new Schema({
 	userId: { type: SchemaTypes.String, required: true },
 	reason: {
 		type: SchemaTypes.String,
-		default: client.config.moderation.default.reason,
+		default: t('common.noReason'),
 	},
 	date: { type: SchemaTypes.Date, required: true },
 	expire: { type: SchemaTypes.Date, required: true },

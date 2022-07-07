@@ -7,6 +7,7 @@ import { convertTime, convertToTime, isValidTime } from '../../functions/convert
 import { MAX_AUTOCOMPLETE_LENGTH } from '../../constants';
 import { capitalize } from '../../functions/other/capitalize';
 import { splitText } from '../../functions/other/splitText';
+import { t } from 'i18next';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction) return;
@@ -138,7 +139,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			return interaction.respond([
 				{
 					name: '⭐️' + ' • ' + 'No inbuilt reasons were found, type a reason...',
-					value: client.config.moderation.default.reason,
+					value: t('common.noReason') as string,
 				},
 			]);
 

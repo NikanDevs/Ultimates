@@ -14,6 +14,7 @@ import { MAX_REASON_LENGTH } from '../../constants';
 import { getUrlFromCase } from '../cases/getURL';
 import { capitalize } from '../other/capitalize';
 import { splitText } from '../other/splitText';
+import { t } from 'i18next';
 
 export async function createModLog(options: createModLogOptions) {
 	const revoke: boolean = options.revoke ? options.revoke : false;
@@ -60,8 +61,7 @@ export async function createModLog(options: createModLogOptions) {
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
 				`• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${
-					splitText(options.reason, MAX_REASON_LENGTH) ||
-					client.config.moderation.default.reason
+					splitText(options.reason, MAX_REASON_LENGTH) ?? t('common.noReason')
 				}`,
 			]
 				.join('\n')

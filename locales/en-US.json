@@ -1,0 +1,12 @@
+{
+	"common": {
+		"errors": {
+			"useAutocomplete": "Use the autocomplete for better results.",
+			"invalidDuration": "The duration is not valid.",
+			"invalidMember": "I couldn't find that member in this server.",
+			"duration": "The duration must be between {min} and {max}."
+		},
+		"noReason": "No reason was provided."
+	}
+}
+

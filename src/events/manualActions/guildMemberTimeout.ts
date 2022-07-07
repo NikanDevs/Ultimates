@@ -9,7 +9,7 @@ import { createModLog } from '../../functions/logs/createModLog';
 import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { User } from 'discord.js';
-import { client } from '../..';
+import { t } from 'i18next';
 
 export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 	if (newMember.guild.id !== process.env.GUILD_ID) return;
@@ -39,7 +39,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: PunishmentTypes.Timeout,
 			userId: newMember.user.id,
 			moderatorId: executor.id,
-			reason: reason || client.config.moderation.default.reason,
+			reason: reason ?? t('common.noReason'),
 			date: new Date(),
 			expire: new Date(warningExpiry.getTime() + duration),
 		});

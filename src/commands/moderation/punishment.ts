@@ -30,6 +30,7 @@ import {
 import { getUrlFromCase } from '../../functions/cases/getURL';
 import { capitalize } from '../../functions/other/capitalize';
 import { splitText } from '../../functions/other/splitText';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.punishment,
@@ -39,8 +40,8 @@ export default new Command({
 		if (getSubCommand === 'revoke') {
 			const warnId = options.getString('id');
 			const reason =
-				splitText(options.getString('reason'), MAX_REASON_LENGTH) ||
-				client.config.moderation.default.reason;
+				splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
+				t('common.noReason');
 
 			const data =
 				warnId.length == AUTOMOD_ID_LENGTH

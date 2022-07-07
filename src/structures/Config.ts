@@ -62,7 +62,6 @@ export class Config {
 			timeout: null as number,
 			softban: null as number,
 			msgs: null as number,
-			reason: null as string,
 		},
 		reasons: {
 			warn: [] as string[],
@@ -191,7 +190,6 @@ export class Config {
 				timeout: data.default.timeout,
 				softban: data.default.softban,
 				msgs: data.default.msgs,
-				reason: data.default.reason,
 			},
 			reasons: {
 				warn: data.reasons.warn,

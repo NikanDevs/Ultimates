@@ -404,7 +404,6 @@ export default new Command({
 						timeout: 60 * 60 * 1000,
 						softban: 60 * 60 * 24 * 30 * 1000,
 						msgs: 0,
-						reason: 'No reason was provided.',
 					},
 					reasons: {
 						warn: [],
@@ -557,9 +556,6 @@ export default new Command({
 							!data.default.msgs
 								? "don't delete any"
 								: `${data.default.msgs} days`
-						}`,
-						`• ${Formatters.bold('Default punishment reason')} - ${
-							data.default.reason || '✖︎'
 						}`,
 					].join('\n')
 				);

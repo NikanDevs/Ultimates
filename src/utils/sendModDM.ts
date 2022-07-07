@@ -5,6 +5,7 @@ import {
 	EmbedBuilder,
 	GuildMember,
 } from 'discord.js';
+import { t } from 'i18next';
 import { client } from '..';
 import { punishmentTypeNames, punismentTypeNamesSuffixes, sendModDMOptions } from '../typings';
 import { PunishmentTypes } from '../typings';
@@ -49,7 +50,7 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 			},
 			{
 				name: 'Reason',
-				value: options.punishment.reason || client.config.moderation.default.reason,
+				value: options.punishment.reason ?? t('common.noReason'),
 				inline: false,
 			},
 		]);

@@ -10,6 +10,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { splitText } from '../../functions/other/splitText';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.ban,
@@ -17,8 +18,7 @@ export default new Command({
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
 		const reason =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
-			client.config.moderation.default.reason;
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
 		const delete_messages =
 			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
 

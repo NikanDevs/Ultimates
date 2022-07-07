@@ -11,6 +11,7 @@ import { addModmailTicket } from '../cases/modmailCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
 import { capitalize } from '../other/capitalize';
+import { t } from 'i18next';
 
 /** Creates a new modmail log and post the log to the modmail webhook. */
 export async function createModmailLog(options: createModmailLogOptions) {
@@ -43,7 +44,7 @@ export async function createModmailLog(options: createModmailLogOptions) {
 					  }`
 					: 'LINE_BREAK',
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason:** ${options.reason || client.config.moderation.default.reason}`,
+				`• **Reason:** ${options.reason ?? t('common.noReason')}`,
 				`\n${
 					!options.referencedCaseUrl
 						? ''

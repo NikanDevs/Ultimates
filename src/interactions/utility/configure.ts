@@ -136,7 +136,6 @@ export const configureCommand = {
 						{ name: 'Default timeout duration', value: 'default_timeout' },
 						{ name: 'Default softban duration', value: 'default_softban' },
 						{ name: 'Default ban delete message days', value: 'default_msgs' },
-						{ name: 'Default punishment reason', value: 'default_reason' },
 					],
 				},
 				{

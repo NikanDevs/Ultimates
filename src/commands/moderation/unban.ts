@@ -7,14 +7,14 @@ import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { interactions } from '../../interactions';
 import { splitText } from '../../functions/other/splitText';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.unban,
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user');
 		const reason =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
-			client.config.moderation.default.reason;
+			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
 		if (!bannedMember)
