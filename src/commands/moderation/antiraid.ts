@@ -135,7 +135,6 @@ export default new Command({
 						reason: reason,
 						date: new Date(),
 						expire: punishmentExpiry,
-						raid: true,
 					});
 					await data.save();
 

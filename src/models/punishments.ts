@@ -11,7 +11,6 @@ const schema = new Schema({
 	reason: { type: String, default: t('common.noReason') },
 	date: { type: SchemaTypes.Date, required: true },
 	expire: { type: SchemaTypes.Date, required: true },
-	raid: { type: SchemaTypes.Boolean, required: false, default: false },
 });
 
 export const punishmentModel = model<PunishmentsSchemaType>('punishment', schema);
