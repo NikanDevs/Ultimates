@@ -170,6 +170,7 @@ export interface sendModDMOptions {
 	expire?: Date;
 	punishment: any;
 	automod?: boolean;
+	appeal?: boolean;
 }
 
 type punishmentUpdateTypes = 'duration' | 'reason';
@@ -184,6 +185,15 @@ export interface createModLogOptions {
 	expire?: Date;
 	revoke?: boolean;
 	update?: punishmentUpdateTypes;
+}
+
+export interface createAntiraidLogOptions {
+	affected: number;
+	moderator: User;
+	reason: string;
+	registered: number;
+	joined: number;
+	results: string;
 }
 
 // Modmail
@@ -257,5 +267,10 @@ export interface paginatorStatusOptions {
 export interface ignoreFunctionOptions {
 	interaction: CommandInteraction;
 	action: PunishmentTypes;
+}
+
+export interface antiRaidHitData {
+	userId: string;
+	punishmentId: string;
 }
 

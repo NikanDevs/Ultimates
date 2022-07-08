@@ -9,8 +9,8 @@
 			"cannotInteract": "You can not interact with this."
 		},
 		"$errors": {
-			"invalidDuration": "${common.errors.invalidDuration} ${common.errors.userAutocomplete}",
-			"invalidID": "${common.errors.invalidID} ${common.errors.userAutocomplete}"
+			"invalidDuration": "${common.errors.invalidDuration} ${common.errors.useAutocomplete}",
+			"invalidID": "${common.errors.invalidID} ${common.errors.useAutocomplete}"
 		},
 		"noReason": "No reason was provided."
 	}

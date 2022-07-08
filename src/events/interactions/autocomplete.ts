@@ -195,4 +195,35 @@ export default new Event('interactionCreate', async (interaction) => {
 			},
 		]);
 	}
+
+	// Antiraid autocomplete
+	if (
+		(focus.name === 'registered' || focus.name === 'joined') &&
+		interaction.commandName === 'antiraid'
+	) {
+		if (!focus.value.toString().trim().length)
+			return interaction.respond([
+				{
+					name: 'Please provide a duration',
+					value: 'null',
+				},
+			]);
+
+		if (!isValidTime(focus.value as string))
+			return interaction
+				.respond([
+					{
+						name: t('common.errors.invalidDuration'),
+						value: 'null',
+					},
+				])
+				.catch(() => {});
+
+		await interaction.respond([
+			{
+				name: convertTime(convertToTime(focus.value)),
+				value: convertToTime(focus.value).toString(),
+			},
+		]);
+	}
 });

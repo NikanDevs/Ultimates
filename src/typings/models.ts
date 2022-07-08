@@ -157,5 +157,6 @@ export type PunishmentsSchemaType = {
 	reason: string;
 	date: Date;
 	expire: Date;
+	raid?: boolean;
 };
 

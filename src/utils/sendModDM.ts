@@ -13,6 +13,7 @@ import { generateDiscordTimestamp } from './generateDiscordTimestamp';
 
 export async function sendModDM(member: GuildMember, options: sendModDMOptions) {
 	const automod = options.automod ? true : false;
+	const appeal = options.appeal ?? true;
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
@@ -64,7 +65,8 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 	let appealComponent: ActionRowBuilder<ButtonBuilder>[] = [];
 	if (
 		(options.action === PunishmentTypes.Ban || options.action === PunishmentTypes.Softban) &&
-		client.config.general.guild.appealLink?.length !== undefined
+		client.config.general.guild.appealLink?.length !== undefined &&
+		appeal
 	)
 		appealComponent = [appealButton];
 
