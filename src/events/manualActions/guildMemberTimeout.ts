@@ -26,11 +26,12 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			(log) => (log.target as User).id === newMember.user.id
 		);
 		if (!findCase) return;
-		const { executor, reason, changes } = findCase;
+		const { executor, reason, changes, createdTimestamp } = findCase;
 		if (executor.bot) return;
+		if (Date.now() - createdTimestamp > 10 * 1000) return;
 
 		const rawDuration = new Date(changes[0].new.toString()).getTime() - Date.now();
-		const duration = ~~(Math.ceil(rawDuration / 1000 / 10) * 10) * 1000; // Rounding up to 10s -> 58 secs to 60 secs
+		const duration = ~~(Math.ceil(rawDuration / 1000 / 10) * 10) * 1000; // Rounding up 58 secs to 60 secs to 1 minute
 		await timeoutMember(newMember, { duration: duration, reason: reason });
 
 		const data_ = new punishmentModel({

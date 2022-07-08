@@ -21,8 +21,9 @@ export default new Event('guildBanAdd', async (ban) => {
 	const findCase = auditLogs.entries.find((log) => (log.target as User).id === ban.user.id);
 	if (!findCase) return;
 
-	const { executor, reason } = findCase;
+	const { executor, reason, createdTimestamp } = findCase;
 	if (executor.bot) return;
+	if (Date.now() - createdTimestamp > 10 * 1000) return;
 
 	const data_ = new punishmentModel({
 		_id: await generateManualId(),

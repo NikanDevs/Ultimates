@@ -25,8 +25,9 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			(log) => (log.target as User).id === newMember.user.id
 		);
 		if (!findCase) return;
-		const { executor, reason } = findCase;
+		const { executor, reason, createdTimestamp } = findCase;
 		if (executor.bot) return;
+		if (Date.now() - createdTimestamp > 10 * 1000) return;
 
 		// Finding the proper case
 		const findTimeout = await durationsModel.findOne({
