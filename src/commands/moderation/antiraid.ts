@@ -25,6 +25,7 @@ import {
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { createAntiraidLog } from '../../functions/logs/createAntiraidLog';
 import { create } from 'sourcebin';
+import { sendModDM } from '../../utils/sendModDM';
 
 export default new Command({
 	interaction: interactions.antiraid,
@@ -140,6 +141,12 @@ export default new Command({
 						expire: punishmentExpiry,
 					});
 					await data.save();
+
+					sendModDM(raider, {
+						action: PunishmentTypes.Ban,
+						punishment: data,
+						appeal: false,
+					});
 				}, 2000);
 			}
 
