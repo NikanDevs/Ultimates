@@ -8,7 +8,7 @@ import {
 	MIN_ANTIRAID_DURATION,
 	punishmentExpiry,
 } from '../../constants';
-import { antiRaidHitData, PunishmentTypes } from '../../typings';
+import { PunishmentTypes } from '../../typings';
 import { punishmentModel } from '../../models/punishments';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
@@ -33,8 +33,8 @@ export default new Command({
 		const joinedOption = options.getString('registered');
 		const registered = convertToTime(registeredOption);
 		const joined = convertToTime(joinedOption);
-		// const delete_messages =
-		// 	options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
+		const delete_messages =
+			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
 		const reason =
 			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
 
@@ -110,7 +110,6 @@ export default new Command({
 			if (c.customId === 'cancel') return interaction.deleteReply();
 			collector.stop('confirmed');
 
-			const hitData: antiRaidHitData[] = [];
 			interaction.editReply({
 				embeds: [
 					new EmbedBuilder()
@@ -126,6 +125,10 @@ export default new Command({
 
 			for (const raider of filtered) {
 				setTimeout(async () => {
+					await interaction.guild.members
+						.ban(raider.user, { deleteMessageDays: delete_messages, reason })
+						.catch(() => {});
+
 					const data = new punishmentModel({
 						_id: await generateManualId(),
 						case: await getModCase(),
@@ -137,20 +140,13 @@ export default new Command({
 						expire: punishmentExpiry,
 					});
 					await data.save();
-
-					hitData.push({
-						userId: raider.id,
-						punishmentId: data._id,
-					});
 				}, 2000);
 			}
 
 			const results = await create(
 				[
 					{
-						content: `    User ID      -      Punishment ID\n\n${hitData.map(
-							(d) => `${d.userId} - ${d.punishmentId}`
-						)}`,
+						content: filtered.map((m) => `- ${m.user.tag} (${m.id})`).join('\n'),
 					},
 				],
 				{
