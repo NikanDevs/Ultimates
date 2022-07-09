@@ -20,14 +20,6 @@ export default new Command({
 
 		if (newNick) {
 			// Set a new nickname
-			if (newNick.length > 32)
-				return interaction.reply({
-					embeds: [
-						client.embeds.error('The nickname must be 32 or fewer in length.'),
-					],
-					ephemeral: true,
-				});
-
 			member.setNickname(newNick);
 			interaction.reply({
 				embeds: [

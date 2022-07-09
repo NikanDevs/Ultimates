@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { MAX_REASON_LENGTH, punishmentExpiry, warningExpiry } from '../../constants';
+import { punishmentExpiry, warningExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -11,15 +11,13 @@ import { timeoutMember } from '../../utils/timeoutMember';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { durationsModel } from '../../models/durations';
-import { splitText } from '../../functions/other/splitText';
 import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.warn,
 	excute: async ({ client, interaction, options }) => {
 		const member = options.getMember('member') as GuildMember;
-		const reason =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
+		const reason = options.getString('reason') ?? t('common.noReason');
 
 		if (!member)
 			return interaction.reply({

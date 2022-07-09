@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
+import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
 import { interactionOptions } from '../../typings';
 
 export const lockdownCommand = {
@@ -29,6 +30,8 @@ export const lockdownCommand = {
 					description: 'The reason of this action',
 					type: ApplicationCommandOptionType.String,
 					required: false,
+					min_length: 1,
+					max_length: MAX_FIELD_VALUE_LENGTH,
 				},
 			],
 		},
@@ -42,6 +45,8 @@ export const lockdownCommand = {
 					description: 'The reason of this action',
 					type: ApplicationCommandOptionType.String,
 					required: false,
+					min_length: 1,
+					max_length: MAX_FIELD_VALUE_LENGTH,
 				},
 			],
 		},

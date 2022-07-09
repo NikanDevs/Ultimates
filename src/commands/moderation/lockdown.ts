@@ -1,13 +1,12 @@
 import { ChannelType, EmbedBuilder, GuildChannel, TextChannel } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
-import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
-import { splitText } from '../../functions/other/splitText';
 
 export default new Command({
 	interaction: interactions.lockdown,
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand() as 'channel' | 'server';
+		const reason = options.getString('reason');
 		const role = client.config.general.guild.memberRoleId
 			? client.config.general.guild.memberRoleId
 			: interaction.guild.roles.everyone;
@@ -34,11 +33,11 @@ export default new Command({
 						: 'This channel was unlocked by a moderator!\n\nYou can now use the channel, thanks for your patient.'
 				);
 
-			if (options.getString('reason'))
+			if (reason)
 				embed.addFields([
 					{
 						name: 'Reason',
-						value: splitText(options.getString('reason'), MAX_FIELD_VALUE_LENGTH),
+						value: reason,
 					},
 				]);
 
@@ -144,11 +143,11 @@ export default new Command({
 						? 'This server was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the server gets unlocked'
 						: 'This server was unlocked by a moderator!\n\nYou can now use it, thanks for your patient.'
 				);
-			if (options.getString('reason'))
+			if (reason)
 				embed.addFields([
 					{
 						name: 'Reason',
-						value: splitText(options.getString('reason'), MAX_FIELD_VALUE_LENGTH),
+						value: reason,
 					},
 				]);
 			interaction.channel.send({

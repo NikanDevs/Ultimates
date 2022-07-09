@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { MAX_REASON_LENGTH } from '../../constants';
 import { interactionOptions } from '../../typings';
 
 export const timeoutCommand = {
@@ -26,6 +27,8 @@ export const timeoutCommand = {
 			description: 'The reason of this timeout',
 			type: ApplicationCommandOptionType.String,
 			required: false,
+			min_length: 1,
+			max_length: MAX_REASON_LENGTH,
 			autocomplete: true,
 		},
 	],

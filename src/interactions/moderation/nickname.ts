@@ -19,6 +19,8 @@ export const nicknameCommand = {
 			description: 'The new nickname you want to set for the member',
 			type: ApplicationCommandOptionType.String,
 			required: false,
+			min_length: 1,
+			max_length: 32, // nickname max length
 		},
 	],
 } as interactionOptions;

@@ -1,20 +1,18 @@
 import { getModCase } from '../../functions/cases/modCase';
-import { MAX_REASON_LENGTH, punishmentExpiry } from '../../constants';
+import { punishmentExpiry } from '../../constants';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
 import { Command } from '../../structures/Command';
 import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { interactions } from '../../interactions';
-import { splitText } from '../../functions/other/splitText';
 import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.unban,
 	excute: async ({ client, interaction, options }) => {
 		const userId = options.getString('user');
-		const reason =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
+		const reason = options.getString('reason') ?? t('common.noReason');
 
 		const bannedMember = await interaction.guild.bans.fetch(userId).catch(() => {});
 		if (!bannedMember)

@@ -102,7 +102,7 @@ export default new Command({
 				}
 			);
 
-			createModmailLog({
+			await createModmailLog({
 				action: ModmailActionTypes.Close,
 				user: await client.users.fetch(userId),
 				moderator: interaction.user,
@@ -154,7 +154,7 @@ export default new Command({
 				const blacklistAdd = new modmailModel({
 					_id: user.id,
 					moderatorId: interaction.id,
-					reason: splitText(options.getString('reason'), MAX_REASON_LENGTH),
+					reason: options.getString('reason'),
 					url: null,
 				});
 				blacklistAdd.save();
@@ -190,7 +190,7 @@ export default new Command({
 					action: ModmailActionTypes.BlacklistRemove,
 					user: user,
 					moderator: interaction.user,
-					reason: splitText(options.getString('reason'), MAX_REASON_LENGTH),
+					reason: options.getString('reason'),
 					referencedCaseUrl: findData.url,
 				});
 			}

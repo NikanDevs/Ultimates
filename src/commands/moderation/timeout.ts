@@ -2,7 +2,6 @@ import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { punishmentModel } from '../../models/punishments';
 import {
-	MAX_REASON_LENGTH,
 	MAX_TIMEOUT_DURATION,
 	MIN_TIMEOUT_DURATION,
 	warningExpiry,
@@ -17,7 +16,6 @@ import { ignore } from '../../functions/ignore';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
-import { splitText } from '../../functions/other/splitText';
 import { t } from 'i18next';
 
 export default new Command({
@@ -27,8 +25,7 @@ export default new Command({
 		const durationO: string | number =
 			options.getString('duration') ?? client.config.moderation.default.timeout;
 		const duration = convertToTime(durationO);
-		const reason: string =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
+		const reason: string = options.getString('reason') ?? t('common.noReason');
 
 		if (!member)
 			return interaction.reply({

@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { MAX_REASON_LENGTH } from '../../constants';
 import { interactionOptions } from '../../typings';
 
 export const softbanCommand = {
@@ -42,6 +43,8 @@ export const softbanCommand = {
 			description: 'The reason of the softban',
 			type: ApplicationCommandOptionType.String,
 			required: false,
+			min_length: 1,
+			max_length: MAX_REASON_LENGTH,
 			autocomplete: true,
 		},
 	],

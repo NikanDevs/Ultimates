@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { MAX_REASON_LENGTH } from '../../constants';
 import { interactionOptions } from '../../typings';
 
 export const unbanCommand = {
@@ -20,6 +21,8 @@ export const unbanCommand = {
 			description: 'The reason of this unban',
 			type: ApplicationCommandOptionType.String,
 			required: false,
+			min_length: 1,
+			max_length: MAX_REASON_LENGTH,
 			autocomplete: true,
 		},
 	],

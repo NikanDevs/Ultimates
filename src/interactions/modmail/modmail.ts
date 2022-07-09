@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { MAX_REASON_LENGTH } from '../../constants';
 import { interactionOptions } from '../../typings';
 
 export const modmailCommand = {
@@ -29,6 +30,8 @@ export const modmailCommand = {
 					description: 'The reason of this creation',
 					type: ApplicationCommandOptionType.String,
 					required: false,
+					min_length: 1,
+					max_length: MAX_REASON_LENGTH,
 				},
 			],
 		},
@@ -48,6 +51,8 @@ export const modmailCommand = {
 					description: 'The reason of this action',
 					type: ApplicationCommandOptionType.String,
 					required: false,
+					min_length: 1,
+					max_length: MAX_REASON_LENGTH,
 				},
 			],
 		},

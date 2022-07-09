@@ -2,12 +2,7 @@ import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { t } from 'i18next';
-import {
-	MAX_ANTIRAID_DURATION,
-	MAX_REASON_LENGTH,
-	MIN_ANTIRAID_DURATION,
-	punishmentExpiry,
-} from '../../constants';
+import { MAX_ANTIRAID_DURATION, MIN_ANTIRAID_DURATION, punishmentExpiry } from '../../constants';
 import { PunishmentTypes } from '../../typings';
 import { punishmentModel } from '../../models/punishments';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -36,9 +31,7 @@ export default new Command({
 		const joined = convertToTime(joinedOption);
 		const delete_messages =
 			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
-		const reason =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
-
+		const reason = options.getString('reason') ?? t('common.noReason');
 		if (!isValidTime(registeredOption) || !isValidTime(joinedOption))
 			return interaction.reply({
 				embeds: [client.embeds.error(t('common.$errors.invalidDuration'))],

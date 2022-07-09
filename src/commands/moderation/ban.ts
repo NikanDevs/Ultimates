@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { MAX_REASON_LENGTH, punishmentExpiry } from '../../constants';
+import { punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -9,7 +9,6 @@ import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
-import { splitText } from '../../functions/other/splitText';
 import { t } from 'i18next';
 
 export default new Command({
@@ -17,8 +16,7 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
-		const reason =
-			splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
+		const reason = options.getString('reason') ?? t('common.noReason');
 		const delete_messages =
 			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
 
