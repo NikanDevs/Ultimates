@@ -1,4 +1,4 @@
-import { EmbedBuilder, GuildMember, TextChannel, Util } from 'discord.js';
+import { EmbedBuilder, GuildMember, resolveColor, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
@@ -31,7 +31,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		})
 		.setTitle('Message Edited')
 		.setURL(newMessage.url)
-		.setColor(Util.resolveColor('#b59190'))
+		.setColor(resolveColor('#b59190'))
 		.setFooter({ text: 'Message ID: ' + newMessage.id });
 
 	if (oldMessage.content !== newMessage.content) {

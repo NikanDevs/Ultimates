@@ -1,4 +1,4 @@
-import { ChannelType, EmbedBuilder, GuildChannel } from 'discord.js';
+import { ChannelType, EmbedBuilder, GuildChannel, TextChannel } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
@@ -79,7 +79,7 @@ export default new Command({
 				],
 			});
 
-			if (channel.isText()) channel.send({ embeds: [embed] });
+			(channel as TextChannel).send({ embeds: [embed] });
 		} else if (getSubCommand === 'server') {
 			await interaction.deferReply();
 			await interaction.guild.channels.fetch();

@@ -1,10 +1,10 @@
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, InteractionType } from 'discord.js';
 import { client } from '../..';
 import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
 
 export default new Event('interactionCreate', async (interaction) => {
-	if (!interaction.isModalSubmit()) return;
+	if (interaction.type !== InteractionType.ModalSubmit) return;
 
 	if (interaction.customId === 'add-badwords') {
 		const words = interaction.fields.getTextInputValue('input');

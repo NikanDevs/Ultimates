@@ -1,4 +1,4 @@
-import { EmbedBuilder, TextChannel, Util } from 'discord.js';
+import { EmbedBuilder, resolveColor, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { logsModel } from '../../models/logs';
 import {
@@ -31,10 +31,10 @@ export async function createModLog(options: createModLogOptions) {
 		})
 		.setColor(
 			revoke
-				? Util.resolveColor('#b04d46')
+				? resolveColor('#b04d46')
 				: update
 				? client.cc.invisible
-				: Util.resolveColor(punishmentTypeEmbedColors[options.action])
+				: resolveColor(punishmentTypeEmbedColors[options.action])
 		)
 		.setDescription(
 			[

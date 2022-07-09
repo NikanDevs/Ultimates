@@ -6,6 +6,7 @@ import {
 	ComponentType,
 	EmbedBuilder,
 	GuildMember,
+	InteractionType,
 	Message,
 	ModalBuilder,
 	TextInputStyle,
@@ -19,7 +20,7 @@ let key1 = '';
 
 export default new Event('interactionCreate', async (interaction) => {
 	// --- Modal answers
-	if (interaction.isModalSubmit()) {
+	if (interaction.type === InteractionType.ModalSubmit) {
 		if (interaction.customId !== 'verify-' + interaction.user.id) return;
 		const getValue = interaction.fields.getTextInputValue('verify-' + interaction.user.id);
 

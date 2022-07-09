@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"chalk": "^4.1.2",
-		"discord.js": "^14.0.0-dev.1654430643-7a1095b",
+		"discord.js": "^14.0.0-dev.1657325401-33ae7df",
 		"dotenv": "^16.0.0",
 		"glob": "^7.2.0",
 		"i18next": "^21.8.13",
@@ -38,4 +38,3 @@
 		"typescript": "^4.6.2"
 	}
 }
-

@@ -3,8 +3,8 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	EmbedBuilder,
+	resolveColor,
 	TextChannel,
-	Util,
 } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
@@ -44,7 +44,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 			iconURL: randomMessage.author.displayAvatarURL(),
 		})
 		.setTitle('Messages Bulk Deleted')
-		.setColor(Util.resolveColor('#b59190'))
+		.setColor(resolveColor('#b59190'))
 		.addFields([
 			{
 				name: 'Channel',

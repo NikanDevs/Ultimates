@@ -1,4 +1,4 @@
-import { EmbedBuilder, TextChannel, Util } from 'discord.js';
+import { EmbedBuilder, resolveColor, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import {
@@ -27,7 +27,7 @@ export async function createModmailLog(options: createModmailLogOptions) {
 			}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
-		.setColor(Util.resolveColor(modmailActionTypeEmbedColors[options.action]))
+		.setColor(resolveColor(modmailActionTypeEmbedColors[options.action]))
 		.setDescription(
 			[
 				`${options.ticketId ? `• **Ticket:** #${options.ticketId}` : ''}\n`,

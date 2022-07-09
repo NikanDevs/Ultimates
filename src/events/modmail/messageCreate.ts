@@ -196,15 +196,13 @@ export default new Event('messageCreate', async (message) => {
 							components: [],
 						});
 
-						const threadChannel = await guild.channels.create(
-							message.author.username,
-							{
-								type: ChannelType.GuildText,
-								parent: client.config.general.guild.modmailCategoryId,
-								topic: `A tunnel to contact **${message.author.username}**, they requested this ticket to be opened through DMs. | ID: ${message.author.id}`,
-								reason: `Modmail ticket open request.`,
-							}
-						);
+						const threadChannel = await guild.channels.create({
+							name: message.author.username,
+							type: ChannelType.GuildText,
+							parent: client.config.general.guild.modmailCategoryId,
+							topic: `A tunnel to contact **${message.author.username}**, they requested this ticket to be opened through DMs. | ID: ${message.author.id}`,
+							reason: `Modmail ticket open request.`,
+						});
 
 						await threadChannel.send({
 							embeds: [await generateModmailInfoEmbed(message.author)],

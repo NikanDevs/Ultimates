@@ -7,7 +7,7 @@ export default new Event('typingStart', async (typing) => {
 
 	const guild =
 		client.guilds.cache.get(process.env.GUILD_ID) ||
-		((await client.guilds.fetch(process.env.GUILD_ID)) as Guild);
+		((await client.guilds.fetch(process.env.GUILD_NAME)) as Guild);
 	if (typing.user.bot) return;
 
 	if (typing.guild) {

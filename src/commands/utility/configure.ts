@@ -78,7 +78,8 @@ export default new Command({
 						await client.config.webhooks.servergate?.delete().catch(() => {});
 						break;
 				}
-				newWebhook = await channel.createWebhook(loggingWebhookNames[module], {
+				newWebhook = await channel.createWebhook({
+					name: loggingWebhookNames[module],
 					avatar: client.user.displayAvatarURL({ extension: 'png' }),
 					reason: '/configure was excuted.',
 				});

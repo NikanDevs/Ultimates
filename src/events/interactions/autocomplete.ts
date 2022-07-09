@@ -2,7 +2,7 @@ import { client } from '../..';
 import { automodModel } from '../../models/automod';
 import { punishmentModel } from '../../models/punishments';
 import { Event } from '../../structures/Event';
-import { GuildMember } from 'discord.js';
+import { GuildMember, InteractionType } from 'discord.js';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { MAX_AUTOCOMPLETE_LENGTH } from '../../constants';
 import { capitalize } from '../../functions/other/capitalize';
@@ -11,7 +11,7 @@ import { t } from 'i18next';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction) return;
-	if (!interaction.isAutocomplete()) return;
+	if (interaction.type !== InteractionType.ApplicationCommandAutocomplete) return;
 
 	// Checking for the member's permissions
 	const getPermissions = client.commands.get(interaction.commandName)?.interaction.permission;

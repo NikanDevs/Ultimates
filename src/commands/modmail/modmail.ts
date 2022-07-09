@@ -295,15 +295,14 @@ export default new Command({
 								],
 							});
 
-							const threadChannel = await guild.channels.create(
-								member.user.username,
-								{
-									type: ChannelType.GuildText,
-									parent: client.config.general.guild.modmailCategoryId,
-									topic: `A tunnel to contact **${member.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${member.id}`,
-									reason: `Direct modmail thread opened.`,
-								}
-							);
+							const threadChannel = await guild.channels.create({
+								name: member.user.username,
+								type: ChannelType.GuildText,
+								parent: client.config.general.guild.modmailCategoryId,
+								topic: `A tunnel to contact **${member.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${member.id}`,
+								reason: `Direct modmail thread opened.`,
+							});
+
 							await threadChannel.send({
 								embeds: [await generateModmailInfoEmbed(member.user)],
 							});
