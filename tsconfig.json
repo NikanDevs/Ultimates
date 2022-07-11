@@ -29,7 +29,7 @@
 		"resolveJsonModule": true,
 		"importHelpers": true
 	},
-	"include": ["scripts", "src", "environment.d.ts"],
+	"include": ["src", "environment.d.ts"],
 	"exclude": ["node_modules"]
 }
 
