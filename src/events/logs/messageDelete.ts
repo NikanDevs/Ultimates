@@ -2,6 +2,7 @@ import { EmbedBuilder, Message, resolveColor, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Event('messageDelete', async (message: Message) => {
 	if (!logActivity('message')) return;
@@ -26,27 +27,15 @@ export default new Event('messageDelete', async (message: Message) => {
 			name: message.author.tag,
 			iconURL: message.author.displayAvatarURL(),
 		})
-		.setTitle('Message Deleted')
+		.setTitle(`Message Deleted in #${channel.name}`)
 		.setDescription(message.content || 'No content.')
 		.setColor(resolveColor('#b59190'))
-		.setFooter({ text: 'Message ID: ' + message.id })
 		.addFields([
 			{
-				name: 'Mention',
-				value: `${message.author}`,
-				inline: true,
-			},
-			{
-				name: 'Channel',
-				value: `${message.channel}`,
-				inline: true,
-			},
-			{
-				name: 'Attachments',
-				value: message.attachments.size
-					? `${message.attachments.size} attachments`
-					: 'No attachments',
-				inline: true,
+				name: 'IDs',
+				value: `\`\`\`ini\nChannel = ${channel.id}\nMember = ${
+					message.author.id
+				}\nMessage = ${message.id}\`\`\`${generateDiscordTimestamp(new Date())}`,
 			},
 		]);
 

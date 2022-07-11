@@ -74,20 +74,22 @@ export enum automodModuleReasons {
 
 // Logging system and modules typings
 
-export type LoggingModules = 'mod' | 'message' | 'modmail' | 'servergate';
+export type LoggingModules = 'mod' | 'message' | 'modmail' | 'servergate' | 'voice';
 
 export enum loggingModulesNames {
 	'mod' = 'Moderation Logging',
 	'message' = 'Message Logging',
 	'modmail' = 'Modmail Logging',
 	'servergate' = 'Joins and Leaves',
+	'voice' = 'Voice State Updates',
 }
 
 export enum loggingWebhookNames {
 	'mod' = 'Mod-Logs',
 	'message' = 'Message-Logs',
 	'modmail' = 'Modmail-Logs',
-	'servergate' = 'Server Gate',
+	'servergate' = 'Server-Gate',
+	'voice' = 'Voice-Logs',
 }
 
 // Logger

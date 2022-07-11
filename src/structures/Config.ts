@@ -8,6 +8,7 @@ export class Config {
 		message: null as WebhookClient,
 		modmail: null as WebhookClient,
 		servergate: null as WebhookClient,
+		voice: null as WebhookClient,
 	};
 
 	/** Logging system active status */
@@ -16,6 +17,7 @@ export class Config {
 		message: null as boolean,
 		modmail: null as boolean,
 		servergate: null as boolean,
+		voice: null as boolean,
 	};
 
 	/** Automod data */
@@ -90,6 +92,10 @@ export class Config {
 				channelIds: [],
 				roleIds: [],
 			},
+			voice: {
+				channelIds: [],
+				roleIds: [],
+			},
 		},
 	};
 
@@ -124,12 +130,17 @@ export class Config {
 			id: getWebhookInfo(data.logging.servergate.webhook)[0],
 			token: getWebhookInfo(data.logging.servergate.webhook)[1],
 		});
+		this.webhooks.voice = new WebhookClient({
+			id: getWebhookInfo(data.logging.voice.webhook)[0],
+			token: getWebhookInfo(data.logging.voice.webhook)[1],
+		});
 
 		this.logging = {
 			mod: data.logging.mod.active,
 			modmail: data.logging.modmail.active,
 			message: data.logging.message.active,
 			servergate: data.logging.servergate.active,
+			voice: data.logging.voice.active,
 		};
 	}
 
@@ -245,6 +256,10 @@ export class Config {
 				message: {
 					channelIds: data.logs.message.channelIds,
 					roleIds: data.logs.message.roleIds,
+				},
+				voice: {
+					channelIds: data.logs.voice.channelIds,
+					roleIds: data.logs.voice.roleIds,
 				},
 			},
 		};

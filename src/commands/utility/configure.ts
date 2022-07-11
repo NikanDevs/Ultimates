@@ -58,6 +58,7 @@ export default new Command({
 						message: { channelId: null, webhook: null, active: false },
 						servergate: { channelId: null, webhook: null, active: false },
 						error: { channelId: null, webhook: null, active: false },
+						voice: { channelId: null, webhook: null, active: false },
 					},
 				});
 				await newData.save();
@@ -76,6 +77,9 @@ export default new Command({
 						break;
 					case 'servergate':
 						await client.config.webhooks.servergate?.delete().catch(() => {});
+						break;
+					case 'voice':
+						await client.config.webhooks.voice?.delete().catch(() => {});
 						break;
 				}
 				newWebhook = await channel.createWebhook({
@@ -118,6 +122,7 @@ export default new Command({
 						await formatLogField('message'),
 						await formatLogField('modmail'),
 						await formatLogField('servergate'),
+						await formatLogField('voice'),
 					]);
 
 				await interaction.followUp({ embeds: [embed] });
@@ -649,6 +654,10 @@ export default new Command({
 							channelIds: [],
 							roleIds: [],
 						},
+						voice: {
+							channelIds: [],
+							roleIds: [],
+						},
 					},
 				});
 				newData.save();
@@ -724,6 +733,7 @@ export default new Command({
 						await formatIgnores('automod:capitals'),
 						await formatIgnores('automod:urls'),
 						await formatIgnores('logs:message'),
+						await formatIgnores('logs:voice'),
 					]);
 
 				await interaction.followUp({

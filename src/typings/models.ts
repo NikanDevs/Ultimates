@@ -79,6 +79,7 @@ export type ConfigSchemaType = {
 		message?: { channelId?: string; webhook?: string; active?: boolean };
 		servergate?: { channelId?: string; webhook?: string; active?: boolean };
 		error?: { channelId?: string; webhook?: string; active?: boolean };
+		voice?: { channelId?: string; webhook?: string; active?: boolean };
 	};
 
 	// ignores config
@@ -94,6 +95,10 @@ export type ConfigSchemaType = {
 	};
 	logs?: {
 		message?: {
+			channelIds?: string[];
+			roleIds?: string[];
+		};
+		voice?: {
 			channelIds?: string[];
 			roleIds?: string[];
 		};

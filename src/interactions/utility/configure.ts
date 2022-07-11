@@ -23,6 +23,7 @@ export const configureCommand = {
 						{ name: 'Message', value: 'message' },
 						{ name: 'Modmail', value: 'modmail' },
 						{ name: 'Joins & Leaves', value: 'servergate' },
+						{ name: 'Voice state updates', value: 'voice' },
 					],
 				},
 				{
@@ -166,6 +167,7 @@ export const configureCommand = {
 						{ name: 'Automod: Too many capitals', value: 'automod:capitals' },
 						{ name: 'Automod: Urls and links', value: 'automod:urls' },
 						{ name: 'Logging: Message logs', value: 'logs:message' },
+						{ name: 'Logging: Voice logs', value: 'logs:voice' },
 					],
 				},
 				{

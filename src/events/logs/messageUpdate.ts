@@ -4,6 +4,7 @@ import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
 import { splitText } from '../../functions/other/splitText';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 	if (!logActivity('message')) return;
@@ -29,10 +30,9 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			name: newMessage.author?.tag,
 			iconURL: newMessage.author?.displayAvatarURL(),
 		})
-		.setTitle('Message Edited')
+		.setTitle(`Message Edited in #${channel.name}`)
 		.setURL(newMessage.url)
-		.setColor(resolveColor('#b59190'))
-		.setFooter({ text: 'Message ID: ' + newMessage.id });
+		.setColor(resolveColor('#b59190'));
 
 	if (oldMessage.content !== newMessage.content) {
 		logEmbed.addFields([
@@ -49,19 +49,10 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 
 	logEmbed.addFields([
 		{
-			name: 'User',
-			value: `${newMessage.author}`,
-			inline: true,
-		},
-		{
-			name: 'Channel',
-			value: `${newMessage.channel}`,
-			inline: true,
-		},
-		{
-			name: 'Edited At',
-			value: `<t:${~~(+newMessage.editedTimestamp / 1000)}:R>`,
-			inline: true,
+			name: 'IDs',
+			value: `\`\`\`ini\nChannel = ${channel.id}\nMember = ${
+				newMessage.author.id
+			}\nMessage = ${newMessage.id}\`\`\`${generateDiscordTimestamp(new Date())}`,
 		},
 	]);
 
