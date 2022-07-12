@@ -41,9 +41,6 @@ export class Config {
 	public general = {
 		ownerId: null as string,
 		developers: [] as string[],
-		success: '' as string,
-		error: '' as string,
-		attention: '' as string,
 		guild: {
 			appealLink: null as string,
 			memberRoleId: null as string,
@@ -169,9 +166,6 @@ export class Config {
 		this.general = {
 			ownerId: data.ownerId,
 			developers: data.developers,
-			success: data.success,
-			error: data.error,
-			attention: data.attention,
 			guild: {
 				appealLink: data.guild.appealLink,
 				memberRoleId: data.guild.memberRoleId,

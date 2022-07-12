@@ -74,12 +74,8 @@ export const punishmentCommand = {
 					type: ApplicationCommandOptionType.Number,
 					choices: [
 						{
-							name: 'duration',
-							value: 1,
-						},
-						{
 							name: 'reason',
-							value: 2,
+							value: 1,
 						},
 					],
 				},

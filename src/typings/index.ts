@@ -175,7 +175,7 @@ export interface sendModDMOptions {
 	appeal?: boolean;
 }
 
-type punishmentUpdateTypes = 'duration' | 'reason';
+type punishmentUpdateTypes = 'reason';
 export interface createModLogOptions {
 	action: PunishmentTypes;
 	punishmentId?: string;
@@ -264,6 +264,43 @@ export interface paginatorStatusOptions {
 	slice2: number;
 }
 
+// Emojis Config
+
+export type EmojisConfigTypes =
+	| 'success'
+	| 'error'
+	| 'attention'
+	| 'ping'
+	| 'mongoDB'
+	| 'online'
+	| 'idle'
+	| 'dnd'
+	| 'offline';
+
+export interface emojisConfigTypes {
+	success: string;
+	error: string;
+	attention: string;
+	ping: string;
+	mongoDB: string;
+	online: string;
+	idle: string;
+	dnd: string;
+	offline: string;
+}
+
+export enum emojisConfigDefaults {
+	success = '✅',
+	error = '❌',
+	attention = '❗️',
+	ping = '🔘',
+	mongoDB = '🌿',
+	online = '🟢',
+	idle = '🟡',
+	dnd = '🔴',
+	offline = '🔘',
+}
+
 // Other
 
 export interface ignoreFunctionOptions {
@@ -274,5 +311,12 @@ export interface ignoreFunctionOptions {
 export interface antiRaidHitData {
 	userId: string;
 	punishmentId: string;
+}
+
+export interface userinfoButtonsOptions {
+	disableAccount?: boolean;
+	disableGuild?: boolean;
+	disableRoles?: boolean;
+	disablePermissions?: boolean;
 }
 

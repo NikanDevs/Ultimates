@@ -3,6 +3,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	Colors,
 	ComponentType,
 	EmbedBuilder,
 	GuildMember,
@@ -26,7 +27,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		if (getValue.toString() === verificationCollection.get('modal-' + interaction.user.id)) {
 			const verifedEmbed = new EmbedBuilder()
-				.setColor(client.cc.successC)
+				.setColor(Colors.Green)
 				.setDescription('Congrats! You were verified in the server.');
 
 			(interaction.member as GuildMember).roles.add(
@@ -40,7 +41,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			getValue.toString() !== verificationCollection.get('modal-' + interaction.user.id)
 		) {
 			const deniedEmbed = new EmbedBuilder()
-				.setColor(client.cc.errorC)
+				.setColor(Colors.Red)
 				.setDescription(
 					"Whoops, your answer wasn't correct. Try again to get verified."
 				);
@@ -81,7 +82,7 @@ export default new Event('interactionCreate', async (interaction) => {
 							~~+cooldownRemaining
 						)}** before trying to verify again.`
 					)
-					.setColor(client.cc.attentionC),
+					.setColor(Colors.Yellow),
 			],
 			ephemeral: true,
 		});
@@ -178,7 +179,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				(!areMatching && collected.customId === 'verify-2')
 			) {
 				const verifedEmbed = new EmbedBuilder()
-					.setColor(client.cc.successC)
+					.setColor(Colors.Green)
 					.setDescription('Congrats! You were verified in the server.');
 
 				if (
@@ -193,7 +194,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				interaction.editReply({ embeds: [verifedEmbed], components: [] });
 			} else {
 				const deniedEmbed = new EmbedBuilder()
-					.setColor(client.cc.errorC)
+					.setColor(Colors.Red)
 					.setDescription(
 						"Whoops, your answer wasn't correct. Try again to get verified."
 					);
@@ -206,7 +207,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			if (reason === 'success') return;
 
 			const timedOut = new EmbedBuilder()
-				.setColor(client.cc.errorC)
+				.setColor(Colors.Red)
 				.setDescription('Verification timed out, try again to verify yourself.');
 
 			interaction.editReply({ embeds: [timedOut], components: [] });

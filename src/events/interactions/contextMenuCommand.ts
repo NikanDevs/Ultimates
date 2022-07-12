@@ -6,6 +6,7 @@ import {
 	Collection,
 	ContextMenuCommandInteraction,
 	EmbedBuilder,
+	Colors,
 } from 'discord.js';
 const cooldown = new Collection();
 import { connection, ConnectionStates } from 'mongoose';
@@ -52,7 +53,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now()
 			)}`;
 			const cooldownEmbed = new EmbedBuilder()
-				.setColor(client.cc.errorC)
+				.setColor(Colors.Red)
 				.setDescription(
 					`You need to wait \`${convertTime(
 						~~+cooldownRemaining

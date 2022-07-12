@@ -16,11 +16,11 @@ export default new Command({
 			.setColor(client.cc.ultimates)
 			.setDescription(
 				[
-					`<:mongoDB:983328317929316392> **MongoDB** - ${capitalize(
+					`${client.cc.ping.mongoDB} **MongoDB** - ${capitalize(
 						ConnectionStates[connection.readyState]
 					)}`,
-					`${pingEmoji(client.ws.ping)} **Websocket** - ${client.ws.ping}ms`,
-					`${pingEmoji(Date.now() - interaction.createdTimestamp)} **Roundtrip** - ${
+					`${client.cc.ping.ping} **Websocket** - ${client.ws.ping}ms`,
+					`${client.cc.ping.ping} **Roundtrip** - ${
 						Date.now() - interaction.createdTimestamp
 					}ms`,
 					'',
@@ -32,15 +32,5 @@ export default new Command({
 			embeds: [embed],
 			ephemeral: true,
 		});
-
-		function pingEmoji(value: number) {
-			if (value > 300) {
-				return '<:pingB:983330298924269589>';
-			} else if (value > 150) {
-				return '<:pingM:983330301692510248>';
-			} else {
-				return '<:pingE:983330296831283230> ';
-			}
-		}
 	},
 });

@@ -17,8 +17,7 @@ export async function timeoutMember(
 		case: await getModCase(),
 		type: PunishmentTypes.Timeout,
 		userId: member.user.id,
-		date: new Date(),
-		duration: options.duration,
+		expires: new Date(Date.now() + options.duration),
 	});
 	await data.save();
 }

@@ -22,9 +22,6 @@ export type ConfigSchemaType = {
 	// general config
 	ownerId?: string;
 	developers?: string[];
-	success?: string;
-	error?: string;
-	attention?: string;
 	guild?: {
 		id?: string;
 		appealLink?: string;
@@ -111,8 +108,7 @@ export type DurationsSchemaType = {
 	case: number;
 	type: PunishmentTypes;
 	userId: Snowflake;
-	date: Date;
-	duration: number;
+	expires: Date;
 };
 
 // Left Members

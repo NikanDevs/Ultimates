@@ -6,9 +6,6 @@ const schema = new Schema({
 	// general config
 	ownerId: { type: SchemaTypes.String, required: false },
 	developers: { type: Object, required: false },
-	success: { type: SchemaTypes.String, required: false },
-	error: { type: SchemaTypes.String, required: false },
-	attention: { type: SchemaTypes.String, required: false },
 	guild: { type: Object, required: false },
 	// moderation config
 	count: { type: Object, required: false },

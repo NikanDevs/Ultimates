@@ -1,6 +1,8 @@
 import {
+	Colors,
 	ComponentType,
 	EmbedBuilder,
+	Formatters,
 	ModalBuilder,
 	ModalSubmitInteraction,
 	TextInputStyle,
@@ -14,6 +16,7 @@ import { Paginator } from '../../structures/Paginator';
 
 export default new Command({
 	interaction: interactions.eval,
+	// @ts-ignore
 	excute: async ({ client, interaction, options }) => {
 		const async = options.getBoolean('async') ?? false;
 		const silent = options.getBoolean('silent') ?? false;
@@ -59,26 +62,27 @@ export default new Command({
 			switch (evaled) {
 				case 'Promise { <pending> }':
 					const sucessEmbed = new EmbedBuilder()
-						.setColor(client.cc.successC)
+						.setColor(Colors.Green)
+						.setTitle('Evaluation succeded')
 						.setDescription(
-							`**Evaluation succeded:**\n\`\`\`ts\n${splitText(
-								code,
-								EMBED_DESCRIPTION_MAX_LENGTH - 40
-							)}\n\`\`\``
+							Formatters.codeBlock(
+								'ts',
+								splitText(code, EMBED_DESCRIPTION_MAX_LENGTH - 20)
+							)
 						);
 					modalInteraction.reply({ embeds: [sucessEmbed], ephemeral: silent });
 					break;
 				default:
 					const embed = new EmbedBuilder()
-						.setColor(client.cc.successC)
+						.setColor(Colors.Green)
 						.setTitle('Evolution output');
 
 					if (evaled.length < EMBED_DESCRIPTION_MAX_LENGTH - 25) {
 						embed.setDescription(
-							`\`\`\`ts\n${splitText(
-								evaled,
-								EMBED_DESCRIPTION_MAX_LENGTH - 20
-							)}\n\`\`\``
+							Formatters.codeBlock(
+								'ts',
+								splitText(evaled, EMBED_DESCRIPTION_MAX_LENGTH - 25)
+							)
 						);
 
 						return modalInteraction.reply({
@@ -105,12 +109,13 @@ export default new Command({
 			}
 		} catch (error) {
 			const errorEmbed = new EmbedBuilder()
-				.setColor(client.cc.errorC)
+				.setColor(Colors.Red)
+				.setTitle('An error has occured')
 				.setDescription(
-					`**An error has occured**\n\`\`\`xl\n${splitText(
-						error?.message,
-						EMBED_DESCRIPTION_MAX_LENGTH - 40
-					)}\n\`\`\``
+					Formatters.codeBlock(
+						'ts',
+						splitText(error.message, EMBED_DESCRIPTION_MAX_LENGTH - 20)
+					)
 				);
 
 			await modalInteraction.reply({ embeds: [errorEmbed], ephemeral: silent });

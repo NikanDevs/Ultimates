@@ -297,9 +297,6 @@ export default new Command({
 					_id: 'general',
 					ownerId: null,
 					developers: [],
-					success: '',
-					error: '',
-					attention: '',
 					guild: {
 						appealLink: null,
 						memberRoleId: null,
@@ -352,9 +349,6 @@ export default new Command({
 						`• ${Formatters.bold('Owner')} - ${
 							(await client.users.fetch(data.ownerId).catch(() => {})) || '✖︎'
 						}`,
-						`• ${Formatters.bold('Success')} - ${data.success || '✖︎'}`,
-						`• ${Formatters.bold('Error')} - ${data.error || '✖︎'}`,
-						`• ${Formatters.bold('Attention')} - ${data.attention || '✖︎'}`,
 						`• ${Formatters.bold('Appeal Link')} - ${
 							data.guild.appealLink || '✖︎'
 						}`,

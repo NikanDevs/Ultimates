@@ -38,14 +38,13 @@ export default new Command({
 					statusPriorities[a.presence?.status] - statusPriorities[b.presence?.status]
 			);
 
-		enum statuses {
-			'online' = '<:online:886215547249913856>',
-			'idle' = '<:idle:906867112612601866>',
-			'dnd' = '<:dnd:906867112222531614>',
-			// note: offline doesn't always mean invisible
-			'offline' = '<:offline:906867114126770186>', // <:invisible:983325305273995334>
-			undefined = '<:offline:906867114126770186>',
-		}
+		const statuses = {
+			online: client.cc.statuses.online,
+			idle: client.cc.statuses.idle,
+			dnd: client.cc.statuses.dnd,
+			offline: client.cc.statuses.offline,
+			undefined: client.cc.statuses.offline,
+		};
 
 		const embed = new EmbedBuilder()
 			.setAuthor({ name: 'Staff members', iconURL: client.user.displayAvatarURL() })

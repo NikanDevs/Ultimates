@@ -15,10 +15,11 @@ import { client } from '../..';
 import { modmailModel } from '../../models/modmail';
 import { Event } from '../../structures/Event';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
-import { ModmailActionTypes } from '../../typings';
+import { ModmailActionTypes, PunishmentTypes } from '../../typings';
 import { getModmailTicket } from '../../functions/cases/modmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { convertTime } from '../../functions/convertTime';
+import { durationsModel } from '../../models/durations';
 export const modmailCooldown: Collection<string, number> = new Collection();
 let confirmationExists: boolean = false;
 let canDM: boolean = true;
@@ -42,11 +43,20 @@ export default new Event('messageCreate', async (message) => {
 				].join('\n')
 			)
 			.addFields([{ name: 'Reason', value: `${data?.reason}` }])
-			.setColor(client.cc.errorC);
+			.setColor(Colors.Red);
 
 		if (data)
 			return (message.channel as DMChannel)?.send({
 				embeds: [blacklistedEmbed],
+			});
+
+		const muteData = await durationsModel.findOne({
+			type: PunishmentTypes.Timeout,
+			userId: message.author.id,
+		});
+		if (muteData)
+			return (message.channel as DMChannel)?.send({
+				content: 'You can not open a ticket right now.',
 			});
 
 		if (confirmationExists === true)
@@ -130,11 +140,11 @@ export default new Event('messageCreate', async (message) => {
 				.then(async () => {
 					switch (canSend) {
 						case true:
-							await message.react(client.config.general.success);
+							await message.react(client.cc.success);
 							break;
 
 						case false:
-							await message.react(client.config.general.error);
+							await message.react(client.cc.error);
 							await message.reply({
 								content: 'Something went wrong while trying to send your message, try again!',
 							});
@@ -227,7 +237,7 @@ export default new Event('messageCreate', async (message) => {
 								[
 									'The ticket you requested has been created.',
 									'Please consider asking your question and wait for a staff member to respond.',
-									`\n• If your message wasn't reacted with ${client.config.general.success}, it was not sent.`,
+									`\n• If your message wasn't reacted with ${client.cc.success}, it was not sent.`,
 								].join('\n')
 							);
 						msg?.delete();
@@ -296,11 +306,11 @@ export default new Event('messageCreate', async (message) => {
 			.then(async () => {
 				switch (canDM) {
 					case true:
-						await message.react(client.config.general.success);
+						await message.react(client.cc.success);
 						break;
 
 					case false:
-						await message.react(client.config.general.error);
+						await message.react(client.cc.error);
 						await message.reply({
 							content: "I wasn't able to DM the user.",
 						});

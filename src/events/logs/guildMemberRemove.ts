@@ -10,6 +10,7 @@ export default new Event('guildMemberRemove', async (member) => {
 
 	const roles = member.roles.cache
 		.filter((r) => r.id !== member.guild.id)
+		.filter((r) => !r.managed)
 		.map((role) => role.id);
 
 	const embed = new EmbedBuilder()
@@ -28,7 +29,7 @@ export default new Event('guildMemberRemove', async (member) => {
 		);
 
 	// Saving the roles if the member has any
-	if (roles.length !== 0) {
+	if (!member.user.bot && roles.length) {
 		new leftMembersModel({
 			userId: member.user.id,
 			roles: roles,

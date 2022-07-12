@@ -290,7 +290,7 @@ export default new Command({
 									new EmbedBuilder({
 										description:
 											"Please wait while we're trying to set this ticket up...",
-										color: client.cc.attentionC,
+										color: Colors.Yellow,
 									}),
 								],
 							});

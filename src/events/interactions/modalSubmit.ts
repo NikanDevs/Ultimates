@@ -1,4 +1,4 @@
-import { EmbedBuilder, InteractionType } from 'discord.js';
+import { Colors, EmbedBuilder, InteractionType } from 'discord.js';
 import { client } from '../..';
 import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
@@ -34,7 +34,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			embeds: [
 				new EmbedBuilder({
 					description: `Added **${input.length}** and removed **${removed}** words.`,
-					color: client.cc.successC,
+					color: Colors.Green,
 				}),
 			],
 			ephemeral: true,
@@ -75,7 +75,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			embeds: [
 				new EmbedBuilder({
 					description: `Added **${input.length}** and removed **${removed}** reasons.`,
-					color: client.cc.successC,
+					color: Colors.Green,
 				}),
 			],
 			ephemeral: true,

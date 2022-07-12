@@ -89,9 +89,6 @@ export const configureCommand = {
 							name: 'Server modmail category id',
 							value: 'guild_modmailCategoryId',
 						},
-						{ name: 'Success Emoji', value: 'success' },
-						{ name: 'Attention Emoji', value: 'attention' },
-						{ name: 'Error Emoji', value: 'error' },
 					],
 				},
 				{

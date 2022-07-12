@@ -1,5 +1,4 @@
 import {
-	GuildEmoji,
 	GuildMember,
 	User,
 	Message,
@@ -13,11 +12,11 @@ import { t } from 'i18next';
 import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
+import { userinfoButtonsOptions } from '../../typings';
 
 export default new Command({
 	interaction: interactions.userinfo,
 	excute: async ({ client, interaction, options }) => {
-		// User
 		let member = interaction.options.getMember('user') as GuildMember;
 		let user = interaction.options.getUser('user');
 		if (!options.getUser('user')) {
@@ -116,9 +115,7 @@ export default new Command({
 							+user.createdAt / 1000
 						)}:R>`,
 						`• **Bot:** ${
-							user?.bot
-								? `${client.config.general.success}`
-								: `${client.config.general.error}`
+							user?.bot ? `${client.cc.success}` : `${client.cc.error}`
 						}`,
 					].join('\n'),
 				},
@@ -127,8 +124,8 @@ export default new Command({
 					value: [
 						`• **Animated:** ${
 							user.displayAvatarURL().endsWith('.gif')
-								? `${client.config.general.success}`
-								: `${client.config.general.error}`
+								? `${client.cc.success}`
+								: `${client.cc.error}`
 						}`,
 						`• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
 					].join('\n'),
@@ -144,8 +141,8 @@ export default new Command({
 					value: [
 						`• **Animated:** ${
 							user.bannerURL().endsWith('.gif')
-								? `${client.config.general.success}`
-								: `${client.config.general.error}`
+								? `${client.cc.success}`
+								: `${client.cc.error}`
 						}`,
 						`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
 					].join('\n'),
@@ -167,22 +164,19 @@ export default new Command({
 			'PremiumEarlySupporter' = 'Early Nitro Supporter',
 			'TeamPseudoUser' = 'Team User',
 			'VerifiedBot' = 'Verified Bot',
+			'UnverifiedBot' = 'Unverified Bot',
 			'VerifiedDeveloper' = 'Early Verified Bot Developer',
 			'CertifiedModerator' = 'Discord Certified Moderator',
 			'BotHTTPInteractions' = 'Http Interaction Bot',
 			'Spammer' = 'Most Likely A Spammer',
 		}
 
-		const badgesArray = [];
-		user.flags?.toArray().forEach((badge) => {
-			const badgeEmojiGuild = client.guilds.cache.get('952173308470771712');
-			const findBadgeEmoji = badgeEmojiGuild.emojis.cache.find(
-				(emoji) => emoji.name === badge
-			) as GuildEmoji;
-			badgesArray.push(`${findBadgeEmoji} • ${badgesReweite[badge]}`);
-		});
+		const badgesArray: string[] = [];
+		if (user.bot && !user.flags?.toArray().includes('VerifiedBot'))
+			badgesArray.push('UnverifiedBot');
+		user.flags?.toArray().forEach((badge) => badgesArray.push(`• ${badgesReweite[badge]}`));
 
-		if (badgesArray.length !== 0) {
+		if (badgesArray.length) {
 			userinfoEmbed.addFields([
 				{
 					name: `Badges [${badgesArray.length}]`,
@@ -215,13 +209,7 @@ export default new Command({
 			}
 
 			// Button Components
-			interface buttonComponentsOptions {
-				disableAccount?: boolean;
-				disableGuild?: boolean;
-				disableRoles?: boolean;
-				disablePermissions?: boolean;
-			}
-			const buttonComponents = (options: buttonComponentsOptions) => [
+			const buttonComponents = (options: userinfoButtonsOptions) => [
 				new ActionRowBuilder<ButtonBuilder>().addComponents([
 					new ButtonBuilder()
 						.setLabel('Account')
@@ -317,8 +305,8 @@ export default new Command({
 										}`,
 										`• **Booster:** ${
 											member.premiumSinceTimestamp
-												? `${client.config.general.success}`
-												: `${client.config.general.error}`
+												? `${client.cc.success}`
+												: `${client.cc.error}`
 										}`,
 										`• **Boosting Since:** ${
 											member.premiumSinceTimestamp
@@ -343,8 +331,8 @@ export default new Command({
 									value: [
 										`• **Animated:** ${
 											member.avatarURL().endsWith('.gif')
-												? `${client.config.general.success}`
-												: `${client.config.general.error}`
+												? `${client.cc.success}`
+												: `${client.cc.error}`
 										}`,
 										`• **Formats:** ${UrlTypeCheck(
 											member.avatarURL(),

@@ -5,6 +5,7 @@ import {
 	GuildMember,
 	Collection,
 	EmbedBuilder,
+	Colors,
 } from 'discord.js';
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
@@ -53,7 +54,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now()
 			)}`;
 			const cooldownEmbed = new EmbedBuilder()
-				.setColor(client.cc.errorC)
+				.setColor(Colors.Red)
 				.setDescription(
 					`You need to wait \`${convertTime(
 						~~+cooldownRemaining

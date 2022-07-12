@@ -7,9 +7,7 @@ import { PunishmentTypes } from '../typings';
 export const checkUnmutes = async () => {
 	const guild = await client.guilds.fetch(process.env.GUILD_ID);
 	const allData = await durationsModel.find({ type: PunishmentTypes.Timeout });
-	const endedData = allData?.filter(
-		(c) => Date.now() > (c?.date as Date)?.getTime() + c.duration
-	);
+	const endedData = allData?.filter((c) => Date.now() > c.expires.getTime());
 	if (!endedData) return;
 
 	for (const data of endedData) {

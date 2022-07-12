@@ -7,7 +7,7 @@ import { PunishmentTypes } from '../typings';
 export const checkUnbans = async () => {
 	const guild = await client.guilds.fetch(process.env.GUILD_ID);
 	const allData = await durationsModel.find({ type: PunishmentTypes.Softban });
-	const endedData = allData?.filter((c) => Date.now() > (c.date as Date).getTime() + c.duration);
+	const endedData = allData?.filter((c) => Date.now() > c.expires.getTime());
 	let reason =
 		Formatters.strikethrough('Unbanned due to softban duration') + ' Already unbanned.';
 	if (!endedData) return;

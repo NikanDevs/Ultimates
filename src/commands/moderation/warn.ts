@@ -200,8 +200,9 @@ export default new Command({
 								case: await getModCase(),
 								type: PunishmentTypes.Softban,
 								userId: member.user.id,
-								date: new Date(),
-								duration: client.config.moderation.duration.ban,
+								expires: new Date(
+									Date.now() + client.config.moderation.duration.ban
+								),
 							});
 							await durationData.save();
 

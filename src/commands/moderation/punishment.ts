@@ -8,16 +8,7 @@ import { interactions } from '../../interactions';
 import { PunishmentTypes } from '../../typings';
 import { createModLog } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
-import { convertTime } from '../../functions/convertTime';
-import {
-	AUTOMOD_ID_LENGTH,
-	MAX_REASON_LENGTH,
-	MAX_SOFTBAN_DURATION,
-	MAX_TIMEOUT_DURATION,
-	MIN_SOFTBAN_DURATION,
-	MIN_TIMEOUT_DURATION,
-	PUNISHMENT_ID_LENGTH,
-} from '../../constants';
+import { AUTOMOD_ID_LENGTH, MAX_REASON_LENGTH, PUNISHMENT_ID_LENGTH } from '../../constants';
 import { getUrlFromCase } from '../../functions/cases/getURL';
 import { capitalize } from '../../functions/other/capitalize';
 import { splitText } from '../../functions/other/splitText';
@@ -445,129 +436,8 @@ export default new Command({
 					ephemeral: true,
 				});
 
-			const duration = /^\d+$/.test(newvalue)
-				? parseInt(newvalue)
-				: +convertTime(newvalue);
 			switch (value) {
 				case 1:
-					if (
-						!(await interaction.guild.members
-							.fetch(punishment.userId)
-							.catch(() => {})) &&
-						punishment.type === PunishmentTypes.Timeout
-					)
-						return interaction.followUp({
-							embeds: [
-								client.embeds.error(
-									'The punished user is not in the server. I can not update the timeout.'
-								),
-							],
-						});
-
-					if (
-						punishment.type == PunishmentTypes.Timeout ||
-						punishment.type === PunishmentTypes.Softban
-					) {
-						if (duration === undefined)
-							return interaction.followUp({
-								embeds: [
-									client.embeds.error(
-										`The provided duration must be in ${
-											punishment.type === PunishmentTypes.Softban
-												? `1y, 1mo, 1w, 1h, 1m`
-												: `1w, 1h, 1d, 1m, 10s`
-										} format.`
-									),
-								],
-								ephemeral: true,
-							});
-
-						if (
-							duration > MAX_TIMEOUT_DURATION ||
-							(duration < MIN_TIMEOUT_DURATION &&
-								punishment.type === PunishmentTypes.Timeout)
-						)
-							return interaction.followUp({
-								embeds: [
-									client.embeds.attention(
-										`The duration must be between ${convertTime(
-											MIN_TIMEOUT_DURATION
-										)} and ${convertTime(MAX_TIMEOUT_DURATION)}.`
-									),
-								],
-								ephemeral: true,
-							});
-
-						if (
-							duration > MAX_SOFTBAN_DURATION ||
-							(duration < MIN_SOFTBAN_DURATION &&
-								punishment.type === PunishmentTypes.Softban)
-						)
-							return interaction.followUp({
-								embeds: [
-									client.embeds.attention(
-										`The duration must be between ${convertTime(
-											MIN_SOFTBAN_DURATION
-										)} and ${convertTime(MAX_SOFTBAN_DURATION)}.`
-									),
-								],
-								ephemeral: true,
-							});
-
-						const findDuration = await durationsModel.findOne({
-							case: punishment.case,
-						});
-
-						if (!findDuration)
-							return interaction.followUp({
-								embeds: [
-									client.embeds.error(
-										'The duration of this punishment has already ended.'
-									),
-								],
-								ephemeral: true,
-							});
-
-						if (duration === findDuration.duration)
-							return interaction.followUp({
-								embeds: [
-									client.embeds.attention(
-										'Try updating the duration to a value that is not the same as the current one.'
-									),
-								],
-							});
-
-						await durationsModel.findOneAndUpdate(
-							{
-								case: punishment.case,
-							},
-							{ $set: { date: new Date(), duration: duration } }
-						);
-
-						if (punishment.type === PunishmentTypes.Timeout)
-							await (
-								await interaction.guild.members.fetch(punishment.userId)
-							).timeout(duration, 'Punishment duration updated.');
-
-						await interaction.followUp({
-							embeds: [
-								client.embeds.success(
-									`Duration was updated to **${convertTime(duration)}**.`
-								),
-							],
-						});
-					} else {
-						return interaction.followUp({
-							embeds: [
-								client.embeds.error(
-									'Only softbans and timeouts support durations.'
-								),
-							],
-							ephemeral: true,
-						});
-					}
-					break;
-				case 2:
 					if (punishment.reason === newvalue)
 						return interaction.reply({
 							embeds: [
@@ -605,8 +475,7 @@ export default new Command({
 				moderator: interaction.user,
 				reason: value === 2 ? newvalue : punishment.reason,
 				referencedPunishment: punishment,
-				duration: value === 1 ? duration : null,
-				update: value === 1 ? 'duration' : 'reason',
+				update: 'reason',
 			});
 
 			const firstLogId = (await getUrlFromCase(punishment.case)).split('/')[6];
@@ -621,18 +490,6 @@ export default new Command({
 
 			switch (value) {
 				case 1:
-					client.config.webhooks.mod.editMessage(firstLogId, {
-						embeds: [
-							EmbedBuilder.from(firstLog.embeds[0]).setDescription(
-								firstLog.embeds[0].description.replaceAll(
-									'\n• **Duration',
-									`\n• **Duration [[U](${updateLog})]`
-								)
-							),
-						],
-					});
-					break;
-				case 2:
 					client.config.webhooks.mod.editMessage(firstLogId, {
 						embeds: [
 							EmbedBuilder.from(firstLog.embeds[0]).setDescription(
