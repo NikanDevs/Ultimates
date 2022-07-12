@@ -48,9 +48,7 @@ export async function createModLog(options: createModLogOptions) {
 				`• **Action:** ${capitalize(options.action)}`,
 				`${
 					options.duration
-						? `• **Duration${
-								options.update === 'duration' ? ' [U]' : ''
-						  }:** ${convertTime(options.duration)}`
+						? `• **Duration:** ${convertTime(options.duration)}`
 						: 'LINE_BREAK'
 				}`,
 				`• **Member:** ${options.user.tag} • ${options.user.id}`,
