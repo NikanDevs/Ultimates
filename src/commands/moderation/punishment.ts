@@ -447,7 +447,6 @@ export default new Command({
 							],
 						});
 
-					newvalue = splitText(newvalue, MAX_REASON_LENGTH);
 					switch (id.length) {
 						case PUNISHMENT_ID_LENGTH:
 							punishment = await punishmentModel.findByIdAndUpdate(id, {

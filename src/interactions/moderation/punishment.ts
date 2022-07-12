@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { MAX_REASON_LENGTH } from '../../constants';
 import { interactionOptions } from '../../typings';
 
 export const punishmentCommand = {
@@ -84,6 +85,8 @@ export const punishmentCommand = {
 					description: 'The new value you want to set for the punishment',
 					required: true,
 					type: ApplicationCommandOptionType.String,
+					min_length: 1,
+					max_length: MAX_REASON_LENGTH,
 				},
 			],
 		},
