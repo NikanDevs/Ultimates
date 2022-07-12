@@ -175,7 +175,6 @@ export interface sendModDMOptions {
 	appeal?: boolean;
 }
 
-type punishmentUpdateTypes = 'reason';
 export interface createModLogOptions {
 	action: PunishmentTypes;
 	punishmentId?: string;
@@ -186,7 +185,7 @@ export interface createModLogOptions {
 	referencedPunishment?: any;
 	expire?: Date;
 	revoke?: boolean;
-	update?: punishmentUpdateTypes;
+	update?: boolean;
 }
 
 export interface createAntiraidLogOptions {

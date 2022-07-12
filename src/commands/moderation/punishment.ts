@@ -414,10 +414,9 @@ export default new Command({
 					embed: embed,
 				});
 			}
-		} else if (getSubCommand === 'update') {
-			const value = options.getNumber('value');
+		} else if (getSubCommand === 'reason') {
 			const id = options.getString('id');
-			let newvalue = options.getString('new-value');
+			let reason = options.getString('reason');
 			let punishment: any = null;
 
 			await interaction.deferReply({ ephemeral: true });
@@ -436,45 +435,39 @@ export default new Command({
 					ephemeral: true,
 				});
 
-			switch (value) {
-				case 1:
-					if (punishment.reason === newvalue)
-						return interaction.reply({
-							embeds: [
-								client.embeds.attention(
-									'Try updating the reason to a value that is not the same as the current one.'
-								),
-							],
-						});
+			if (punishment.reason === reason)
+				return interaction.reply({
+					embeds: [
+						client.embeds.attention(
+							'Please provide a different reason than the current one.'
+						),
+					],
+				});
 
-					switch (id.length) {
-						case PUNISHMENT_ID_LENGTH:
-							punishment = await punishmentModel.findByIdAndUpdate(id, {
-								$set: { reason: newvalue },
-							});
-							break;
-						case AUTOMOD_ID_LENGTH:
-							punishment = await automodModel.findByIdAndUpdate(id, {
-								$set: { reason: newvalue },
-							});
-							break;
-					}
-
-					await interaction.followUp({
-						embeds: [
-							client.embeds.success(`Reason was updated to **${newvalue}**`),
-						],
+			switch (id.length) {
+				case PUNISHMENT_ID_LENGTH:
+					punishment = await punishmentModel.findByIdAndUpdate(id, {
+						$set: { reason: reason },
+					});
+					break;
+				case AUTOMOD_ID_LENGTH:
+					punishment = await automodModel.findByIdAndUpdate(id, {
+						$set: { reason: reason },
 					});
 					break;
 			}
+
+			await interaction.followUp({
+				embeds: [client.embeds.success(`Reason was updated to **${reason}**`)],
+			});
 
 			const updateLog = await createModLog({
 				action: punishment.type as PunishmentTypes,
 				user: await client.users.fetch(punishment.userId),
 				moderator: interaction.user,
-				reason: value === 2 ? newvalue : punishment.reason,
+				reason: reason,
 				referencedPunishment: punishment,
-				update: 'reason',
+				update: true,
 			});
 
 			const firstLogId = (await getUrlFromCase(punishment.case)).split('/')[6];
@@ -487,20 +480,16 @@ export default new Command({
 				.catch(() => {})) as Message;
 			if (!firstLog) return;
 
-			switch (value) {
-				case 1:
-					client.config.webhooks.mod.editMessage(firstLogId, {
-						embeds: [
-							EmbedBuilder.from(firstLog.embeds[0]).setDescription(
-								firstLog.embeds[0].description.replaceAll(
-									'\n• **Reason',
-									`\n• **Reason [[U](${updateLog})]`
-								)
-							),
-						],
-					});
-					break;
-			}
+			client.config.webhooks.mod.editMessage(firstLogId, {
+				embeds: [
+					EmbedBuilder.from(firstLog.embeds[0]).setDescription(
+						firstLog.embeds[0].description.replaceAll(
+							'\n• **Reason',
+							`\n• **Reason [[U](${updateLog})]`
+						)
+					),
+				],
+			});
 		}
 	},
 });

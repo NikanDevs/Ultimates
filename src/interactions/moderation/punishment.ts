@@ -57,8 +57,8 @@ export const punishmentCommand = {
 			],
 		},
 		{
-			name: 'update',
-			description: 'Update the duration or reason for a punishment',
+			name: 'reason',
+			description: 'Change the reason for a punishment',
 			type: ApplicationCommandOptionType.Subcommand,
 			options: [
 				{
@@ -69,20 +69,8 @@ export const punishmentCommand = {
 					autocomplete: true,
 				},
 				{
-					name: 'value',
-					description: 'The part of the punishment you want to update',
-					required: true,
-					type: ApplicationCommandOptionType.Number,
-					choices: [
-						{
-							name: 'reason',
-							value: 1,
-						},
-					],
-				},
-				{
-					name: 'new-value',
-					description: 'The new value you want to set for the punishment',
+					name: 'reason',
+					description: 'The new reason you want to set for this punishment',
 					required: true,
 					type: ApplicationCommandOptionType.String,
 					min_length: 1,

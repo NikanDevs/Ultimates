@@ -18,21 +18,20 @@ import { t } from 'i18next';
 
 export async function createModLog(options: createModLogOptions) {
 	const revoke: boolean = options.revoke ? options.revoke : false;
-	const update: boolean = options.update ? true : false;
 	const currentCase = await getModCase();
 	if (logActivity('mod')) await addModCase();
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
 			name: ` ${
-				revoke ? 'Revoke' : update ? 'Update' : capitalize(options.action)
+				revoke ? 'Revoke' : options.update ? 'Update' : capitalize(options.action)
 			} | Case: #${revoke ? options.referencedPunishment.case : currentCase}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setColor(
 			revoke
 				? resolveColor('#b04d46')
-				: update
+				: options.update
 				? client.cc.invisible
 				: resolveColor(punishmentTypeEmbedColors[options.action])
 		)
@@ -58,7 +57,7 @@ export async function createModLog(options: createModLogOptions) {
 						: 'Automatic'
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason${options.update === 'reason' ? ' [U]' : ''}:** ${
+				`• **Reason${options.update ? ' [U]' : ''}:** ${
 					splitText(options.reason, MAX_REASON_LENGTH) ?? t('common.noReason')
 				}`,
 			]
@@ -68,14 +67,14 @@ export async function createModLog(options: createModLogOptions) {
 
 	if (!logActivity('mod')) return;
 	var logMessage = await client.config.webhooks.mod.send({ embeds: [embed] });
-	if (update)
+	if (options.update)
 		return `https://discord.com/channels/${process.env.GUILD_ID}/${logMessage.channel_id}/${logMessage.id}`;
 
 	if (
 		options.action === PunishmentTypes.Unmute ||
 		options.action === PunishmentTypes.Unban ||
 		revoke ||
-		update
+		options.update
 	)
 		return;
 
