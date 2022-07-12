@@ -123,7 +123,7 @@ export type LeftMembersSchemaType = {
 
 export type LogsSchemaType = {
 	_id: string;
-	currentCase: number;
+	currentCase?: number;
 	url: string;
 	expire?: Date;
 };

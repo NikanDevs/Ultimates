@@ -3,7 +3,7 @@ import type { LogsSchemaType } from '../typings/models';
 
 const schema = new Schema({
 	_id: { type: SchemaTypes.String, required: true },
-	currentCase: { type: SchemaTypes.Number, required: true },
+	currentCase: { type: SchemaTypes.Number, required: false },
 	url: { type: SchemaTypes.String, required: true },
 	expire: { type: SchemaTypes.Date, required: false },
 });
