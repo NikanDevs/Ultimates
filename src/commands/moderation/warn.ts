@@ -101,6 +101,10 @@ export default new Command({
 						reason: `Reaching ${client.config.moderation.count.timeout1} warnings.`,
 						duration: client.config.moderation.duration.timeout1,
 						referencedPunishment: warnData,
+						expire: new Date(
+							warningExpiry.getTime() +
+								client.config.moderation.duration.timeout1
+						),
 					});
 
 					sendModDM(member, {
@@ -140,6 +144,10 @@ export default new Command({
 						reason: `Reaching ${client.config.moderation.count.timeout2} warnings.`,
 						duration: client.config.moderation.duration.timeout2,
 						referencedPunishment: warnData,
+						expire: new Date(
+							warningExpiry.getTime() +
+								client.config.moderation.duration.timeout1
+						),
 					});
 
 					sendModDM(member, {

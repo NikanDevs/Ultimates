@@ -428,8 +428,11 @@ export default new Event('messageCreate', async (message) => {
 				type: PunishmentTypes.Timeout,
 				userId: message.author.id,
 				date: new Date(),
-				expire: automodPunishmentExpiry,
 				reason: `Reaching ${punishmentCount} automod warnings.`,
+				expire: new Date(
+					automodPunishmentExpiry.getTime() +
+						client.config.moderation.duration.automod
+				),
 			});
 			data.save();
 
@@ -448,7 +451,10 @@ export default new Event('messageCreate', async (message) => {
 				duration: client.config.moderation.duration.automod,
 				reason: `Reaching ${punishmentCount} automod warnings.`,
 				referencedPunishment: warnData,
-				expire: automodPunishmentExpiry,
+				expire: new Date(
+					automodPunishmentExpiry.getTime() +
+						client.config.moderation.duration.automod
+				),
 			});
 		}
 	}

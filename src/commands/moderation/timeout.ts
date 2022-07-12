@@ -1,11 +1,7 @@
 import { GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { punishmentModel } from '../../models/punishments';
-import {
-	MAX_TIMEOUT_DURATION,
-	MIN_TIMEOUT_DURATION,
-	warningExpiry,
-} from '../../constants';
+import { MAX_TIMEOUT_DURATION, MIN_TIMEOUT_DURATION, warningExpiry } from '../../constants';
 import { durationsModel } from '../../models/durations';
 import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -97,6 +93,7 @@ export default new Command({
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
+			expire: new Date(warningExpiry.getTime() + duration),
 		});
 	},
 });

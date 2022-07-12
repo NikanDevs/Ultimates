@@ -99,6 +99,7 @@ export default new Command({
 			duration: duration,
 			moderator: interaction.user,
 			reason: reason,
+			expire: new Date(punishmentExpiry.getTime() + duration),
 		});
 	},
 });
