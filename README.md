@@ -46,5 +46,5 @@ After the slash commands are registered, use the `/configure` command to setup e
 
 ## Extra
 
-Do you think the bot looks ugly with the default emojis? Try visiting `emojis.yml` and make them nicer :)
+Do you think the bot looks ugly with the default emojis? Try visiting `emojis.example.yml` and make them nicer :)
 

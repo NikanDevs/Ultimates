@@ -1,0 +1,26 @@
+# Emoji formats:
+# 1. Default apple and windows emojis
+# 2. Discord emojis - must match /(<a?)?:\w+:(\d{18}>)?/
+
+# What to do:
+# 1. Change this file's name to `emojis.yml`
+# 2. Uncomment all the code bellow (beside the comments)
+# 3. Add your custom emojis to the strings
+# 4. Restart your bot
+
+# # General
+# success: ''
+# error: ''
+# attention: ''
+
+# # /ping
+# ping: ''
+# mongoDB: ''
+
+# # /staff - statues
+# online: ''
+# idle: ''
+# dnd: ''
+# offline: ''
+
+
