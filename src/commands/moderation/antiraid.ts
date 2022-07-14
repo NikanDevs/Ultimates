@@ -198,7 +198,10 @@ export default new Command({
 		});
 
 		collector.on('end', (_, reason) => {
-			if (reason !== 'confirmed') return interaction.deleteReply();
+			if (reason !== 'confirmed') {
+				guardCollection.delete('antiraid');
+				interaction.deleteReply();
+			}
 		});
 	},
 });
