@@ -82,10 +82,12 @@ export default new Command({
 			)
 			.map((m) => m);
 
-		if (!filtered.length)
+		if (!filtered.length) {
+			guardCollection.delete('antiraid');
 			return interaction.followUp({
 				embeds: [client.embeds.attention('No members were affected by the antiraid.')],
 			});
+		}
 
 		const hitMembers = filtered.map((m) => `- ${m.user.tag} (${m.user.id})`);
 		const confirmButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([
