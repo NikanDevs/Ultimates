@@ -470,20 +470,21 @@ export default new Command({
 				update: true,
 			});
 
-			const firstLogId = (await getUrlFromCase(punishment.case)).split('/')[6];
-			const getFirstLogChannel = (await client.channels
+			const substanceLogID = (await getUrlFromCase(punishment.case)).split('/')[6];
+			const substanceLogChannel = (await client.channels
 				.fetch((await getUrlFromCase(punishment.case)).split('/')[5])
 				.catch(() => {})) as TextChannel;
-			if (!getFirstLogChannel) return;
-			const firstLog = (await getFirstLogChannel.messages
-				.fetch(firstLogId)
+			if (!substanceLogChannel) return;
+			const substanceLog = (await substanceLogChannel.messages
+				.fetch(substanceLogID)
 				.catch(() => {})) as Message;
-			if (!firstLog) return;
+			if (!substanceLog) return;
+			if (substanceLog.embeds[0].author.name.startsWith('Antiraid')) return;
 
-			client.config.webhooks.mod.editMessage(firstLogId, {
+			client.config.webhooks.mod.editMessage(substanceLogID, {
 				embeds: [
-					EmbedBuilder.from(firstLog.embeds[0]).setDescription(
-						firstLog.embeds[0].description.replaceAll(
+					EmbedBuilder.from(substanceLog.embeds[0]).setDescription(
+						substanceLog.embeds[0].description.replaceAll(
 							'\n• **Reason',
 							`\n• **Reason [[U](${updateLog})]`
 						)

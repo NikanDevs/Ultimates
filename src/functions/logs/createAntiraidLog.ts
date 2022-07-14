@@ -36,7 +36,7 @@ export async function createAntiraidLog(options: createAntiraidLogOptions) {
 					splitText(options.reason, MAX_REASON_LENGTH) ?? t('common.noReason')
 				}`,
 				`• **Registered:** in the past ${convertTime(options.registered)}`,
-				`• **Joined:** in the past ${convertTime(options.registered)}\n`,
+				`• **Joined:** in the past ${convertTime(options.joined)}\n`,
 				`[View the results](${options.results})`,
 			].join('\n')
 		);

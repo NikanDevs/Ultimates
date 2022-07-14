@@ -141,7 +141,7 @@ export default new Command({
 						.ban(raider.user, { deleteMessageDays: delete_messages, reason })
 						.catch(() => {});
 
-					const data = new punishmentModel({
+					const data = await new punishmentModel({
 						_id: await generateManualId(),
 						case: await getModCase(),
 						type: PunishmentTypes.Ban,
@@ -150,8 +150,7 @@ export default new Command({
 						reason: reason,
 						date: new Date(),
 						expire: punishmentExpiry,
-					});
-					await data.save();
+					}).save();
 
 					sendModDM(raider, {
 						action: PunishmentTypes.Ban,
@@ -175,26 +174,27 @@ export default new Command({
 				}
 			);
 
-			await createAntiraidLog({
-				affected: filtered.length,
-				moderator: interaction.user,
-				reason: reason,
-				registered,
-				joined,
-				results: results.url,
-			});
+			setTimeout(async () => {
+				await createAntiraidLog({
+					affected: filtered.length,
+					moderator: interaction.user,
+					reason: reason,
+					registered,
+					joined,
+					results: results.url,
+				});
 
-			await interaction.editReply({
-				embeds: [
-					client.embeds.success(
-						`Antiraid is done, ${filtered.length} member${
-							filtered.length === 1 ? ' was' : 's were'
-						} affected.`
-					),
-				],
-			});
-
-			guardCollection.delete('antiraid');
+				await interaction.editReply({
+					embeds: [
+						client.embeds.success(
+							`Antiraid is done, ${filtered.length} member${
+								filtered.length === 1 ? ' was' : 's were'
+							} affected.`
+						),
+					],
+				});
+				guardCollection.delete('antiraid');
+			}, 5 * 1000);
 		});
 
 		collector.on('end', (_, reason) => {
