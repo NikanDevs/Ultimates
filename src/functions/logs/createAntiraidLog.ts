@@ -52,6 +52,7 @@ export async function createAntiraidLog(options: createAntiraidLogOptions) {
 		_id: currentCase,
 		url: findMessage.url,
 		expire: punishmentExpiry,
+		antiraid: true,
 	});
 	await newLogData.save();
 }

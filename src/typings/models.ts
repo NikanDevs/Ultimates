@@ -126,6 +126,7 @@ export type LogsSchemaType = {
 	currentCase?: number;
 	url: string;
 	expire?: Date;
+	antiraid?: boolean;
 };
 
 // Modmail

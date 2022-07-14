@@ -6,6 +6,7 @@ const schema = new Schema({
 	currentCase: { type: SchemaTypes.Number, required: false },
 	url: { type: SchemaTypes.String, required: true },
 	expire: { type: SchemaTypes.Date, required: false },
+	antiraid: { type: SchemaTypes.Boolean, required: false },
 });
 
 export const logsModel = model<LogsSchemaType>('logs', schema);

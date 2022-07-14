@@ -148,7 +148,9 @@ export default new Command({
 							referencedPunishment: data,
 							revoke: true,
 						}).then(async () => {
-							await logsModel.findByIdAndDelete(data.case);
+							if (!(await logsModel.findByIdAndDelete(data.case)).antiraid)
+								await logsModel.findByIdAndDelete(data.case);
+
 							data.delete();
 						});
 					}
@@ -470,6 +472,7 @@ export default new Command({
 				update: true,
 			});
 
+			if ((await logsModel.findById(punishment.case)).antiraid) return;
 			const substanceLogID = (await getUrlFromCase(punishment.case)).split('/')[6];
 			const substanceLogChannel = (await client.channels
 				.fetch((await getUrlFromCase(punishment.case)).split('/')[5])
@@ -479,7 +482,6 @@ export default new Command({
 				.fetch(substanceLogID)
 				.catch(() => {})) as Message;
 			if (!substanceLog) return;
-			if (substanceLog.embeds[0].author.name.startsWith('Antiraid')) return;
 
 			client.config.webhooks.mod.editMessage(substanceLogID, {
 				embeds: [
