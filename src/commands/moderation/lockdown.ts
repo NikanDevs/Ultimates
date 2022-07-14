@@ -1,15 +1,14 @@
 import { ChannelType, EmbedBuilder, GuildChannel, TextChannel } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
+import { guardCollection } from '../../constants';
 
 export default new Command({
 	interaction: interactions.lockdown,
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand() as 'channel' | 'server';
 		const reason = options.getString('reason');
-		const role = client.config.general.guild.memberRoleId
-			? client.config.general.guild.memberRoleId
-			: interaction.guild.roles.everyone;
+		const role = client.config.general.guild.memberRoleId ?? interaction.guild.roles.everyone;
 
 		if (getSubCommand === 'channel') {
 			const channel = (options.getChannel('channel') ||
@@ -80,8 +79,20 @@ export default new Command({
 
 			(channel as TextChannel).send({ embeds: [embed] });
 		} else if (getSubCommand === 'server') {
+			if (guardCollection.has('lockdown'))
+				return interaction.reply({
+					embeds: [
+						client.embeds.attention(
+							'The server is already locking down, please wait...'
+						),
+					],
+					ephemeral: true,
+				});
+
 			await interaction.deferReply();
+			guardCollection.set('lockdown', null);
 			await interaction.guild.channels.fetch();
+
 			const alreadyLocked = interaction.guild.channels.cache
 				.filter(
 					(ch) =>
@@ -162,6 +173,8 @@ export default new Command({
 					),
 				],
 			});
+
+			guardCollection.delete('lockdown');
 		}
 	},
 });

@@ -23,8 +23,8 @@ enum statusPriorities {
 
 export default new Command({
 	interaction: interactions.staff,
-	excute: async ({ client, interaction }) => {
-		await interaction.deferReply({ ephemeral: false });
+	excute: async ({ client, interaction, options }) => {
+		await interaction.deferReply({ ephemeral: options.getBoolean('hidden') ?? false });
 		const members = await interaction.guild.members.fetch({ force: true });
 		const staff = members
 			.filter(

@@ -32,7 +32,7 @@ export const antiRaidCommand = {
 			choices: [
 				{ name: "Don't delete any", value: 0 },
 				{ name: 'Previous 24 hours', value: 1 },
-				{ name: 'Previous 48 hours', value: 2 },
+				{ name: 'Previous 48 hours (default)', value: 2 },
 				{ name: 'Previous 3 days', value: 3 },
 				{ name: 'Previous 4 days', value: 4 },
 				{ name: 'Previous 5 days', value: 5 },

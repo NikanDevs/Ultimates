@@ -20,13 +20,14 @@ export default new Command({
 
 		if (newNick) {
 			// Set a new nickname
-			member.setNickname(newNick);
+			member.setNickname(newNick, `/nickname by ${interaction.user.tag}`);
 			interaction.reply({
 				embeds: [
 					client.embeds.success(
 						`**${member.user.tag}** nickname was set to **${newNick}**`
 					),
 				],
+				ephemeral: true,
 			});
 		} else if (!newNick && !member.nickname) {
 			// Moderate the nickname
@@ -42,17 +43,22 @@ export default new Command({
 				return nickname;
 			}
 
-			member.setNickname(`Moderated Nickname ` + generateNick());
+			member.setNickname(
+				`Moderated Nickname ` + generateNick(),
+				`/nickname by ${interaction.user.tag}`
+			);
 			interaction.reply({
 				embeds: [
 					client.embeds.success(`**${member.user.tag}** nickname was moderated.`),
 				],
+				ephemeral: true,
 			});
 		} else if (!newNick && member.nickname) {
 			// Reset the nickname
-			member.setNickname(null);
+			member.setNickname(null, `/nickname by ${interaction.user.tag}`);
 			interaction.reply({
 				embeds: [client.embeds.success(`**${member.user.tag}** nickname was reset.`)],
+				ephemeral: true,
 			});
 		}
 	},

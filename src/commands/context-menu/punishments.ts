@@ -73,7 +73,7 @@ export default new Command({
 				],
 				ephemeral: true,
 			});
-		await interaction.deferReply();
+		await interaction.deferReply({ ephemeral: true });
 		if (warnings.length <= 3) {
 			embed.setDescription(warnings.map((data) => data.toString()).join('\n\n'));
 			interaction.followUp({ embeds: [embed] });

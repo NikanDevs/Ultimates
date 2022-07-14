@@ -1,6 +1,6 @@
 import { GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
-import { punishmentExpiry, warningExpiry } from '../../constants';
+import { guardCollection, punishmentExpiry, warningExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
 import { createModLog } from '../../functions/logs/createModLog';
 import { punishmentModel } from '../../models/punishments';
@@ -26,6 +26,21 @@ export default new Command({
 			});
 
 		if (ignore(member, { interaction, action: PunishmentTypes.Warn })) return;
+
+		if (guardCollection.has(`warn:${member.id}`))
+			return interaction.reply({
+				embeds: [
+					client.embeds.attention(
+						'Whoops, looks like a double warning has appeared!'
+					),
+				],
+				ephemeral: true,
+			});
+
+		guardCollection.set(`warn:${member.id}`, null);
+		setTimeout(() => {
+			guardCollection.delete(`warn:${member.id}`);
+		}, 10 * 1000);
 
 		const warnData = new punishmentModel({
 			_id: await generateManualId(),

@@ -30,7 +30,6 @@ export type interactionOptions = {
 	directory: commandDirectories;
 	cooldown?: number;
 	permission?: PermissionResolvable[];
-	available?: boolean;
 } & ChatInputApplicationCommandData;
 
 export type commandType = {
@@ -318,4 +317,6 @@ export interface userinfoButtonsOptions {
 	disableRoles?: boolean;
 	disablePermissions?: boolean;
 }
+
+export type GuardCollectionTypes = `antiraid` | `warn:${string}` | `purge:${string}` | `lockdown`;
 

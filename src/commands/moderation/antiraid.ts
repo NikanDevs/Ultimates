@@ -2,7 +2,12 @@ import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { t } from 'i18next';
-import { MAX_ANTIRAID_DURATION, MIN_ANTIRAID_DURATION, punishmentExpiry } from '../../constants';
+import {
+	guardCollection,
+	MAX_ANTIRAID_DURATION,
+	MIN_ANTIRAID_DURATION,
+	punishmentExpiry,
+} from '../../constants';
 import { PunishmentTypes } from '../../typings';
 import { punishmentModel } from '../../models/punishments';
 import { generateManualId } from '../../utils/generatePunishmentId';
@@ -29,8 +34,7 @@ export default new Command({
 		const joinedOption = options.getString('registered');
 		const registered = convertToTime(registeredOption);
 		const joined = convertToTime(joinedOption);
-		const delete_messages =
-			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
+		const delete_messages = options.getNumber('delete_messages') ?? 2;
 		const reason = options.getString('reason') ?? t('common.noReason');
 		if (!isValidTime(registeredOption) || !isValidTime(joinedOption))
 			return interaction.reply({
@@ -56,6 +60,17 @@ export default new Command({
 				ephemeral: true,
 			});
 
+		if (guardCollection.has('antiraid'))
+			return interaction.reply({
+				embeds: [
+					client.embeds.attention(
+						'The server is already getting scanned by the antiraid...'
+					),
+				],
+				ephemeral: true,
+			});
+
+		guardCollection.set('antiraid', null);
 		await interaction.deferReply({ ephemeral: false });
 		const members = await interaction.guild.members.fetch({ force: true });
 		const filtered = members
@@ -101,10 +116,11 @@ export default new Command({
 			if (c.user.id !== interaction.user.id)
 				return c.reply({ content: t('common.errors.cannotInteract'), ephemeral: true });
 
-			if (c.customId === 'cancel') return interaction.deleteReply();
+			if (c.customId === 'cancel') return collector.stop('cancel');
 			collector.stop('confirmed');
 
 			interaction.editReply({
+				content: null,
 				embeds: [
 					new EmbedBuilder()
 						.setDescription(
@@ -170,11 +186,13 @@ export default new Command({
 				embeds: [
 					client.embeds.success(
 						`Antiraid is done, ${filtered.length} member${
-							filtered.length === 1 ? '' : 's'
+							filtered.length === 1 ? ' was' : 's were'
 						} affected.`
 					),
 				],
 			});
+
+			guardCollection.delete('antiraid');
 		});
 
 		collector.on('end', (_, reason) => {

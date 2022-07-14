@@ -38,7 +38,10 @@ export default new Command({
 						ephemeral: true,
 					});
 
-				await (interaction.channel as TextChannel).setRateLimitPerUser(rate);
+				await (interaction.channel as TextChannel).setRateLimitPerUser(
+					rate,
+					`/slowmode by ${interaction.user.tag}`
+				);
 				await interaction.reply({
 					embeds: [
 						client.embeds.success(
@@ -47,6 +50,7 @@ export default new Command({
 								: 'Slowmode was turned off.'
 						),
 					],
+					ephemeral: true,
 				});
 				break;
 		}

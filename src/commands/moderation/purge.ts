@@ -1,4 +1,5 @@
 import { Collection, Message, TextChannel } from 'discord.js';
+import { guardCollection } from '../../constants';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 const fifteenDays = 1000 * 60 * 60 * 24 * 15;
@@ -41,7 +42,22 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		interaction.reply({ embeds: [client.embeds.success(descriptionText)] });
+		if (guardCollection.has(`purge:${channel.id}`))
+			return interaction.reply({
+				embeds: [
+					client.embeds.attention(
+						'This channel has recently been purged, try again in a few seconds.'
+					),
+				],
+				ephemeral: true,
+			});
+
+		guardCollection.set(`purge:${channel.id}`, null);
+		setTimeout(() => {
+			guardCollection.delete(`purge:${channel.id}`);
+		}, 10 * 1000);
+
+		interaction.reply({ embeds: [client.embeds.success(descriptionText)], ephemeral: true });
 		await channel.bulkDelete(messagesToPurge, true);
 	},
 });
