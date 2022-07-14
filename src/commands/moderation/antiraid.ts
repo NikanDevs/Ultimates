@@ -31,7 +31,7 @@ export default new Command({
 	interaction: interactions.antiraid,
 	excute: async ({ client, interaction, options }) => {
 		const registeredOption = options.getString('registered');
-		const joinedOption = options.getString('registered');
+		const joinedOption = options.getString('joined');
 		const registered = convertToTime(registeredOption);
 		const joined = convertToTime(joinedOption);
 		const delete_messages = options.getNumber('delete_messages') ?? 2;
