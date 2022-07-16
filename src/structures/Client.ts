@@ -1,7 +1,5 @@
 import { Client, Collection, ClientEvents, Partials, GatewayIntentBits } from 'discord.js';
 import { commandType } from '../typings';
-import { glob } from 'glob';
-import { promisify } from 'util';
 import { connect } from 'mongoose';
 import { Event } from './Event';
 import { cc, clientEmbeds } from '../functions/other/client';
@@ -9,7 +7,7 @@ import { logger } from '../logger';
 import { logsModel } from '../models/logs';
 import { modmailModel } from '../models/modmail';
 import { Config } from './Config';
-const globPromise = promisify(glob);
+import { readdirSync } from 'fs';
 
 export class UltimatesClient extends Client {
 	public commands: Collection<string, commandType> = new Collection();
@@ -58,26 +56,43 @@ export class UltimatesClient extends Client {
 	}
 
 	private async importFiles(filePath: string) {
-		return (await import(filePath as string))?.default;
+		return (await import(filePath))?.default;
 	}
 
 	/** Registers commands and events if called. */
 	private async registerModules() {
 		// Commands
-		const slashFiles = await globPromise(`${__dirname}/../commands/**/*{.ts,.js}`);
-		slashFiles.forEach(async (filePaths) => {
-			const command: commandType = await this.importFiles(filePaths);
+		logger.info('Registering commands...', { showDate: false });
+		for (const category of readdirSync(`${__dirname}/../commands`)) {
+			for (const fileName of readdirSync(`${__dirname}/../commands/${category}`)) {
+				const filePath = `${__dirname}/../commands/${category}/${fileName}`;
+				const command: commandType = await this.importFiles(filePath.toString());
 
-			this.commands.set(command.interaction.name, command);
-		});
+				this.commands.set(command.interaction.name, command);
+			}
+		}
+		logger.info('Registered commands', { showDate: false });
 
-		const eventFiles =
-			(await globPromise(`${__dirname}/../events/**/*{.ts,.js}`)) ||
-			(await globPromise(`${__dirname}/../events/**{.ts,.js}`));
-		eventFiles.forEach(async (filePaths) => {
-			const event: Event<keyof ClientEvents> = await this.importFiles(filePaths);
-			this.on(event.event, event.run);
-		});
+		// Events
+		logger.info('Registering events...', { showDate: false });
+		for (const category of readdirSync(`${__dirname}/../events`)) {
+			if (category.endsWith('.ts') || category.endsWith('.js')) {
+				const filePath = `${__dirname}/../events/${category}`;
+				const event: Event<keyof ClientEvents> = await this.importFiles(
+					filePath.toString()
+				);
+				this.on(event.event, event.run);
+			} else {
+				for (const fileName of readdirSync(`${__dirname}/../events/${category}`)) {
+					const filePath = `${__dirname}/../events/${category}/${fileName}`;
+					const event: Event<keyof ClientEvents> = await this.importFiles(
+						filePath.toString()
+					);
+					this.on(event.event, event.run);
+				}
+			}
+		}
+		logger.info('Registered events', { showDate: false });
 	}
 
 	/** Handles process errors and exits if called. */
