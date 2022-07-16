@@ -3,6 +3,8 @@ import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
+import { splitText } from '../../functions/other/splitText';
+import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
 
 export default new Event('messageDelete', async (message: Message) => {
 	if (!logActivity('message')) return;
@@ -27,15 +29,18 @@ export default new Event('messageDelete', async (message: Message) => {
 			name: message.author.tag,
 			iconURL: message.author.displayAvatarURL(),
 		})
-		.setTitle(`Message Deleted in #${channel.name}`)
-		.setDescription(message.content || 'No content.')
+		.setDescription(`Message deleted in ${channel} • ${generateDiscordTimestamp(new Date())}`)
 		.setColor(resolveColor('#b59190'))
 		.addFields([
 			{
+				name: 'Content',
+				value:
+					splitText(message.content, MAX_FIELD_VALUE_LENGTH) ??
+					'The message has no content.',
+			},
+			{
 				name: 'IDs',
-				value: `\`\`\`ini\nChannel = ${channel.id}\nMember = ${
-					message.author.id
-				}\nMessage = ${message.id}\`\`\`${generateDiscordTimestamp(new Date())}`,
+				value: `\`\`\`ini\nMember = ${message.author.id}\`\`\``,
 			},
 		]);
 

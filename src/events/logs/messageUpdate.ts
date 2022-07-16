@@ -1,4 +1,4 @@
-import { EmbedBuilder, GuildMember, resolveColor, TextChannel } from 'discord.js';
+import { EmbedBuilder, Formatters, GuildMember, resolveColor, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
@@ -30,31 +30,34 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			name: newMessage.author?.tag,
 			iconURL: newMessage.author?.displayAvatarURL(),
 		})
-		.setTitle(`Message Edited in #${channel.name}`)
+		.setDescription(
+			`${Formatters.hyperlink(
+				'Message',
+				newMessage.url
+			)} edited in ${channel} • ${generateDiscordTimestamp(new Date())}`
+		)
 		.setURL(newMessage.url)
-		.setColor(resolveColor('#b59190'));
-
-	if (oldMessage.content !== newMessage.content) {
-		logEmbed.addFields([
+		.setColor(resolveColor('#b59190'))
+		.addFields([
 			{
 				name: 'Old message ',
-				value: splitText(oldMessage?.content, MAX_FIELD_VALUE_LENGTH),
+				value:
+					splitText(oldMessage?.content, MAX_FIELD_VALUE_LENGTH) ??
+					"The old message doesn't have a content.",
 			},
 			{
-				name: 'New content',
-				value: splitText(newMessage?.content, MAX_FIELD_VALUE_LENGTH),
+				name: 'Edited content',
+				value:
+					splitText(newMessage?.content, MAX_FIELD_VALUE_LENGTH) ??
+					"The edited message doesn't have a content.",
+			},
+		])
+		.addFields([
+			{
+				name: 'IDs',
+				value: `\`\`\`ini\nMember = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``,
 			},
 		]);
-	}
-
-	logEmbed.addFields([
-		{
-			name: 'IDs',
-			value: `\`\`\`ini\nChannel = ${channel.id}\nMember = ${
-				newMessage.author.id
-			}\nMessage = ${newMessage.id}\`\`\`${generateDiscordTimestamp(new Date())}`,
-		},
-	]);
 
 	client.config.webhooks.message.send({
 		embeds: [logEmbed],

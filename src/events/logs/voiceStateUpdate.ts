@@ -27,13 +27,13 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				name: newState.member.user.tag,
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
-			.setDescription(`Joined ${newState.channel}`)
+			.setDescription(
+				`Joined ${newState.channel} • ${generateDiscordTimestamp(new Date())}`
+			)
 			.addFields([
 				{
 					name: 'IDs',
-					value: `\`\`\`ini\nChannel = ${newState.channelId}\nMember = ${
-						newState.member.id
-					}\`\`\`${generateDiscordTimestamp(new Date())}`,
+					value: `\`\`\`ini\nMember = ${newState.member.id}\`\`\``,
 				},
 			])
 			.setColor(resolveColor('#9edadb'));
@@ -45,13 +45,11 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				name: newState.member.user.tag,
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
-			.setDescription(`Left ${oldState.channel}`)
+			.setDescription(`Left ${oldState.channel} • ${generateDiscordTimestamp(new Date())}`)
 			.addFields([
 				{
 					name: 'IDs',
-					value: `\`\`\`ini\nChannel = ${oldState.channelId}\nMember = ${
-						oldState.member.id
-					}\`\`\`${generateDiscordTimestamp(new Date())}`,
+					value: `\`\`\`ini\nMember = ${oldState.member.id}\`\`\``,
 				},
 			])
 			.setColor(resolveColor('#d98d84'));
@@ -63,15 +61,15 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				name: newState.member.user.tag,
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
-			.setDescription(`Moved from ${oldState.channel} to ${newState.channel}`)
+			.setDescription(
+				`Moved from ${oldState.channel} to ${
+					newState.channel
+				} • ${generateDiscordTimestamp(new Date())}`
+			)
 			.addFields([
 				{
 					name: 'IDs',
-					value: `\`\`\`ini\nOld-Channel = ${oldState.channelId}\nNew-Channel = ${
-						newState.channelId
-					}\nMember = ${oldState.member.id}\`\`\`${generateDiscordTimestamp(
-						new Date()
-					)}`,
+					value: `\`\`\`ini\nMember = ${oldState.member.id}\`\`\``,
 				},
 			])
 			.setColor(resolveColor('#887fdb'));

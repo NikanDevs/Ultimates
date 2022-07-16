@@ -72,7 +72,11 @@ export default new Event('messageDeleteBulk', async (messages) => {
 		});
 
 		const map = messages.map((msg) => {
-			return [msg.author.tag, '::', msg.content ? msg.content : 'No Content'].join(' ');
+			return [
+				`${msg.author.tag} (${msg.author.id})`,
+				'::',
+				msg.content ? msg.content : 'No Content',
+			].join(' ');
 		});
 
 		const srcbin = await create(
@@ -98,7 +102,7 @@ export default new Event('messageDeleteBulk', async (messages) => {
 		client.config.webhooks.message.editMessage(webHookMsg.id, {
 			embeds: [logEmbed],
 			components: [viewAllRow],
-			content: ' ',
+			content: null,
 		});
 	} else {
 		client.config.webhooks.message.send({ embeds: [logEmbed] });
