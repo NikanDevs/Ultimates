@@ -1,6 +1,7 @@
 import { UltimatesClient } from './structures/Client';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
+require('dotenv').config();
 
 i18next.use(Backend).init({
 	lng: 'en-US',

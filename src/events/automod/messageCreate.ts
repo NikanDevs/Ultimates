@@ -1,6 +1,11 @@
 import { GuildMember, Message, TextChannel } from 'discord.js';
 import { client } from '../..';
-import { automodPunishmentExpiry, AUTOMOD_SPAM_COUNT } from '../../constants';
+import {
+	automodPunishmentExpiry,
+	AUTOMOD_MAX_MENTIONS,
+	AUTOMOD_MAX_MESSAGE_LENGTH,
+	AUTOMOD_SPAM_COUNT,
+} from '../../constants';
 import { Event } from '../../structures/Event';
 import { automodModel } from '../../models/automod';
 import { automodSpamCollection } from '../../constants';
@@ -57,7 +62,7 @@ export default new Event('messageCreate', async (message) => {
 	}
 
 	if (
-		message.content.length > 550 &&
+		message.content.length > AUTOMOD_MAX_MESSAGE_LENGTH &&
 		config.modules.largeMessage &&
 		!getsIgnored('largeMessage')
 	) {
@@ -182,7 +187,7 @@ export default new Event('messageCreate', async (message) => {
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
-		message.mentions?.members.size > 4 &&
+		message.mentions?.members.size > AUTOMOD_MAX_MENTIONS &&
 		config.modules.massMention &&
 		!getsIgnored('massMention')
 	) {

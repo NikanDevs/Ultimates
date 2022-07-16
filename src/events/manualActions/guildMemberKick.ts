@@ -8,7 +8,6 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { createModLog } from '../../functions/logs/createModLog';
 import { t } from 'i18next';
-require('dotenv').config();
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (member.guild.id !== process.env.GUILD_ID) return;

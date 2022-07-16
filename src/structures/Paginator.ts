@@ -134,23 +134,27 @@ export class Paginator {
 			});
 
 		if (this.options.interaction.deferred) {
-			const msg = (await this.options.interaction.followUp({
-				embeds: [newEmbed],
-				components: [this.buildButtons()],
-				ephemeral: this.options.ephemeral,
-			})) as Message;
+			const msg = (await this.options.interaction
+				.followUp({
+					embeds: [newEmbed],
+					components: [this.buildButtons()],
+					ephemeral: this.options.ephemeral,
+				})
+				.catch(() => {})) as Message;
 
 			this.options = {
 				...this.options,
 				target: msg,
 			};
 		} else {
-			const msg = (await this.options.interaction.reply({
-				embeds: [newEmbed],
-				components: [this.buildButtons()],
-				ephemeral: this.options.ephemeral,
-				fetchReply: true,
-			})) as Message;
+			const msg = (await this.options.interaction
+				.reply({
+					embeds: [newEmbed],
+					components: [this.buildButtons()],
+					ephemeral: this.options.ephemeral,
+					fetchReply: true,
+				})
+				.catch(() => {})) as Message;
 
 			this.options = {
 				...this.options,

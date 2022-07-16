@@ -1,5 +1,4 @@
-require('dotenv').config();
-import { Client, Collection, ClientEvents, Partials } from 'discord.js';
+import { Client, Collection, ClientEvents, Partials, GatewayIntentBits } from 'discord.js';
 import { commandType } from '../typings';
 import { glob } from 'glob';
 import { promisify } from 'util';
@@ -21,20 +20,22 @@ export class UltimatesClient extends Client {
 	// Constructor
 	constructor() {
 		super({
-			intents: 131071,
-			partials: [
-				Partials.Channel,
-				Partials.GuildMember,
-				Partials.Message,
-				Partials.Reaction,
-				Partials.User,
-				Partials.GuildScheduledEvent,
-				Partials.ThreadMember,
+			intents: [
+				GatewayIntentBits.Guilds,
+				GatewayIntentBits.GuildBans,
+				GatewayIntentBits.GuildMembers,
+				GatewayIntentBits.GuildVoiceStates, // event:logs:voiceStateUpdate
+				GatewayIntentBits.GuildPresences, // command:userinfo
+				GatewayIntentBits.GuildMessages, // event:automod:messageCreate
+				GatewayIntentBits.GuildMessageTyping, // event:modmail:typingStart
+				GatewayIntentBits.DirectMessages, // event:modmail:messageCreate
+				GatewayIntentBits.DirectMessageTyping, // event:modmail:typingStart
+				GatewayIntentBits.MessageContent, // event:automod:messageCreate
 			],
+			partials: [Partials.Channel, Partials.GuildMember, Partials.Message, Partials.User],
+			failIfNotExists: true,
 			allowedMentions: { repliedUser: false },
-			presence: {
-				status: 'idle',
-			},
+			presence: { status: 'idle' },
 		});
 
 		this.born();

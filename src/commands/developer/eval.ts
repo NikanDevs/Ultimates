@@ -70,7 +70,9 @@ export default new Command({
 								splitText(code, EMBED_DESCRIPTION_MAX_LENGTH - 20)
 							)
 						);
-					modalInteraction.reply({ embeds: [sucessEmbed], ephemeral: silent });
+					modalInteraction
+						.reply({ embeds: [sucessEmbed], ephemeral: silent })
+						.catch(() => {});
 					break;
 				default:
 					const embed = new EmbedBuilder()
@@ -85,10 +87,12 @@ export default new Command({
 							)
 						);
 
-						return modalInteraction.reply({
-							embeds: [embed],
-							ephemeral: silent,
-						});
+						return modalInteraction
+							.reply({
+								embeds: [embed],
+								ephemeral: silent,
+							})
+							.catch(() => {});
 					} else {
 						const split: string[] = evaled.match(/.{1,1935}/g);
 						embed.setDescription('```ts\n${{array}}\n```').setFooter({
@@ -118,7 +122,9 @@ export default new Command({
 					)
 				);
 
-			await modalInteraction.reply({ embeds: [errorEmbed], ephemeral: silent });
+			await modalInteraction
+				.reply({ embeds: [errorEmbed], ephemeral: silent })
+				.catch(() => {});
 		}
 	},
 });

@@ -8,11 +8,6 @@ import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 	if (!logActivity('message')) return;
-
-	if (!oldMessage.author) return;
-	if (!oldMessage.content.length && !oldMessage.attachments.size) return;
-	if (oldMessage.content === newMessage.content) return;
-
 	const channel = newMessage?.channel as TextChannel;
 	const member = newMessage.member as GuildMember;
 
@@ -24,6 +19,10 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 		client.config.ignores.logs.message.roleIds.some((role) => member?.roles?.cache.has(role))
 	)
 		return;
+
+	if (!oldMessage.author) return;
+	if (!oldMessage.content.length && !oldMessage.attachments.size) return;
+	if (oldMessage.content === newMessage.content) return;
 
 	const logEmbed = new EmbedBuilder()
 		.setAuthor({
