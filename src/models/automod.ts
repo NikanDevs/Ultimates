@@ -5,7 +5,7 @@ import type { AutomodSchemaType } from '../typings/models';
 const schema = new Schema({
 	_id: { type: SchemaTypes.String, required: true },
 	case: { type: SchemaTypes.Number, required: true },
-	type: { type: SchemaTypes.Number, required: true },
+	type: { type: SchemaTypes.String, required: true },
 	userId: { type: SchemaTypes.String, required: true },
 	reason: {
 		type: SchemaTypes.String,
