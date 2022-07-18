@@ -18,7 +18,7 @@ export const punishmentExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 90);
 // Collections
 export const verificationCollection = new Collection<string, string | number>();
 export const automodSpamCollection = new Collection<string, number>();
-export const guardCollection = new Collection<GuardCollectionTypes, null>();
+export const guardCollection = new Collection<GuardCollectionTypes, null | string[]>();
 
 // Other constants
 export const EMBED_DESCRIPTION_MAX_LENGTH = 4096;

@@ -1,9 +1,9 @@
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { leftMembersModel } from '../../models/leftMembers';
-import { leftMemberExpiry } from '../../constants';
+import { guardCollection, leftMemberExpiry } from '../../constants';
 import { logActivity } from '../../functions/logs/checkActivity';
-import { EmbedBuilder, resolveColor } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (member.guild.id !== process.env.GUILD_ID) return;
@@ -15,7 +15,7 @@ export default new Event('guildMemberRemove', async (member) => {
 
 	const embed = new EmbedBuilder()
 		.setAuthor({ name: member.guild.name, iconURL: member.guild.iconURL() })
-		.setColor(resolveColor('#b55c4e'))
+		.setColor(client.cc.invisible)
 		.setDescription(
 			[
 				`• **Mention:** ${member}\n`,
@@ -24,12 +24,14 @@ export default new Event('guildMemberRemove', async (member) => {
 				`• **Joined:** <t:${~~(member.joinedTimestamp / 1000)}:R>`,
 				`• **Left:** <t:${~~(Date.now() / 1000)}:R>`,
 				`• **Member Count:** ${member.guild.memberCount}`,
-				'\nThe member has left!',
+				`\nMember Left! ${
+					checkAntiraid(member.id) ? 'Most likely affected by the antiraid.' : ''
+				}`,
 			].join('\n')
 		);
 
 	// Saving the roles if the member has any
-	if (!member.user.bot && roles.length) {
+	if (!member.user.bot && roles.length && !checkAntiraid(member.id)) {
 		new leftMembersModel({
 			userId: member.user.id,
 			roles: roles,
@@ -41,3 +43,11 @@ export default new Event('guildMemberRemove', async (member) => {
 		// Sending the left message
 		client.config.webhooks.servergate?.send({ embeds: [embed] });
 });
+
+function checkAntiraid(id: string): boolean {
+	const antiraidData = guardCollection.get('antiraid');
+	if (!antiraidData) return false;
+	if (!antiraidData.includes(id)) return false;
+
+	return true;
+}

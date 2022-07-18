@@ -82,6 +82,12 @@ export default new Command({
 			)
 			.map((m) => m);
 
+		guardCollection.delete('antiraid');
+		guardCollection.set(
+			'antiraid',
+			filtered.map((m) => m.id)
+		);
+
 		if (!filtered.length) {
 			guardCollection.delete('antiraid');
 			return interaction.followUp({
