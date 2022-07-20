@@ -1,0 +1,32 @@
+- name: 'approved'
+  description: 'The suggestion was approved and accepted'
+  color: '0CC328'
+
+- name: 'bug'
+  description: 'Something is not working as expected'
+  color: 'eb5b5b'
+
+- name: 'denied'
+  description: 'The suggestion was rejected and denied'
+  color: 'f7a79e'
+
+- name: 'high priority'
+  description: 'The issue is important and it needs extra attention'
+  color: '6b0202'
+
+- name: 'in progress'
+  description: 'The issue is in-progress and getting fixed'
+  color: 'adf0dd'
+
+- name: 'invalid'
+  description: 'The issue is not valid and the problem is from the poster'
+  color: 'e6d47a'
+
+- name: 'new feature'
+  description: 'Request a new feature to be added to the project'
+  color: 'c7e67a'
+
+- name: 'question'
+  description: 'Something is not clear enough to understand'
+  color: 'bfd4f2'
+
