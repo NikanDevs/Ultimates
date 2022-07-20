@@ -16,7 +16,6 @@ body:
                  - Events
                  - Structures
                  - Other
-            mutiple: false
        validations:
             required: true
 
@@ -79,11 +78,10 @@ body:
                  - Low
                  - Medium
                  - High
-            mutiple: false
        validations:
             required: true
 
-     - type: checkmark
+     - type: checkboxes
        id: confirm
        attributes:
             label: Are you sure about reporting this bug?
