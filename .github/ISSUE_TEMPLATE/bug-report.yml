@@ -1,0 +1,94 @@
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+
+name: Bug report
+description: Report something that is not working as expected
+labels: [bug]
+body:
+     - type: dropdown
+       id: section
+       attributes:
+            label: What part of the bot is this bug for?
+            options:
+                 - Scripts
+                 - Dependencies
+                 - Database models
+                 - Commands
+                 - Events
+                 - Structures
+                 - Other
+            mutiple: false
+       validations:
+            required: true
+
+     - type: textarea
+       id: description
+       attributes:
+            label: Describe this bug
+            description: |
+                 Describe the bug in as much detail as possible, providing some examples of what you are doing would be great.
+
+                 - You can attach files by dragging them into the area below
+       validations:
+            required: true
+
+     - type: textarea
+       id: steps
+       attributes:
+            label: Steps to Reproduce
+            description: List all the essential actions to make this bug happen. This has to be reproducible every time it's done.
+            placeholder: |
+                 1. Open discord client
+                 2. Use the /ban command from the bot
+                 3. Enter an ID for an user with the system badge for the 'user' option
+       validations:
+            required: true
+
+     - type: textarea
+       id: actual_result
+       attributes:
+            label: Actual Result
+            description: What happens if you follow the steps? (provide any errors in the fields below)
+            placeholder: |
+                 The bot does not respond to the interaction.
+       validations:
+            required: true
+
+     - type: textarea
+       id: expected_result
+       attributes:
+            label: Expected Result
+            description: What should happen if the bug didn't exist?
+            placeholder: |
+                 The bot should ban the user and not throw an error
+       validations:
+            required: true
+
+     - type: textarea
+       id: errors
+       attributes:
+            label: Errors
+            description: Do you get any error in your console? Please provide the full stack here.
+       validations:
+            required: false
+
+     - type: dropdown
+       id: priority
+       attributes:
+            label: What priority does this issue have?
+            options:
+                 - Low
+                 - Medium
+                 - High
+            mutiple: false
+       validations:
+            required: true
+
+     - type: checkmark
+       id: confirm
+       attributes:
+            label: Are you sure about reporting this bug?
+            description: |
+                 Please make sure you have provided everything needed for this bug to be fixed.
+       validations:
+            required: true
+
