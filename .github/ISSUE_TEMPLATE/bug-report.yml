@@ -85,8 +85,6 @@ body:
        id: confirm
        attributes:
             label: Are you sure about reporting this bug?
-            description: |
-                 Please make sure you have provided everything needed for this bug to be fixed.
             options:
                  - label: 'I have provided enough information for this bug to be fixed'
                    required: true
