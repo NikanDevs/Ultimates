@@ -28,41 +28,25 @@ import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
 import { Command } from '../../structures/Command';
 import {
-	type AutomodModules,
 	automodModulesNames,
 	loggingModulesNames,
 	loggingWebhookNames,
 	LoggingModules,
+	automodModulesArray,
 } from '../../typings';
 
 export default new Command({
 	interaction: interactions.configure,
 	excute: async ({ client, interaction, options }) => {
 		const subcommand = options.getSubcommand();
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ ephemeral: false });
 
 		if (subcommand === 'logs') {
 			const module = options.getString('module') as LoggingModules;
-
 			const channel = options.getChannel('channel') as TextChannel;
 			const active = options.getBoolean('active');
-			let newWebhook: Webhook;
-
 			const data = await configModel.findById('logging');
-			if (!data) {
-				const newData = new configModel({
-					_id: 'logging',
-					logging: {
-						mod: { channelId: null, webhook: null, active: false },
-						modmail: { channelId: null, webhook: null, active: false },
-						message: { channelId: null, webhook: null, active: false },
-						servergate: { channelId: null, webhook: null, active: false },
-						error: { channelId: null, webhook: null, active: false },
-						voice: { channelId: null, webhook: null, active: false },
-					},
-				});
-				await newData.save();
-			}
+			let newWebhook: Webhook;
 
 			if (channel && channel?.id !== data.logging[module].channelId) {
 				switch (module) {
@@ -85,7 +69,6 @@ export default new Command({
 				newWebhook = await channel.createWebhook({
 					name: loggingWebhookNames[module],
 					avatar: client.user.displayAvatarURL({ extension: 'png' }),
-					reason: '/configure was excuted.',
 				});
 			}
 			if (module && (channel || active !== null)) {
@@ -113,7 +96,13 @@ export default new Command({
 				await client.config.updateLogs();
 			}
 
-			if (!module) {
+			if (module) {
+				const embed = new EmbedBuilder()
+					.setColor(client.cc.ultimates)
+					.addFields([await formatLogField(module)]);
+
+				await interaction.followUp({ embeds: [embed] });
+			} else if (!module) {
 				const embed = new EmbedBuilder()
 					.setTitle('Logging Configuration')
 					.setColor(client.cc.ultimates)
@@ -124,12 +113,6 @@ export default new Command({
 						await formatLogField('servergate'),
 						await formatLogField('voice'),
 					]);
-
-				await interaction.followUp({ embeds: [embed] });
-			} else {
-				const embed = new EmbedBuilder()
-					.setColor(client.cc.ultimates)
-					.addFields([await formatLogField(module)]);
 
 				await interaction.followUp({ embeds: [embed] });
 			}
@@ -145,106 +128,92 @@ export default new Command({
 					value: data.logging[module].webhook
 						? `${
 								data.logging[module].active
-									? '<:online:886215547249913856>'
-									: '<:offline:906867114126770186>'
+									? client.cc.statuses.online
+									: client.cc.statuses.offline
 						  } • ${channel ? channel : "The logs channel wasn't found."}`
-						: '<:idle:906867112612601866> • This module is not set, yet...',
+						: `${client.cc.statuses.idle} • This module is not set, yet...`,
 				};
 			}
 		} else if (subcommand === 'automod') {
-			const module = options.getString('module') as AutomodModules;
+			const data = await configModel.findById('automod');
 
-			const active = options.getBoolean('active');
-			var data = await configModel.findById('automod');
-			if (!data) {
-				const newData = new configModel({
-					_id: 'automod',
-					filteredWords: [],
-					modules: {
-						badwords: false,
-						invites: false,
-						largeMessage: false,
-						massMention: false,
-						massEmoji: false,
-						spam: false,
-						capitals: false,
-						urls: false,
+			const embed = new EmbedBuilder()
+				.setTitle('Automod Configuration')
+				.setColor(client.cc.ultimates)
+				.setDescription(
+					'Select the auto moderation modules you want to be active on the select-menu. Click the button to add filtered-words to trigger the filtered-words module.'
+				)
+				.addFields([
+					{
+						name: 'Filtered words',
+						value: data.filteredWords.length
+							? splitText(
+									data.filteredWords.map((w) => `\`${w}\``).join(' '),
+									MAX_FIELD_VALUE_LENGTH
+							  )
+							: 'No filtered words',
 					},
-				});
-				await newData.save();
-			}
-			data = await configModel.findById('automod');
-
-			if (module && active !== null) {
-				await configModel.findByIdAndUpdate('automod', {
-					$set: {
-						modules: {
-							...(await configModel.findById('automod')).modules,
-							[module]: active,
-						},
-					},
-				});
-				await client.config.updateAutomod();
-			}
-
-			if (!module) {
-				const embed = new EmbedBuilder()
-					.setTitle('Automod Configuration')
-					.setColor(client.cc.ultimates)
-					.setDescription(
-						[
-							await formatDescription('badwords'),
-							await formatDescription('invites'),
-							await formatDescription('largeMessage'),
-							await formatDescription('massMention'),
-							await formatDescription('massEmoji'),
-							await formatDescription('spam'),
-							await formatDescription('capitals'),
-							await formatDescription('urls'),
-						].join('\n')
-					);
-
-				if (data.filteredWords.length)
-					embed.addFields([
-						{
-							name: 'Filtered Words',
-							value: splitText(
-								data.filteredWords
-									.map((word: string) => word.toLowerCase())
-									.join(', '),
-								MAX_FIELD_VALUE_LENGTH
-							),
-						},
-					]);
-
-				const button = new ActionRowBuilder<ButtonBuilder>().addComponents([
-					new ButtonBuilder()
-						.setLabel('Add filtered words')
-						.setStyle(ButtonStyle.Secondary)
-						.setCustomId('badwords'),
 				]);
 
-				const sentInteraction = (await interaction.followUp({
-					embeds: [embed],
-					components: [button],
-				})) as Message;
+			const selectMenu = new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+				new SelectMenuBuilder()
+					.setCustomId('automod-modules')
+					.setPlaceholder('Select active modules')
+					.setMinValues(0)
+					.setMaxValues(8)
+					.setOptions(
+						automodModulesArray.map((m) => {
+							return {
+								label: m.rewrite,
+								value: m.name,
+								default: client.config.automod.modules[m.name],
+							};
+						})
+					),
+			]);
+			const button = new ActionRowBuilder<ButtonBuilder>().addComponents(
+				new ButtonBuilder()
+					.setLabel('Edit filtered words')
+					.setStyle(ButtonStyle.Secondary)
+					.setCustomId('badwords')
+			);
 
-				const collector = sentInteraction.createMessageComponentCollector({
-					componentType: ComponentType.Button,
-					time: 1000 * 60 * 1,
-				});
+			const sentInteraction = (await interaction.followUp({
+				embeds: [embed],
+				components: [selectMenu, button],
+			})) as Message;
 
-				collector.on('collect', async (collected): Promise<any> => {
-					if (collected.user.id !== interaction.user.id)
-						return collected.reply({
-							content: t('common.errors.cannotInteract'),
-							ephemeral: true,
-						});
-					if (collected.customId !== 'badwords') return;
+			const collector = sentInteraction.createMessageComponentCollector({
+				time: 1000 * 60 * 5,
+			});
 
+			collector.on('collect', async (collected) => {
+				if (collected.user.id !== interaction.user.id) {
+					collected.reply({
+						content: t('common.errors.cannotInteract'),
+						ephemeral: true,
+					});
+					return void null;
+				}
+
+				if (collected.customId === 'automod-modules' && collected.isSelectMenu()) {
+					const restOfModules = (await configModel.findById('automod')).modules;
+					Object.keys(restOfModules).forEach((v) => (restOfModules[v] = false));
+
+					await configModel.findByIdAndUpdate('automod', {
+						$set: {
+							modules: collected.values.reduce(
+								(acc: any, cur) => ({ ...acc, [cur]: true }),
+								restOfModules
+							),
+						},
+					});
+					await client.config.updateAutomod();
+					await collected.deferUpdate();
+				} else if (collected.customId == 'badwords' && collected.isButton()) {
 					const modal = new ModalBuilder()
-						.setTitle('Add filtered words')
-						.setCustomId('add-badwords')
+						.setTitle('Filtered Words')
+						.setCustomId('badwords')
 						.addComponents([
 							{
 								type: ComponentType.ActionRow,
@@ -252,60 +221,32 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'input',
-										label: 'Separate words with commas',
+										label: 'Separate them with commas',
 										style: TextInputStyle.Paragraph,
-										required: true,
+										required: false,
 										max_length: 4000,
-										min_length: 1,
-										placeholder:
-											'badword1, frick, pizza, cake - type an existing word to remove it',
+										min_length: 0,
+										placeholder: 'No filtered words, add some!',
+										value: client.config.automod.filteredWords.length
+											? client.config.automod.filteredWords.join(
+													', '
+											  )
+											: null,
 									},
 								],
 							},
 						]);
 					await collected.showModal(modal);
-					collector.stop();
-				});
+				}
+			});
 
-				collector.on('end', () => {
-					interaction.editReply({ components: [] });
-				});
-			} else {
-				const embed = new EmbedBuilder()
-					.setColor(client.cc.ultimates)
-					.setDescription(await formatDescription(module));
-
-				await interaction.followUp({ embeds: [embed] });
-			}
-
-			// Functions
-			async function formatDescription(module: AutomodModules) {
-				const data = await configModel.findById('automod');
-				return `${
-					data.modules[module]
-						? '<:online:886215547249913856>'
-						: '<:offline:906867114126770186>'
-				} - ${automodModulesNames[module]}`;
-			}
+			collector.on('end', () => {
+				interaction.editReply({ components: [] });
+			});
 		} else if (subcommand === 'general') {
 			const module = options.getString('module');
 			let value = options.getString('value');
-
 			let data = await configModel.findById('general');
-			if (!data) {
-				const newData = new configModel({
-					_id: 'general',
-					ownerId: null,
-					developers: [],
-					guild: {
-						appealLink: null,
-						memberRoleId: null,
-						modmailCategoryId: null,
-					},
-				});
-				await newData.save();
-			}
-			data = await configModel.findById('general');
 
 			if (module && value) {
 				if (module === 'developers') {
@@ -389,35 +330,7 @@ export default new Command({
 		} else if (subcommand === 'moderation') {
 			let module = options.getString('module');
 			const value = options.getString('value');
-
 			let data = await configModel.findById('moderation');
-			if (!data) {
-				const newData = new configModel({
-					_id: 'moderation',
-					count: { automod: 3, timeout1: 2, timeout2: 4, ban: 6 },
-					duration: {
-						timeout1: 60 * 60 * 1000,
-						timeout2: 2 * 60 * 60 * 100,
-						ban: null,
-						automod: 60 * 30 * 1000,
-					},
-					default: {
-						timeout: 60 * 60 * 1000,
-						softban: 60 * 60 * 24 * 30 * 1000,
-						msgs: 0,
-					},
-					reasons: {
-						warn: [],
-						timeout: [],
-						ban: [],
-						softban: [],
-						unban: [],
-						kick: [],
-					},
-				});
-				await newData.save();
-			}
-			data = await configModel.findById('moderation');
 
 			if (module && value) {
 				// Counts
@@ -516,8 +429,8 @@ export default new Command({
 				}
 				await client.config.updateModeration();
 			}
-
 			data = await configModel.findById('moderation');
+
 			const embed = new EmbedBuilder()
 				.setTitle('Moderation Configuration')
 				.setColor(client.cc.ultimates)
@@ -628,34 +541,6 @@ export default new Command({
 					? 'logs'
 					: null
 				: null;
-
-			const data = await configModel.findById('ignores');
-			if (!data) {
-				const newData = new configModel({
-					_id: 'ignores',
-					automod: {
-						badwords: { channelIds: [], roleIds: [] },
-						invites: { channelIds: [], roleIds: [] },
-						largeMessage: { channelIds: [], roleIds: [] },
-						massMention: { channelIds: [], roleIds: [] },
-						massEmoji: { channelIds: [], roleIds: [] },
-						spam: { channelIds: [], roleIds: [] },
-						capitals: { channelIds: [], roleIds: [] },
-						urls: { channelIds: [], roleIds: [] },
-					},
-					logs: {
-						message: {
-							channelIds: [],
-							roleIds: [],
-						},
-						voice: {
-							channelIds: [],
-							roleIds: [],
-						},
-					},
-				});
-				newData.save();
-			}
 
 			if (module && (channel || role)) {
 				const values = (await configModel.findById('ignores'))[target][

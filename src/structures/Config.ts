@@ -259,7 +259,107 @@ export class Config {
 		};
 	}
 
+	private async setSubstances() {
+		const logging = await configModel.findById('logging');
+		const automod = await configModel.findById('automod');
+		const general = await configModel.findById('general');
+		const moderation = await configModel.findById('moderation');
+		const ignores = await configModel.findById('ignores');
+
+		if (!logging)
+			await new configModel({
+				_id: 'logging',
+				logging: {
+					mod: { channelId: null, webhook: null, active: false },
+					modmail: { channelId: null, webhook: null, active: false },
+					message: { channelId: null, webhook: null, active: false },
+					servergate: { channelId: null, webhook: null, active: false },
+					voice: { channelId: null, webhook: null, active: false },
+				},
+			}).save();
+
+		if (!automod)
+			await new configModel({
+				_id: 'automod',
+				filteredWords: [],
+				modules: {
+					badwords: false,
+					invites: false,
+					largeMessage: false,
+					massMention: false,
+					massEmoji: false,
+					spam: false,
+					capitals: false,
+					urls: false,
+				},
+			}).save();
+
+		if (!general)
+			await new configModel({
+				_id: 'general',
+				ownerId: null,
+				developers: [],
+				guild: {
+					appealLink: null,
+					memberRoleId: null,
+					modmailCategoryId: null,
+				},
+			}).save();
+
+		if (!moderation)
+			await new configModel({
+				_id: 'moderation',
+				count: { automod: 3, timeout1: 2, timeout2: 4, ban: 6 },
+				duration: {
+					timeout1: 60 * 60 * 1000,
+					timeout2: 2 * 60 * 60 * 100,
+					ban: null,
+					automod: 60 * 30 * 1000,
+				},
+				default: {
+					timeout: 60 * 60 * 1000,
+					softban: 60 * 60 * 24 * 30 * 1000,
+					msgs: 0,
+				},
+				reasons: {
+					warn: [],
+					timeout: [],
+					ban: [],
+					softban: [],
+					unban: [],
+					kick: [],
+				},
+			}).save();
+
+		if (!ignores)
+			await new configModel({
+				_id: 'ignores',
+				automod: {
+					badwords: { channelIds: [], roleIds: [] },
+					invites: { channelIds: [], roleIds: [] },
+					largeMessage: { channelIds: [], roleIds: [] },
+					massMention: { channelIds: [], roleIds: [] },
+					massEmoji: { channelIds: [], roleIds: [] },
+					spam: { channelIds: [], roleIds: [] },
+					capitals: { channelIds: [], roleIds: [] },
+					urls: { channelIds: [], roleIds: [] },
+				},
+				logs: {
+					message: {
+						channelIds: [],
+						roleIds: [],
+					},
+					voice: {
+						channelIds: [],
+						roleIds: [],
+					},
+				},
+			}).save();
+	}
+
 	public async setConfig() {
+		await this.setSubstances();
+
 		await this.updateLogs();
 		await this.updateAutomod();
 		await this.updateGeneral();

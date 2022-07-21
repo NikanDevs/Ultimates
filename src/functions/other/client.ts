@@ -32,19 +32,19 @@ export const cc = {
 export const clientEmbeds = {
 	success: function (message: string) {
 		const embed = new EmbedBuilder()
-			.setDescription(client.cc.success + ' ' + message)
+			.setDescription(client.cc.success + ' • ' + message)
 			.setColor(resolveColor('#9eea9a'));
 		return embed;
 	},
 	attention: function (message: string) {
 		const embed = new EmbedBuilder()
-			.setDescription(client.cc.attention + ' ' + message)
+			.setDescription(client.cc.attention + ' • ' + message)
 			.setColor(resolveColor('#f0e17c'));
 		return embed;
 	},
 	error: function name(error: string) {
 		const embed = new EmbedBuilder()
-			.setDescription(client.cc.error + ' ' + error)
+			.setDescription(client.cc.error + ' • ' + error)
 			.setColor(Colors.Red);
 		return embed;
 	},

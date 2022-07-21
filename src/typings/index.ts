@@ -60,6 +60,17 @@ export enum automodModulesNames {
 	'urls' = 'Urls and links',
 }
 
+export const automodModulesArray = [
+	{ name: 'badwords', rewrite: 'Filtered words' },
+	{ name: 'invites', rewrite: 'Discord invites' },
+	{ name: 'largeMessage', rewrite: 'Large messages' },
+	{ name: 'massMention', rewrite: 'Mass mentions' },
+	{ name: 'massEmoji', rewrite: 'Mass emoji' },
+	{ name: 'spam', rewrite: 'Spam' },
+	{ name: 'capitals', rewrite: 'Too many capitals' },
+	{ name: 'urls', rewrite: 'Urls and links' },
+];
+
 export enum automodModuleReasons {
 	'badwords' = 'Sending filtered words in the chat.',
 	'invites' = 'Sending discord invite links in the chat.',

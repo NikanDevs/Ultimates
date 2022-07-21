@@ -127,7 +127,6 @@ export class UltimatesClient extends Client {
 				currentCase: 1,
 			});
 			await data.save();
-			logger.info('Set logs substance data', { showDate: false });
 		}
 		if (!modmail) {
 			const data = new modmailModel({
@@ -136,7 +135,6 @@ export class UltimatesClient extends Client {
 				openedTickets: [],
 			});
 			await data.save();
-			logger.info('Set modmail substance data', { showDate: false });
 		}
 	}
 }

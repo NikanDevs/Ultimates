@@ -1,45 +1,44 @@
 import { Colors, EmbedBuilder, InteractionType } from 'discord.js';
 import { client } from '../..';
+import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
+import { splitText } from '../../functions/other/splitText';
 import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (interaction.type !== InteractionType.ModalSubmit) return;
 
-	if (interaction.customId === 'add-badwords') {
-		const words = interaction.fields.getTextInputValue('input');
-		const currentWords = (await configModel.findById('automod')).filteredWords;
-		let removed: number = 0;
-		const input = words
+	if (interaction.customId === 'badwords') {
+		if (!interaction.isFromMessage()) return;
+		const input = interaction.fields.getTextInputValue('input');
+		const newWords = input
 			.split(',')
-			.map((word) => word.trim().toUpperCase())
-			.map((word) => {
-				if (currentWords.includes(word)) {
-					currentWords.splice(currentWords.indexOf(word), 1);
-					word = null;
-					removed++;
-				}
-				return word;
-			})
-			.filter((word) => word);
+			.map((v) => (v.trim().length ? v.trim().toLowerCase() : null))
+			.filter((v) => v);
 
 		await configModel.findByIdAndUpdate('automod', {
 			$set: {
-				filteredWords: currentWords.concat(input),
+				filteredWords: newWords,
 			},
 		});
 		await client.config.updateAutomod();
 
-		await interaction.reply({
+		await interaction.deferUpdate();
+		await interaction.message.edit({
 			embeds: [
-				new EmbedBuilder({
-					description: `Added **${input.length}** and removed **${removed}** words.`,
-					color: Colors.Green,
+				EmbedBuilder.from(interaction.message.embeds[0]).spliceFields(0, 1, {
+					name: 'Filtered words',
+					value: newWords.length
+						? splitText(
+								newWords.map((w) => `\`${w}\``).join(' '),
+								MAX_FIELD_VALUE_LENGTH
+						  )
+						: 'No filtered words',
 				}),
 			],
-			ephemeral: true,
 		});
 	}
+
 	if (interaction.customId.startsWith('add-reason')) {
 		const words = interaction.fields.getTextInputValue('input');
 		const module = interaction.customId.replaceAll('add-reason-', '');
