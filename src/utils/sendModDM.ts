@@ -1,10 +1,4 @@
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	EmbedBuilder,
-	GuildMember,
-} from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember } from 'discord.js';
 import { t } from 'i18next';
 import { client } from '..';
 import { punishmentTypeNames, punismentTypeNamesSuffixes, sendModDMOptions } from '../typings';
@@ -21,9 +15,8 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setTitle(
-			`You were ${punishmentTypeNames[options.action]} ${
-				punismentTypeNamesSuffixes[options.action]
-			} ` + member.guild.name
+			`You were ${punishmentTypeNames[options.action]} ${punismentTypeNamesSuffixes[options.action]} ` +
+				member.guild.name
 		)
 		.setColor(client.cc.invisible)
 		.addFields([
@@ -57,15 +50,12 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 		]);
 
 	const appealButton = new ActionRowBuilder<ButtonBuilder>().addComponents([
-		new ButtonBuilder()
-			.setURL(client.config.general.guild.appealLink)
-			.setStyle(ButtonStyle.Link)
-			.setLabel('Appeal'),
+		new ButtonBuilder().setURL(client.config.general.appealLink).setStyle(ButtonStyle.Link).setLabel('Appeal'),
 	]);
 	let appealComponent: ActionRowBuilder<ButtonBuilder>[] = [];
 	if (
 		(options.action === PunishmentTypes.Ban || options.action === PunishmentTypes.Softban) &&
-		client.config.general.guild.appealLink?.length !== undefined &&
+		client.config.general.appealLink?.length !== undefined &&
 		appeal
 	)
 		appealComponent = [appealButton];

@@ -1,11 +1,4 @@
-import {
-	ChannelType,
-	GuildMember,
-	TextChannel,
-	CategoryChannel,
-	EmbedBuilder,
-	Colors,
-} from 'discord.js';
+import { ChannelType, GuildMember, TextChannel, CategoryChannel, EmbedBuilder, Colors } from 'discord.js';
 import { create } from 'sourcebin';
 import { modmailCooldown } from '../../events/modmail/messageCreate';
 import { getModmailTicket } from '../../functions/cases/modmailCase';
@@ -24,31 +17,24 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const subCommands = options.getSubcommand();
 		const guild =
-			client.guilds.cache.get(process.env.GUILD_ID) ||
-			(await client.guilds.fetch(process.env.GUILD_ID));
+			client.guilds.cache.get(process.env.GUILD_ID) || (await client.guilds.fetch(process.env.GUILD_ID));
 
 		if (subCommands === 'close') {
 			const currentTextChannel = interaction.channel as TextChannel;
 
 			if (
 				currentTextChannel.guildId !== process.env.GUILD_ID ||
-				currentTextChannel.parentId !== client.config.general.guild.modmailCategoryId ||
+				currentTextChannel.parentId !== client.config.general.modmailCategoryId ||
 				currentTextChannel.id === '885266382235795477' ||
 				currentTextChannel.id === '880538350740725850'
 			)
 				return interaction.reply({
-					embeds: [
-						client.embeds.attention(
-							'You should run this command in a ticket channel.'
-						),
-					],
+					embeds: [client.embeds.attention('You should run this command in a ticket channel.')],
 					ephemeral: true,
 				});
 
 			const user = await client.users.fetch(
-				currentTextChannel.topic?.slice(
-					currentTextChannel.topic?.length - client.user.id.length
-				)
+				currentTextChannel.topic?.slice(currentTextChannel.topic?.length - client.user.id.length)
 			);
 			if (!user)
 				return interaction.reply({
@@ -57,28 +43,21 @@ export default new Command({
 				});
 
 			await interaction.deferReply();
-			const userId = currentTextChannel.topic.slice(
-				currentTextChannel.topic.length - client.user.id.length
-			);
+			const userId = currentTextChannel.topic.slice(currentTextChannel.topic.length - client.user.id.length);
 			let fetchMessages = await interaction.channel.messages.fetch({
 				limit: 100,
 			});
 			fetchMessages = fetchMessages.filter(
-				(fetchedMessage) =>
-					!fetchedMessage.author.bot || fetchedMessage.author.id === client.user.id
+				(fetchedMessage) => !fetchedMessage.author.bot || fetchedMessage.author.id === client.user.id
 			);
 
 			let filtered = fetchMessages
 				.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
 				.map((msg) => {
-					if (msg.author.bot && msg.author.id !== client.user.id)
-						return 'LINE_BREAK';
+					if (msg.author.bot && msg.author.id !== client.user.id) return 'LINE_BREAK';
 					if (msg.author.id === client.user.id) {
-						if (!msg.embeds[0]?.author?.url?.endsWith(userId))
-							return 'LINE_BREAK';
-						return `${msg.embeds[0]?.author.name} :: ${
-							msg.embeds[0]?.description || 'No content.'
-						}`;
+						if (!msg.embeds[0]?.author?.url?.endsWith(userId)) return 'LINE_BREAK';
+						return `${msg.embeds[0]?.author.name} :: ${msg.embeds[0]?.description || 'No content.'}`;
 					} else if (!msg.author.bot) {
 						return `${msg?.author?.tag} :: ${msg?.content || 'No content.'}`;
 					}
@@ -113,11 +92,7 @@ export default new Command({
 
 			await interaction
 				.followUp({
-					embeds: [
-						client.embeds.attention(
-							'This ticket is going to be deleted in 10 seconds...'
-						),
-					],
+					embeds: [client.embeds.attention('This ticket is going to be deleted in 10 seconds...')],
 					components: [],
 				})
 				.then(() => {
@@ -160,11 +135,7 @@ export default new Command({
 				blacklistAdd.save();
 
 				await interaction.reply({
-					embeds: [
-						client.embeds.success(
-							`**${user.tag}** was added to the modmail blacklist.`
-						),
-					],
+					embeds: [client.embeds.success(`**${user.tag}** was added to the modmail blacklist.`)],
 					components: [],
 				});
 
@@ -178,11 +149,7 @@ export default new Command({
 				await findData.delete();
 
 				await interaction.reply({
-					embeds: [
-						client.embeds.success(
-							`**${user.tag}** was removed from the modmail blacklist.`
-						),
-					],
+					embeds: [client.embeds.success(`**${user.tag}** was removed from the modmail blacklist.`)],
 					components: [],
 				});
 
@@ -207,30 +174,24 @@ export default new Command({
 			// Checking bot
 			if (member.user.bot)
 				return interaction.reply({
-					embeds: [
-						client.embeds.attention("You can't open modmail threads for bots."),
-					],
+					embeds: [client.embeds.attention("You can't open modmail threads for bots.")],
 					ephemeral: true,
 				});
 
 			// Checking already exists
 			const guildCategory = client.guilds.cache
 				.get(process.env.GUILD_ID)
-				.channels.cache.get(
-					client.config.general.guild.modmailCategoryId
-				) as CategoryChannel;
+				.channels.cache.get(client.config.general.modmailCategoryId) as CategoryChannel;
 			const findExisting = guildCategory.children.cache.find(
 				/* child? sus af */ (child: TextChannel) =>
-					child.topic?.slice(child.topic?.length - client.user.id.length) ===
-					member.id
+					child.topic?.slice(child.topic?.length - client.user.id.length) === member.id
 			);
 
 			if (findExisting)
 				return interaction.reply({
 					embeds: [
 						client.embeds.attention(
-							'Looks like this user already has a ticket opened at ' +
-								findExisting.toString()
+							'Looks like this user already has a ticket opened at ' + findExisting.toString()
 						),
 					],
 					ephemeral: true,
@@ -240,11 +201,7 @@ export default new Command({
 			const data = await modmailModel.findById(member.id);
 			if (data)
 				return interaction.reply({
-					embeds: [
-						client.embeds.attention(
-							`${member.user.tag} is blacklisted from opening modmails.`
-						),
-					],
+					embeds: [client.embeds.attention(`${member.user.tag} is blacklisted from opening modmails.`)],
 					ephemeral: true,
 				});
 
@@ -298,7 +255,7 @@ export default new Command({
 							const threadChannel = await guild.channels.create({
 								name: member.user.username,
 								type: ChannelType.GuildText,
-								parent: client.config.general.guild.modmailCategoryId,
+								parent: client.config.general.modmailCategoryId,
 								topic: `A tunnel to contact **${member.user.username}**, ${interaction.user.username} requested this ticket to be opened using /modmail open | ID: ${member.id}`,
 								reason: `Direct modmail thread opened.`,
 							});
@@ -311,11 +268,7 @@ export default new Command({
 							modmailCooldown.delete(`open_${member.user.id}`);
 
 							await interaction.editReply({
-								embeds: [
-									client.embeds.success(
-										`Thread was created at ${threadChannel}`
-									),
-								],
+								embeds: [client.embeds.success(`Thread was created at ${threadChannel}`)],
 							});
 
 							createModmailLog({
@@ -324,10 +277,7 @@ export default new Command({
 								user: member.user,
 								moderator: interaction.user,
 								ticket: { type: 'DIRECT', channel: threadChannel },
-								reason: splitText(
-									options.getString('reason'),
-									MAX_REASON_LENGTH
-								),
+								reason: splitText(options.getString('reason'), MAX_REASON_LENGTH),
 							});
 							break;
 					}

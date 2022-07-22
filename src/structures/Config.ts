@@ -39,13 +39,10 @@ export class Config {
 
 	/** General data */
 	public general = {
-		ownerId: null as string,
 		developers: [] as string[],
-		guild: {
-			appealLink: null as string,
-			memberRoleId: null as string,
-			modmailCategoryId: null as string,
-		},
+		appealLink: null as string,
+		memberRoleId: null as string,
+		modmailCategoryId: null as string,
 	};
 
 	/** The config for the moderation system. */
@@ -164,13 +161,10 @@ export class Config {
 		if (!data) return;
 
 		this.general = {
-			ownerId: data.ownerId,
 			developers: data.developers,
-			guild: {
-				appealLink: data.guild.appealLink,
-				memberRoleId: data.guild.memberRoleId,
-				modmailCategoryId: data.guild.modmailCategoryId,
-			},
+			appealLink: data.appealLink,
+			memberRoleId: data.memberRoleId,
+			modmailCategoryId: data.modmailCategoryId,
 		};
 	}
 
@@ -297,13 +291,10 @@ export class Config {
 		if (!general)
 			await new configModel({
 				_id: 'general',
-				ownerId: null,
 				developers: [],
-				guild: {
-					appealLink: null,
-					memberRoleId: null,
-					modmailCategoryId: null,
-				},
+				appealLink: null,
+				memberRoleId: null,
+				modmailCategoryId: null,
 			}).save();
 
 		if (!moderation)

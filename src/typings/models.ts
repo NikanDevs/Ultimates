@@ -20,14 +20,10 @@ export type ConfigSchemaType = {
 	_id: configIds;
 
 	// general config
-	ownerId?: string;
 	developers?: string[];
-	guild?: {
-		id?: string;
-		appealLink?: string;
-		memberRoleId?: string | Snowflake;
-		modmailCategoryId?: string | Snowflake;
-	};
+	appealLink: string;
+	memberRoleId: string;
+	modmailCategoryId: string;
 
 	// moderation config
 	count?: {

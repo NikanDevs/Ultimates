@@ -20,20 +20,7 @@ export function ignore(member: GuildMember, options: ignoreFunctionOptions): boo
 	if (interaction.user.id === member.user.id) {
 		interaction.reply({
 			embeds: [
-				client.embeds.error(
-					"You can't perform that action on yourself[.](https://takeb1nzyto.space/)"
-				),
-			],
-			ephemeral: true,
-		});
-		return true;
-	}
-	if (member.id === client.config.general.ownerId) {
-		interaction.reply({
-			embeds: [
-				client.embeds.error(
-					"You don't have permissions to perform an action on the owner."
-				),
+				client.embeds.error("You can't perform that action on yourself[.](https://takeb1nzyto.space/)"),
 			],
 			ephemeral: true,
 		});
@@ -41,17 +28,12 @@ export function ignore(member: GuildMember, options: ignoreFunctionOptions): boo
 	}
 	if (member.roles?.highest.position >= interaction.guild.members.me.roles?.highest.position) {
 		interaction.reply({
-			embeds: [
-				client.embeds.error("I don't have enough permissions to perform this action."),
-			],
+			embeds: [client.embeds.error("I don't have enough permissions to perform this action.")],
 			ephemeral: true,
 		});
 		return true;
 	}
-	if (
-		(action === PunishmentTypes.Ban || action === PunishmentTypes.Softban) &&
-		!member.bannable
-	) {
+	if ((action === PunishmentTypes.Ban || action === PunishmentTypes.Softban) && !member.bannable) {
 		interaction.reply({
 			embeds: [client.embeds.error("This member can't be banned.")],
 			ephemeral: true,
@@ -83,14 +65,9 @@ export function ignore(member: GuildMember, options: ignoreFunctionOptions): boo
 		});
 		return true;
 	}
-	if (
-		(interaction.member as GuildMember).roles.highest.position <=
-		member.roles.highest.position
-	) {
+	if ((interaction.member as GuildMember).roles.highest.position <= member.roles.highest.position) {
 		interaction.reply({
-			embeds: [
-				client.embeds.error('Your position is not high enough to perform this action.'),
-			],
+			embeds: [client.embeds.error('Your position is not high enough to perform this action.')],
 			ephemeral: true,
 		});
 		return true;

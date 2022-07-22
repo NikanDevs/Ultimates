@@ -4,9 +4,10 @@ import type { ConfigSchemaType } from '../typings/models';
 const schema = new Schema({
 	_id: { type: SchemaTypes.String },
 	// general config
-	ownerId: { type: SchemaTypes.String, required: false },
-	developers: { type: Object, required: false },
-	guild: { type: Object, required: false },
+	developers: { type: SchemaTypes.Array, required: false },
+	appealLink: { type: SchemaTypes.String, required: false },
+	memberRoleId: { type: SchemaTypes.String, required: false },
+	modmailCategoryId: { type: SchemaTypes.String, required: false },
 	// moderation config
 	count: { type: Object, required: false },
 	duration: { type: Object, required: false },

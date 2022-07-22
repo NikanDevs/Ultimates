@@ -336,6 +336,33 @@ export enum emojisConfigDefaults {
 	offline = '🔘',
 }
 
+// General config
+
+export type GeneralConfigTypes = 'developers' | 'appealLink' | 'memberRoleId' | 'modmailCategoryId';
+
+export enum generalConfigNames {
+	'developers' = 'Developers',
+	'appealLink' = 'Ban appeal link',
+	'memberRoleId' = 'Member role',
+	'modmailCategoryId' = 'Modmail category',
+}
+
+export const generalConfigArray = [
+	{ name: 'developers', rewrite: 'Developers' },
+	{ name: 'appealLink', rewrite: 'Ban appeal link' },
+	{ name: 'memberRoleId', rewrite: 'Member role' },
+	{ name: 'modmailCategoryId', rewrite: 'Modmail category' },
+];
+
+export enum generalConfigDescriptions {
+	'developers' = 'Developers have permissions to use the `/eval` command.',
+	'appealLink' = 'When a person gets banned from the server, the appeal link gets sent to them.',
+	'memberRoleId' = 'Member role id is used for locking down channels and the verification module.',
+	'modmailCategoryId' = 'Modmail tickets are created under this category.',
+}
+
+export const generalConfigIdType: GeneralConfigTypes[] = ['memberRoleId', 'modmailCategoryId'];
+
 // Other
 
 export interface ignoreFunctionOptions {

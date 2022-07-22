@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ChannelType } from 'discord.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 import { interactionOptions } from '../../typings';
 
 export const configureCommand = {
@@ -22,31 +22,6 @@ export const configureCommand = {
 			name: 'general',
 			description: 'Configure the general config and settings',
 			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'module',
-					description: 'The general module you want to configure',
-					type: ApplicationCommandOptionType.String,
-					required: false,
-					choices: [
-						{ name: 'Owner ID', value: 'ownerId' },
-						{ name: 'Add or remove a developer', value: 'developers' },
-						{ name: 'Server ban appeal link', value: 'guild_appealLink' },
-						{ name: 'Server member role id', value: 'guild_memberRoleId' },
-						{
-							name: 'Server modmail category id',
-							value: 'guild_modmailCategoryId',
-						},
-					],
-				},
-				{
-					name: 'value',
-					description:
-						'The value of this module (developers module will remove if you enter an existing id)',
-					type: ApplicationCommandOptionType.String,
-					required: false,
-				},
-			],
 		},
 		{
 			name: 'moderation',
@@ -88,44 +63,6 @@ export const configureCommand = {
 					name: 'value',
 					description: 'The new value of this module',
 					type: ApplicationCommandOptionType.String,
-					required: false,
-				},
-			],
-		},
-		{
-			name: 'ignores',
-			description: 'Configure the ignore values for diffrent modules',
-			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'module',
-					description: 'The module you want to configure ignores for',
-					type: ApplicationCommandOptionType.String,
-					required: false,
-					choices: [
-						{ name: 'Automod: Filtered words', value: 'automod:badwords' },
-						{ name: 'Automod: Discord invites', value: 'automod:invites' },
-						{ name: 'Automod: Large messages', value: 'automod:largeMessage' },
-						{ name: 'Automod: Mass mentions', value: 'automod:massMention' },
-						{ name: 'Automod: Mass emoji', value: 'automod:massEmoji' },
-						{ name: 'Automod: Spam', value: 'automod:spam' },
-						{ name: 'Automod: Too many capitals', value: 'automod:capitals' },
-						{ name: 'Automod: Urls and links', value: 'automod:urls' },
-						{ name: 'Logging: Message logs', value: 'logs:message' },
-						{ name: 'Logging: Voice logs', value: 'logs:voice' },
-					],
-				},
-				{
-					name: 'channel',
-					description: 'Add or remove a channel to/from the ignore list',
-					type: ApplicationCommandOptionType.Channel,
-					required: false,
-					channel_types: [ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildNews],
-				},
-				{
-					name: 'role',
-					description: 'Add or remove a role to/from the ignore list.',
-					type: ApplicationCommandOptionType.Role,
 					required: false,
 				},
 			],

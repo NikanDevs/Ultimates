@@ -1,12 +1,15 @@
 import { ChannelType, Colors, EmbedBuilder, InteractionType, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
+import { getURL } from '../../functions/automod/isURL';
 import { splitText } from '../../functions/other/splitText';
 import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
 import {
 	automodModuleDescriptions,
 	AutomodModules,
+	generalConfigDescriptions,
+	GeneralConfigTypes,
 	loggingModuleDescriptions,
 	LoggingModules,
 	loggingWebhookNames,
@@ -237,6 +240,90 @@ export default new Event('interactionCreate', async (interaction) => {
 							  }`
 							: '',
 					].join('\n')
+				),
+			],
+		});
+	}
+
+	if (interaction.customId.startsWith('general')) {
+		if (!interaction.isFromMessage()) return;
+		const module = interaction.customId.replace('general:', '') as GeneralConfigTypes;
+		const input = interaction.fields.getTextInputValue('input') || null;
+
+		module === 'developers'
+			? input
+					.split(' ')
+					.map((t) => t.trim())
+					.forEach(async (d) => {
+						await client.users.fetch(d).catch(() => {});
+					})
+			: void null;
+		const developers =
+			module === 'developers'
+				? input
+						.split(' ')
+						.map((t) => t.trim())
+						.map((d) => {
+							if (!client.users.cache.get(d)) d = null;
+							return d;
+						})
+						.filter((e) => e)
+				: null;
+
+		if (module === 'memberRoleId' && input && !interaction.guild.roles.cache.get(input))
+			return interaction.reply({
+				embeds: [client.embeds.error('Please provide a valid role id in this server.')],
+				ephemeral: true,
+			});
+
+		if (
+			module === 'modmailCategoryId' &&
+			input &&
+			(!interaction.guild.channels.cache.get(input) ||
+				interaction.guild.channels.cache.get(input)?.type !== ChannelType.GuildCategory)
+		)
+			return interaction.reply({
+				embeds: [client.embeds.error('Please provide a valid category id in this server.')],
+				ephemeral: true,
+			});
+
+		if (module === 'appealLink' && input && !getURL(input))
+			return interaction.reply({
+				embeds: [client.embeds.error('Please provide a valid url.')],
+				ephemeral: true,
+			});
+
+		await configModel.findByIdAndUpdate('general', {
+			$set: {
+				[module]: module === 'developers' ? developers : input,
+			},
+		});
+		await client.config.updateGeneral();
+		await interaction.deferUpdate();
+		await interaction.message.edit({
+			embeds: [
+				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
+					`${generalConfigDescriptions[module]}\n\n\`Current:\` ${
+						module === 'memberRoleId'
+							? client.config.general.memberRoleId
+								? interaction.guild.roles.cache
+										.get(client.config.general.memberRoleId)
+										?.toString() || client.config.general.memberRoleId
+								: 'None'
+							: module === 'modmailCategoryId'
+							? client.config.general.modmailCategoryId
+								? interaction.guild.channels.cache
+										.get(client.config.general.modmailCategoryId)
+										?.toString() || client.config.general.modmailCategoryId
+								: 'None'
+							: module === 'developers'
+							? client.config.general.developers.length
+								? client.config.general.developers
+										.map((u) => client.users.cache.get(u)?.tag || u)
+										.join(' | ')
+								: 'None'
+							: client.config.general[module] ?? 'None'
+					}`
 				),
 			],
 		});

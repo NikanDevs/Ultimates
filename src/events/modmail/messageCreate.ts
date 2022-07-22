@@ -27,8 +27,7 @@ let canSend: boolean = true;
 
 export default new Event('messageCreate', async (message) => {
 	const guild =
-		client.guilds.cache.get(process.env.GUILD_ID) ||
-		((await client.guilds.fetch(process.env.GUILD_ID)) as Guild);
+		client.guilds.cache.get(process.env.GUILD_ID) || ((await client.guilds.fetch(process.env.GUILD_ID)) as Guild);
 
 	if (!message?.guild && message.channel.type === ChannelType.DM && !message.author?.bot) {
 		// Checking for blacklist
@@ -65,15 +64,11 @@ export default new Event('messageCreate', async (message) => {
 			});
 
 		// Checking for cooldowns
-		const getOpenCooldownRamaining = `${~~(
-			modmailCooldown.get(`open_${message.author.id}`) - Date.now()
-		)}`;
+		const getOpenCooldownRamaining = `${~~(modmailCooldown.get(`open_${message.author.id}`) - Date.now())}`;
 
 		if (modmailCooldown.has(`open_${message.author.id}`))
 			return (message.channel as DMChannel).send({
-				content: `You need to wait **${convertTime(
-					+getOpenCooldownRamaining
-				)}** to open a ticket again.`,
+				content: `You need to wait **${convertTime(+getOpenCooldownRamaining)}** to open a ticket again.`,
 			});
 
 		if (modmailCooldown.has(`send-message_${message.author.id}`)) return;
@@ -81,19 +76,13 @@ export default new Event('messageCreate', async (message) => {
 		const openedThread = guild.channels.cache
 			.filter(
 				(channel) =>
-					channel.parentId === client.config.general.guild.modmailCategoryId &&
+					channel.parentId === client.config.general.modmailCategoryId &&
 					channel.type === ChannelType.GuildText
 			)
-			.find((channel: TextChannel) =>
-				channel?.topic?.endsWith(message.author.id)
-			) as TextChannel;
+			.find((channel: TextChannel) => channel?.topic?.endsWith(message.author.id)) as TextChannel;
 
 		if (openedThread) {
-			if (
-				client.config.automod.filteredWords.some((word) =>
-					message.content.toLowerCase().includes(word)
-				)
-			)
+			if (client.config.automod.filteredWords.some((word) => message.content.toLowerCase().includes(word)))
 				return message.reply({
 					content: "You're not allowed to use this word in modmails.",
 				});
@@ -165,14 +154,8 @@ export default new Event('messageCreate', async (message) => {
 				);
 
 			const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
-				new ButtonBuilder()
-					.setLabel('Create')
-					.setStyle(ButtonStyle.Success)
-					.setCustomId('1'),
-				new ButtonBuilder()
-					.setLabel('Cancel')
-					.setStyle(ButtonStyle.Danger)
-					.setCustomId('2'),
+				new ButtonBuilder().setLabel('Create').setStyle(ButtonStyle.Success).setCustomId('1'),
+				new ButtonBuilder().setLabel('Cancel').setStyle(ButtonStyle.Danger).setCustomId('2'),
 			]);
 
 			let msg = await (message.channel as DMChannel).send({
@@ -209,7 +192,7 @@ export default new Event('messageCreate', async (message) => {
 						const threadChannel = await guild.channels.create({
 							name: message.author.username,
 							type: ChannelType.GuildText,
-							parent: client.config.general.guild.modmailCategoryId,
+							parent: client.config.general.modmailCategoryId,
 							topic: `A tunnel to contact **${message.author.username}**, they requested this ticket to be opened through DMs. | ID: ${message.author.id}`,
 							reason: `Modmail ticket open request.`,
 						});
@@ -257,7 +240,7 @@ export default new Event('messageCreate', async (message) => {
 		message?.guild &&
 		message.channel.type === ChannelType.GuildText &&
 		!message.author?.bot &&
-		message.channel.parentId === client.config.general.guild.modmailCategoryId
+		message.channel.parentId === client.config.general.modmailCategoryId
 	) {
 		const channelTopic = (message.channel as TextChannel).topic;
 		const usersThread = guild.members.cache.find(

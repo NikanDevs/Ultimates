@@ -1,12 +1,6 @@
 import { Event } from '../../structures/Event';
 import { client } from '../..';
-import {
-	CommandInteractionOptionResolver,
-	GuildMember,
-	Collection,
-	EmbedBuilder,
-	Colors,
-} from 'discord.js';
+import { CommandInteractionOptionResolver, GuildMember, Collection, EmbedBuilder, Colors } from 'discord.js';
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
 import { convertTime } from '../../functions/convertTime';
@@ -22,11 +16,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		if (!command)
 			return interaction.reply({
-				embeds: [
-					client.embeds.error(
-						`No commands were found matching \`/${interaction.commandName}\``
-					),
-				],
+				embeds: [client.embeds.error(`No commands were found matching \`/${interaction.commandName}\``)],
 				ephemeral: true,
 			});
 
@@ -37,14 +27,9 @@ export default new Event('interactionCreate', async (interaction) => {
 			return;
 
 		// Permission Check
-		if (
-			command.interaction.permission?.some((perm) => !member.permissions.has(perm)) &&
-			interaction.user.id !== client.config.general.ownerId
-		)
+		if (command.interaction.permission?.some((perm) => !member.permissions.has(perm)))
 			return interaction.reply({
-				embeds: [
-					client.embeds.attention("You don't have permissions to use this command."),
-				],
+				embeds: [client.embeds.attention("You don't have permissions to use this command.")],
 				ephemeral: true,
 			});
 
@@ -55,22 +40,14 @@ export default new Event('interactionCreate', async (interaction) => {
 			)}`;
 			const cooldownEmbed = new EmbedBuilder()
 				.setColor(Colors.Red)
-				.setDescription(
-					`You need to wait \`${convertTime(
-						~~+cooldownRemaining
-					)}\` to use this command.`
-				);
+				.setDescription(`You need to wait \`${convertTime(~~+cooldownRemaining)}\` to use this command.`);
 
 			return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
 		}
 
 		if (command.interaction.directory !== 'developer' && connection.readyState !== 1) {
 			interaction.reply({
-				embeds: [
-					client.embeds.attention(
-						'MongoDB is not connected properly, please contact a developer.'
-					),
-				],
+				embeds: [client.embeds.attention('MongoDB is not connected properly, please contact a developer.')],
 				ephemeral: true,
 			});
 			return logger.warn({
@@ -78,9 +55,9 @@ export default new Event('interactionCreate', async (interaction) => {
 				reason: {
 					name: 'MongoDB',
 					message: 'Mongoose database is not connected properly',
-					stack: `Current ready state: ${
-						connection.readyState
-					}\nCurrent ready status: ${ConnectionStates[connection.readyState]}`,
+					stack: `Current ready state: ${connection.readyState}\nCurrent ready status: ${
+						ConnectionStates[connection.readyState]
+					}`,
 				},
 			});
 		}
@@ -98,11 +75,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				})
 			);
 
-		if (
-			command.interaction.cooldown &&
-			!client.config.general.developers.includes(interaction.user.id) &&
-			client.config.general.ownerId !== interaction.user.id
-		) {
+		if (command.interaction.cooldown && !client.config.general.developers.includes(interaction.user.id)) {
 			cooldown.set(
 				`${command.interaction.name}${interaction.user.id}`,
 				Date.now() + command.interaction.cooldown

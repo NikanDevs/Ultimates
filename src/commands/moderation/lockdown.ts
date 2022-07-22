@@ -8,11 +8,10 @@ export default new Command({
 	excute: async ({ client, interaction, options }) => {
 		const getSubCommand = options.getSubcommand() as 'channel' | 'server';
 		const reason = options.getString('reason');
-		const role = client.config.general.guild.memberRoleId ?? interaction.guild.roles.everyone;
+		const role = client.config.general.memberRoleId ?? interaction.guild.roles.everyone;
 
 		if (getSubCommand === 'channel') {
-			const channel = (options.getChannel('channel') ||
-				interaction.channel) as GuildChannel;
+			const channel = (options.getChannel('channel') || interaction.channel) as GuildChannel;
 			const alreadyLocked = channel
 				.permissionsFor(role)
 				.toArray()
@@ -60,32 +59,20 @@ export default new Command({
 					break;
 				default:
 					return interaction.reply({
-						embeds: [
-							client.embeds.attention(
-								'You can only lock text, voice and stage channels.'
-							),
-						],
+						embeds: [client.embeds.attention('You can only lock text, voice and stage channels.')],
 						ephemeral: true,
 					});
 			}
 
 			await interaction.reply({
-				embeds: [
-					client.embeds.success(
-						`${channel} was ${!alreadyLocked ? 'locked' : 'unlocked'}.`
-					),
-				],
+				embeds: [client.embeds.success(`${channel} was ${!alreadyLocked ? 'locked' : 'unlocked'}.`)],
 			});
 
 			(channel as TextChannel).send({ embeds: [embed] });
 		} else if (getSubCommand === 'server') {
 			if (guardCollection.has('lockdown'))
 				return interaction.reply({
-					embeds: [
-						client.embeds.attention(
-							'The server is already locking down, please wait...'
-						),
-					],
+					embeds: [client.embeds.attention('The server is already locking down, please wait...')],
 					ephemeral: true,
 				});
 
@@ -117,9 +104,7 @@ export default new Command({
 				)
 				.filter((ch) => ch.permissionsFor(role).toArray().includes('ViewChannel'))
 				.filter((ch) =>
-					!alreadyLocked
-						? ch.permissionsFor(role).toArray().includes('SendMessages')
-						: true
+					!alreadyLocked ? ch.permissionsFor(role).toArray().includes('SendMessages') : true
 				)
 				.forEach(async (ch) => {
 					switch (ch.type) {
@@ -167,9 +152,7 @@ export default new Command({
 			await interaction.followUp({
 				embeds: [
 					client.embeds.success(
-						`${interaction.guild.name} was ${
-							!alreadyLocked ? 'locked' : 'unlocked'
-						}.`
+						`${interaction.guild.name} was ${!alreadyLocked ? 'locked' : 'unlocked'}.`
 					),
 				],
 			});

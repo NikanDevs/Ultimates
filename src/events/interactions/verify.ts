@@ -30,21 +30,15 @@ export default new Event('interactionCreate', async (interaction) => {
 				.setColor(Colors.Green)
 				.setDescription('Congrats! You were verified in the server.');
 
-			(interaction.member as GuildMember).roles.add(
-				client.config.general.guild.memberRoleId
-			);
+			(interaction.member as GuildMember).roles.add(client.config.general.memberRoleId);
 
 			interaction.reply({ embeds: [verifedEmbed], ephemeral: true });
 			verificationCollection.delete('cooldown-' + interaction.user.id);
 			verificationCollection.delete('modal-' + interaction.user.id);
-		} else if (
-			getValue.toString() !== verificationCollection.get('modal-' + interaction.user.id)
-		) {
+		} else if (getValue.toString() !== verificationCollection.get('modal-' + interaction.user.id)) {
 			const deniedEmbed = new EmbedBuilder()
 				.setColor(Colors.Red)
-				.setDescription(
-					"Whoops, your answer wasn't correct. Try again to get verified."
-				);
+				.setDescription("Whoops, your answer wasn't correct. Try again to get verified.");
 
 			interaction.reply({ embeds: [deniedEmbed], ephemeral: true });
 		}
@@ -54,33 +48,25 @@ export default new Event('interactionCreate', async (interaction) => {
 	// Verify Button
 	if (!interaction.isButton()) return;
 	if ((interaction as ButtonInteraction).customId !== 'verify') return;
-	if (!interaction.guild.roles.cache.get(client.config.general.guild.memberRoleId))
+	if (!interaction.guild.roles.cache.get(client.config.general.memberRoleId))
 		return interaction.reply({
 			content: "Member role wasn't found, please contact a staff member!",
 			ephemeral: true,
 		});
-	if (
-		(interaction.member as GuildMember).roles.cache.has(
-			client.config.general.guild.memberRoleId
-		)
-	)
+	if ((interaction.member as GuildMember).roles.cache.has(client.config.general.memberRoleId))
 		return interaction.reply({
 			content: "You're already verified into the server!",
 			ephemeral: true,
 		});
 
 	// Verificaton Cooldown
-	const cooldownRemaining = `${~~(
-		+verificationCollection.get('cooldown-' + interaction.user.id) - Date.now()
-	)}`;
+	const cooldownRemaining = `${~~(+verificationCollection.get('cooldown-' + interaction.user.id) - Date.now())}`;
 	if (verificationCollection.has('cooldown-' + interaction.user.id))
 		return interaction.reply({
 			embeds: [
 				new EmbedBuilder()
 					.setDescription(
-						`Please wait **${convertTime(
-							~~+cooldownRemaining
-						)}** before trying to verify again.`
+						`Please wait **${convertTime(~~+cooldownRemaining)}** before trying to verify again.`
 					)
 					.setColor(Colors.Yellow),
 			],
@@ -147,14 +133,8 @@ export default new Event('interactionCreate', async (interaction) => {
 			.setColor(client.cc.invisible);
 
 		const buttonComponent = new ActionRowBuilder<ButtonBuilder>().addComponents([
-			new ButtonBuilder()
-				.setCustomId('verify-1')
-				.setLabel('Matching')
-				.setStyle(ButtonStyle.Success),
-			new ButtonBuilder()
-				.setCustomId('verify-2')
-				.setLabel('Not Matching')
-				.setStyle(ButtonStyle.Danger),
+			new ButtonBuilder().setCustomId('verify-1').setLabel('Matching').setStyle(ButtonStyle.Success),
+			new ButtonBuilder().setCustomId('verify-2').setLabel('Not Matching').setStyle(ButtonStyle.Danger),
 		]);
 
 		const msg = (await interaction.followUp({
@@ -182,22 +162,13 @@ export default new Event('interactionCreate', async (interaction) => {
 					.setColor(Colors.Green)
 					.setDescription('Congrats! You were verified in the server.');
 
-				if (
-					!interaction.guild.roles.cache.get(
-						client.config.general.guild.memberRoleId
-					)
-				)
-					return;
-				(interaction.member as GuildMember).roles.add(
-					client.config.general.guild.memberRoleId
-				);
+				if (!interaction.guild.roles.cache.get(client.config.general.memberRoleId)) return;
+				(interaction.member as GuildMember).roles.add(client.config.general.memberRoleId);
 				interaction.editReply({ embeds: [verifedEmbed], components: [] });
 			} else {
 				const deniedEmbed = new EmbedBuilder()
 					.setColor(Colors.Red)
-					.setDescription(
-						"Whoops, your answer wasn't correct. Try again to get verified."
-					);
+					.setDescription("Whoops, your answer wasn't correct. Try again to get verified.");
 
 				interaction.editReply({ embeds: [deniedEmbed], components: [] });
 			}

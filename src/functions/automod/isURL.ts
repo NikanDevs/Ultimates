@@ -5,3 +5,12 @@ export function isURL(str: string) {
 	return res !== null;
 }
 
+export function getURL(str: string) {
+	var res = str.match(
+		/(?:https?:\/\/)(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*/gi
+	);
+
+	if (!res) return null;
+	return res[0];
+}
+

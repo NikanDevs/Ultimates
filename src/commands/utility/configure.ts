@@ -34,6 +34,11 @@ import {
 	supportedLoggingIgnores,
 	loggingModulesArray,
 	loggingModuleDescriptions,
+	GeneralConfigTypes,
+	generalConfigNames,
+	generalConfigDescriptions,
+	generalConfigArray,
+	generalConfigIdType,
 } from '../../typings';
 
 export default new Command({
@@ -500,81 +505,127 @@ export default new Command({
 				interaction.editReply({ components: [] });
 			});
 		} else if (subcommand === 'general') {
-			const module = options.getString('module');
-			let value = options.getString('value');
-			let data = await configModel.findById('general');
-
-			if (module && value) {
-				if (module === 'developers') {
-					const currentDevs = (await configModel.findById('general')).developers;
-					if (currentDevs.includes(value)) {
-						currentDevs.splice(currentDevs.indexOf(value));
-						value = 'null';
-					}
-					await configModel.findByIdAndUpdate('general', {
-						$set: {
-							developers: currentDevs.concat([value].filter((value) => value !== 'null')),
-						},
-					});
-				} else if (module.startsWith('guild')) {
-					await configModel.findByIdAndUpdate('general', {
-						$set: {
-							guild: {
-								...(await configModel.findById('general')).guild,
-								[module.replaceAll('guild_', '')]: value,
-							},
-						},
-					});
-				} else {
-					await configModel.findByIdAndUpdate('general', {
-						$set: {
-							[module]: value,
-						},
-					});
-				}
-				await client.config.updateGeneral();
-			}
-			data = await configModel.findById('general');
-
+			const preSelected: GeneralConfigTypes = 'developers';
 			const embed = new EmbedBuilder()
-				.setTitle('General Configuration')
-				.setColor(client.cc.ultimates)
+				.setTitle(generalConfigNames[preSelected])
+				.setColor(client.cc.invisible)
 				.setDescription(
-					[
-						// `• ${Formatters.bold('Owner')} - ${
-						// 	(await client.users.fetch(data.ownerId).catch(() => {})) || '✖︎'
-						// }`,
-						`• ${Formatters.bold('Appeal Link')} - ${data.guild.appealLink || '✖︎'}`,
-						`• ${Formatters.bold('Member Role')} - ${
-							data.guild.memberRoleId
-								? await interaction.guild.roles.fetch(data.guild.memberRoleId).catch(() => {})
-								: '✖︎'
-						}`,
-						`• ${Formatters.bold('Modmail Category')} - ${
-							data.guild.modmailCategoryId
-								? await interaction.guild.channels
-										.fetch(data.guild.modmailCategoryId)
-										.catch(() => {})
-								: '✖︎'
-						}`,
-						`• ${Formatters.bold('Developers')} - ${
-							data.developers.length
-								? data.developers
-										.map(
-											(dev) =>
-												`${
-													client.users.cache.get(dev)?.tag === undefined
-														? `Not found, ID: ${dev}`
-														: client.users.cache.get(dev)?.tag
-												}`
-										)
-										.join(' `|` ')
-								: 'No developers.'
-						}`,
-					].join('\n')
+					`${generalConfigDescriptions[preSelected]}\n\n\`Current:\` ${
+						client.config.general[preSelected].length
+							? client.config.general[preSelected]
+									.map((d) => client.users.cache.get(d)?.tag || d)
+									.join(' ')
+							: 'None'
+					}`
 				);
 
-			await interaction.followUp({ embeds: [embed] });
+			const selectMenu = (module: GeneralConfigTypes) => {
+				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+					new SelectMenuBuilder().setCustomId('general:modules').setOptions(
+						generalConfigArray.map((m) => {
+							return {
+								label: m.rewrite,
+								value: m.name,
+								default: m.name === module,
+							};
+						})
+					),
+				]);
+			};
+
+			const buttonComponents = (module: GeneralConfigTypes) => {
+				return new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder()
+						.setLabel('Edit')
+						.setStyle(ButtonStyle.Secondary)
+						.setCustomId(`general:${module}`)
+				);
+			};
+
+			const sentInteraction = (await interaction.followUp({
+				embeds: [embed],
+				components: [selectMenu(preSelected), buttonComponents(preSelected)],
+			})) as Message;
+
+			const collector = sentInteraction.createMessageComponentCollector({
+				time: 1000 * 60 * 5,
+			});
+
+			collector.on('collect', async (collected) => {
+				if (collected.user.id !== interaction.user.id) {
+					collected.reply({
+						content: t('common.errors.cannotInteract'),
+						ephemeral: true,
+					});
+					return void null;
+				}
+
+				if (collected.customId === 'general:modules' && collected.isSelectMenu()) {
+					const selectedModule = collected.values[0] as GeneralConfigTypes;
+					const embed = new EmbedBuilder()
+						.setTitle(generalConfigNames[selectedModule])
+						.setColor(client.cc.invisible)
+						.setDescription(
+							`${generalConfigDescriptions[selectedModule]}\n\n\`Current:\` ${
+								selectedModule === 'memberRoleId'
+									? client.config.general.memberRoleId
+										? interaction.guild.roles.cache
+												.get(client.config.general.memberRoleId)
+												?.toString() || client.config.general.memberRoleId
+										: 'None'
+									: selectedModule === 'modmailCategoryId'
+									? client.config.general.modmailCategoryId
+										? interaction.guild.channels.cache
+												.get(client.config.general.modmailCategoryId)
+												?.toString() || client.config.general.modmailCategoryId
+										: 'None'
+									: selectedModule === 'developers'
+									? client.config.general.developers.length
+										? client.config.general.developers
+												.map((u) => client.users.cache.get(u)?.tag || u)
+												.join(' | ')
+										: 'None'
+									: client.config.general[selectedModule] ?? 'None'
+							}`
+						);
+
+					await collected.update({
+						embeds: [embed],
+						components: [selectMenu(selectedModule), buttonComponents(selectedModule)],
+					});
+				} else if (collected.customId.startsWith('general:')) {
+					const module = collected.customId.replace('general:', '') as GeneralConfigTypes;
+					const modal = new ModalBuilder()
+						.setTitle(`${generalConfigNames[module]}`)
+						.setCustomId(`general:${module}`)
+						.addComponents([
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'input',
+										label:
+											generalConfigNames[module] +
+											`${module === 'developers' ? ' (separate with spaces)' : ''}`,
+										style: generalConfigIdType.includes(module)
+											? TextInputStyle.Short
+											: TextInputStyle.Paragraph,
+										required: false,
+										max_length: generalConfigIdType.includes(module) ? 18 : 400,
+										min_length: generalConfigIdType.includes(module) ? 18 : 0,
+										placeholder: 'LLLpo',
+										value:
+											module === 'developers'
+												? client.config.general[module].join(' ')
+												: client.config.general[module],
+									},
+								],
+							},
+						]);
+					await collected.showModal(modal);
+				}
+			});
 		} else if (subcommand === 'moderation') {
 			let module = options.getString('module');
 			const value = options.getString('value');
