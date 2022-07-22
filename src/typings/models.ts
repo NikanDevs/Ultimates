@@ -75,7 +75,6 @@ export type ConfigSchemaType = {
 		modmail?: { channelId?: string; webhook?: string; active?: boolean };
 		message?: { channelId?: string; webhook?: string; active?: boolean };
 		servergate?: { channelId?: string; webhook?: string; active?: boolean };
-		error?: { channelId?: string; webhook?: string; active?: boolean };
 		voice?: { channelId?: string; webhook?: string; active?: boolean };
 	};
 

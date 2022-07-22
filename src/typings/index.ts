@@ -82,16 +82,37 @@ export enum automodModuleReasons {
 	'urls' = 'Sending links and urls.',
 }
 
+export enum automodModuleDescriptions {
+	'badwords' = 'Gets triggered when a filtered-word gets sent in a channel. Click the button below to edit filtered-words.',
+	'invites' = 'Gets triggered when a discord server invite gets sent in a channel.',
+	'largeMessage' = 'Gets triggered when a very large message in content gets sent in a channel.',
+	'massMention' = `Gets triggered when a person @mentions more than 4 people in a channel.`,
+	'massEmoji' = 'Gets triggered when a person uses too many emojis in a single message.',
+	'spam' = 'Gets triggered when a person sends message too quickly in a channel.',
+	'capitals' = 'Gets triggered when a person uses too manu capital letters in a single message.',
+	'urls' = 'Gets triggered when a person sends a link of any type in the chat.',
+}
+
 // Logging system and modules typings
 
 export type LoggingModules = 'mod' | 'message' | 'modmail' | 'servergate' | 'voice';
 
+export const supportedLoggingIgnores: LoggingModules[] = ['message', 'voice'];
+
+export const loggingModulesArray = [
+	{ name: 'mod', rewrite: 'Moderation logging' },
+	{ name: 'message', rewrite: 'Message logging' },
+	{ name: 'modmail', rewrite: 'Modmail logging' },
+	{ name: 'servergate', rewrite: 'Joins and leaves' },
+	{ name: 'voice', rewrite: 'Voice state updates' },
+];
+
 export enum loggingModulesNames {
-	'mod' = 'Moderation Logging',
-	'message' = 'Message Logging',
-	'modmail' = 'Modmail Logging',
-	'servergate' = 'Joins and Leaves',
-	'voice' = 'Voice State Updates',
+	'mod' = 'Moderation logging',
+	'message' = 'Message logging',
+	'modmail' = 'Modmail logging',
+	'servergate' = 'Joins and leaves',
+	'voice' = 'Voice state updates',
 }
 
 export enum loggingWebhookNames {
@@ -100,6 +121,14 @@ export enum loggingWebhookNames {
 	'modmail' = 'Modmail-Logs',
 	'servergate' = 'Server-Gate',
 	'voice' = 'Voice-Logs',
+}
+
+export enum loggingModuleDescriptions {
+	'mod' = 'Sends all the moderation cases when a punishment is recorded.',
+	'message' = 'Sends logs when a message was deleted, edited, or when a channel was purged.',
+	'modmail' = 'Sends logs when someone creates, deletes a ticket, or when someone gets blacklisted.',
+	'servergate' = 'Sends logs when someone joins or leaves the server.',
+	'voice' = 'Sends logs when someone joins or leaves a voice channel.',
 }
 
 // Logger
@@ -251,10 +280,7 @@ export interface createModmailLogOptions {
 
 // Paginator
 
-export type PaginatorInteractionTypes =
-	| CommandInteraction
-	| UserContextMenuCommandInteraction
-	| ModalSubmitInteraction;
+export type PaginatorInteractionTypes = CommandInteraction | UserContextMenuCommandInteraction | ModalSubmitInteraction;
 
 export interface paginatorOptions {
 	array: any[];

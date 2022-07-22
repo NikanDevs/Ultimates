@@ -1,6 +1,5 @@
 import {
 	ActionRowBuilder,
-	APIEmbedField,
 	ButtonBuilder,
 	ButtonStyle,
 	ComponentType,
@@ -9,9 +8,7 @@ import {
 	Message,
 	ModalBuilder,
 	SelectMenuBuilder,
-	TextChannel,
 	TextInputStyle,
-	Webhook,
 } from 'discord.js';
 import { t } from 'i18next';
 import {
@@ -30,9 +27,13 @@ import { Command } from '../../structures/Command';
 import {
 	automodModulesNames,
 	loggingModulesNames,
-	loggingWebhookNames,
 	LoggingModules,
 	automodModulesArray,
+	AutomodModules,
+	automodModuleDescriptions,
+	supportedLoggingIgnores,
+	loggingModulesArray,
+	loggingModuleDescriptions,
 } from '../../typings';
 
 export default new Command({
@@ -42,145 +43,83 @@ export default new Command({
 		await interaction.deferReply({ ephemeral: false });
 
 		if (subcommand === 'logs') {
-			const module = options.getString('module') as LoggingModules;
-			const channel = options.getChannel('channel') as TextChannel;
-			const active = options.getBoolean('active');
+			const preSelected: LoggingModules = 'mod';
 			const data = await configModel.findById('logging');
-			let newWebhook: Webhook;
-
-			if (channel && channel?.id !== data.logging[module].channelId) {
-				switch (module) {
-					case 'mod':
-						await client.config.webhooks.mod?.delete().catch(() => {});
-						break;
-					case 'message':
-						await client.config.webhooks.message?.delete().catch(() => {});
-						break;
-					case 'modmail':
-						await client.config.webhooks.modmail?.delete().catch(() => {});
-						break;
-					case 'servergate':
-						await client.config.webhooks.servergate?.delete().catch(() => {});
-						break;
-					case 'voice':
-						await client.config.webhooks.voice?.delete().catch(() => {});
-						break;
-				}
-				newWebhook = await channel.createWebhook({
-					name: loggingWebhookNames[module],
-					avatar: client.user.displayAvatarURL({ extension: 'png' }),
-				});
-			}
-			if (module && (channel || active !== null)) {
-				await configModel.findByIdAndUpdate('logging', {
-					$set: {
-						logging: {
-							...(await configModel.findById('logging')).logging,
-							[module]: {
-								channelId: channel
-									? channel.id === data.logging[module].channelId
-										? data.logging[module].channelId
-										: channel.id
-									: data.logging[module].channelId,
-								webhook: channel
-									? channel.id === data.logging[module].channelId
-										? data.logging[module].webhook
-										: newWebhook.url
-									: data.logging[module].webhook,
-								active:
-									active === null ? data.logging[module].active : active,
-							},
-						},
-					},
-				});
-				await client.config.updateLogs();
-			}
-
-			if (module) {
-				const embed = new EmbedBuilder()
-					.setColor(client.cc.ultimates)
-					.addFields([await formatLogField(module)]);
-
-				await interaction.followUp({ embeds: [embed] });
-			} else if (!module) {
-				const embed = new EmbedBuilder()
-					.setTitle('Logging Configuration')
-					.setColor(client.cc.ultimates)
-					.addFields([
-						await formatLogField('mod'),
-						await formatLogField('message'),
-						await formatLogField('modmail'),
-						await formatLogField('servergate'),
-						await formatLogField('voice'),
-					]);
-
-				await interaction.followUp({ embeds: [embed] });
-			}
-
-			// Functions
-			async function formatLogField(module: LoggingModules) {
-				const data = await configModel.findById('logging');
-				let channel = (await client.channels
-					.fetch(data.logging[module].channelId)
-					.catch(() => {})) as TextChannel;
-				return {
-					name: loggingModulesNames[module],
-					value: data.logging[module].webhook
-						? `${
-								data.logging[module].active
-									? client.cc.statuses.online
-									: client.cc.statuses.offline
-						  } • ${channel ? channel : "The logs channel wasn't found."}`
-						: `${client.cc.statuses.idle} • This module is not set, yet...`,
-				};
-			}
-		} else if (subcommand === 'automod') {
-			const data = await configModel.findById('automod');
 
 			const embed = new EmbedBuilder()
-				.setTitle('Automod Configuration')
-				.setColor(client.cc.ultimates)
+				.setTitle(loggingModulesNames[preSelected])
+				.setColor(client.cc.invisible)
 				.setDescription(
-					'Select the auto moderation modules you want to be active on the select-menu. Click the button to add filtered-words to trigger the filtered-words module.'
-				)
-				.addFields([
-					{
-						name: 'Filtered words',
-						value: data.filteredWords.length
-							? splitText(
-									data.filteredWords.map((w) => `\`${w}\``).join(' '),
-									MAX_FIELD_VALUE_LENGTH
-							  )
-							: 'No filtered words',
-					},
-				]);
+					[
+						`${loggingModuleDescriptions[preSelected]}\n`,
+						`\`Channel:\` ${
+							data.logging[preSelected].channelId
+								? interaction.guild.channels.cache.get(data.logging[preSelected].channelId) ||
+								  data.logging[preSelected].channelId
+								: 'None'
+						}\n`,
+						supportedLoggingIgnores.includes(preSelected)
+							? `\`Ignores:\`${
+									client.config.ignores.logs[preSelected].channelIds.concat(
+										client.config.ignores.logs[preSelected].roleIds
+									).length
+										? `${client.config.ignores.logs[preSelected].channelIds.map(
+												(c: string) =>
+													interaction.guild.channels.cache.get(c).toString()
+										  )} ${client.config.ignores.logs[preSelected].roleIds.map(
+												(c: string) =>
+													interaction.guild.roles.cache.get(c).toString()
+										  )}`
+										: ' No ignores found'
+							  }`
+							: '',
+					].join('\n')
+				);
 
-			const selectMenu = new ActionRowBuilder<SelectMenuBuilder>().addComponents([
-				new SelectMenuBuilder()
-					.setCustomId('automod-modules')
-					.setPlaceholder('Select active modules')
-					.setMinValues(0)
-					.setMaxValues(8)
-					.setOptions(
-						automodModulesArray.map((m) => {
+			const selectMenu = (module: LoggingModules) => {
+				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+					new SelectMenuBuilder().setCustomId('logging:modules').setOptions(
+						loggingModulesArray.map((m) => {
 							return {
 								label: m.rewrite,
 								value: m.name,
-								default: client.config.automod.modules[m.name],
+								default: m.name === module,
 							};
 						})
 					),
-			]);
-			const button = new ActionRowBuilder<ButtonBuilder>().addComponents(
-				new ButtonBuilder()
-					.setLabel('Edit filtered words')
-					.setStyle(ButtonStyle.Secondary)
-					.setCustomId('badwords')
-			);
+				]);
+			};
+
+			const buttonComponents = (module: LoggingModules, state: 'enabled' | 'disabled') => {
+				const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder()
+						.setLabel(state === 'enabled' ? 'Enabled' : 'Disabled')
+						.setStyle(state === 'enabled' ? ButtonStyle.Success : ButtonStyle.Danger)
+						.setCustomId(`logging:toggle:${module}`),
+
+					new ButtonBuilder()
+						.setLabel('Edit channel')
+						.setStyle(ButtonStyle.Secondary)
+						.setCustomId(`logging:channel:${module}`)
+				);
+
+				if (supportedLoggingIgnores.includes(module))
+					row.addComponents(
+						new ButtonBuilder()
+							.setLabel('Edit ignores')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId(`logging:ignore:${module}`)
+					);
+
+				return row;
+			};
 
 			const sentInteraction = (await interaction.followUp({
 				embeds: [embed],
-				components: [selectMenu, button],
+				components: [
+					selectMenu(preSelected),
+					buttonComponents(preSelected, client.config.logging[preSelected] ? 'enabled' : 'disabled'),
+				],
 			})) as Message;
 
 			const collector = sentInteraction.createMessageComponentCollector({
@@ -196,21 +135,340 @@ export default new Command({
 					return void null;
 				}
 
-				if (collected.customId === 'automod-modules' && collected.isSelectMenu()) {
-					const restOfModules = (await configModel.findById('automod')).modules;
-					Object.keys(restOfModules).forEach((v) => (restOfModules[v] = false));
+				if (collected.customId === 'logging:modules' && collected.isSelectMenu()) {
+					const selectedModule = collected.values[0] as LoggingModules;
+					const embed = new EmbedBuilder()
+						.setTitle(loggingModulesNames[selectedModule])
+						.setColor(client.cc.invisible)
+						.setDescription(
+							[
+								`${loggingModuleDescriptions[selectedModule]}\n`,
+								`\`Channel:\` ${
+									data.logging[selectedModule].channelId
+										? interaction.guild.channels.cache.get(
+												data.logging[selectedModule].channelId
+										  ) || data.logging[selectedModule].channelId
+										: 'None'
+								}\n`,
+								supportedLoggingIgnores.includes(selectedModule)
+									? `\`Ignores:\` ${
+											client.config.ignores.logs[selectedModule].channelIds.concat(
+												client.config.ignores.logs[selectedModule].roleIds
+											).length
+												? `${client.config.ignores.logs[
+														selectedModule
+												  ].channelIds.map((c: string) =>
+														interaction.guild.channels.cache.get(c).toString()
+												  )} ${client.config.ignores.logs[
+														selectedModule
+												  ].roleIds.map((c: string) =>
+														interaction.guild.roles.cache.get(c).toString()
+												  )}`
+												: 'No ignores found'
+									  }`
+									: '',
+							].join('\n')
+						);
+
+					await collected.update({
+						embeds: [embed],
+						components: [
+							selectMenu(selectedModule),
+							buttonComponents(
+								selectedModule,
+								client.config.automod.modules[selectedModule] ? 'enabled' : 'disabled'
+							),
+						],
+					});
+				} else if (collected.customId.startsWith('logging:toggle') && collected.isButton()) {
+					const module = collected.customId.replace('logging:toggle:', '') as LoggingModules;
+					const data = await configModel.findById('logging');
+
+					await configModel.findByIdAndUpdate('logging', {
+						$set: {
+							logging: {
+								...data.logging,
+								[module]: {
+									...data.logging[module],
+									active: !data.logging[module].active,
+								},
+							},
+						},
+					});
+
+					await client.config.updateLogs();
+					await collected.update({
+						components: [
+							selectMenu(module),
+							buttonComponents(module, client.config.logging[module] ? 'enabled' : 'disabled'),
+						],
+					});
+				} else if (collected.customId.startsWith('logging:channel') && collected.isButton()) {
+					const module = collected.customId.replace('logging:channel:', '') as LoggingModules;
+					const data = (await configModel.findById('logging')).logging[module];
+
+					const modal = new ModalBuilder()
+						.setTitle(`${loggingModulesNames[module]} channel`)
+						.setCustomId(`logging:channel:${module}`)
+						.addComponents([
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'channelId',
+										label: 'Provide the channel id',
+										style: TextInputStyle.Short,
+										required: false,
+										max_length: 18,
+										min_length: 18,
+										placeholder: 'No channel set, set one!',
+										value: data.channelId ?? null,
+									},
+								],
+							},
+						]);
+					await collected.showModal(modal);
+				} else if (collected.customId.startsWith('logging:ignore') && collected.isButton()) {
+					const module = collected.customId.replace('logging:ignore:', '') as LoggingModules;
+
+					const modal = new ModalBuilder()
+						.setTitle(`${loggingModulesNames[module]} ignores`)
+						.setCustomId(`logging:ignores:${module}`)
+						.addComponents([
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'channelIds',
+										label: 'Ignore channels, separate with spaces',
+										style: TextInputStyle.Paragraph,
+										required: false,
+										max_length: 400,
+										min_length: 0,
+										placeholder: 'No ignored channel ids, add some!',
+										value: client.config.ignores.logs[module].channelIds
+											? client.config.ignores.logs[module].channelIds.join(' ')
+											: null,
+									},
+								],
+							},
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'roleIds',
+										label: 'Ignore roles, separate with spaces',
+										style: TextInputStyle.Paragraph,
+										required: false,
+										max_length: 400,
+										min_length: 0,
+										placeholder: 'No ignored roles ids, add some!',
+										value: client.config.ignores.logs[module].roleIds
+											? client.config.ignores.logs[module].roleIds.join(' ')
+											: null,
+									},
+								],
+							},
+						]);
+					await collected.showModal(modal);
+				}
+			});
+		} else if (subcommand === 'automod') {
+			const preSelected: AutomodModules = 'badwords';
+			const embed = new EmbedBuilder()
+				.setTitle(automodModulesNames[preSelected])
+				.setColor(client.cc.invisible)
+				.setDescription(
+					[
+						`${automodModuleDescriptions[preSelected]}\n`,
+						`\`Ignores:\` ${
+							client.config.ignores.automod[preSelected].channelIds.concat(
+								client.config.ignores.automod[preSelected].roleIds
+							).length
+								? `${client.config.ignores.automod[preSelected].channelIds.map((c) =>
+										interaction.guild.channels.cache.get(c).toString()
+								  )} ${client.config.ignores.automod[preSelected].roleIds.map((c) =>
+										interaction.guild.roles.cache.get(c).toString()
+								  )}`
+								: 'No ignores found'
+						}`,
+					].join('\n')
+				)
+				.setFields([
+					{
+						name: 'Filtered words',
+						value: client.config.automod.filteredWords.length
+							? splitText(
+									client.config.automod.filteredWords.map((w) => `\`${w}\``).join(' '),
+									MAX_FIELD_VALUE_LENGTH
+							  )
+							: 'No filtered words',
+					},
+				]);
+
+			const selectMenu = (module: AutomodModules) => {
+				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+					new SelectMenuBuilder().setCustomId('automod:modules').setOptions(
+						automodModulesArray.map((m) => {
+							return {
+								label: m.rewrite,
+								value: m.name,
+								default: m.name === module,
+							};
+						})
+					),
+				]);
+			};
+
+			const buttonComponents = (module: AutomodModules, state: 'enabled' | 'disabled') => {
+				const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder()
+						.setLabel(state === 'enabled' ? 'Enabled' : 'Disabled')
+						.setStyle(state === 'enabled' ? ButtonStyle.Success : ButtonStyle.Danger)
+						.setCustomId(`automod:toggle:${module}`),
+
+					new ButtonBuilder()
+						.setLabel('Edit ignores')
+						.setStyle(ButtonStyle.Secondary)
+						.setCustomId(`automod:ignore:${module}`)
+				);
+
+				if (module === 'badwords')
+					row.addComponents(
+						new ButtonBuilder()
+							.setLabel('Edit filtered words')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId(`automod:badwords`)
+					);
+
+				return row;
+			};
+
+			const sentInteraction = (await interaction.followUp({
+				embeds: [embed],
+				components: [
+					selectMenu(preSelected),
+					buttonComponents(
+						preSelected,
+						client.config.automod.modules[preSelected] ? 'enabled' : 'disabled'
+					),
+				],
+			})) as Message;
+
+			const collector = sentInteraction.createMessageComponentCollector({
+				time: 1000 * 60 * 5,
+			});
+
+			collector.on('collect', async (collected) => {
+				if (collected.user.id !== interaction.user.id) {
+					collected.reply({
+						content: t('common.errors.cannotInteract'),
+						ephemeral: true,
+					});
+					return void null;
+				}
+
+				if (collected.customId === 'automod:modules' && collected.isSelectMenu()) {
+					const selectedModule = collected.values[0] as AutomodModules;
+					const embed = new EmbedBuilder()
+						.setTitle(automodModulesNames[selectedModule])
+						.setColor(client.cc.invisible)
+						.setDescription(
+							[
+								`${automodModuleDescriptions[selectedModule]}\n`,
+								`\`Ignores:\` ${
+									client.config.ignores.automod[selectedModule].channelIds.concat(
+										client.config.ignores.automod[selectedModule].roleIds
+									).length
+										? `${client.config.ignores.automod[selectedModule].channelIds.map(
+												(c) => interaction.guild.channels.cache.get(c).toString()
+										  )} ${client.config.ignores.automod[selectedModule].roleIds.map(
+												(c) => interaction.guild.roles.cache.get(c).toString()
+										  )}`
+										: 'No ignores found'
+								}`,
+							].join('\n')
+						);
+
+					await collected.update({
+						embeds: [embed],
+						components: [
+							selectMenu(selectedModule),
+							buttonComponents(
+								selectedModule,
+								client.config.automod.modules[selectedModule] ? 'enabled' : 'disabled'
+							),
+						],
+					});
+				} else if (collected.customId.startsWith('automod:toggle') && collected.isButton()) {
+					const module = collected.customId.replace('automod:toggle:', '') as AutomodModules;
+					const data = await configModel.findById('automod');
 
 					await configModel.findByIdAndUpdate('automod', {
 						$set: {
-							modules: collected.values.reduce(
-								(acc: any, cur) => ({ ...acc, [cur]: true }),
-								restOfModules
-							),
+							modules: { ...data.modules, [module]: !data.modules[module] },
 						},
 					});
+
 					await client.config.updateAutomod();
-					await collected.deferUpdate();
-				} else if (collected.customId == 'badwords' && collected.isButton()) {
+					await collected.update({
+						components: [
+							selectMenu(module),
+							buttonComponents(
+								module,
+								client.config.automod.modules[module] ? 'enabled' : 'disabled'
+							),
+						],
+					});
+				} else if (collected.customId.startsWith('automod:ignore') && collected.isButton()) {
+					const module = collected.customId.replace('automod:ignore:', '') as AutomodModules;
+
+					const modal = new ModalBuilder()
+						.setTitle(`${automodModulesNames[module]} ignores`)
+						.setCustomId(`automod:ignores:${module}`)
+						.addComponents([
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'channelIds',
+										label: 'Ignore channels, separate with spaces',
+										style: TextInputStyle.Paragraph,
+										required: false,
+										max_length: 400,
+										min_length: 0,
+										placeholder: 'No ignored channel ids, add some!',
+										value: client.config.ignores.automod[module].channelIds
+											? client.config.ignores.automod[module].channelIds.join(' ')
+											: null,
+									},
+								],
+							},
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'roleIds',
+										label: 'Ignore roles, separate with spaces',
+										style: TextInputStyle.Paragraph,
+										required: false,
+										max_length: 400,
+										min_length: 0,
+										placeholder: 'No ignored roles ids, add some!',
+										value: client.config.ignores.automod[module].roleIds
+											? client.config.ignores.automod[module].roleIds.join(' ')
+											: null,
+									},
+								],
+							},
+						]);
+					await collected.showModal(modal);
+				} else if (collected.customId == 'automod:badwords' && collected.isButton()) {
 					const modal = new ModalBuilder()
 						.setTitle('Filtered Words')
 						.setCustomId('badwords')
@@ -224,13 +482,11 @@ export default new Command({
 										label: 'Separate them with commas',
 										style: TextInputStyle.Paragraph,
 										required: false,
-										max_length: 4000,
+										max_length: 500,
 										min_length: 0,
 										placeholder: 'No filtered words, add some!',
 										value: client.config.automod.filteredWords.length
-											? client.config.automod.filteredWords.join(
-													', '
-											  )
+											? client.config.automod.filteredWords.join(', ')
 											: null,
 									},
 								],
@@ -257,9 +513,7 @@ export default new Command({
 					}
 					await configModel.findByIdAndUpdate('general', {
 						$set: {
-							developers: currentDevs.concat(
-								[value].filter((value) => value !== 'null')
-							),
+							developers: currentDevs.concat([value].filter((value) => value !== 'null')),
 						},
 					});
 				} else if (module.startsWith('guild')) {
@@ -287,17 +541,13 @@ export default new Command({
 				.setColor(client.cc.ultimates)
 				.setDescription(
 					[
-						`• ${Formatters.bold('Owner')} - ${
-							(await client.users.fetch(data.ownerId).catch(() => {})) || '✖︎'
-						}`,
-						`• ${Formatters.bold('Appeal Link')} - ${
-							data.guild.appealLink || '✖︎'
-						}`,
+						// `• ${Formatters.bold('Owner')} - ${
+						// 	(await client.users.fetch(data.ownerId).catch(() => {})) || '✖︎'
+						// }`,
+						`• ${Formatters.bold('Appeal Link')} - ${data.guild.appealLink || '✖︎'}`,
 						`• ${Formatters.bold('Member Role')} - ${
 							data.guild.memberRoleId
-								? await interaction.guild.roles
-										.fetch(data.guild.memberRoleId)
-										.catch(() => {})
+								? await interaction.guild.roles.fetch(data.guild.memberRoleId).catch(() => {})
 								: '✖︎'
 						}`,
 						`• ${Formatters.bold('Modmail Category')} - ${
@@ -313,11 +563,9 @@ export default new Command({
 										.map(
 											(dev) =>
 												`${
-													client.users.cache.get(dev)
-														?.tag === undefined
+													client.users.cache.get(dev)?.tag === undefined
 														? `Not found, ID: ${dev}`
-														: client.users.cache.get(dev)
-																?.tag
+														: client.users.cache.get(dev)?.tag
 												}`
 										)
 										.join(' `|` ')
@@ -334,10 +582,7 @@ export default new Command({
 
 			if (module && value) {
 				// Counts
-				if (
-					(module.startsWith('count') || module.includes('msgs')) &&
-					isNaN(parseInt(value))
-				)
+				if ((module.startsWith('count') || module.includes('msgs')) && isNaN(parseInt(value)))
 					return interaction.followUp({
 						embeds: [client.embeds.attention('The input should be a number.')],
 					});
@@ -347,9 +592,7 @@ export default new Command({
 					(isNaN(parseInt(value)) || parseInt(value) < 0 || parseInt(value) > 7)
 				)
 					return interaction.followUp({
-						embeds: [
-							client.embeds.attention('The days must be between 0 and 7.'),
-						],
+						embeds: [client.embeds.attention('The days must be between 0 and 7.')],
 					});
 
 				if (
@@ -436,15 +679,9 @@ export default new Command({
 				.setColor(client.cc.ultimates)
 				.setDescription(
 					[
-						`• ${Formatters.bold('1st timeout warnings count')} - ${
-							data.count.timeout1 || '✖︎'
-						}`,
-						`• ${Formatters.bold('2nd timeout warnings count')} - ${
-							data.count.timeout2 || '✖︎'
-						}`,
-						`• ${Formatters.bold('Ban warnings count')} - ${
-							data.count.ban || '✖︎'
-						}`,
+						`• ${Formatters.bold('1st timeout warnings count')} - ${data.count.timeout1 || '✖︎'}`,
+						`• ${Formatters.bold('2nd timeout warnings count')} - ${data.count.timeout2 || '✖︎'}`,
+						`• ${Formatters.bold('Ban warnings count')} - ${data.count.ban || '✖︎'}`,
 						`• ${Formatters.bold('Automod timeout warning multiplication')} - ${
 							data.count.timeout1 || '✖︎'
 						}`,
@@ -467,9 +704,7 @@ export default new Command({
 							convertTime(data.default.softban) || '✖︎'
 						}`,
 						`• ${Formatters.bold('Default ban delete msgs duration')} - ${
-							!data.default.msgs
-								? "don't delete any"
-								: `${data.default.msgs} days`
+							!data.default.msgs ? "don't delete any" : `${data.default.msgs} days`
 						}`,
 					].join('\n')
 				);
@@ -530,146 +765,6 @@ export default new Command({
 					]);
 				await collected.showModal(modal);
 			});
-		} else if (subcommand === 'ignores') {
-			const module = options.getString('module');
-			const channel = options.getChannel('channel');
-			const role = options.getRole('role');
-			const target = module
-				? module?.startsWith('automod')
-					? 'automod'
-					: module?.startsWith('logs')
-					? 'logs'
-					: null
-				: null;
-
-			if (module && (channel || role)) {
-				const values = (await configModel.findById('ignores'))[target][
-					module.replaceAll('automod:', '').replaceAll('logs:', '')
-				];
-
-				let channelIds: string[] = values.channelIds;
-				let roleIds: string[] = values.roleIds;
-
-				if (channel && channelIds.includes(channel.id)) {
-					channelIds.splice(channelIds.indexOf(channel.id));
-				} else if (channel && !channelIds.includes(channel.id)) {
-					channelIds = channelIds.concat([channel.id]);
-				}
-
-				if (role && roleIds.includes(role.id)) {
-					roleIds.splice(roleIds.indexOf(role.id));
-				} else if (role && !roleIds.includes(role.id)) {
-					roleIds = roleIds.concat([role.id]);
-				}
-
-				switch (target) {
-					case 'logs':
-						await configModel.findByIdAndUpdate('ignores', {
-							$set: {
-								automod: {
-									...(await configModel.findById('ignores')).automod,
-								},
-								logs: {
-									...(await configModel.findById('ignores')).logs,
-									[module.replaceAll('logs:', '')]: {
-										channelIds: channelIds,
-										roleIds: roleIds,
-									},
-								},
-							},
-						});
-						break;
-					case 'automod':
-						await configModel.findByIdAndUpdate('ignores', {
-							$set: {
-								automod: {
-									...(await configModel.findById('ignores')).automod,
-									[module.replaceAll('automod:', '')]: {
-										channelIds: channelIds,
-										roleIds: roleIds,
-									},
-								},
-								logs: {
-									...(await configModel.findById('ignores')).logs,
-								},
-							},
-						});
-						break;
-				}
-				await client.config.updateIgnores();
-			}
-			if (!module) {
-				const embed = new EmbedBuilder()
-					.setTitle('Ignore List Configuration')
-					.setColor(client.cc.ultimates)
-					.addFields([
-						await formatIgnores('automod:badwords'),
-						await formatIgnores('automod:invites'),
-						await formatIgnores('automod:largeMessage'),
-						await formatIgnores('automod:massMention'),
-						await formatIgnores('automod:massEmoji'),
-						await formatIgnores('automod:spam'),
-						await formatIgnores('automod:capitals'),
-						await formatIgnores('automod:urls'),
-						await formatIgnores('logs:message'),
-						await formatIgnores('logs:voice'),
-					]);
-
-				await interaction.followUp({
-					embeds: [embed],
-				});
-			} else if (module) {
-				const embed = new EmbedBuilder()
-					.setColor(client.cc.ultimates)
-					.addFields([await formatIgnores(module)]);
-
-				await interaction.followUp({
-					embeds: [embed],
-				});
-			}
-
-			async function formatIgnores(module: string): Promise<APIEmbedField> {
-				const theTarget = module
-					? module?.startsWith('automod')
-						? 'automod'
-						: module?.startsWith('logs')
-						? 'logs'
-						: null
-					: null;
-				const getValues = (await configModel.findById('ignores'))[theTarget][
-					module.replaceAll('automod:', '').replaceAll('logs:', '')
-				];
-				return {
-					name: `${module.startsWith('automod') ? 'Automod:' : 'Logging:'} ${
-						module.startsWith('automod')
-							? automodModulesNames[module.replaceAll('automod:', '')]
-							: loggingModulesNames[module.replaceAll('logs:', '')]
-					}`,
-					value: [
-						`• ${Formatters.bold('Channels:')} ${
-							getValues.channelIds.length
-								? getValues.channelIds
-										.map(
-											(id: string) =>
-												client.channels.cache.get(id) || id
-										)
-										.join(' ')
-								: 'No ignores'
-						}`,
-						`• ${Formatters.bold('Roles:')} ${
-							getValues.roleIds.length
-								? getValues.roleIds
-										.map(
-											(id: string) =>
-												interaction.guild.roles.cache.get(id) ||
-												id
-										)
-										.join(' ')
-								: 'No ignores'
-						}`,
-					].join('\n'),
-				};
-			}
 		}
 	},
 });

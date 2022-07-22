@@ -12,34 +12,6 @@ export const configureCommand = {
 			name: 'logs',
 			description: 'Configure the settings of the logging system',
 			type: ApplicationCommandOptionType.Subcommand,
-			options: [
-				{
-					name: 'module',
-					description: 'The log module you want to configure',
-					type: ApplicationCommandOptionType.String,
-					required: false,
-					choices: [
-						{ name: 'Moderation', value: 'mod' },
-						{ name: 'Message', value: 'message' },
-						{ name: 'Modmail', value: 'modmail' },
-						{ name: 'Joins & Leaves', value: 'servergate' },
-						{ name: 'Voice state updates', value: 'voice' },
-					],
-				},
-				{
-					name: 'channel',
-					description: 'The channel you want the module to be posting on',
-					type: ApplicationCommandOptionType.Channel,
-					channel_types: [ChannelType.GuildText],
-					required: false,
-				},
-				{
-					name: 'active',
-					description: 'If this module should be active at the time and post',
-					type: ApplicationCommandOptionType.Boolean,
-					required: false,
-				},
-			],
 		},
 		{
 			name: 'automod',
@@ -148,11 +120,7 @@ export const configureCommand = {
 					description: 'Add or remove a channel to/from the ignore list',
 					type: ApplicationCommandOptionType.Channel,
 					required: false,
-					channel_types: [
-						ChannelType.GuildText,
-						ChannelType.GuildVoice,
-						ChannelType.GuildNews,
-					],
+					channel_types: [ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildNews],
 				},
 				{
 					name: 'role',
