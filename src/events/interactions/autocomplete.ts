@@ -90,11 +90,9 @@ export default new Event('interactionCreate', async (interaction) => {
 		case 'unban':
 			if (focus?.name === 'user') {
 				const mapBans = (await interaction.guild.bans.fetch()).map((ban) => {
-					return [
-						`${ban.user.tag}`,
-						`${ban.user.id}`,
-						`${ban.reason || t('common.noReason')}`,
-					].join(' • ');
+					return [`${ban.user.tag}`, `${ban.user.id}`, `${ban.reason || t('common.noReason')}`].join(
+						' • '
+					);
 				});
 				const availableBannedMembers = [...new Set(mapBans)];
 				const filteredBannedMembers = availableBannedMembers
@@ -107,9 +105,7 @@ export default new Event('interactionCreate', async (interaction) => {
 					.slice(0, 25);
 
 				if (!filteredBannedMembers.length)
-					return interaction.respond([
-						{ name: 'No banned members were found!', value: 'null' },
-					]);
+					return interaction.respond([{ name: 'No banned members were found!', value: 'null' }]);
 
 				await interaction.respond(
 					filteredBannedMembers.map((data: string) => ({
@@ -123,18 +119,13 @@ export default new Event('interactionCreate', async (interaction) => {
 
 	// Reason autocomplete
 	if (focus?.name === 'reason') {
-		const availableReasons = [
-			...new Set(client.config.moderation.reasons[interaction.commandName]),
-		];
+		const availableReasons = [...new Set(client.config.moderation.reasons[interaction.commandName])];
 		const filteredReasons = availableReasons
 			.filter((reason: string) => reason.startsWith(focus.value as string))
 			.map((data, i) => (i === 0 ? '⭐️' : i.toString()) + ' • ' + data)
 			.slice(0, 25);
 
-		if (
-			!client.config.moderation.reasons[interaction.commandName].length &&
-			!focus.value.toString().length
-		)
+		if (!client.config.moderation.reasons[interaction.commandName].length && !focus.value.toString().length)
 			return interaction.respond([
 				{
 					name: '⭐️' + ' • ' + 'No inbuilt reasons were found, type a reason...',
@@ -145,10 +136,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (filteredReasons.length === 0)
 			return interaction.respond([
 				{
-					name:
-						'⭐️' +
-						' • ' +
-						splitText(focus.value.toString(), MAX_AUTOCOMPLETE_LENGTH - 4),
+					name: '⭐️' + ' • ' + splitText(focus.value.toString(), MAX_AUTOCOMPLETE_LENGTH - 4),
 					value: splitText(focus.value.toString(), MAX_AUTOCOMPLETE_LENGTH),
 				},
 			]);
@@ -167,13 +155,13 @@ export default new Event('interactionCreate', async (interaction) => {
 				{
 					name: convertTime(
 						interaction.commandName === 'softban'
-							? client.config.moderation.default.softban
-							: client.config.moderation.default.timeout
+							? client.config.moderation.defaults.softban
+							: client.config.moderation.defaults.timeout
 					),
 					value: convertTime(
 						interaction.commandName === 'softban'
-							? client.config.moderation.default.softban
-							: client.config.moderation.default.timeout
+							? client.config.moderation.defaults.softban
+							: client.config.moderation.defaults.timeout
 					),
 				},
 			]);
@@ -197,10 +185,7 @@ export default new Event('interactionCreate', async (interaction) => {
 	}
 
 	// Antiraid autocomplete
-	if (
-		(focus.name === 'registered' || focus.name === 'joined') &&
-		interaction.commandName === 'antiraid'
-	) {
+	if ((focus.name === 'registered' || focus.name === 'joined') && interaction.commandName === 'antiraid') {
 		if (!focus.value.toString().trim().length)
 			return interaction.respond([
 				{

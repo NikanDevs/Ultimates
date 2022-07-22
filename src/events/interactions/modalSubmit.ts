@@ -1,18 +1,30 @@
-import { ChannelType, Colors, EmbedBuilder, InteractionType, TextChannel } from 'discord.js';
+import { ChannelType, EmbedBuilder, InteractionType, TextChannel } from 'discord.js';
+import { t } from 'i18next';
 import { client } from '../..';
-import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
+import {
+	MAX_FIELD_VALUE_LENGTH,
+	MAX_REASON_LENGTH,
+	MAX_SOFTBAN_DURATION,
+	MAX_TIMEOUT_DURATION,
+	MIN_SOFTBAN_DURATION,
+	MIN_TIMEOUT_DURATION,
+} from '../../constants';
 import { getURL } from '../../functions/automod/isURL';
+import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { splitText } from '../../functions/other/splitText';
 import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
 import {
 	automodModuleDescriptions,
 	AutomodModules,
+	deleteDayRewites,
 	generalConfigDescriptions,
 	GeneralConfigTypes,
 	loggingModuleDescriptions,
 	LoggingModules,
 	loggingWebhookNames,
+	moderationConfigDescriptions,
+	ModerationConfigTypes,
 	supportedLoggingIgnores,
 } from '../../typings';
 
@@ -329,43 +341,199 @@ export default new Event('interactionCreate', async (interaction) => {
 		});
 	}
 
-	if (interaction.customId.startsWith('add-reason')) {
-		const words = interaction.fields.getTextInputValue('input');
-		const module = interaction.customId.replaceAll('add-reason-', '');
-		const currentReasons: string[] = (await configModel.findById('moderation')).reasons[module];
-		let removed: number = 0;
-		const input = words
-			.split('--')
+	if (interaction.customId.startsWith('moderation:reasons')) {
+		if (!interaction.isFromMessage()) return;
+		const input = interaction.fields.getTextInputValue('reasons');
+		const module = interaction.customId.replaceAll('moderation:reasons:', '');
+		const reasons = input
+			.split('||')
 			.map((reason) => reason.trim())
-			.map((reason) => {
-				// Checking if a reason already exists
-				if (currentReasons.includes(reason)) {
-					currentReasons.splice(currentReasons.indexOf(reason), 1);
-					removed++;
-					reason = null;
-				}
-				return reason;
-			})
-			.filter((word) => word);
+			.map((reason) => splitText(reason, MAX_REASON_LENGTH))
+			.filter((r) => r && r.length);
 
 		await configModel.findByIdAndUpdate('moderation', {
 			$set: {
 				reasons: {
 					...(await configModel.findById('moderation')).reasons,
-					[module]: currentReasons.concat(input),
+					[module]: reasons,
 				},
 			},
 		});
 		await client.config.updateModeration();
+		await interaction.deferUpdate();
+	} else if (interaction.customId.startsWith('moderation')) {
+		if (!interaction.isFromMessage()) return;
+		const subModule = interaction.customId.split(':')[1] as ModerationConfigTypes;
+		const module = interaction.customId.split(':')[2];
+		const input = interaction.fields.getTextInputValue('input').trim();
+		const data = await configModel.findById('moderation');
+		let output: unknown = true;
 
-		await interaction.reply({
+		if (subModule === 'counts') {
+			if (isNaN(parseInt(input)))
+				return interaction.reply({
+					embeds: [client.embeds.error('Please enter a valid number.')],
+					ephemeral: true,
+				});
+
+			const array: number[] = [parseInt(input), data.counts.timeout1, data.counts.timeout2, data.counts.ban];
+			const findDups = (a: number[]): number[] => a.filter((item, index) => a.indexOf(item) != index);
+			if (findDups(array).length)
+				return interaction.reply({
+					embeds: [client.embeds.error('Punishment count numbers must be unique.')],
+					ephemeral: true,
+				});
+
+			output = parseInt(input);
+		} else if (subModule === 'durations') {
+			if (module === 'ban' && !isValidTime(input)) output = null;
+			if (output === true && !isValidTime(input))
+				return interaction.reply({
+					embeds: [client.embeds.error(t('common.errors.invalidDuration'))],
+					ephemeral: true,
+				});
+
+			const duration = convertToTime(input);
+			if (
+				output === true &&
+				module === 'ban' &&
+				(duration > MAX_SOFTBAN_DURATION || duration < MIN_SOFTBAN_DURATION)
+			)
+				return interaction.reply({
+					embeds: [
+						client.embeds.attention(
+							t('common.errors.duration', {
+								min: convertTime(MIN_SOFTBAN_DURATION),
+								max: convertTime(MAX_SOFTBAN_DURATION),
+							})
+						),
+					],
+					ephemeral: true,
+				});
+
+			if (output === true && (duration > MAX_TIMEOUT_DURATION || duration < MIN_TIMEOUT_DURATION))
+				return interaction.reply({
+					embeds: [
+						client.embeds.attention(
+							t('common.errors.duration', {
+								min: convertTime(MIN_TIMEOUT_DURATION),
+								max: convertTime(MAX_TIMEOUT_DURATION),
+							})
+						),
+					],
+					ephemeral: true,
+				});
+
+			if (output) output = convertToTime(input);
+		} else if (subModule === 'defaults') {
+			if (module === 'msgs' && (isNaN(parseInt(input)) || parseInt(input) < 0 || parseInt(input) > 7))
+				return interaction.reply({
+					embeds: [client.embeds.error('The delete messages days must be between 0 and 7.')],
+					ephemeral: true,
+				});
+
+			if (module === 'msgs') output = parseInt(input);
+
+			if (output === true && !isValidTime(input))
+				return interaction.reply({
+					embeds: [client.embeds.error(t('common.errors.invalidDuration'))],
+					ephemeral: true,
+				});
+
+			const duration = convertToTime(input);
+			if (
+				output === true &&
+				module === 'timeout' &&
+				(duration > MAX_TIMEOUT_DURATION || duration < MIN_TIMEOUT_DURATION)
+			)
+				return interaction.reply({
+					embeds: [
+						client.embeds.attention(
+							t('common.errors.duration', {
+								min: convertTime(MIN_TIMEOUT_DURATION),
+								max: convertTime(MAX_TIMEOUT_DURATION),
+							})
+						),
+					],
+					ephemeral: true,
+				});
+
+			if (
+				output === true &&
+				module === 'softban' &&
+				(duration > MAX_SOFTBAN_DURATION || duration < MIN_SOFTBAN_DURATION)
+			)
+				return interaction.reply({
+					embeds: [
+						client.embeds.attention(
+							t('common.errors.duration', {
+								min: convertTime(MIN_SOFTBAN_DURATION),
+								max: convertTime(MAX_SOFTBAN_DURATION),
+							})
+						),
+					],
+					ephemeral: true,
+				});
+
+			if (output === true) output = convertToTime(input);
+		}
+
+		await configModel.findByIdAndUpdate('moderation', {
+			$set: {
+				[subModule]: {
+					...(await configModel.findById('moderation'))[subModule],
+					[module]: output,
+				},
+			},
+		});
+		await client.config.updateModeration();
+		await interaction.deferUpdate();
+
+		interaction.message.edit({
 			embeds: [
-				new EmbedBuilder({
-					description: `Added **${input.length}** and removed **${removed}** reasons.`,
-					color: Colors.Green,
-				}),
+				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
+					[
+						`${moderationConfigDescriptions[subModule]}\n`,
+						subModule === 'counts'
+							? [
+									`\`Timeout #1:\` ${client.config.moderation[subModule].timeout1}`,
+									`\`Timeout #2:\` ${client.config.moderation[subModule].timeout2}`,
+									`\`Ban:\` ${client.config.moderation[subModule].ban}`,
+									`\`Automod multiplication:\` ${client.config.moderation[subModule].automod}`,
+							  ].join('\n')
+							: subModule === 'durations'
+							? [
+									`\`Timeout #1:\` ${convertTime(
+										client.config.moderation[subModule].timeout1
+									)}`,
+									`\`Timeout #2:\` ${convertTime(
+										client.config.moderation[subModule].timeout2
+									)}`,
+									`\`Ban:\` ${
+										client.config.moderation[subModule].ban
+											? convertTime(client.config.moderation[subModule].ban)
+											: 'Permanent'
+									}`,
+									`\`Automod timeout:\` ${convertTime(
+										client.config.moderation[subModule].automod
+									)}`,
+							  ].join('\n')
+							: subModule === 'defaults'
+							? [
+									`\`Timeout duration:\` ${convertTime(
+										client.config.moderation[subModule].timeout
+									)}`,
+									`\`Softban duration:\` ${convertTime(
+										client.config.moderation[subModule].softban
+									)}`,
+									`\`Delete message days:\` ${
+										deleteDayRewites[client.config.moderation[subModule].msgs]
+									}`,
+							  ].join('\n')
+							: '',
+					].join('\n')
+				),
 			],
-			ephemeral: true,
 		});
 	}
 });

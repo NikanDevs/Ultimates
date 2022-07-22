@@ -9,9 +9,9 @@ const schema = new Schema({
 	memberRoleId: { type: SchemaTypes.String, required: false },
 	modmailCategoryId: { type: SchemaTypes.String, required: false },
 	// moderation config
-	count: { type: Object, required: false },
-	duration: { type: Object, required: false },
-	default: { type: Object, required: false },
+	counts: { type: Object, required: false },
+	durations: { type: Object, required: false },
+	defaults: { type: Object, required: false },
 	reasons: { type: Object, required: false },
 	// automod config
 	filteredWords: { type: SchemaTypes.Array, required: false },

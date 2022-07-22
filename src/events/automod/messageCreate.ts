@@ -104,11 +104,7 @@ export default new Event('messageCreate', async (message) => {
 			reason: automodModuleReasons.largeMessage,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
-	} else if (
-		isDiscordInvite(message.content) &&
-		config.modules.invites &&
-		!getsIgnored('invites')
-	) {
+	} else if (isDiscordInvite(message.content) && config.modules.invites && !getsIgnored('invites')) {
 		message?.delete();
 		textChannel
 			.send({
@@ -268,11 +264,7 @@ export default new Event('messageCreate', async (message) => {
 			reason: automodModuleReasons.capitals,
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
-	} else if (
-		mostIsEmojis(message.content) &&
-		config.modules.massEmoji &&
-		!getsIgnored('massEmoji')
-	) {
+	} else if (mostIsEmojis(message.content) && config.modules.massEmoji && !getsIgnored('massEmoji')) {
 		message?.delete();
 		textChannel
 			.send({
@@ -370,9 +362,7 @@ export default new Event('messageCreate', async (message) => {
 		}, 7000);
 
 		var fetchMessage = await textChannel.messages.fetch({ limit: 9, before: message.id });
-		var filteredMessage = fetchMessage.filter(
-			(msg) => !msg.pinned && msg.author.id === message.author.id
-		);
+		var filteredMessage = fetchMessage.filter((msg) => !msg.pinned && msg.author.id === message.author.id);
 
 		await textChannel.bulkDelete(filteredMessage, true);
 
@@ -422,10 +412,10 @@ export default new Event('messageCreate', async (message) => {
 		});
 		const punishmentCount = punishmentFind.length;
 
-		if (punishmentCount % client.config.moderation.count.automod === 0) {
+		if (punishmentCount % client.config.moderation.counts.automod === 0) {
 			await timeoutMember(message.member, {
 				reason: `Reaching ${punishmentCount} automod warnings.`,
-				duration: client.config.moderation.duration.automod,
+				duration: client.config.moderation.durations.automod,
 			});
 			const data = new automodModel({
 				_id: await generateAutomodId(),
@@ -434,17 +424,14 @@ export default new Event('messageCreate', async (message) => {
 				userId: message.author.id,
 				date: new Date(),
 				reason: `Reaching ${punishmentCount} automod warnings.`,
-				expire: new Date(
-					automodPunishmentExpiry.getTime() +
-						client.config.moderation.duration.automod
-				),
+				expire: new Date(automodPunishmentExpiry.getTime() + client.config.moderation.durations.automod),
 			});
 			data.save();
 
 			sendModDM(message.member, {
 				action: PunishmentTypes.Timeout,
 				punishment: data,
-				expire: new Date(Date.now() + client.config.moderation.duration.automod),
+				expire: new Date(Date.now() + client.config.moderation.durations.automod),
 				automod: true,
 			});
 
@@ -453,13 +440,10 @@ export default new Event('messageCreate', async (message) => {
 				punishmentId: data._id,
 				user: message.author,
 				moderator: client.user,
-				duration: client.config.moderation.duration.automod,
+				duration: client.config.moderation.durations.automod,
 				reason: `Reaching ${punishmentCount} automod warnings.`,
 				referencedPunishment: warnData,
-				expire: new Date(
-					automodPunishmentExpiry.getTime() +
-						client.config.moderation.duration.automod
-				),
+				expire: new Date(automodPunishmentExpiry.getTime() + client.config.moderation.durations.automod),
 			});
 		}
 	}

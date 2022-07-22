@@ -18,8 +18,7 @@ export default new Command({
 	interaction: interactions.timeout,
 	excute: async ({ client, interaction, options }) => {
 		const member: GuildMember = options.getMember('member') as GuildMember;
-		const durationO: string | number =
-			options.getString('duration') ?? client.config.moderation.default.timeout;
+		const durationO: string | number = options.getString('duration') ?? client.config.moderation.defaults.timeout;
 		const duration = convertToTime(durationO);
 		const reason: string = options.getString('reason') ?? t('common.noReason');
 

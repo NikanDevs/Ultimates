@@ -17,8 +17,7 @@ export default new Command({
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
 		const reason = options.getString('reason') ?? t('common.noReason');
-		const delete_messages =
-			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
+		const delete_messages = options.getNumber('delete_messages') ?? client.config.moderation.defaults.msgs;
 
 		if (member) if (ignore(member, { interaction, action: PunishmentTypes.Ban })) return;
 		if (await interaction.guild.bans.fetch(user.id).catch(() => {}))

@@ -47,14 +47,14 @@ export class Config {
 
 	/** The config for the moderation system. */
 	public moderation = {
-		count: { automod: null, timeout1: null, timeout2: null, ban: null },
-		duration: {
+		counts: { automod: null, timeout1: null, timeout2: null, ban: null },
+		durations: {
 			timeout1: null as number,
 			timeout2: null as number,
 			ban: null as number,
 			automod: null as number,
 		},
-		default: {
+		defaults: {
 			timeout: null as number,
 			softban: null as number,
 			msgs: null as number,
@@ -173,22 +173,22 @@ export class Config {
 		if (!data) return;
 
 		this.moderation = {
-			count: {
-				automod: data.count.automod,
-				timeout1: data.count.timeout1,
-				timeout2: data.count.timeout2,
-				ban: data.count.ban,
+			counts: {
+				automod: data.counts.automod,
+				timeout1: data.counts.timeout1,
+				timeout2: data.counts.timeout2,
+				ban: data.counts.ban,
 			},
-			duration: {
-				timeout1: data.duration.timeout1,
-				timeout2: data.duration.timeout2,
-				ban: data.duration.ban,
-				automod: data.duration.automod,
+			durations: {
+				timeout1: data.durations.timeout1,
+				timeout2: data.durations.timeout2,
+				ban: data.durations.ban,
+				automod: data.durations.automod,
 			},
-			default: {
-				timeout: data.default.timeout,
-				softban: data.default.softban,
-				msgs: data.default.msgs,
+			defaults: {
+				timeout: data.defaults.timeout,
+				softban: data.defaults.softban,
+				msgs: data.defaults.msgs,
 			},
 			reasons: {
 				warn: data.reasons.warn,
@@ -300,14 +300,14 @@ export class Config {
 		if (!moderation)
 			await new configModel({
 				_id: 'moderation',
-				count: { automod: 3, timeout1: 2, timeout2: 4, ban: 6 },
-				duration: {
+				counts: { automod: 3, timeout1: 2, timeout2: 4, ban: 6 },
+				durations: {
 					timeout1: 60 * 60 * 1000,
-					timeout2: 2 * 60 * 60 * 100,
+					timeout2: 2 * 60 * 60 * 1000,
 					ban: null,
 					automod: 60 * 30 * 1000,
 				},
-				default: {
+				defaults: {
 					timeout: 60 * 60 * 1000,
 					softban: 60 * 60 * 24 * 30 * 1000,
 					msgs: 0,

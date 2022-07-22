@@ -19,10 +19,8 @@ export default new Command({
 		const user = options.getUser('user');
 		const member = options.getMember('user') as GuildMember;
 		const reason = options.getString('reason') ?? t('common.noReason');
-		const delete_messages =
-			options.getNumber('delete_messages') ?? client.config.moderation.default.msgs;
-		const durationO =
-			options.getString('duration') ?? client.config.moderation.default.softban;
+		const delete_messages = options.getNumber('delete_messages') ?? client.config.moderation.defaults.msgs;
+		const durationO = options.getString('duration') ?? client.config.moderation.defaults.softban;
 		const duration = convertToTime(durationO);
 
 		if (member) if (ignore(member, { interaction, action: PunishmentTypes.Softban })) return;

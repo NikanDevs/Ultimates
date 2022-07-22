@@ -26,19 +26,19 @@ export type ConfigSchemaType = {
 	modmailCategoryId: string;
 
 	// moderation config
-	count?: {
+	counts?: {
 		timeout1?: number;
 		timeout2?: number;
 		ban?: number;
 		automod?: number;
 	};
-	duration?: {
+	durations?: {
 		timeout1?: number;
 		timeout2?: number;
 		ban?: number;
 		automod?: number;
 	};
-	default?: {
+	defaults?: {
 		timeout?: number;
 		softban?: number;
 		msgs?: number;

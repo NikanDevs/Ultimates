@@ -4,22 +4,13 @@ import {
 	ButtonStyle,
 	ComponentType,
 	EmbedBuilder,
-	Formatters,
-	Message,
 	ModalBuilder,
 	SelectMenuBuilder,
 	TextInputStyle,
 } from 'discord.js';
 import { t } from 'i18next';
-import {
-	MAX_FIELD_VALUE_LENGTH,
-	MAX_REASON_LENGTH,
-	MAX_SOFTBAN_DURATION,
-	MAX_TIMEOUT_DURATION,
-	MIN_SOFTBAN_DURATION,
-	MIN_TIMEOUT_DURATION,
-} from '../../constants';
-import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
+import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
+import { convertTime } from '../../functions/convertTime';
 import { splitText } from '../../functions/other/splitText';
 import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
@@ -39,13 +30,18 @@ import {
 	generalConfigDescriptions,
 	generalConfigArray,
 	generalConfigIdType,
+	moderationConfigNames,
+	ModerationConfigTypes,
+	moderationConfigDescriptions,
+	moderationConfigArray,
+	deleteDayRewites,
+	moderationModulesNames,
 } from '../../typings';
 
 export default new Command({
 	interaction: interactions.configure,
 	excute: async ({ client, interaction, options }) => {
 		const subcommand = options.getSubcommand();
-		await interaction.deferReply({ ephemeral: false });
 
 		if (subcommand === 'logs') {
 			const preSelected: LoggingModules = 'mod';
@@ -82,7 +78,7 @@ export default new Command({
 				);
 
 			const selectMenu = (module: LoggingModules) => {
-				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+				return new ActionRowBuilder<SelectMenuBuilder>().setComponents([
 					new SelectMenuBuilder().setCustomId('logging:modules').setOptions(
 						loggingModulesArray.map((m) => {
 							return {
@@ -96,7 +92,7 @@ export default new Command({
 			};
 
 			const buttonComponents = (module: LoggingModules, state: 'enabled' | 'disabled') => {
-				const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+				const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
 					new ButtonBuilder()
 						.setLabel(state === 'enabled' ? 'Enabled' : 'Disabled')
 						.setStyle(state === 'enabled' ? ButtonStyle.Success : ButtonStyle.Danger)
@@ -119,13 +115,13 @@ export default new Command({
 				return row;
 			};
 
-			const sentInteraction = (await interaction.followUp({
+			const sentInteraction = await interaction.reply({
 				embeds: [embed],
 				components: [
 					selectMenu(preSelected),
 					buttonComponents(preSelected, client.config.logging[preSelected] ? 'enabled' : 'disabled'),
 				],
-			})) as Message;
+			});
 
 			const collector = sentInteraction.createMessageComponentCollector({
 				time: 1000 * 60 * 5,
@@ -315,7 +311,7 @@ export default new Command({
 				]);
 
 			const selectMenu = (module: AutomodModules) => {
-				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+				return new ActionRowBuilder<SelectMenuBuilder>().setComponents([
 					new SelectMenuBuilder().setCustomId('automod:modules').setOptions(
 						automodModulesArray.map((m) => {
 							return {
@@ -329,7 +325,7 @@ export default new Command({
 			};
 
 			const buttonComponents = (module: AutomodModules, state: 'enabled' | 'disabled') => {
-				const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+				const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
 					new ButtonBuilder()
 						.setLabel(state === 'enabled' ? 'Enabled' : 'Disabled')
 						.setStyle(state === 'enabled' ? ButtonStyle.Success : ButtonStyle.Danger)
@@ -352,7 +348,7 @@ export default new Command({
 				return row;
 			};
 
-			const sentInteraction = (await interaction.followUp({
+			const sentInteraction = await interaction.reply({
 				embeds: [embed],
 				components: [
 					selectMenu(preSelected),
@@ -361,7 +357,7 @@ export default new Command({
 						client.config.automod.modules[preSelected] ? 'enabled' : 'disabled'
 					),
 				],
-			})) as Message;
+			});
 
 			const collector = sentInteraction.createMessageComponentCollector({
 				time: 1000 * 60 * 5,
@@ -520,7 +516,7 @@ export default new Command({
 				);
 
 			const selectMenu = (module: GeneralConfigTypes) => {
-				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+				return new ActionRowBuilder<SelectMenuBuilder>().setComponents([
 					new SelectMenuBuilder().setCustomId('general:modules').setOptions(
 						generalConfigArray.map((m) => {
 							return {
@@ -534,7 +530,7 @@ export default new Command({
 			};
 
 			const buttonComponents = (module: GeneralConfigTypes) => {
-				return new ActionRowBuilder<ButtonBuilder>().addComponents(
+				return new ActionRowBuilder<ButtonBuilder>().setComponents(
 					new ButtonBuilder()
 						.setLabel('Edit')
 						.setStyle(ButtonStyle.Secondary)
@@ -542,10 +538,10 @@ export default new Command({
 				);
 			};
 
-			const sentInteraction = (await interaction.followUp({
+			const sentInteraction = await interaction.reply({
 				embeds: [embed],
 				components: [selectMenu(preSelected), buttonComponents(preSelected)],
-			})) as Message;
+			});
 
 			const collector = sentInteraction.createMessageComponentCollector({
 				time: 1000 * 60 * 5,
@@ -627,194 +623,274 @@ export default new Command({
 				}
 			});
 		} else if (subcommand === 'moderation') {
-			let module = options.getString('module');
-			const value = options.getString('value');
-			let data = await configModel.findById('moderation');
-
-			if (module && value) {
-				// Counts
-				if ((module.startsWith('count') || module.includes('msgs')) && isNaN(parseInt(value)))
-					return interaction.followUp({
-						embeds: [client.embeds.attention('The input should be a number.')],
-					});
-
-				if (
-					module.includes('msgs') &&
-					(isNaN(parseInt(value)) || parseInt(value) < 0 || parseInt(value) > 7)
-				)
-					return interaction.followUp({
-						embeds: [client.embeds.attention('The days must be between 0 and 7.')],
-					});
-
-				if (
-					!module.startsWith('count') &&
-					(module.includes('timeout') || module.includes('automod')) &&
-					(!isValidTime(value) ||
-						convertToTime(value) > MAX_TIMEOUT_DURATION ||
-						convertToTime(value) < MIN_TIMEOUT_DURATION)
-				)
-					return interaction.followUp({
-						embeds: [
-							client.embeds.attention(
-								`The duration must be between ${convertTime(
-									MIN_TIMEOUT_DURATION
-								)} and ${convertTime(MAX_TIMEOUT_DURATION)}.`
-							),
-						],
-					});
-
-				if (
-					module.startsWith('default') &&
-					module.includes('ban') &&
-					(!isValidTime(value) ||
-						convertToTime(value) > MAX_SOFTBAN_DURATION ||
-						convertToTime(value) < MIN_SOFTBAN_DURATION)
-				)
-					return interaction.followUp({
-						embeds: [
-							client.embeds.attention(
-								`The duration must be between ${convertTime(
-									MIN_SOFTBAN_DURATION
-								)} and ${convertTime(MAX_SOFTBAN_DURATION)}.`
-							),
-						],
-					});
-
-				if (module.startsWith('count')) {
-					module = module.replaceAll('count_', '');
-					await configModel.findByIdAndUpdate('moderation', {
-						$set: {
-							count: {
-								...(await configModel.findById('moderation')).count,
-								[module]: parseInt(value),
-							},
-						},
-					});
-				} else if (module.startsWith('duration')) {
-					module = module.replaceAll('duration_', '');
-					await configModel.findByIdAndUpdate('moderation', {
-						$set: {
-							duration: {
-								...(await configModel.findById('moderation')).duration,
-								[module]:
-									module === 'duration_ban'
-										? convertToTime(value) === undefined
-											? null
-											: convertToTime(value)
-										: convertToTime(value),
-							},
-						},
-					});
-				} else if (module.startsWith('default')) {
-					module = module.replaceAll('default_', '');
-					await configModel.findByIdAndUpdate('moderation', {
-						$set: {
-							default: {
-								...(await configModel.findById('moderation')).default,
-								[module]:
-									module === 'reason'
-										? splitText(value, MAX_REASON_LENGTH)
-										: module === 'msgs'
-										? parseInt(value)
-										: convertToTime(value),
-							},
-						},
-					});
-				}
-				await client.config.updateModeration();
-			}
-			data = await configModel.findById('moderation');
-
+			const preSelected: ModerationConfigTypes = 'counts';
 			const embed = new EmbedBuilder()
-				.setTitle('Moderation Configuration')
-				.setColor(client.cc.ultimates)
+				.setTitle(moderationConfigNames[preSelected])
+				.setColor(client.cc.invisible)
 				.setDescription(
 					[
-						`• ${Formatters.bold('1st timeout warnings count')} - ${data.count.timeout1 || '✖︎'}`,
-						`• ${Formatters.bold('2nd timeout warnings count')} - ${data.count.timeout2 || '✖︎'}`,
-						`• ${Formatters.bold('Ban warnings count')} - ${data.count.ban || '✖︎'}`,
-						`• ${Formatters.bold('Automod timeout warning multiplication')} - ${
-							data.count.timeout1 || '✖︎'
-						}`,
-						`• ${Formatters.bold('1st auto timeout duration ')} - ${
-							convertTime(data.duration.timeout1) || '✖︎'
-						}`,
-						`• ${Formatters.bold('2nd auto timeout duration')} - ${
-							convertTime(data.duration.timeout2) || '✖︎'
-						}`,
-						`• ${Formatters.bold('Auto ban duration')} - ${
-							data.duration.ban ? convertTime(data.duration.ban) : 'Permanent'
-						}`,
-						`• ${Formatters.bold('Automod auto timeout duration')} - ${
-							convertTime(data.duration.automod) || '✖︎'
-						}`,
-						`• ${Formatters.bold('Default timeout duration')} - ${
-							convertTime(data.default.timeout) || '✖︎'
-						}`,
-						`• ${Formatters.bold('Default softban duration')} - ${
-							convertTime(data.default.softban) || '✖︎'
-						}`,
-						`• ${Formatters.bold('Default ban delete msgs duration')} - ${
-							!data.default.msgs ? "don't delete any" : `${data.default.msgs} days`
-						}`,
+						`${moderationConfigDescriptions[preSelected]}\n`,
+						`\`Timeout #1:\` ${client.config.moderation[preSelected].timeout1}`,
+						`\`Timeout #2:\` ${client.config.moderation[preSelected].timeout2}`,
+						`\`Ban:\` ${client.config.moderation[preSelected].ban}`,
+						`\`Automod multiplication:\` ${client.config.moderation[preSelected].automod}`,
 					].join('\n')
 				);
 
-			const selectmenu = new ActionRowBuilder<SelectMenuBuilder>().setComponents([
-				new SelectMenuBuilder()
-					.setCustomId('reasons')
-					.setMaxValues(1)
-					.setMinValues(1)
-					.setPlaceholder('Edit autocomplete reasons for...')
-					.setOptions([
-						{ label: '/warn', value: 'warn' },
-						{ label: '/timeout', value: 'timeout' },
-						{ label: '/ban', value: 'ban' },
-						{ label: '/softban', value: 'softban' },
-						{ label: '/unban', value: 'unban' },
-						{ label: '/kick', value: 'kick' },
-					]),
-			]);
+			const selectMenu = (module: ModerationConfigTypes) => {
+				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+					new SelectMenuBuilder().setCustomId('moderation:modules').setOptions(
+						moderationConfigArray.map((m) => {
+							return {
+								label: m.rewrite,
+								value: m.name,
+								default: m.name === module,
+							};
+						})
+					),
+				]);
+			};
 
-			const sentInteraction = (await interaction.followUp({
+			const buttonComponents = (module: ModerationConfigTypes) => {
+				const row = new ActionRowBuilder<ButtonBuilder | SelectMenuBuilder>();
+
+				if (module === 'counts')
+					row.setComponents([
+						new ButtonBuilder()
+							.setLabel('Timeout #1')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:counts:timeout1'),
+						new ButtonBuilder()
+							.setLabel('Timeout #2')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:counts:timeout2'),
+						new ButtonBuilder()
+							.setLabel('Ban')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:counts:ban'),
+						new ButtonBuilder()
+							.setLabel('Automod')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:counts:automod'),
+					]);
+
+				if (module === 'durations')
+					row.setComponents([
+						new ButtonBuilder()
+							.setLabel('Timeout #1')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:timeout1'),
+						new ButtonBuilder()
+							.setLabel('Timeout #2')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:timeout2'),
+						new ButtonBuilder()
+							.setLabel('Ban')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:ban'),
+						new ButtonBuilder()
+							.setLabel('Automod')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:automod'),
+					]);
+
+				if (module === 'durations')
+					row.setComponents([
+						new ButtonBuilder()
+							.setLabel('Timeout #1')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:timeout1'),
+						new ButtonBuilder()
+							.setLabel('Timeout #2')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:timeout2'),
+						new ButtonBuilder()
+							.setLabel('Ban')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:ban'),
+						new ButtonBuilder()
+							.setLabel('Automod')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:durations:automod'),
+					]);
+
+				if (module === 'defaults')
+					row.setComponents([
+						new ButtonBuilder()
+							.setLabel('Timeout duration')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:defaults:timeout'),
+						new ButtonBuilder()
+							.setLabel('Softban duration')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:defaults:softban'),
+						new ButtonBuilder()
+							.setLabel('Delete messages days')
+							.setStyle(ButtonStyle.Secondary)
+							.setCustomId('moderation:defaults:msgs'),
+					]);
+
+				if (module === 'reasons')
+					row.setComponents(
+						new SelectMenuBuilder()
+							.setCustomId('moderation:reasons')
+							.setMaxValues(1)
+							.setMinValues(0)
+							.setPlaceholder('Edit autocomplete reasons for...')
+							.setOptions([
+								{ label: '/warn', value: 'warn' },
+								{ label: '/timeout', value: 'timeout' },
+								{ label: '/ban', value: 'ban' },
+								{ label: '/softban', value: 'softban' },
+								{ label: '/unban', value: 'unban' },
+								{ label: '/kick', value: 'kick' },
+							])
+					);
+
+				return row;
+			};
+
+			const sentInteraction = await interaction.reply({
 				embeds: [embed],
-				components: [selectmenu],
-			})) as Message;
-
-			const collector = sentInteraction.createMessageComponentCollector({
-				componentType: ComponentType.SelectMenu,
-				time: 60000,
+				components: [selectMenu(preSelected), buttonComponents(preSelected)],
 			});
 
-			collector.on('collect', async (collected): Promise<any> => {
-				if (collected.user.id !== interaction.user.id)
-					return interaction.reply({
+			const collector = sentInteraction.createMessageComponentCollector({
+				time: 1000 * 60 * 5,
+			});
+
+			collector.on('collect', async (collected) => {
+				if (collected.user.id !== interaction.user.id) {
+					collected.reply({
 						content: t('common.errors.cannotInteract'),
 						ephemeral: true,
 					});
+					return void null;
+				}
 
-				const modal = new ModalBuilder()
-					.setTitle('Add reasons')
-					.setCustomId('add-reason-' + collected.values)
-					.addComponents([
-						{
-							type: ComponentType.ActionRow,
-							components: [
-								{
-									type: ComponentType.TextInput,
-									custom_id: 'input',
-									label: 'Separate reasons with --',
-									style: TextInputStyle.Paragraph,
-									required: true,
-									max_length: 4000,
-									min_length: 1,
-									placeholder:
-										'Eating warns, being the imposter - type an existing reason to remove it',
-								},
-							],
-						},
-					]);
-				await collected.showModal(modal);
+				if (collected.customId === 'moderation:modules' && collected.isSelectMenu()) {
+					const selectedModule = collected.values[0] as ModerationConfigTypes;
+					const embed = new EmbedBuilder()
+						.setTitle(moderationConfigNames[selectedModule])
+						.setColor(client.cc.invisible)
+						.setDescription(
+							[
+								`${moderationConfigDescriptions[selectedModule]}\n`,
+								selectedModule === 'counts'
+									? [
+											`\`Timeout #1:\` ${client.config.moderation[selectedModule].timeout1}`,
+											`\`Timeout #2:\` ${client.config.moderation[selectedModule].timeout2}`,
+											`\`Ban:\` ${client.config.moderation[selectedModule].ban}`,
+											`\`Automod multiplication:\` ${client.config.moderation[selectedModule].automod}`,
+									  ].join('\n')
+									: selectedModule === 'durations'
+									? [
+											`\`Timeout #1:\` ${convertTime(
+												client.config.moderation[selectedModule].timeout1
+											)}`,
+											`\`Timeout #2:\` ${convertTime(
+												client.config.moderation[selectedModule].timeout2
+											)}`,
+											`\`Ban:\` ${
+												client.config.moderation[selectedModule].ban
+													? convertTime(
+															client.config.moderation[selectedModule].ban
+													  )
+													: 'Permanent'
+											}`,
+											`\`Automod timeout:\` ${convertTime(
+												client.config.moderation[selectedModule].automod
+											)}`,
+									  ].join('\n')
+									: selectedModule === 'defaults'
+									? [
+											`\`Timeout duration:\` ${convertTime(
+												client.config.moderation[selectedModule].timeout
+											)}`,
+											`\`Softban duration:\` ${convertTime(
+												client.config.moderation[selectedModule].softban
+											)}`,
+											`\`Delete message days:\` ${
+												deleteDayRewites[
+													client.config.moderation[selectedModule].msgs
+												]
+											}`,
+									  ].join('\n')
+									: '',
+							].join('\n')
+						);
+
+					await collected.update({
+						embeds: [embed],
+						components: [selectMenu(selectedModule), buttonComponents(selectedModule)],
+					});
+				} else if (collected.customId === 'moderation:reasons' && collected.isSelectMenu()) {
+					const modal = new ModalBuilder()
+						.setTitle(`Reasons for ${collected.values[0]}`)
+						.setCustomId(`moderation:reasons:${collected.values[0]}`)
+						.addComponents([
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'reasons',
+										label: 'Separate reasons with ||',
+										style: TextInputStyle.Paragraph,
+										required: false,
+										max_length: 4000,
+										min_length: 0,
+										placeholder: 'No reasons, add some!',
+										value: client.config.moderation.reasons[collected.values[0]].length
+											? client.config.moderation.reasons[collected.values[0]].join(
+													' || '
+											  )
+											: null,
+									},
+								],
+							},
+						]);
+					await collected.showModal(modal);
+				} else if (collected.customId.startsWith('moderation:') && collected.isButton()) {
+					const subModule = collected.customId.split(':')[1] as ModerationConfigTypes;
+					const module = collected.customId.split(':')[2];
+					const modal = new ModalBuilder()
+						.setTitle(
+							`${moderationConfigNames[subModule]} - ${moderationModulesNames[subModule][module]}`
+						)
+						.setCustomId(`moderation:${subModule}:${module}`)
+						.addComponents([
+							{
+								type: ComponentType.ActionRow,
+								components: [
+									{
+										type: ComponentType.TextInput,
+										custom_id: 'input',
+										label: `${moderationConfigNames[subModule]} - ${moderationModulesNames[subModule][module]}`,
+										style: TextInputStyle.Short,
+										required: true,
+										max_length: 100,
+										min_length: 1,
+										value:
+											subModule === 'durations'
+												? client.config.moderation[subModule][module]
+													? convertTime(
+															client.config.moderation[subModule][module]
+													  )
+													: 'Permanent'
+												: subModule === 'defaults'
+												? module === 'msgs'
+													? client.config.moderation[subModule][module]
+													: convertTime(
+															client.config.moderation[subModule][module]
+													  )
+												: client.config.moderation[subModule][module],
+									},
+								],
+							},
+						]);
+					await collected.showModal(modal);
+				}
 			});
 		}
 	},

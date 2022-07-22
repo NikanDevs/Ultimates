@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { MAX_REASON_LENGTH } from '../../constants';
-import { interactionOptions } from '../../typings';
+import { deleteDayRewites, interactionOptions } from '../../typings';
 
 export const softbanCommand = {
 	name: 'softban',
@@ -28,14 +28,14 @@ export const softbanCommand = {
 			type: ApplicationCommandOptionType.Number,
 			required: false,
 			choices: [
-				{ name: "Don't delete any", value: 0 },
-				{ name: 'Previous 24 hours', value: 1 },
-				{ name: 'Previous 48 hours', value: 2 },
-				{ name: 'Previous 3 days', value: 3 },
-				{ name: 'Previous 4 days', value: 4 },
-				{ name: 'Previous 5 days', value: 5 },
-				{ name: 'Previous 6 days', value: 6 },
-				{ name: 'Previous 7 days', value: 7 },
+				{ name: deleteDayRewites[0], value: 0 },
+				{ name: deleteDayRewites[1], value: 1 },
+				{ name: deleteDayRewites[2], value: 2 },
+				{ name: deleteDayRewites[3], value: 3 },
+				{ name: deleteDayRewites[4], value: 4 },
+				{ name: deleteDayRewites[5], value: 5 },
+				{ name: deleteDayRewites[6], value: 6 },
+				{ name: deleteDayRewites[7], value: 7 },
 			],
 		},
 		{
