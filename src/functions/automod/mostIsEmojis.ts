@@ -13,4 +13,3 @@ export function mostIsEmojis(str: string) {
 		return false;
 	}
 }
-

@@ -3,8 +3,7 @@ import { client } from '..';
 
 export async function generateModmailInfoEmbed(user: User) {
 	const guild =
-		client.guilds.cache.get(process.env.GUILD_ID) ||
-		((await client.guilds.fetch(process.env.GUILD_ID)) as Guild);
+		client.guilds.cache.get(process.env.GUILD_ID) || ((await client.guilds.fetch(process.env.GUILD_ID)) as Guild);
 	const guildMember = (await guild.members.fetch(user.id)) as GuildMember;
 
 	return new EmbedBuilder()
@@ -33,12 +32,9 @@ export async function generateModmailInfoEmbed(user: User) {
 						+guildMember.joinedAt / 1000
 					)}:R>`,
 					`• **Nickname**: ${
-						user.username == guildMember.displayName
-							? `No Nickname`
-							: guildMember.displayName
+						user.username == guildMember.displayName ? `No Nickname` : guildMember.displayName
 					}`,
 				].join('\n'),
 			},
 		]);
 }
-

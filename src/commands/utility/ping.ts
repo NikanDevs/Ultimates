@@ -20,9 +20,7 @@ export default new Command({
 						ConnectionStates[connection.readyState]
 					)}`,
 					`${client.cc.ping.ping} **Websocket** - ${client.ws.ping}ms`,
-					`${client.cc.ping.ping} **Roundtrip** - ${
-						Date.now() - interaction.createdTimestamp
-					}ms`,
+					`${client.cc.ping.ping} **Roundtrip** - ${Date.now() - interaction.createdTimestamp}ms`,
 					'',
 					`🕓 **Uptime** - ${convertTime(+client.uptime)}`,
 				].join('\n')

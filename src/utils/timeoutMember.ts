@@ -10,8 +10,7 @@ export async function timeoutMember(
 		duration: number;
 	}
 ) {
-	if (!member.communicationDisabledUntilTimestamp)
-		await member.timeout(options.duration, options.reason);
+	if (!member.communicationDisabledUntilTimestamp) await member.timeout(options.duration, options.reason);
 
 	const data = new durationsModel({
 		case: await getModCase(),

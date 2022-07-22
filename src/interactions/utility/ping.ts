@@ -8,4 +8,3 @@ export const pingCommand = {
 	permission: [],
 	available: true,
 } as interactionOptions;
-

@@ -18,9 +18,7 @@ export default new Event('messageDelete', async (message: Message) => {
 		message?.guildId !== process.env.GUILD_ID ||
 		message?.author?.bot ||
 		client.config.ignores.logs.message.channelIds.includes(channel?.id) ||
-		client.config.ignores.logs.message.roleIds.some((role) =>
-			message?.member?.roles?.cache.has(role)
-		)
+		client.config.ignores.logs.message.roleIds.some((role) => message?.member?.roles?.cache.has(role))
 	)
 		return;
 
@@ -34,9 +32,7 @@ export default new Event('messageDelete', async (message: Message) => {
 		.addFields([
 			{
 				name: 'Content',
-				value:
-					splitText(message.content, MAX_FIELD_VALUE_LENGTH) ??
-					'The message has no content.',
+				value: splitText(message.content, MAX_FIELD_VALUE_LENGTH) ?? 'The message has no content.',
 			},
 			{
 				name: 'IDs',

@@ -24,4 +24,3 @@ const schema = new Schema({
 });
 
 export const configModel = model<ConfigSchemaType>('config', schema);
-

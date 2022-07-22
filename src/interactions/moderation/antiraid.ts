@@ -18,8 +18,7 @@ export const antiRaidCommand = {
 		},
 		{
 			name: 'joined',
-			description:
-				'The user should have joined the server in the past <input> to be affected',
+			description: 'The user should have joined the server in the past <input> to be affected',
 			type: ApplicationCommandOptionType.String,
 			required: true,
 			autocomplete: true,
@@ -50,4 +49,3 @@ export const antiRaidCommand = {
 		},
 	],
 } as interactionOptions;
-

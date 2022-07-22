@@ -2,26 +2,13 @@ import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { t } from 'i18next';
-import {
-	guardCollection,
-	MAX_ANTIRAID_DURATION,
-	MIN_ANTIRAID_DURATION,
-	punishmentExpiry,
-} from '../../constants';
+import { guardCollection, MAX_ANTIRAID_DURATION, MIN_ANTIRAID_DURATION, punishmentExpiry } from '../../constants';
 import { PunishmentTypes } from '../../typings';
 import { punishmentModel } from '../../models/punishments';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { getModCase } from '../../functions/cases/modCase';
 import { splitText } from '../../functions/other/splitText';
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	Colors,
-	ComponentType,
-	EmbedBuilder,
-	Message,
-} from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, EmbedBuilder, Message } from 'discord.js';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { createAntiraidLog } from '../../functions/logs/createAntiraidLog';
 import { create } from 'sourcebin';
@@ -62,11 +49,7 @@ export default new Command({
 
 		if (guardCollection.has('antiraid'))
 			return interaction.reply({
-				embeds: [
-					client.embeds.attention(
-						'The server is already getting scanned by the antiraid...'
-					),
-				],
+				embeds: [client.embeds.attention('The server is already getting scanned by the antiraid...')],
 				ephemeral: true,
 			});
 
@@ -97,14 +80,8 @@ export default new Command({
 
 		const hitMembers = filtered.map((m) => `- ${m.user.tag} (${m.user.id})`);
 		const confirmButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([
-			new ButtonBuilder()
-				.setLabel('Confirm')
-				.setCustomId('confirm')
-				.setStyle(ButtonStyle.Success),
-			new ButtonBuilder()
-				.setLabel('Cancel')
-				.setCustomId('cancel')
-				.setStyle(ButtonStyle.Danger),
+			new ButtonBuilder().setLabel('Confirm').setCustomId('confirm').setStyle(ButtonStyle.Success),
+			new ButtonBuilder().setLabel('Cancel').setCustomId('cancel').setStyle(ButtonStyle.Danger),
 		]);
 
 		const confirmMsg = (await interaction.followUp({
@@ -211,4 +188,3 @@ export default new Command({
 		});
 	},
 });
-

@@ -43,17 +43,15 @@ export const clientEmbeds = {
 		return embed;
 	},
 	error: function name(error: string) {
-		const embed = new EmbedBuilder()
-			.setDescription(client.cc.error + ' • ' + error)
-			.setColor(Colors.Red);
+		const embed = new EmbedBuilder().setDescription(client.cc.error + ' • ' + error).setColor(Colors.Red);
 		return embed;
 	},
 	moderation: function (user: User | string, options: { action: PunishmentTypes; id: string }) {
 		const embed = new EmbedBuilder()
 			.setDescription(
-				`${Formatters.bold(user.toString())} was ${
-					punishmentTypeNames[options.action]
-				}  • ID: \`${options['id']}\``
+				`${Formatters.bold(user.toString())} was ${punishmentTypeNames[options.action]}  • ID: \`${
+					options['id']
+				}\``
 			)
 			.setColor(client.cc.moderation);
 		return embed;
@@ -66,13 +64,9 @@ function checkEmojis(type: EmojisConfigTypes) {
 	const output = emojisExist
 		? !readFileSync(`${process.cwd()}/emojis.yml`, 'utf8').trim().length
 			? emojisConfigDefaults[type]
-			: (load(readFileSync(`${process.cwd()}/emojis.yml`, 'utf8')) as emojisConfigTypes)[
-					type
-			  ] === undefined
+			: (load(readFileSync(`${process.cwd()}/emojis.yml`, 'utf8')) as emojisConfigTypes)[type] === undefined
 			? emojisConfigDefaults[type]
-			: (load(readFileSync(`${process.cwd()}/emojis.yml`, 'utf8')) as emojisConfigTypes)[
-					type
-			  ]
+			: (load(readFileSync(`${process.cwd()}/emojis.yml`, 'utf8')) as emojisConfigTypes)[type]
 		: emojisConfigDefaults[type];
 
 	return output;

@@ -1,11 +1,7 @@
 import { EmbedBuilder, resolveColor, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { logsModel } from '../../models/logs';
-import {
-	type createModLogOptions,
-	PunishmentTypes,
-	punishmentTypeEmbedColors,
-} from '../../typings';
+import { type createModLogOptions, PunishmentTypes, punishmentTypeEmbedColors } from '../../typings';
 import { addModCase, getModCase } from '../cases/modCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
@@ -23,9 +19,9 @@ export async function createModLog(options: createModLogOptions) {
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
-			name: ` ${
-				revoke ? 'Revoke' : options.update ? 'Update' : capitalize(options.action)
-			} | Case: #${revoke ? options.referencedPunishment.case : currentCase}`,
+			name: ` ${revoke ? 'Revoke' : options.update ? 'Update' : capitalize(options.action)} | Case: #${
+				revoke ? options.referencedPunishment.case : currentCase
+			}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setColor(
@@ -45,11 +41,7 @@ export async function createModLog(options: createModLogOptions) {
 						  }](${await getUrlFromCase(options.referencedPunishment.case)})`
 				}\n`,
 				`• **Action:** ${capitalize(options.action)}`,
-				`${
-					options.duration
-						? `• **Duration:** ${convertTime(options.duration)}`
-						: 'LINE_BREAK'
-				}`,
+				`${options.duration ? `• **Duration:** ${convertTime(options.duration)}` : 'LINE_BREAK'}`,
 				`• **Member:** ${options.user.tag} • ${options.user.id}`,
 				`• **Moderator:** ${
 					options.moderator.id !== client.user.id
@@ -78,9 +70,9 @@ export async function createModLog(options: createModLogOptions) {
 	)
 		return;
 
-	var findMessage = await (
-		client.channels.cache.get(logMessage.channel_id) as TextChannel
-	).messages.fetch(logMessage.id);
+	var findMessage = await (client.channels.cache.get(logMessage.channel_id) as TextChannel).messages.fetch(
+		logMessage.id
+	);
 	const newLogData = new logsModel({
 		_id: currentCase,
 		url: findMessage.url,

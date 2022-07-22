@@ -5,4 +5,3 @@ export async function getUrlFromCase(tofindCase: string | number): Promise<strin
 
 	return data ? data.url : 'https://discord.com/404';
 }
-

@@ -42,4 +42,3 @@ export const banCommand = {
 		},
 	],
 } as interactionOptions;
-

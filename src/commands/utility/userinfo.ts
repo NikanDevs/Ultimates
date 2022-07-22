@@ -114,9 +114,7 @@ export default new Command({
 						`• **Registered:** <t:${~~(+user.createdAt / 1000)}:f> | <t:${~~(
 							+user.createdAt / 1000
 						)}:R>`,
-						`• **Bot:** ${
-							user?.bot ? `${client.cc.success}` : `${client.cc.error}`
-						}`,
+						`• **Bot:** ${user?.bot ? `${client.cc.success}` : `${client.cc.error}`}`,
 					].join('\n'),
 				},
 				{
@@ -140,9 +138,7 @@ export default new Command({
 					name: 'Banner',
 					value: [
 						`• **Animated:** ${
-							user.bannerURL().endsWith('.gif')
-								? `${client.cc.success}`
-								: `${client.cc.error}`
+							user.bannerURL().endsWith('.gif') ? `${client.cc.success}` : `${client.cc.error}`
 						}`,
 						`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
 					].join('\n'),
@@ -172,8 +168,7 @@ export default new Command({
 		}
 
 		const badgesArray: string[] = [];
-		if (user.bot && !user.flags?.toArray().includes('VerifiedBot'))
-			badgesArray.push(badgesReweite.UnverifiedBot);
+		if (user.bot && !user.flags?.toArray().includes('VerifiedBot')) badgesArray.push(badgesReweite.UnverifiedBot);
 		user.flags?.toArray().forEach((badge) => badgesArray.push(`• ${badgesReweite[badge]}`));
 
 		if (badgesArray.length) {
@@ -195,13 +190,8 @@ export default new Command({
 						name: `Presence`,
 						value: [
 							`• **Status:** ${capitalize(member?.presence?.status)}`,
-							`• **Devices [${
-								Object.entries(devices).length
-							}]:** ${Object.entries(devices)
-								.map(
-									(value) =>
-										`${value[0][0].toUpperCase()}${value[0].slice(1)}`
-								)
+							`• **Devices [${Object.entries(devices).length}]:** ${Object.entries(devices)
+								.map((value) => `${value[0][0].toUpperCase()}${value[0].slice(1)}`)
 								.join(', ')}`,
 						].join('\n'),
 					},
@@ -286,18 +276,16 @@ export default new Command({
 								name: user.tag,
 								iconURL: user.displayAvatarURL(),
 							})
-							.setDescription(
-								[`**ID:** ${user.id}`, user.toString()].join(' • ')
-							)
+							.setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
 							.setThumbnail(user.displayAvatarURL())
 							.setColor(client.cc.invisible)
 							.addFields([
 								{
 									name: `Information in ${interaction.guild.name}`,
 									value: [
-										`• ** Joined:** <t:${~~(
+										`• ** Joined:** <t:${~~(+member.joinedAt / 1000)}:f> [<t:${~~(
 											+member.joinedAt / 1000
-										)}:f> [<t:${~~(+member.joinedAt / 1000)}:R>]`,
+										)}:R>]`,
 										`• **Nickname:** ${
 											member.displayName === member.user?.username
 												? 'No Nickname'
@@ -311,12 +299,8 @@ export default new Command({
 										`• **Boosting Since:** ${
 											member.premiumSinceTimestamp
 												? `<t:${~~(
-														member.premiumSinceTimestamp /
-														1000
-												  )}:f> | <t:${~~(
-														member.premiumSinceTimestamp /
-														1000
-												  )}:R>`
+														member.premiumSinceTimestamp / 1000
+												  )}:f> | <t:${~~(member.premiumSinceTimestamp / 1000)}:R>`
 												: 'Not boosting the server!'
 										}`,
 										`• **Acknowments:** ${acknowments}`,
@@ -334,10 +318,7 @@ export default new Command({
 												? `${client.cc.success}`
 												: `${client.cc.error}`
 										}`,
-										`• **Formats:** ${UrlTypeCheck(
-											member.avatarURL(),
-											'Avatar'
-										)}`,
+										`• **Formats:** ${UrlTypeCheck(member.avatarURL(), 'Avatar')}`,
 									].join('\n'),
 								},
 							]);

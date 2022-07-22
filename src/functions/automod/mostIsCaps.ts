@@ -20,4 +20,3 @@ export function mostIsCap(str: string) {
 		else return false;
 	} else return false;
 }
-

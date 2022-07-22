@@ -6,4 +6,3 @@ export function logActivity(type: LoggingModules) {
 		return false;
 	} else return true;
 }
-

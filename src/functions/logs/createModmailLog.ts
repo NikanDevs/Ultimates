@@ -33,9 +33,7 @@ export async function createModmailLog(options: createModmailLogOptions) {
 				`${options.ticketId ? `• **Ticket:** #${options.ticketId}` : ''}\n`,
 				`• **Action:** ${capitalize(options.action)}`,
 				`• **Member:** ${options.user.tag} • ${options.user.id}`,
-				options.action === ModmailActionTypes.Open
-					? `• **Channel:** ${ticket.channel}`
-					: 'LINE_BREAK',
+				options.action === ModmailActionTypes.Open ? `• **Channel:** ${ticket.channel}` : 'LINE_BREAK',
 				options.moderator
 					? `• **Moderator:** ${
 							options.moderator.id !== client.user.id
@@ -58,16 +56,15 @@ export async function createModmailLog(options: createModmailLogOptions) {
 				.join('\n')
 				.replaceAll('LINE_BREAK\n', '')
 		);
-	if (logActivity('modmail'))
-		var logMessage = await client.config.webhooks.modmail.send({ embeds: [embed] });
+	if (logActivity('modmail')) var logMessage = await client.config.webhooks.modmail.send({ embeds: [embed] });
 
 	if (options.action === ModmailActionTypes.Open) {
 		await addModmailTicket();
 
 		if (logActivity('modmail'))
-			var findMessage = await (
-				client.channels.cache.get(logMessage.channel_id) as TextChannel
-			).messages.fetch(logMessage.id);
+			var findMessage = await (client.channels.cache.get(logMessage.channel_id) as TextChannel).messages.fetch(
+				logMessage.id
+			);
 
 		await modmailModel.findByIdAndUpdate('substance', {
 			$push: {
@@ -81,16 +78,14 @@ export async function createModmailLog(options: createModmailLogOptions) {
 			},
 		});
 	} else if (options.action === ModmailActionTypes.BlacklistAdd && logActivity('modmail')) {
-		let findMessage = await (
-			client.channels.cache.get(logMessage.channel_id) as TextChannel
-		).messages.fetch(logMessage.id);
+		let findMessage = await (client.channels.cache.get(logMessage.channel_id) as TextChannel).messages.fetch(
+			logMessage.id
+		);
 
 		await modmailModel.findByIdAndUpdate(options.user.id, { $set: { url: findMessage.url } });
 	} else if (options.action === ModmailActionTypes.Close) {
 		const openedTickets = (await modmailModel.findById('substance')).openedTickets;
-		const ticketData = (openedTickets as modmailTicketData[]).find(
-			(data) => data.userId === options.user.id
-		);
+		const ticketData = (openedTickets as modmailTicketData[]).find((data) => data.userId === options.user.id);
 
 		await modmailModel.findByIdAndUpdate('substance', {
 			$pull: { openedTickets: { userId: ticketData.userId } },

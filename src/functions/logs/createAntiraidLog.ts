@@ -23,18 +23,14 @@ export async function createAntiraidLog(options: createAntiraidLogOptions) {
 		.setDescription(
 			[
 				`• **Action:** Antiraid`,
-				`• **Affected:** ${options.affected.toLocaleString()} member${
-					options.affected === 1 ? '' : 's'
-				}`,
+				`• **Affected:** ${options.affected.toLocaleString()} member${options.affected === 1 ? '' : 's'}`,
 				`• **Moderator:** ${
 					options.moderator.id !== client.user.id
 						? `${options.moderator.tag} • ${options.moderator.id}`
 						: 'Automatic'
 				}`,
 				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason:** ${
-					splitText(options.reason, MAX_REASON_LENGTH) ?? t('common.noReason')
-				}`,
+				`• **Reason:** ${splitText(options.reason, MAX_REASON_LENGTH) ?? t('common.noReason')}`,
 				`• **Registered:** in the past ${convertTime(options.registered)}`,
 				`• **Joined:** in the past ${convertTime(options.joined)}\n`,
 				`[View the results](${options.results})`,
@@ -44,9 +40,9 @@ export async function createAntiraidLog(options: createAntiraidLogOptions) {
 	if (!logActivity('mod')) return;
 	var logMessage = await client.config.webhooks.mod.send({ embeds: [embed] });
 
-	var findMessage = await (
-		client.channels.cache.get(logMessage.channel_id) as TextChannel
-	).messages.fetch(logMessage.id);
+	var findMessage = await (client.channels.cache.get(logMessage.channel_id) as TextChannel).messages.fetch(
+		logMessage.id
+	);
 
 	const newLogData = new logsModel({
 		_id: currentCase,
@@ -56,4 +52,3 @@ export async function createAntiraidLog(options: createAntiraidLogOptions) {
 	});
 	await newLogData.save();
 }
-

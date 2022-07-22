@@ -12,12 +12,8 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 		newState.guild.id !== process.env.GUILD_ID ||
 		client.config.ignores.logs.voice.channelIds.includes(newState.channelId) ||
 		client.config.ignores.logs.voice.channelIds.includes(oldState.channelId) ||
-		client.config.ignores.logs.voice.roleIds.some((role) =>
-			newState?.member?.roles?.cache.has(role)
-		) ||
-		client.config.ignores.logs.voice.roleIds.some((role) =>
-			oldState?.member?.roles?.cache.has(role)
-		)
+		client.config.ignores.logs.voice.roleIds.some((role) => newState?.member?.roles?.cache.has(role)) ||
+		client.config.ignores.logs.voice.roleIds.some((role) => oldState?.member?.roles?.cache.has(role))
 	)
 		return;
 
@@ -27,9 +23,7 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				name: newState.member.user.tag,
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
-			.setDescription(
-				`Joined ${newState.channel} • ${generateDiscordTimestamp(new Date())}`
-			)
+			.setDescription(`Joined ${newState.channel} • ${generateDiscordTimestamp(new Date())}`)
 			.addFields([
 				{
 					name: 'IDs',
@@ -62,9 +56,7 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
 			.setDescription(
-				`Moved from ${oldState.channel} to ${
-					newState.channel
-				} • ${generateDiscordTimestamp(new Date())}`
+				`Moved from ${oldState.channel} to ${newState.channel} • ${generateDiscordTimestamp(new Date())}`
 			)
 			.addFields([
 				{
@@ -77,4 +69,3 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 		client.config.webhooks.voice.send({ embeds: [embed] });
 	}
 });
-

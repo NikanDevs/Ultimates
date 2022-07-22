@@ -8,16 +8,13 @@ export const checkUnbans = async () => {
 	const guild = await client.guilds.fetch(process.env.GUILD_ID);
 	const allData = await durationsModel.find({ type: PunishmentTypes.Softban });
 	const endedData = allData?.filter((c) => Date.now() > c.expires.getTime());
-	let reason =
-		Formatters.strikethrough('Unbanned due to softban duration') + ' Already unbanned.';
+	let reason = Formatters.strikethrough('Unbanned due to softban duration') + ' Already unbanned.';
 	if (!endedData) return;
 
 	for (const data of endedData) {
 		await data.delete();
 		const bannedMember = await guild.bans?.fetch(data.userId).catch(() => {});
-		const findUser = (await client.users
-			.fetch(data.userId, { force: true })
-			.catch(() => {})) as User;
+		const findUser = (await client.users.fetch(data.userId, { force: true }).catch(() => {})) as User;
 
 		if (bannedMember || bannedMember !== undefined) {
 			reason = 'Unbanned due to softban duration.';
@@ -33,4 +30,3 @@ export const checkUnbans = async () => {
 		});
 	}
 };
-

@@ -24,4 +24,3 @@ export const nicknameCommand = {
 		},
 	],
 } as interactionOptions;
-

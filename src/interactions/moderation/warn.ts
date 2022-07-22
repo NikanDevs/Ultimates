@@ -26,4 +26,3 @@ export const warnCommand = {
 		},
 	],
 } as interactionOptions;
-

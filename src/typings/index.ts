@@ -439,4 +439,3 @@ export const deleteDayRewites = {
 	6: 'Previous 6 days',
 	7: 'Previous 7 days',
 };
-

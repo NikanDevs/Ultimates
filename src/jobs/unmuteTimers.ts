@@ -12,12 +12,8 @@ export const checkUnmutes = async () => {
 
 	for (const data of endedData) {
 		await data.delete();
-		const guildMember = (await guild.members
-			?.fetch(data.userId)
-			.catch(() => {})) as GuildMember;
-		const findUser = (await client.users
-			.fetch(data.userId, { force: true })
-			.catch(() => {})) as User;
+		const guildMember = (await guild.members?.fetch(data.userId).catch(() => {})) as GuildMember;
+		const findUser = (await client.users.fetch(data.userId, { force: true }).catch(() => {})) as User;
 
 		if (guildMember) guildMember.timeout(null, 'Timeout ended based on the duration.');
 
@@ -30,4 +26,3 @@ export const checkUnmutes = async () => {
 		});
 	}
 };
-

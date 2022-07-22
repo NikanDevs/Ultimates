@@ -10,11 +10,7 @@ import {
 	ButtonStyle,
 } from 'discord.js';
 import { t } from 'i18next';
-import type {
-	PaginatorInteractionTypes,
-	paginatorOptions,
-	paginatorStatusOptions,
-} from '../typings';
+import type { PaginatorInteractionTypes, paginatorOptions, paginatorStatusOptions } from '../typings';
 
 export class Paginator {
 	private options: {
@@ -57,12 +53,7 @@ export class Paginator {
 		const sliced = this.options.array.slice(this.status.slice1, this.status.slice2);
 
 		const newEmbed = EmbedBuilder.from(embedjson)
-			.setDescription(
-				embedjson.description.replaceAll(
-					'${{array}}',
-					sliced.join(this.options.joinWith)
-				)
-			)
+			.setDescription(embedjson.description.replaceAll('${{array}}', sliced.join(this.options.joinWith)))
 			.setFooter({
 				text: embedjson.footer.text
 					.replaceAll('${{currentPage}}', this.status.currentPage.toString())
@@ -121,12 +112,7 @@ export class Paginator {
 		const embedjson = this.options.embed.toJSON();
 		const sliced = this.options.array.slice(this.status.slice1, this.status.slice2);
 		const newEmbed = EmbedBuilder.from(embedjson)
-			.setDescription(
-				embedjson.description.replaceAll(
-					'${{array}}',
-					sliced.join(this.options.joinWith)
-				)
-			)
+			.setDescription(embedjson.description.replaceAll('${{array}}', sliced.join(this.options.joinWith)))
 			.setFooter({
 				text: embedjson.footer.text
 					.replaceAll('${{currentPage}}', this.status.currentPage.toString())
@@ -165,17 +151,10 @@ export class Paginator {
 
 	public buildButtons(): typeof buttons {
 		const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
-			new ButtonBuilder()
-				.setCustomId('previous')
-				.setEmoji({ name: '◀️' })
-				.setStyle(ButtonStyle.Primary),
-			new ButtonBuilder()
-				.setCustomId('next')
-				.setEmoji({ name: '▶️' })
-				.setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setCustomId('previous').setEmoji({ name: '◀️' }).setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setCustomId('next').setEmoji({ name: '▶️' }).setStyle(ButtonStyle.Primary),
 		]);
 
 		return buttons;
 	}
 }
-

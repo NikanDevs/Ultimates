@@ -43,10 +43,7 @@ export default new Command({
 					warnCounter = warnCounter + 1;
 					return [
 						`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
-						`• **Date:** ${generateDiscordTimestamp(
-							data.date,
-							'Short Date/Time'
-						)}`,
+						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
 						data.type === PunishmentTypes.Warn
 							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 							: 'LINE_BREAK',

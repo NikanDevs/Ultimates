@@ -24,9 +24,7 @@ export default new Event('guildMemberRemove', async (member) => {
 				`• **Joined:** <t:${~~(member.joinedTimestamp / 1000)}:R>`,
 				`• **Left:** <t:${~~(Date.now() / 1000)}:R>`,
 				`• **Member Count:** ${member.guild.memberCount}`,
-				`\nMember Left! ${
-					checkAntiraid(member.id) ? 'Most likely affected by the antiraid.' : ''
-				}`,
+				`\nMember Left! ${checkAntiraid(member.id) ? 'Most likely affected by the antiraid.' : ''}`,
 			].join('\n')
 		);
 

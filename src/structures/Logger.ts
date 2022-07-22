@@ -60,18 +60,8 @@ export class Logger {
 	private formatReason(reason: Error) {
 		const name = reason.name;
 		const message = reason.message.replaceAll(name, '');
-		const stack = reason.stack
-			.replaceAll(name, '')
-			.replace(':', '')
-			.replaceAll(`${message}\n`, '');
+		const stack = reason.stack.replaceAll(name, '').replace(':', '').replaceAll(`${message}\n`, '');
 
-		return (
-			chalk.whiteBright.bold(name) +
-			': ' +
-			chalk.whiteBright(message) +
-			'\n' +
-			chalk.white(stack)
-		);
+		return chalk.whiteBright.bold(name) + ': ' + chalk.whiteBright(message) + '\n' + chalk.white(stack);
 	}
 }
-

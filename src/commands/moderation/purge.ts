@@ -27,9 +27,7 @@ export default new Command({
 		}
 		if (user) {
 			messagesToPurge = fetchMessages.filter(
-				(msg) =>
-					msg.author.id === user.id &&
-					Date.now() + msg.createdTimestamp > fifteenDays
+				(msg) => msg.author.id === user.id && Date.now() + msg.createdTimestamp > fifteenDays
 			);
 
 			descriptionText = `Cleared **${messagesToPurge?.size}** messages from \`${user?.username}\``;
@@ -45,9 +43,7 @@ export default new Command({
 		if (guardCollection.has(`purge:${channel.id}`))
 			return interaction.reply({
 				embeds: [
-					client.embeds.attention(
-						'This channel has recently been purged, try again in a few seconds.'
-					),
+					client.embeds.attention('This channel has recently been purged, try again in a few seconds.'),
 				],
 				ephemeral: true,
 			});

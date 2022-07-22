@@ -27,10 +27,7 @@ export default new Event('messageUpdate', async (_oldMessage, newMessage) => {
 		newMessage.mentions?.members.size > AUTOMOD_MAX_MENTIONS ||
 		mostIsCap(newMessage.content) ||
 		mostIsEmojis(newMessage.content) ||
-		client.config.automod.filteredWords.some((word) =>
-			newMessage.content.toUpperCase().includes(word)
-		)
+		client.config.automod.filteredWords.some((word) => newMessage.content.toUpperCase().includes(word))
 	)
 		client.emit('messageCreate', newMessage as Message);
 });
-

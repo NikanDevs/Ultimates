@@ -22,15 +22,9 @@ export function convertTime(time: number | string): string {
 			time -= minutesTimestamp * 60 * 1000;
 			const secondsTimestamp = Math.floor(time / 1000);
 
-			const yearS = !yearsTimestamp
-				? ''
-				: `${yearsTimestamp} year` + (yearsTimestamp === 1 ? '' : 's');
-			const dayS = !daysTimestamp
-				? ''
-				: `${daysTimestamp} day` + (daysTimestamp === 1 ? '' : 's');
-			const hourS = !hoursTimestamp
-				? ''
-				: `${hoursTimestamp} hour` + (hoursTimestamp === 1 ? '' : 's');
+			const yearS = !yearsTimestamp ? '' : `${yearsTimestamp} year` + (yearsTimestamp === 1 ? '' : 's');
+			const dayS = !daysTimestamp ? '' : `${daysTimestamp} day` + (daysTimestamp === 1 ? '' : 's');
+			const hourS = !hoursTimestamp ? '' : `${hoursTimestamp} hour` + (hoursTimestamp === 1 ? '' : 's');
 			const minuteS = !minutesTimestamp
 				? ''
 				: `${minutesTimestamp} minute` + (minutesTimestamp === 1 ? '' : 's');
@@ -38,9 +32,7 @@ export function convertTime(time: number | string): string {
 				? ''
 				: `${secondsTimestamp} second` + (secondsTimestamp === 1 ? '' : 's');
 
-			const result = [yearS, /**monthS, weekS,**/ dayS, hourS, minuteS, secondS].filter(
-				(item) => item !== ''
-			);
+			const result = [yearS, /**monthS, weekS,**/ dayS, hourS, minuteS, secondS].filter((item) => item !== '');
 			return result.join(' and ');
 		case 'string':
 			let miliseconds = 0;
@@ -123,4 +115,3 @@ export function convertToTime(v: string | number): number {
 	if (!isValidTime(v)) return undefined;
 	else return +convertTime(v);
 }
-

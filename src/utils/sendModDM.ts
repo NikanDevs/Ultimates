@@ -62,4 +62,3 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 
 	await member.send({ embeds: [embed], components: appealComponent }).catch(() => {});
 }
-

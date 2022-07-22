@@ -27,4 +27,3 @@ export const warningsCommand = {
 		},
 	],
 } as interactionOptions;
-

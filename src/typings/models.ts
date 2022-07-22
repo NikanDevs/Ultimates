@@ -155,4 +155,3 @@ export type PunishmentsSchemaType = {
 	date: Date;
 	expire: Date;
 };
-

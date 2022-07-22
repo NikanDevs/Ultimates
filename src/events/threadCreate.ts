@@ -6,4 +6,3 @@ export default new Event('threadCreate', async (thread) => {
 
 	await thread.join();
 });
-

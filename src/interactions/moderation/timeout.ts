@@ -33,4 +33,3 @@ export const timeoutCommand = {
 		},
 	],
 } as interactionOptions;
-

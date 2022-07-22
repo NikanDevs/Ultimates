@@ -4,4 +4,3 @@ export function isDiscordInvite(str: string) {
 	);
 	return res !== null;
 }
-

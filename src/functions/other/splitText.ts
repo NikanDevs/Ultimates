@@ -6,4 +6,3 @@ export function splitText(text: string, length: number): string {
 	if (text.length > splitValue) text = text.slice(0, splitValue) + endsWith;
 	return text;
 }
-

@@ -16,9 +16,7 @@ export default new Command({
 						new EmbedBuilder()
 							.setDescription(
 								slowmode !== 0
-									? `The current slowmode is **${convertTime(
-											slowmode * 1000
-									  )}**`
+									? `The current slowmode is **${convertTime(slowmode * 1000)}**`
 									: "This channel doesn't have any slowmode."
 							)
 							.setColor(client.cc.invisible),
@@ -31,9 +29,7 @@ export default new Command({
 				if (slowmode === rate)
 					return interaction.reply({
 						embeds: [
-							client.embeds.attention(
-								'Providing the current slowmode will not change anything'
-							),
+							client.embeds.attention('Providing the current slowmode will not change anything'),
 						],
 						ephemeral: true,
 					});
@@ -56,4 +52,3 @@ export default new Command({
 		}
 	},
 });
-

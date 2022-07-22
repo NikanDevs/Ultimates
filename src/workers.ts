@@ -10,4 +10,3 @@ export async function registerWorkers(timeout: number) {
 		await checkUnbans();
 	}, timeout);
 }
-

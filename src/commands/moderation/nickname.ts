@@ -22,35 +22,23 @@ export default new Command({
 			// Set a new nickname
 			member.setNickname(newNick, `/nickname by ${interaction.user.tag}`);
 			interaction.reply({
-				embeds: [
-					client.embeds.success(
-						`**${member.user.tag}** nickname was set to **${newNick}**`
-					),
-				],
+				embeds: [client.embeds.success(`**${member.user.tag}** nickname was set to **${newNick}**`)],
 				ephemeral: true,
 			});
 		} else if (!newNick && !member.nickname) {
 			// Moderate the nickname
 			function generateNick() {
-				const characters =
-					'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+				const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
 				let nickname = '';
 				for (var i = 0; i < 5; i++) {
-					nickname += characters.charAt(
-						Math.floor(Math.random() * characters.length)
-					);
+					nickname += characters.charAt(Math.floor(Math.random() * characters.length));
 				}
 				return nickname;
 			}
 
-			member.setNickname(
-				`Moderated Nickname ` + generateNick(),
-				`/nickname by ${interaction.user.tag}`
-			);
+			member.setNickname(`Moderated Nickname ` + generateNick(), `/nickname by ${interaction.user.tag}`);
 			interaction.reply({
-				embeds: [
-					client.embeds.success(`**${member.user.tag}** nickname was moderated.`),
-				],
+				embeds: [client.embeds.success(`**${member.user.tag}** nickname was moderated.`)],
 				ephemeral: true,
 			});
 		} else if (!newNick && member.nickname) {

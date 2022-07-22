@@ -43,4 +43,3 @@ export const interactions = {
 	staff: staffCommand,
 	userinfo: userinfoCommand,
 };
-

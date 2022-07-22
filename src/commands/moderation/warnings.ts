@@ -31,13 +31,8 @@ export default new Command({
 				warnCounter = warnCounter + 1;
 				warningsMap.push(
 					[
-						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${
-							data._id
-						}**`,
-						`• **Date:** ${generateDiscordTimestamp(
-							data.date,
-							'Short Date/Time'
-						)}`,
+						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${data._id}**`,
+						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
 						data.type === PunishmentTypes.Warn
 							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 							: 'LINE_BREAK',
@@ -52,10 +47,7 @@ export default new Command({
 				warningsMap.push(
 					[
 						`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
-						`• **Date:** ${generateDiscordTimestamp(
-							data.date,
-							'Short Date/Time'
-						)}`,
+						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
 						data.type === PunishmentTypes.Warn
 							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 							: 'LINE_BREAK',

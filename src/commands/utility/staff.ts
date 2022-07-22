@@ -29,14 +29,9 @@ export default new Command({
 		const staff = members
 			.filter(
 				(member) =>
-					staffPermissions.some((permission) =>
-						member.permissions.has(permission)
-					) && !member.user.bot
+					staffPermissions.some((permission) => member.permissions.has(permission)) && !member.user.bot
 			)
-			.sort(
-				(a, b) =>
-					statusPriorities[a.presence?.status] - statusPriorities[b.presence?.status]
-			);
+			.sort((a, b) => statusPriorities[a.presence?.status] - statusPriorities[b.presence?.status]);
 
 		const statuses = {
 			online: client.cc.statuses.online,
@@ -51,12 +46,7 @@ export default new Command({
 			.setColor(client.cc.ultimates)
 			.setDescription(
 				staff
-					.map(
-						(staff) =>
-							`${statuses[staff.presence?.status]} • ${staff} - ${guessRole(
-								staff
-							)}`
-					)
+					.map((staff) => `${statuses[staff.presence?.status]} • ${staff} - ${guessRole(staff)}`)
 					.join('\n')
 			);
 
@@ -74,4 +64,3 @@ export default new Command({
 		}
 	},
 });
-

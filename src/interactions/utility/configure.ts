@@ -34,4 +34,3 @@ export const configureCommand = {
 		},
 	],
 } as interactionOptions;
-

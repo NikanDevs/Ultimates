@@ -30,10 +30,9 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			iconURL: newMessage.author?.displayAvatarURL(),
 		})
 		.setDescription(
-			`${Formatters.hyperlink(
-				'Message',
-				newMessage.url
-			)} edited in ${channel} • ${generateDiscordTimestamp(new Date())}`
+			`${Formatters.hyperlink('Message', newMessage.url)} edited in ${channel} • ${generateDiscordTimestamp(
+				new Date()
+			)}`
 		)
 		.setURL(newMessage.url)
 		.setColor(resolveColor('#b59190'))

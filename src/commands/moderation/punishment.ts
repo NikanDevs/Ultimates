@@ -22,9 +22,7 @@ export default new Command({
 
 		if (getSubCommand === 'revoke') {
 			const warnId = options.getString('id');
-			const reason =
-				splitText(options.getString('reason'), MAX_REASON_LENGTH) ??
-				t('common.noReason');
+			const reason = splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
 
 			const data =
 				warnId.length == AUTOMOD_ID_LENGTH
@@ -59,11 +57,7 @@ export default new Command({
 						await getMember.timeout(null, 'Mute ended based on the duration.');
 
 						await interaction.followUp({
-							embeds: [
-								client.embeds.success(
-									`Punishment **${warnId}** was revoked.`
-								),
-							],
+							embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
 						});
 
 						await createModLog({
@@ -82,11 +76,7 @@ export default new Command({
 						});
 					} else {
 						await interaction.followUp({
-							embeds: [
-								client.embeds.success(
-									`Punishment **${warnId}** was revoked.`
-								),
-							],
+							embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
 						});
 
 						await createModLog({
@@ -114,11 +104,7 @@ export default new Command({
 							});
 
 						await interaction.followUp({
-							embeds: [
-								client.embeds.success(
-									`Punishment **${warnId}** was revoked.`
-								),
-							],
+							embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
 						});
 
 						await createModLog({
@@ -135,11 +121,7 @@ export default new Command({
 						});
 					} else {
 						await interaction.followUp({
-							embeds: [
-								client.embeds.success(
-									`Punishment **${warnId}** was **revoked**.`
-								),
-							],
+							embeds: [client.embeds.success(`Punishment **${warnId}** was **revoked**.`)],
 						});
 
 						await createModLog({
@@ -159,9 +141,7 @@ export default new Command({
 					break;
 				default:
 					await interaction.followUp({
-						embeds: [
-							client.embeds.success(`Punishment **${warnId}** was revoked.`),
-						],
+						embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
 					});
 
 					await createModLog({
@@ -189,9 +169,7 @@ export default new Command({
 					});
 					if (!automodWarn) return (doesExist = false);
 
-					const automodUser = (await client.users
-						.fetch(automodWarn.userId)
-						.catch(() => {})) as User;
+					const automodUser = (await client.users.fetch(automodWarn.userId).catch(() => {})) as User;
 
 					baseEmbed
 						.setDescription(`ID: \`${warnId}\` • Case: ${automodWarn.case}`)
@@ -207,10 +185,7 @@ export default new Command({
 							},
 							{
 								name: 'Date & Time',
-								value: generateDiscordTimestamp(
-									automodWarn.date,
-									'Short Date/Time'
-								),
+								value: generateDiscordTimestamp(automodWarn.date, 'Short Date/Time'),
 								inline: true,
 							},
 							{
@@ -246,12 +221,8 @@ export default new Command({
 					});
 					if (!manualWarn) return (doesExist = false);
 
-					const manualUser = (await client.users
-						.fetch(manualWarn.userId)
-						.catch(() => {})) as User;
-					const getMod = (await client.users
-						.fetch(manualWarn.moderatorId)
-						.catch(() => {})) as User;
+					const manualUser = (await client.users.fetch(manualWarn.userId).catch(() => {})) as User;
+					const getMod = (await client.users.fetch(manualWarn.moderatorId).catch(() => {})) as User;
 
 					baseEmbed
 						.setDescription(`ID: \`${warnId}\` • Case: ${manualWarn.case}`)
@@ -267,10 +238,7 @@ export default new Command({
 							},
 							{
 								name: 'Date & Time',
-								value: generateDiscordTimestamp(
-									manualWarn.date,
-									'Short Date/Time'
-								),
+								value: generateDiscordTimestamp(manualWarn.date, 'Short Date/Time'),
 								inline: true,
 							},
 							{
@@ -340,20 +308,13 @@ export default new Command({
 				.map((data) => {
 					warnCounter = warnCounter + 1;
 					return [
-						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${
-							data._id
-						}**`,
-						`• **Date:** ${generateDiscordTimestamp(
-							data.date,
-							'Short Date/Time'
-						)}`,
+						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${data._id}**`,
+						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
 						data.moderatorId === client.user.id
 							? `• **Moderator:** Automatic`
 							: client.users.cache.get(data.moderatorId) === undefined
 							? `• **Moderator ID:** ${data.moderatorId}`
-							: `• **Moderator:** ${
-									client.users.cache.get(data.moderatorId).tag
-							  }`,
+							: `• **Moderator:** ${client.users.cache.get(data.moderatorId).tag}`,
 						data.type === 'WARN'
 							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 							: 'LINE_BREAK',
@@ -366,13 +327,8 @@ export default new Command({
 					findWarningsAutomod.map((data) => {
 						warnCounter = warnCounter + 1;
 						return [
-							`\`${warnCounter}\` **${capitalize(
-								data.type
-							)}** | Auto Moderation`,
-							`• **Date:** ${generateDiscordTimestamp(
-								data.date,
-								'Short Date/Time'
-							)}`,
+							`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
+							`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
 							data.type === 'WARN'
 								? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
 								: 'LINE_BREAK',
@@ -441,11 +397,7 @@ export default new Command({
 
 			if (punishment.reason === reason)
 				return interaction.reply({
-					embeds: [
-						client.embeds.attention(
-							'Please provide a different reason than the current one.'
-						),
-					],
+					embeds: [client.embeds.attention('Please provide a different reason than the current one.')],
 				});
 
 			switch (id.length) {

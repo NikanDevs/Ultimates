@@ -9,4 +9,3 @@ export const punishmentsContextmenu = {
 	permission: ['ManageMessages'],
 	type: 2,
 } as interactionOptions;
-

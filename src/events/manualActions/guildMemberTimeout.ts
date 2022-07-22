@@ -22,9 +22,7 @@ export default new Event('guildMemberUpdate', async (oldMember, newMember) => {
 			type: AuditLogEvent.MemberUpdate,
 		});
 
-		const findCase = auditLogs.entries.find(
-			(log) => (log.target as User).id === newMember.user.id
-		);
+		const findCase = auditLogs.entries.find((log) => (log.target as User).id === newMember.user.id);
 		if (!findCase) return;
 		const { executor, reason, changes, createdTimestamp } = findCase;
 		if (executor.bot) return;

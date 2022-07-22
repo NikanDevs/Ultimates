@@ -19,8 +19,7 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						"I couldn't find that banned member. " +
-							t('common.errors.userAutocomplete')
+						"I couldn't find that banned member. " + t('common.errors.userAutocomplete')
 					),
 				],
 				ephemeral: true,

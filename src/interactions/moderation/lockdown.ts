@@ -19,11 +19,7 @@ export const lockdownCommand = {
 					description: 'The channel you want to take action on',
 					type: ApplicationCommandOptionType.Channel,
 					required: false,
-					channel_types: [
-						ChannelType.GuildText,
-						ChannelType.GuildVoice,
-						ChannelType.GuildStageVoice,
-					],
+					channel_types: [ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildStageVoice],
 				},
 				{
 					name: 'reason',
@@ -52,4 +48,3 @@ export const lockdownCommand = {
 		},
 	],
 } as interactionOptions;
-

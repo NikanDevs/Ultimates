@@ -8,4 +8,3 @@ export function capitalize(str: string) {
 	});
 	return splitFixed.join(' ');
 }
-

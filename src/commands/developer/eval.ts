@@ -65,26 +65,16 @@ export default new Command({
 						.setColor(Colors.Green)
 						.setTitle('Evaluation succeded')
 						.setDescription(
-							Formatters.codeBlock(
-								'ts',
-								splitText(code, EMBED_DESCRIPTION_MAX_LENGTH - 20)
-							)
+							Formatters.codeBlock('ts', splitText(code, EMBED_DESCRIPTION_MAX_LENGTH - 20))
 						);
-					modalInteraction
-						.reply({ embeds: [sucessEmbed], ephemeral: silent })
-						.catch(() => {});
+					modalInteraction.reply({ embeds: [sucessEmbed], ephemeral: silent }).catch(() => {});
 					break;
 				default:
-					const embed = new EmbedBuilder()
-						.setColor(Colors.Green)
-						.setTitle('Evolution output');
+					const embed = new EmbedBuilder().setColor(Colors.Green).setTitle('Evolution output');
 
 					if (evaled.length < EMBED_DESCRIPTION_MAX_LENGTH - 25) {
 						embed.setDescription(
-							Formatters.codeBlock(
-								'ts',
-								splitText(evaled, EMBED_DESCRIPTION_MAX_LENGTH - 25)
-							)
+							Formatters.codeBlock('ts', splitText(evaled, EMBED_DESCRIPTION_MAX_LENGTH - 25))
 						);
 
 						return modalInteraction
@@ -116,16 +106,10 @@ export default new Command({
 				.setColor(Colors.Red)
 				.setTitle('An error has occured')
 				.setDescription(
-					Formatters.codeBlock(
-						'ts',
-						splitText(error.message, EMBED_DESCRIPTION_MAX_LENGTH - 20)
-					)
+					Formatters.codeBlock('ts', splitText(error.message, EMBED_DESCRIPTION_MAX_LENGTH - 20))
 				);
 
-			await modalInteraction
-				.reply({ embeds: [errorEmbed], ephemeral: silent })
-				.catch(() => {});
+			await modalInteraction.reply({ embeds: [errorEmbed], ephemeral: silent }).catch(() => {});
 		}
 	},
 });
-

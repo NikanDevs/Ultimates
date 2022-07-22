@@ -13,4 +13,3 @@ export function getURL(str: string) {
 	if (!res) return null;
 	return res[0];
 }
-

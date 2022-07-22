@@ -21,16 +21,9 @@ export default new Command({
 				});
 
 			if (ignore(member, { interaction, action: PunishmentTypes.Unknown })) return;
-			if (
-				role.position > interaction.guild.members.me.roles.highest.position ||
-				role.managed
-			)
+			if (role.position > interaction.guild.members.me.roles.highest.position || role.managed)
 				return interaction.reply({
-					embeds: [
-						client.embeds.error(
-							"I don't have enough permissions to manage that role."
-						),
-					],
+					embeds: [client.embeds.error("I don't have enough permissions to manage that role.")],
 					ephemeral: true,
 				});
 			if (
