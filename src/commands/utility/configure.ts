@@ -41,9 +41,9 @@ import {
 export default new Command({
 	interaction: interactions.configure,
 	excute: async ({ client, interaction, options }) => {
-		const subcommand = options.getSubcommand();
+		const mainModule = options.getString('module') as 'general' | 'moderation' | 'automod' | 'logs';
 
-		if (subcommand === 'logs') {
+		if (mainModule === 'logs') {
 			const preSelected: LoggingModules = 'mod';
 			const data = await configModel.findById('logging');
 
@@ -277,7 +277,11 @@ export default new Command({
 					await collected.showModal(modal);
 				}
 			});
-		} else if (subcommand === 'automod') {
+
+			collector.on('end', () => {
+				interaction.editReply({ components: [] });
+			});
+		} else if (mainModule === 'automod') {
 			const preSelected: AutomodModules = 'badwords';
 			const embed = new EmbedBuilder()
 				.setTitle(automodModulesNames[preSelected])
@@ -500,7 +504,7 @@ export default new Command({
 			collector.on('end', () => {
 				interaction.editReply({ components: [] });
 			});
-		} else if (subcommand === 'general') {
+		} else if (mainModule === 'general') {
 			const preSelected: GeneralConfigTypes = 'developers';
 			const embed = new EmbedBuilder()
 				.setTitle(generalConfigNames[preSelected])
@@ -622,7 +626,11 @@ export default new Command({
 					await collected.showModal(modal);
 				}
 			});
-		} else if (subcommand === 'moderation') {
+
+			collector.on('end', () => {
+				interaction.editReply({ components: [] });
+			});
+		} else if (mainModule === 'moderation') {
 			const preSelected: ModerationConfigTypes = 'counts';
 			const embed = new EmbedBuilder()
 				.setTitle(moderationConfigNames[preSelected])
@@ -891,6 +899,10 @@ export default new Command({
 						]);
 					await collected.showModal(modal);
 				}
+			});
+
+			collector.on('end', () => {
+				interaction.editReply({ components: [] });
 			});
 		}
 	},

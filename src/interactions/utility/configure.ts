@@ -5,28 +5,32 @@ export const configureCommand = {
 	name: 'configure',
 	description: 'Configure different modules of the bot',
 	directory: 'utility',
-	cooldown: 5000,
+	cooldown: 10000,
 	permission: ['Administrator'],
 	options: [
 		{
-			name: 'logs',
-			description: 'Configure the settings of the logging system',
-			type: ApplicationCommandOptionType.Subcommand,
-		},
-		{
-			name: 'automod',
-			description: 'Configure the settings of the auto moderation system',
-			type: ApplicationCommandOptionType.Subcommand,
-		},
-		{
-			name: 'general',
-			description: 'Configure the general config and settings',
-			type: ApplicationCommandOptionType.Subcommand,
-		},
-		{
-			name: 'moderation',
-			description: 'Configure the settings of the moderation module',
-			type: ApplicationCommandOptionType.Subcommand,
+			name: 'module',
+			description: 'The module you want to configure',
+			type: ApplicationCommandOptionType.String,
+			required: true,
+			choices: [
+				{
+					name: 'General',
+					value: 'general',
+				},
+				{
+					name: 'Moderation',
+					value: 'moderation',
+				},
+				{
+					name: 'Auto moderation',
+					value: 'automod',
+				},
+				{
+					name: 'Logging',
+					value: 'logs',
+				},
+			],
 		},
 	],
 } as interactionOptions;
