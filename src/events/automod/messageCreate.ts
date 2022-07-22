@@ -304,7 +304,7 @@ export default new Event('messageCreate', async (message) => {
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
-		config.filteredWords.some((word) => message.content.toUpperCase().includes(word)) &&
+		config.filteredWords.some((word) => message.content.toUpperCase().includes(word.toUpperCase())) &&
 		config.modules.badwords &&
 		!getsIgnored('badwords')
 	) {

@@ -194,7 +194,7 @@ export default new Command({
 							selectMenu(selectedModule),
 							buttonComponents(
 								selectedModule,
-								client.config.automod.modules[selectedModule] ? 'enabled' : 'disabled'
+								client.config.logging[selectedModule] ? 'enabled' : 'disabled'
 							),
 						],
 					});
@@ -550,7 +550,7 @@ export default new Command({
 						client.config.general[preSelected].length
 							? client.config.general[preSelected]
 									.map((d) => client.users.cache.get(d)?.tag || d)
-									.join(' ')
+									.join(' | ')
 							: 'None'
 					}`
 				);
