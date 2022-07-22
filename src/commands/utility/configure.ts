@@ -64,13 +64,22 @@ export default new Command({
 									client.config.ignores.logs[preSelected].channelIds.concat(
 										client.config.ignores.logs[preSelected].roleIds
 									).length
-										? `${client.config.ignores.logs[preSelected].channelIds.map(
-												(c: string) =>
-													interaction.guild.channels.cache.get(c).toString()
-										  )} ${client.config.ignores.logs[preSelected].roleIds.map(
-												(c: string) =>
-													interaction.guild.roles.cache.get(c).toString()
-										  )}`
+										? `\n${client.config.ignores.logs[preSelected].channelIds
+												.map(
+													(c: string) =>
+														interaction.guild.channels.cache
+															.get(c)
+															.toString() || c
+												)
+												.join(' ')} ${client.config.ignores.logs[
+												preSelected
+										  ].roleIds
+												.map(
+													(c: string) =>
+														interaction.guild.roles.cache.get(c).toString() ||
+														c
+												)
+												.join(' ')}`
 										: ' No ignores found'
 							  }`
 							: '',
@@ -156,15 +165,23 @@ export default new Command({
 											client.config.ignores.logs[selectedModule].channelIds.concat(
 												client.config.ignores.logs[selectedModule].roleIds
 											).length
-												? `${client.config.ignores.logs[
+												? `\n${client.config.ignores.logs[selectedModule].channelIds
+														.map(
+															(c: string) =>
+																interaction.guild.channels.cache
+																	.get(c)
+																	.toString() || c
+														)
+														.join(' ')} ${client.config.ignores.logs[
 														selectedModule
-												  ].channelIds.map((c: string) =>
-														interaction.guild.channels.cache.get(c).toString()
-												  )} ${client.config.ignores.logs[
-														selectedModule
-												  ].roleIds.map((c: string) =>
-														interaction.guild.roles.cache.get(c).toString()
-												  )}`
+												  ].roleIds
+														.map(
+															(c: string) =>
+																interaction.guild.roles.cache
+																	.get(c)
+																	.toString() || c
+														)
+														.join(' ')}`
 												: 'No ignores found'
 									  }`
 									: '',
@@ -293,11 +310,11 @@ export default new Command({
 							client.config.ignores.automod[preSelected].channelIds.concat(
 								client.config.ignores.automod[preSelected].roleIds
 							).length
-								? `${client.config.ignores.automod[preSelected].channelIds.map((c) =>
-										interaction.guild.channels.cache.get(c).toString()
-								  )} ${client.config.ignores.automod[preSelected].roleIds.map((c) =>
-										interaction.guild.roles.cache.get(c).toString()
-								  )}`
+								? `\n${client.config.ignores.automod[preSelected].channelIds
+										.map((c) => interaction.guild.channels.cache.get(c).toString() || c)
+										.join(' ')} ${client.config.ignores.automod[preSelected].roleIds
+										.map((c) => interaction.guild.roles.cache.get(c).toString() || c)
+										.join(' ')}`
 								: 'No ignores found'
 						}`,
 					].join('\n')
@@ -388,15 +405,34 @@ export default new Command({
 									client.config.ignores.automod[selectedModule].channelIds.concat(
 										client.config.ignores.automod[selectedModule].roleIds
 									).length
-										? `${client.config.ignores.automod[selectedModule].channelIds.map(
-												(c) => interaction.guild.channels.cache.get(c).toString()
-										  )} ${client.config.ignores.automod[selectedModule].roleIds.map(
-												(c) => interaction.guild.roles.cache.get(c).toString()
-										  )}`
+										? `\n${client.config.ignores.automod[selectedModule].channelIds
+												.map((c) =>
+													interaction.guild.channels.cache.get(c).toString()
+												)
+												.join(' ')} ${client.config.ignores.automod[
+												selectedModule
+										  ].roleIds
+												.map((c) => interaction.guild.roles.cache.get(c).toString())
+												.join(' ')}`
 										: 'No ignores found'
 								}`,
 							].join('\n')
 						);
+
+					if (selectedModule === 'badwords')
+						embed.setFields([
+							{
+								name: 'Filtered words',
+								value: client.config.automod.filteredWords.length
+									? splitText(
+											client.config.automod.filteredWords
+												.map((w) => `\`${w}\``)
+												.join(' '),
+											MAX_FIELD_VALUE_LENGTH
+									  )
+									: 'No filtered words',
+							},
+						]);
 
 					await collected.update({
 						embeds: [embed],

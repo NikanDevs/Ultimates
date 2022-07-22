@@ -107,11 +107,11 @@ export default new Event('interactionCreate', async (interaction) => {
 							client.config.ignores.automod[module].channelIds.concat(
 								client.config.ignores.automod[module].roleIds
 							).length
-								? `${client.config.ignores.automod[module].channelIds.map((c) =>
-										interaction.guild.channels.cache.get(c).toString()
-								  )} ${client.config.ignores.automod[module].roleIds.map((c) =>
-										interaction.guild.roles.cache.get(c).toString()
-								  )}`
+								? `\n${client.config.ignores.automod[module].channelIds
+										.map((c) => interaction.guild.channels.cache.get(c).toString())
+										.join(' ')} ${client.config.ignores.automod[module].roleIds
+										.map((c) => interaction.guild.roles.cache.get(c).toString())
+										.join(' ')}`
 								: 'No ignores found'
 						}`,
 					].join('\n')
@@ -168,16 +168,20 @@ export default new Event('interactionCreate', async (interaction) => {
 								: 'None'
 						}\n`,
 						supportedLoggingIgnores.includes(module)
-							? `\`Ignores:\`${
+							? `\`Ignores:\` ${
 									client.config.ignores.logs[module].channelIds.concat(
 										client.config.ignores.logs[module].roleIds
 									).length
-										? `${client.config.ignores.logs[module].channelIds.map((c: string) =>
-												interaction.guild.channels.cache.get(c).toString()
-										  )} ${client.config.ignores.logs[module].roleIds.map((c: string) =>
-												interaction.guild.roles.cache.get(c).toString()
-										  )}`
-										: ' No ignores found'
+										? `\n${client.config.ignores.logs[module].channelIds
+												.map((c: string) =>
+													interaction.guild.channels.cache.get(c).toString()
+												)
+												.join(' ')} ${client.config.ignores.logs[module].roleIds
+												.map((c: string) =>
+													interaction.guild.roles.cache.get(c).toString()
+												)
+												.join(' ')}`
+										: 'No ignores found'
 							  }`
 							: '',
 					].join('\n')
@@ -239,16 +243,20 @@ export default new Event('interactionCreate', async (interaction) => {
 								: 'None'
 						}\n`,
 						supportedLoggingIgnores.includes(module)
-							? `\`Ignores:\`${
+							? `\`Ignores:\` ${
 									client.config.ignores.logs[module].channelIds.concat(
 										client.config.ignores.logs[module].roleIds
 									).length
-										? `${client.config.ignores.logs[module].channelIds.map((c: string) =>
-												interaction.guild.channels.cache.get(c).toString()
-										  )} ${client.config.ignores.logs[module].roleIds.map((c: string) =>
-												interaction.guild.roles.cache.get(c).toString()
-										  )}`
-										: ' No ignores found'
+										? `\n${client.config.ignores.logs[module].channelIds
+												.map((c: string) =>
+													interaction.guild.channels.cache.get(c).toString()
+												)
+												.join(' ')} ${client.config.ignores.logs[module].roleIds
+												.map((c: string) =>
+													interaction.guild.roles.cache.get(c).toString()
+												)
+												.join(' ')}`
+										: 'No ignores found'
 							  }`
 							: '',
 					].join('\n')
