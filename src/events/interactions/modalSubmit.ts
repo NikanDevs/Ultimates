@@ -378,7 +378,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 			const array: number[] = [parseInt(input), data.counts.timeout1, data.counts.timeout2, data.counts.ban];
 			const findDups = (a: number[]): number[] => a.filter((item, index) => a.indexOf(item) != index);
-			if (findDups(array).length)
+			if (module !== 'automod' && findDups(array).length)
 				return interaction.reply({
 					embeds: [client.embeds.error('Punishment count numbers must be unique.')],
 					ephemeral: true,
