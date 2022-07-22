@@ -69,7 +69,7 @@ export default new Command({
 													(c: string) =>
 														interaction.guild.channels.cache
 															.get(c)
-															.toString() || c
+															?.toString() || c
 												)
 												.join(' ')} ${client.config.ignores.logs[
 												preSelected
@@ -170,7 +170,7 @@ export default new Command({
 															(c: string) =>
 																interaction.guild.channels.cache
 																	.get(c)
-																	.toString() || c
+																	?.toString() || c
 														)
 														.join(' ')} ${client.config.ignores.logs[
 														selectedModule
@@ -179,7 +179,7 @@ export default new Command({
 															(c: string) =>
 																interaction.guild.roles.cache
 																	.get(c)
-																	.toString() || c
+																	?.toString() || c
 														)
 														.join(' ')}`
 												: 'No ignores found'
@@ -311,9 +311,9 @@ export default new Command({
 								client.config.ignores.automod[preSelected].roleIds
 							).length
 								? `\n${client.config.ignores.automod[preSelected].channelIds
-										.map((c) => interaction.guild.channels.cache.get(c).toString() || c)
+										.map((c) => interaction.guild.channels.cache.get(c)?.toString() || c)
 										.join(' ')} ${client.config.ignores.automod[preSelected].roleIds
-										.map((c) => interaction.guild.roles.cache.get(c).toString() || c)
+										.map((c) => interaction.guild.roles.cache.get(c)?.toString() || c)
 										.join(' ')}`
 								: 'No ignores found'
 						}`,
