@@ -8,6 +8,7 @@ export const lockdownCommand = {
 	directory: 'moderation',
 	cooldown: 20000,
 	permission: ['ManageMessages'],
+	botPermission: ['ManageChannels'],
 	options: [
 		{
 			name: 'channel',

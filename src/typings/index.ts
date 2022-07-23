@@ -30,6 +30,7 @@ export type interactionOptions = {
 	directory: commandDirectories;
 	cooldown?: number;
 	permission?: PermissionResolvable[];
+	botPermission?: PermissionResolvable[];
 } & ChatInputApplicationCommandData;
 
 export type commandType = {

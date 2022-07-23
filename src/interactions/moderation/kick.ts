@@ -8,6 +8,7 @@ export const kickCommand = {
 	directory: 'moderation',
 	cooldown: 300,
 	permission: ['KickMembers'],
+	botPermission: ['KickMembers'],
 	options: [
 		{
 			name: 'member',

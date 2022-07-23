@@ -7,7 +7,7 @@ export const warningsCommand = {
 	directory: 'moderation',
 	cooldown: 5000,
 	permission: [],
-	available: true,
+	botPermission: [],
 	options: [
 		{
 			name: 'type',

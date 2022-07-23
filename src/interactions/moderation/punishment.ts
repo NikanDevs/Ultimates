@@ -8,6 +8,7 @@ export const punishmentCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ManageMessages'],
+	botPermission: ['ModerateMembers', 'BanMembers'],
 	options: [
 		{
 			name: 'revoke',

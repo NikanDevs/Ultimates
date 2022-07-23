@@ -7,6 +7,7 @@ export const staffCommand = {
 	directory: 'utility',
 	cooldown: 5000,
 	permission: [],
+	botPermission: [],
 	options: [
 		{
 			name: 'hidden',

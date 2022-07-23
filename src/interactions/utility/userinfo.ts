@@ -7,6 +7,7 @@ export const userinfoCommand = {
 	directory: 'utility',
 	cooldown: 3000,
 	permission: ['ManageMessages'],
+	botPermission: [],
 	options: [
 		{
 			name: 'user',

@@ -7,5 +7,7 @@ export const punishmentsContextmenu = {
 	directory: 'moderation',
 	cooldown: 5000,
 	permission: ['ManageMessages'],
+	botPermission: [],
+
 	type: 2,
 } as interactionOptions;

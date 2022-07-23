@@ -7,6 +7,7 @@ export const modmailCommand = {
 	description: 'Take an action on the modmail system',
 	directory: 'modmail',
 	permission: ['ManageMessages'],
+	botPermission: ['ManageChannels'],
 	cooldown: 10000,
 	options: [
 		{

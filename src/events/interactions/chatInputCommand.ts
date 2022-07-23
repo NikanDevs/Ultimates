@@ -24,12 +24,30 @@ export default new Event('interactionCreate', async (interaction) => {
 			!client.config.general.developers.includes(interaction.user.id) &&
 			command.interaction.directory === 'developer'
 		)
-			return;
+			return interaction.reply({
+				embeds: [client.embeds.attention("You don't have permissions to use this command.")],
+				ephemeral: true,
+			});
 
 		// Permission Check
 		if (command.interaction.permission?.some((perm) => !member.permissions.has(perm)))
 			return interaction.reply({
 				embeds: [client.embeds.attention("You don't have permissions to use this command.")],
+				ephemeral: true,
+			});
+
+		// Bot Permission Check
+		if (!interaction.guild.members.me.permissions.has(command.interaction.botPermission ?? []))
+			return interaction.reply({
+				embeds: [
+					client.embeds.attention(
+						`I need ${command.interaction.botPermission
+							.map((p) => p.toString())
+							.join(' & ')} permission${
+							command.interaction.botPermission.length === 1 ? '' : 's'
+						} for this command.`
+					),
+				],
 				ephemeral: true,
 			});
 

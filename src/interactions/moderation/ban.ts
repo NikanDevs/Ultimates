@@ -8,6 +8,7 @@ export const banCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['BanMembers'],
+	botPermission: ['BanMembers'],
 	options: [
 		{
 			name: 'user',

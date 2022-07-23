@@ -7,6 +7,7 @@ export const slowmodeCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ManageMessages'],
+	botPermission: ['ManageChannels'],
 	options: [
 		{
 			name: 'rate',

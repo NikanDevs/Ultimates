@@ -8,6 +8,7 @@ export const warnCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ManageMessages'],
+	botPermission: ['BanMembers', 'ModerateMembers'],
 	options: [
 		{
 			name: 'member',

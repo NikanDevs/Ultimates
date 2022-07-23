@@ -8,6 +8,7 @@ export const unbanCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['BanMembers'],
+	botPermission: ['BanMembers'],
 	options: [
 		{
 			name: 'user',

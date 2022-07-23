@@ -7,6 +7,7 @@ export const nicknameCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ManageNicknames'],
+	botPermission: ['ManageNicknames'],
 	options: [
 		{
 			name: 'member',

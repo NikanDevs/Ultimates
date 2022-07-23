@@ -38,6 +38,29 @@ export default new Event('interactionCreate', async (interaction) => {
 				ephemeral: true,
 			});
 
+		// Bot Permission Check
+		if (
+			!interaction.guild.members.me.permissions.has(
+				!command.interaction.botPermission
+					? command.interaction.botPermission.length
+						? command.interaction.botPermission
+						: []
+					: []
+			)
+		)
+			return interaction.reply({
+				embeds: [
+					client.embeds.attention(
+						`I need ${command.interaction.botPermission
+							.map((p) => p.toString())
+							.join(' & ')} permission${
+							command.interaction.botPermission.length === 1 ? '' : 's'
+						} for this command.`
+					),
+				],
+				ephemeral: true,
+			});
+
 		// Cooldowns
 		if (cooldown.has(`${command.interaction.name}${interaction.user.id}`)) {
 			const cooldownRemaining = `${~~(

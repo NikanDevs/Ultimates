@@ -4,7 +4,7 @@ export const pingCommand = {
 	name: 'ping',
 	description: "Check the bot's health",
 	directory: 'utility',
-	cooldown: 5000,
+	cooldown: 3000,
 	permission: [],
-	available: true,
+	botPermission: [],
 } as interactionOptions;

@@ -8,6 +8,7 @@ export const antiRaidCommand = {
 	directory: 'moderation',
 	cooldown: 120000,
 	permission: ['BanMembers'],
+	botPermission: ['BanMembers'],
 	options: [
 		{
 			name: 'registered',

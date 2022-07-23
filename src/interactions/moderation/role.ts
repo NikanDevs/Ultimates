@@ -7,6 +7,7 @@ export const roleCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ManageRoles'],
+	botPermission: ['ManageRoles'],
 	options: [
 		{
 			name: 'edit',

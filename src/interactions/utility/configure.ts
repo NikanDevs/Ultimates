@@ -7,6 +7,7 @@ export const configureCommand = {
 	directory: 'utility',
 	cooldown: 10000,
 	permission: ['Administrator'],
+	botPermission: ['ManageWebhooks'],
 	options: [
 		{
 			name: 'module',

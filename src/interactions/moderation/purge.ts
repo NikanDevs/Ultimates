@@ -7,6 +7,7 @@ export const purgeCommand = {
 	directory: 'moderation',
 	cooldown: 5000,
 	permission: ['ManageMessages'],
+	botPermission: ['ManageMessages'],
 	options: [
 		{
 			name: 'amount',

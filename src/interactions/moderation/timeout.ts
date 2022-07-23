@@ -8,6 +8,7 @@ export const timeoutCommand = {
 	directory: 'moderation',
 	cooldown: 3000,
 	permission: ['ModerateMembers'],
+	botPermission: ['ModerateMembers'],
 	options: [
 		{
 			name: 'member',

@@ -7,6 +7,7 @@ export const evalCommand = {
 	directory: 'developer',
 	cooldown: 3000,
 	permission: [],
+	botPermission: [],
 	options: [
 		{
 			name: 'async',
