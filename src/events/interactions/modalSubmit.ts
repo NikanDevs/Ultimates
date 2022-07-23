@@ -353,11 +353,14 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (!interaction.isFromMessage()) return;
 		const input = interaction.fields.getTextInputValue('reasons');
 		const module = interaction.customId.replaceAll('moderation:reasons:', '');
-		const reasons = input
-			.split('||')
-			.map((reason) => reason.trim())
-			.map((reason) => splitText(reason, MAX_REASON_LENGTH))
-			.filter((r) => r && r.length);
+		const reasons = [
+			...new Set(
+				input
+					.split('||')
+					.map((reason) => reason.trim())
+					.filter((r) => r && r.length)
+			),
+		];
 
 		await configModel.findByIdAndUpdate('moderation', {
 			$set: {

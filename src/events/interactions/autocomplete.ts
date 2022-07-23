@@ -140,6 +140,7 @@ export default new Event('interactionCreate', async (interaction) => {
 					value: splitText(focus.value.toString(), MAX_AUTOCOMPLETE_LENGTH),
 				},
 			]);
+
 		await interaction.respond(
 			filteredReasons.map((reason: string) => ({
 				name: splitText(reason, MAX_AUTOCOMPLETE_LENGTH),
