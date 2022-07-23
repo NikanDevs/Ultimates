@@ -144,7 +144,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.respond(
 			filteredReasons.map((reason: string) => ({
 				name: splitText(reason, MAX_AUTOCOMPLETE_LENGTH),
-				value: reason.split(' • ')[1],
+				value: splitText(reason.split(' • ')[1], MAX_AUTOCOMPLETE_LENGTH),
 			}))
 		);
 	}
