@@ -3,7 +3,6 @@ import { t } from 'i18next';
 import { client } from '../..';
 import {
 	MAX_FIELD_VALUE_LENGTH,
-	MAX_REASON_LENGTH,
 	MAX_SOFTBAN_DURATION,
 	MAX_TIMEOUT_DURATION,
 	MIN_SOFTBAN_DURATION,
