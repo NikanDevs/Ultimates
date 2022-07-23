@@ -31,9 +31,9 @@ import {
 export default new Event('interactionCreate', async (interaction) => {
 	if (interaction.type !== InteractionType.ModalSubmit) return;
 
-	if (interaction.customId === 'badwords') {
+	if (interaction.customId === 'automod:badwords') {
 		if (!interaction.isFromMessage()) return;
-		const input = interaction.fields.getTextInputValue('input');
+		const input = interaction.fields.getTextInputValue('words');
 		const newWords = input
 			.split(',')
 			.map((v) => (v.trim().length ? v.trim().toLowerCase() : null))
@@ -103,7 +103,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
 					[
 						`${automodModuleDescriptions[module]}\n`,
-						`\`Ignores:\` ${
+						`• **Ignores:** ${
 							client.config.ignores.automod[module].channelIds.concat(
 								client.config.ignores.automod[module].roleIds
 							).length
@@ -315,7 +315,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		await configModel.findByIdAndUpdate('general', {
 			$set: {
-				[module]: module === 'developers' ? developers : input,
+				[module]: module === 'developers' ? developers : module === 'appealLink' ? getURL(input) : input,
 			},
 		});
 		await client.config.updateGeneral();
@@ -323,7 +323,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.message.edit({
 			embeds: [
 				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
-					`${generalConfigDescriptions[module]}\n\n\`Current:\` ${
+					`${generalConfigDescriptions[module]}\n\n• **Current:** ${
 						module === 'memberRoleId'
 							? client.config.general.memberRoleId
 								? interaction.guild.roles.cache
@@ -504,37 +504,37 @@ export default new Event('interactionCreate', async (interaction) => {
 						`${moderationConfigDescriptions[subModule]}\n`,
 						subModule === 'counts'
 							? [
-									`\`Timeout #1:\` ${client.config.moderation[subModule].timeout1}`,
-									`\`Timeout #2:\` ${client.config.moderation[subModule].timeout2}`,
-									`\`Ban:\` ${client.config.moderation[subModule].ban}`,
-									`\`Automod multiplication:\` ${client.config.moderation[subModule].automod}`,
+									`• **Timeout #1:** ${client.config.moderation[subModule].timeout1}`,
+									`• **Timeout #2:** ${client.config.moderation[subModule].timeout2}`,
+									`• **Ban:** ${client.config.moderation[subModule].ban}`,
+									`• **Automod multiplication:** ${client.config.moderation[subModule].automod}`,
 							  ].join('\n')
 							: subModule === 'durations'
 							? [
-									`\`Timeout #1:\` ${convertTime(
+									`• **Timeout #1:** ${convertTime(
 										client.config.moderation[subModule].timeout1
 									)}`,
-									`\`Timeout #2:\` ${convertTime(
+									`• **Timeout #2:** ${convertTime(
 										client.config.moderation[subModule].timeout2
 									)}`,
-									`\`Ban:\` ${
+									`• **Ban:** ${
 										client.config.moderation[subModule].ban
 											? convertTime(client.config.moderation[subModule].ban)
 											: 'Permanent'
 									}`,
-									`\`Automod timeout:\` ${convertTime(
+									`• **Automod timeout:** ${convertTime(
 										client.config.moderation[subModule].automod
 									)}`,
 							  ].join('\n')
 							: subModule === 'defaults'
 							? [
-									`\`Timeout duration:\` ${convertTime(
+									`• **Timeout duration:** ${convertTime(
 										client.config.moderation[subModule].timeout
 									)}`,
-									`\`Softban duration:\` ${convertTime(
+									`• **Softban duration:** ${convertTime(
 										client.config.moderation[subModule].softban
 									)}`,
-									`\`Delete message days:\` ${
+									`• **Delete message days:** ${
 										deleteDayRewites[client.config.moderation[subModule].msgs]
 									}`,
 							  ].join('\n')

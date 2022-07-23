@@ -53,14 +53,14 @@ export default new Command({
 				.setDescription(
 					[
 						`${loggingModuleDescriptions[preSelected]}\n`,
-						`\`Channel:\` ${
+						`• **Channel:** ${
 							data.logging[preSelected].channelId
 								? interaction.guild.channels.cache.get(data.logging[preSelected].channelId) ||
 								  data.logging[preSelected].channelId
 								: 'None'
 						}\n`,
 						supportedLoggingIgnores.includes(preSelected)
-							? `\`Ignores:\`${
+							? `• **Ignores:** ${
 									client.config.ignores.logs[preSelected].channelIds.concat(
 										client.config.ignores.logs[preSelected].roleIds
 									).length
@@ -80,7 +80,7 @@ export default new Command({
 														c
 												)
 												.join(' ')}`
-										: ' No ignores found'
+										: 'No ignores found'
 							  }`
 							: '',
 					].join('\n')
@@ -153,7 +153,7 @@ export default new Command({
 						.setDescription(
 							[
 								`${loggingModuleDescriptions[selectedModule]}\n`,
-								`\`Channel:\` ${
+								`• **Channel:** ${
 									data.logging[selectedModule].channelId
 										? interaction.guild.channels.cache.get(
 												data.logging[selectedModule].channelId
@@ -161,7 +161,7 @@ export default new Command({
 										: 'None'
 								}\n`,
 								supportedLoggingIgnores.includes(selectedModule)
-									? `\`Ignores:\` ${
+									? `• **Ignores:** ${
 											client.config.ignores.logs[selectedModule].channelIds.concat(
 												client.config.ignores.logs[selectedModule].roleIds
 											).length
@@ -306,7 +306,7 @@ export default new Command({
 				.setDescription(
 					[
 						`${automodModuleDescriptions[preSelected]}\n`,
-						`\`Ignores:\` ${
+						`• **Ignores:** ${
 							client.config.ignores.automod[preSelected].channelIds.concat(
 								client.config.ignores.automod[preSelected].roleIds
 							).length
@@ -371,6 +371,7 @@ export default new Command({
 
 			const sentInteraction = await interaction.reply({
 				embeds: [embed],
+				fetchReply: true,
 				components: [
 					selectMenu(preSelected),
 					buttonComponents(
@@ -401,7 +402,7 @@ export default new Command({
 						.setDescription(
 							[
 								`${automodModuleDescriptions[selectedModule]}\n`,
-								`\`Ignores:\` ${
+								`• **Ignores:** ${
 									client.config.ignores.automod[selectedModule].channelIds.concat(
 										client.config.ignores.automod[selectedModule].roleIds
 									).length
@@ -512,14 +513,14 @@ export default new Command({
 				} else if (collected.customId == 'automod:badwords' && collected.isButton()) {
 					const modal = new ModalBuilder()
 						.setTitle('Filtered Words')
-						.setCustomId('badwords')
+						.setCustomId('automod:badwords')
 						.addComponents([
 							{
 								type: ComponentType.ActionRow,
 								components: [
 									{
 										type: ComponentType.TextInput,
-										custom_id: 'input',
+										custom_id: 'words',
 										label: 'Separate them with commas',
 										style: TextInputStyle.Paragraph,
 										required: false,
@@ -538,7 +539,10 @@ export default new Command({
 			});
 
 			collector.on('end', () => {
-				interaction.editReply({ components: [] });
+				interaction.editReply({
+					embeds: [EmbedBuilder.from(sentInteraction.embeds[0]).spliceFields(0, 1)],
+					components: [],
+				});
 			});
 		} else if (mainModule === 'general') {
 			const preSelected: GeneralConfigTypes = 'developers';
@@ -546,7 +550,7 @@ export default new Command({
 				.setTitle(generalConfigNames[preSelected])
 				.setColor(client.cc.invisible)
 				.setDescription(
-					`${generalConfigDescriptions[preSelected]}\n\n\`Current:\` ${
+					`${generalConfigDescriptions[preSelected]}\n\n• **Current:** ${
 						client.config.general[preSelected].length
 							? client.config.general[preSelected]
 									.map((d) => client.users.cache.get(d)?.tag || d)
@@ -602,7 +606,7 @@ export default new Command({
 						.setTitle(generalConfigNames[selectedModule])
 						.setColor(client.cc.invisible)
 						.setDescription(
-							`${generalConfigDescriptions[selectedModule]}\n\n\`Current:\` ${
+							`${generalConfigDescriptions[selectedModule]}\n\n• **Current:** ${
 								selectedModule === 'memberRoleId'
 									? client.config.general.memberRoleId
 										? interaction.guild.roles.cache
@@ -674,10 +678,10 @@ export default new Command({
 				.setDescription(
 					[
 						`${moderationConfigDescriptions[preSelected]}\n`,
-						`\`Timeout #1:\` ${client.config.moderation[preSelected].timeout1}`,
-						`\`Timeout #2:\` ${client.config.moderation[preSelected].timeout2}`,
-						`\`Ban:\` ${client.config.moderation[preSelected].ban}`,
-						`\`Automod multiplication:\` ${client.config.moderation[preSelected].automod}`,
+						`• **Timeout #1:** ${client.config.moderation[preSelected].timeout1}`,
+						`• **Timeout #2:** ${client.config.moderation[preSelected].timeout2}`,
+						`• **Ban:** ${client.config.moderation[preSelected].ban}`,
+						`• **Automod multiplication:** ${client.config.moderation[preSelected].automod}`,
 					].join('\n')
 				);
 
@@ -822,39 +826,39 @@ export default new Command({
 								`${moderationConfigDescriptions[selectedModule]}\n`,
 								selectedModule === 'counts'
 									? [
-											`\`Timeout #1:\` ${client.config.moderation[selectedModule].timeout1}`,
-											`\`Timeout #2:\` ${client.config.moderation[selectedModule].timeout2}`,
-											`\`Ban:\` ${client.config.moderation[selectedModule].ban}`,
-											`\`Automod multiplication:\` ${client.config.moderation[selectedModule].automod}`,
+											`• **Timeout #1:** ${client.config.moderation[selectedModule].timeout1}`,
+											`• **Timeout #2:** ${client.config.moderation[selectedModule].timeout2}`,
+											`• **Ban:** ${client.config.moderation[selectedModule].ban}`,
+											`• **Automod multiplication:** ${client.config.moderation[selectedModule].automod}`,
 									  ].join('\n')
 									: selectedModule === 'durations'
 									? [
-											`\`Timeout #1:\` ${convertTime(
+											`• **Timeout #1:** ${convertTime(
 												client.config.moderation[selectedModule].timeout1
 											)}`,
-											`\`Timeout #2:\` ${convertTime(
+											`• **Timeout #2:** ${convertTime(
 												client.config.moderation[selectedModule].timeout2
 											)}`,
-											`\`Ban:\` ${
+											`• **Ban:** ${
 												client.config.moderation[selectedModule].ban
 													? convertTime(
 															client.config.moderation[selectedModule].ban
 													  )
 													: 'Permanent'
 											}`,
-											`\`Automod timeout:\` ${convertTime(
+											`• **Automod timeout:** ${convertTime(
 												client.config.moderation[selectedModule].automod
 											)}`,
 									  ].join('\n')
 									: selectedModule === 'defaults'
 									? [
-											`\`Timeout duration:\` ${convertTime(
+											`• **Timeout duration:** ${convertTime(
 												client.config.moderation[selectedModule].timeout
 											)}`,
-											`\`Softban duration:\` ${convertTime(
+											`• **Softban duration:** ${convertTime(
 												client.config.moderation[selectedModule].softban
 											)}`,
-											`\`Delete message days:\` ${
+											`• **Delete message days:** ${
 												deleteDayRewites[
 													client.config.moderation[selectedModule].msgs
 												]
@@ -870,7 +874,7 @@ export default new Command({
 					});
 				} else if (collected.customId === 'moderation:reasons' && collected.isSelectMenu()) {
 					const modal = new ModalBuilder()
-						.setTitle(`Reasons for ${collected.values[0]}`)
+						.setTitle(`Reasons for /${collected.values[0]}`)
 						.setCustomId(`moderation:reasons:${collected.values[0]}`)
 						.addComponents([
 							{
