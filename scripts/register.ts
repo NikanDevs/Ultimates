@@ -22,4 +22,3 @@ const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN.toStr
 	});
 	logger.info('Register interactions', { showDate: false });
 })();
-
