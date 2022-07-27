@@ -1,4 +1,13 @@
-node_modules
-.DS_Store
+# Libraries
+node_modules/
+
+# Build
+dist/
+
+# Environment
 .env
-dist
+
+# Miscellaneous
+.DS_Store
+.husky/_/*
+.idea
