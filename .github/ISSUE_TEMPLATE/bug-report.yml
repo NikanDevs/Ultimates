@@ -86,8 +86,7 @@ body:
        attributes:
             label: Are you sure about reporting this bug?
             options:
-                 - label: 'I have provided enough information for this bug to be fixed'
+                 - label: "I have provided enough information for this bug to be fixed"
                    required: true
        validations:
             required: true
-

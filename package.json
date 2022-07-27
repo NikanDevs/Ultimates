@@ -10,7 +10,8 @@
 		"start": "ts-node src/index.ts",
 		"start:prod": "node dist/index.js",
 		"register": "ts-node scripts/register.ts",
-		"format": "prettier --config .prettierrc.yml 'src' 'scripts' 'locales' --write",
+		"format": "prettier --config .prettierrc.yml . --write",
+		"check:format": "prettier --config .prettierrc.yml --check .",
 		"postinstall": "husky install"
 	},
 	"private": true,
@@ -41,4 +42,3 @@
 		"typescript": "^4.6.2"
 	}
 }
-

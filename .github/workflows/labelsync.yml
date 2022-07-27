@@ -3,7 +3,7 @@ on:
      workflow_dispatch:
      push:
           paths:
-               - '.github/labels.yml'
+               - ".github/labels.yml"
 jobs:
      labeler:
           name: Labeler
@@ -19,4 +19,3 @@ jobs:
                       yaml-file: .github/labels.yml
                       skip-delete: false
                       dry-run: false
-

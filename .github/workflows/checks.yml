@@ -1,0 +1,21 @@
+name: Checks
+on: [push, pull_request]
+jobs:
+     Formattings:
+          name: Formattings
+          runs-on: ubuntu-latest
+          steps:
+               - name: Checkout
+                 uses: actions/checkout@v3
+
+               - name: Install node.js
+                 uses: actions/setup-node@v3
+                 with:
+                      node-version: 16
+                      cache: "npm"
+
+               - name: Install Prettier
+                 run: npm i prettier --save-dev
+
+               - name: Format Check
+                 run: npm run check:format
