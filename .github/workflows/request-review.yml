@@ -1,0 +1,12 @@
+name: "Review Pull Requests"
+on:
+     pull_request_target:
+jobs:
+     reviewers:
+          name: Request Review
+          runs-on: ubuntu-latest
+          steps:
+               - name: Request review
+                 if: github.event.action == 'opened'
+                 uses: kentaro-m/auto-assign-action@v1.2.1
+
