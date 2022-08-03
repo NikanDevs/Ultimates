@@ -168,7 +168,7 @@ export default new Command({
 		}
 
 		const badgesArray: string[] = [];
-		if (user.bot && !user.flags?.toArray().includes('VerifiedBot')) badgesArray.push(badgesReweite.UnverifiedBot);
+		if (user.bot && !user.flags?.toArray().includes('VerifiedBot')) badgesArray.push('UnverifiedBot');
 		user.flags?.toArray().forEach((badge) => badgesArray.push(`• ${badgesReweite[badge]}`));
 
 		if (badgesArray.length) {
