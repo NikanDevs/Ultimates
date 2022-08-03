@@ -654,7 +654,7 @@ export default new Command({
 										required: false,
 										max_length: generalConfigIdType.includes(module) ? 18 : 400,
 										min_length: generalConfigIdType.includes(module) ? 18 : 0,
-										placeholder: 'LLLpo',
+										placeholder: null,
 										value:
 											module === 'developers'
 												? client.config.general[module].join(' ')
