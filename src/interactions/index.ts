@@ -19,6 +19,7 @@ import { configureCommand } from './utility/configure';
 import { pingCommand } from './utility/ping';
 import { staffCommand } from './utility/staff';
 import { userinfoCommand } from './utility/userinfo';
+import { verificationCommand } from './utility/verification';
 
 export const interactions = {
 	Punishments: punishmentsContextmenu,
@@ -42,4 +43,5 @@ export const interactions = {
 	ping: pingCommand,
 	staff: staffCommand,
 	userinfo: userinfoCommand,
+	verification: verificationCommand,
 };

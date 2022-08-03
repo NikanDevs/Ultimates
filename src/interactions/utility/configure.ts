@@ -15,22 +15,10 @@ export const configureCommand = {
 			type: ApplicationCommandOptionType.String,
 			required: true,
 			choices: [
-				{
-					name: 'General',
-					value: 'general',
-				},
-				{
-					name: 'Moderation',
-					value: 'moderation',
-				},
-				{
-					name: 'Auto moderation',
-					value: 'automod',
-				},
-				{
-					name: 'Logging',
-					value: 'logs',
-				},
+				{ name: 'General', value: 'general' },
+				{ name: 'Moderation', value: 'moderation' },
+				{ name: 'Auto moderation', value: 'automod' },
+				{ name: 'Logging', value: 'logs' },
 			],
 		},
 	],
