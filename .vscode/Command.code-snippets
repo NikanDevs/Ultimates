@@ -13,5 +13,5 @@
 			"})"
 		],
 		"description": "Creates a slash command handler in the file."
-	},
+	}
 }
