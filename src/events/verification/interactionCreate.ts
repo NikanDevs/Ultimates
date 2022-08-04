@@ -7,6 +7,7 @@ import {
 	EmbedBuilder,
 	GuildMember,
 	ModalBuilder,
+	SelectMenuBuilder,
 	TextInputStyle,
 } from 'discord.js';
 import { client } from '../..';
@@ -52,7 +53,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		verificationCollection.delete('cooldown:' + interaction.user.id);
 	}, 30000);
 
-	const verifiactionMode: number = generateRandomNumber(1, 2);
+	const verifiactionMode: number = generateRandomNumber(1, 3);
 
 	switch (verifiactionMode) {
 		case VerificationModes.Matching:
@@ -113,7 +114,7 @@ export default new Event('interactionCreate', async (interaction) => {
 							],
 							components: [],
 						});
-						verificationCollection.delete('cooldown-' + interaction.user.id);
+						verificationCollection.delete('cooldown:' + interaction.user.id);
 					} else {
 						interaction.editReply({
 							embeds: [
@@ -187,6 +188,93 @@ export default new Event('interactionCreate', async (interaction) => {
 				}, VERIFICATION_TIME);
 			}
 			break;
+		case VerificationModes.Selection:
+			{
+				let key = generateCode();
+
+				const embed = new EmbedBuilder()
+					.setAuthor({ name: 'Select the option which is matching your key' })
+					.setDescription(
+						`Select the option in the menu below which is **exactly** matching your key.\n\n**Your key:** ${key}`
+					)
+					.setColor(client.cc.invisible);
+
+				const options: string[] = [key];
+				for (let index = 0; index < generateRandomNumber(4, 14); index++) {
+					options.push(generateCode());
+				}
+
+				const buttonComponent = new ActionRowBuilder<SelectMenuBuilder>().addComponents([
+					new SelectMenuBuilder()
+						.setPlaceholder('Select the matching key')
+						.setCustomId('verification:selection')
+						.setMaxValues(1)
+						.setMinValues(1)
+						.setOptions(
+							shuffleIndexes(
+								options.map((i) => {
+									return { label: i, value: i };
+								})
+							)
+						),
+				]);
+
+				const msg = await interaction.reply({
+					embeds: [embed],
+					components: [buttonComponent],
+					fetchReply: true,
+					ephemeral: true,
+				});
+
+				const collector = msg.createMessageComponentCollector({
+					time: VERIFICATION_TIME,
+					componentType: ComponentType.SelectMenu,
+					max: 1,
+				});
+
+				collector.on('collect', (collected) => {
+					collector.stop('success');
+
+					if (collected.values[0] === key) {
+						(interaction.member as GuildMember).roles.add(client.config.general.memberRoleId);
+
+						interaction.editReply({
+							embeds: [
+								new EmbedBuilder()
+									.setColor(Colors.Green)
+									.setDescription('Congrats! You were verified in the server.'),
+							],
+							components: [],
+						});
+						verificationCollection.delete('cooldown:' + interaction.user.id);
+					} else {
+						interaction.editReply({
+							embeds: [
+								new EmbedBuilder()
+									.setColor(Colors.Red)
+									.setDescription(
+										"Whoops, your answer wasn't correct. Try again to get verified."
+									),
+							],
+							components: [],
+						});
+					}
+				});
+
+				collector.on('end', (_, reason) => {
+					if (reason === 'success') return;
+
+					interaction.editReply({
+						embeds: [
+							new EmbedBuilder()
+								.setColor(Colors.Red)
+								.setDescription('Verification timed out, try again to verify yourself.'),
+						],
+						components: [],
+					});
+				});
+			}
+			break;
 	}
 });
 
@@ -201,4 +289,19 @@ function generateCode() {
 
 function generateRandomNumber(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function shuffleIndexes(array: any[]) {
+	let currentIndex: number = array.length;
+	let temporaryValue: number;
+	let randomIndex: number;
+
+	while (0 !== currentIndex) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+	return array;
 }

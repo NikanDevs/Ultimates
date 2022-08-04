@@ -414,6 +414,7 @@ export const moderationModulesNames = {
 export enum VerificationModes {
 	Matching = 1,
 	Modal = 2,
+	Selection = 3,
 }
 
 // Other
