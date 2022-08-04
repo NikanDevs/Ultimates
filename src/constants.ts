@@ -38,3 +38,4 @@ export const MAX_ANTIRAID_DURATION = 1000 * 60 * 60 * 24 * 180; // 180 days
 export const MAX_REASON_LENGTH = 100;
 export const MAX_FIELD_VALUE_LENGTH = 1024;
 export const MAX_AUTOCOMPLETE_LENGTH = 100;
+export const VERIFICATION_TIME = 30 * 1000;

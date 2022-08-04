@@ -409,6 +409,13 @@ export const moderationModulesNames = {
 	},
 };
 
+// Verification
+
+export enum VerificationModes {
+	Matching = 1,
+	Modal = 2,
+}
+
 // Other
 
 export interface ignoreFunctionOptions {
