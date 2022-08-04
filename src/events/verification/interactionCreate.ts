@@ -48,7 +48,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			],
 			ephemeral: true,
 		});
-	verificationCollection.set('cooldown:' + interaction.user.id, Date.now() + 20000);
+	verificationCollection.set('cooldown:' + interaction.user.id, Date.now() + 30000);
 	setTimeout(() => {
 		verificationCollection.delete('cooldown:' + interaction.user.id);
 	}, 30000);
