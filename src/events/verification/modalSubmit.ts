@@ -43,4 +43,3 @@ export default new Event('interactionCreate', async (interaction) => {
 		verificationCollection.delete('modal:answer-' + interaction.user.id);
 	}
 });
-
