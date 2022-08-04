@@ -31,7 +31,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				ephemeral: true,
 			});
 
-			verificationCollection.delete('cooldown-' + interaction.user.id);
+			verificationCollection.delete('cooldown:' + interaction.user.id);
 			verificationCollection.delete('modal:answer-' + interaction.user.id);
 		} else if (getValue !== answer) {
 			const deniedEmbed = new EmbedBuilder()
