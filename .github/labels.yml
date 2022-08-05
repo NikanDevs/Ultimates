@@ -29,3 +29,7 @@
 - name: "question"
   description: "Something is not clear enough to understand"
   color: "bfd4f2"
+
+- name: "dependencies"
+  description: "Pull requests that upgrade a dependency"
+  color: "999594"
