@@ -13,5 +13,22 @@
 			"invalidID": "${common.errors.invalidID} ${common.errors.useAutocomplete}"
 		},
 		"noReason": "No reason was provided."
+	},
+	"command": {
+		"context": {
+			"punishments": {
+				"embed": {
+					"manual-id": "`{warnCount}` **{type}** | **ID: {id}**",
+					"automod-id": "`{warnCount}` **{type}** | Auto Moderation",
+					"date": "• **Date:** {- date}",
+					"moderator": "• **Moderator:** {moderator}",
+					"expire": "• **Expire:** {expire}",
+					"reason": "• **Reason:** {reason}",
+					"footer": "Page {currentPage}/{totalPages}"
+				},
+				"automatic": "Automatic",
+				"no-punishments": "No punishments were found for **{user}**"
+			}
+		}
 	}
 }

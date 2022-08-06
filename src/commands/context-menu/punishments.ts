@@ -1,4 +1,5 @@
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, User } from 'discord.js';
+import { t } from 'i18next';
 import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';
@@ -12,42 +13,58 @@ export default new Command({
 	interaction: interactions.Punishments,
 	excute: async ({ client, interaction }) => {
 		if (!interaction.isUserContextMenuCommand()) return;
-		const user = interaction.targetUser;
+		const user = interaction.targetUser as User;
 
 		// Getting all the warnings
 		const findWarningsNormal = await punishmentModel.find({ userId: user.id });
 		const findWarningsAutomod = await automodModel.find({ userId: user.id });
-		let warnCounter = 0;
+		let warnCount = 0;
 
 		const warnings = findWarningsNormal
 			.map((data) => {
-				warnCounter = warnCounter + 1;
+				warnCount = warnCount + 1;
 				return [
-					`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${data._id}**`,
-					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
-					data.moderatorId === client.user.id
-						? `• **Moderator:** Automatic`
-						: client.users.cache.get(data.moderatorId) === undefined
-						? `• **Moderator ID:** ${data.moderatorId}`
-						: `• **Moderator:** ${client.users.cache.get(data.moderatorId).tag}`,
+					t('command.context.punishments.embed.manual-id', {
+						warnCount: warnCount.toString(),
+						type: capitalize(data.type),
+						id: data._id,
+					}),
+					t('command.context.punishments.embed.date', {
+						date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+					}),
+					t('command.context.punishments.embed.moderator', {
+						moderator:
+							data.moderatorId === client.user.id
+								? t('command.context.punishments.automatic')
+								: client.users.cache.get(data.moderatorId)?.tag || data.moderatorId,
+					}),
 					data.type === PunishmentTypes.Warn
-						? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+						? t('command.context.punishments.embed.expire', {
+								expire: generateDiscordTimestamp(data.expire),
+						  })
 						: 'LINE_BREAK',
-					`• **Reason:** ${data.reason}`,
+					t('command.context.punishments.embed.reason', { reason: data.reason }),
 				]
 					.join('\n')
 					.replaceAll('\nLINE_BREAK', '');
 			})
 			.concat(
 				findWarningsAutomod.map((data) => {
-					warnCounter = warnCounter + 1;
+					warnCount = warnCount + 1;
 					return [
-						`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
-						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
+						t('command.context.punishments.embed.automod-id', {
+							warnCount: warnCount.toString(),
+							type: capitalize(data.type),
+						}),
+						t('command.context.punishments.embed.date', {
+							date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+						}),
 						data.type === PunishmentTypes.Warn
-							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							? t('command.context.punishments.embed.expire', {
+									expire: generateDiscordTimestamp(data.expire),
+							  })
 							: 'LINE_BREAK',
-						`• **Reason:** ${data.reason}`,
+						t('command.context.punishments.embed.reason', { reason: data.reason }),
 					]
 						.join('\n')
 						.replaceAll('\nLINE_BREAK', '');
@@ -64,19 +81,23 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					new EmbedBuilder({
-						description: `No punishments were found for **${user.tag}**`,
+						description: t('command.context.punishments.no-punishments', { user: user.tag }),
 						color: client.cc.invisible,
 					}),
 				],
 				ephemeral: true,
 			});
+
 		await interaction.deferReply({ ephemeral: true });
 		if (warnings.length <= 3) {
 			embed.setDescription(warnings.map((data) => data.toString()).join('\n\n'));
 			interaction.followUp({ embeds: [embed] });
 		} else if (warnings.length > 3) {
 			embed.setDescription('${{array}}').setFooter({
-				text: 'Page ${{currentPage}}/${{totalPages}}',
+				text: t('command.context.punishments.embed.footer', {
+					currentPage: '${{currentPage}}',
+					totalPages: '${{totalPages}}',
+				}),
 			});
 
 			const paginator = new Paginator();
