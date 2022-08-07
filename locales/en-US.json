@@ -27,7 +27,36 @@
 					"footer": "Page {currentPage}/{totalPages}"
 				},
 				"automatic": "Automatic",
-				"no-punishments": "No punishments were found for **{user}**"
+				"noPunishments": "No punishments were found for **{user}**"
+			}
+		},
+		"modmail": {
+			"modmail": {
+				"close": {
+					"invalidChannel": "You may only run this command in a ticker channel.",
+					"invalidUser": "I wasn't able to find the user, did you change the channel topic?",
+					"transcript_title": "Modmail Transcript",
+					"transcript_description": "Modmail Transcript for {user}",
+					"deleting": "This ticket will be deleted in 10 seconds...",
+					"embed_title": "Ticket closed",
+					"embed_description": "Your ticket was closed by a staff member. If you got other questions in the future, feel free to ask them!"
+				},
+				"blacklist": {
+					"invalidReason": "Please provide a reason.",
+					"added": "**{user}** was added to the modmail blacklist.",
+					"removed": "**{user}** was removed from the modmail blacklist."
+				},
+				"open": {
+					"noBot": "You can not open modmail tickers for bots.",
+					"exists": "Looks like this user already has a ticket opened at {- channel}",
+					"blacklisted": "{user} is blacklisted from opening modmail tickets.",
+					"enbed_title": "Modmail ticket opened",
+					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering of how this ticket got opened, be patient until the moderator contact from through this ticket.",
+					"embed_reason": "Reason",
+					"cantDM": "This user doesn't accept direct messages or has blacked the bot. Could not open the modmail.",
+					"opening": "Opening a modmail ticket, please wait...",
+					"opened": "Ticket was created at {- channel}"
+				}
 			}
 		}
 	}

@@ -81,7 +81,7 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					new EmbedBuilder({
-						description: t('command.context.punishments.no-punishments', { user: user.tag }),
+						description: t('command.context.punishments.noPunishments', { user: user.tag }),
 						color: client.cc.invisible,
 					}),
 				],

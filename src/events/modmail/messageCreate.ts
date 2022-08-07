@@ -8,7 +8,6 @@ import {
 	ComponentType,
 	DMChannel,
 	EmbedBuilder,
-	Guild,
 	TextChannel,
 } from 'discord.js';
 import { client } from '../..';
@@ -26,10 +25,14 @@ let canDM: boolean = true;
 let canSend: boolean = true;
 
 export default new Event('messageCreate', async (message) => {
-	const guild =
-		client.guilds.cache.get(process.env.GUILD_ID) || ((await client.guilds.fetch(process.env.GUILD_ID)) as Guild);
+	const guild = client.guilds.cache.get(process.env.GUILD_ID);
 
 	if (!message?.guild && message.channel.type === ChannelType.DM && !message.author?.bot) {
+		if (!guild.channels.cache.get(client.config.general.modmailCategoryId))
+			return message.channel?.send({
+				content: 'This server does not have the modmail module set up.',
+			});
+
 		// Checking for blacklist
 		const data = await modmailModel.findById(message.author.id);
 		const blacklistedEmbed = new EmbedBuilder()
@@ -45,7 +48,7 @@ export default new Event('messageCreate', async (message) => {
 			.setColor(Colors.Red);
 
 		if (data)
-			return (message.channel as DMChannel)?.send({
+			return message.channel?.send({
 				embeds: [blacklistedEmbed],
 			});
 
@@ -244,7 +247,8 @@ export default new Event('messageCreate', async (message) => {
 	) {
 		const channelTopic = (message.channel as TextChannel).topic;
 		const usersThread = guild.members.cache.find(
-			(user) => user.id === channelTopic.slice(channelTopic.length - user.id.length)
+			(user) =>
+				user.id === channelTopic.split('|')[channelTopic.split('|').length - 1].replace('ID:', '').trim()
 		);
 
 		if (!usersThread)
