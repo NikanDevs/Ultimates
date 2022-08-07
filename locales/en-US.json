@@ -40,7 +40,7 @@
 					"transcript_description": "Modmail Transcript for {user}",
 					"deleting": "This ticket will be deleted in 10 seconds...",
 					"embed_title": "Ticket closed",
-					"embed_description": "Your ticket was closed by a staff member. If you got other questions in the future, feel free to ask them!"
+					"embed_description": "Your ticket was closed by a staff member. If you have any other questions in the future, feel free to ask them!"
 				},
 				"blacklist": {
 					"invalidReason": "Please provide a reason.",
@@ -48,13 +48,13 @@
 					"removed": "**{user}** was removed from the modmail blacklist."
 				},
 				"open": {
-					"noBot": "You can not open modmail tickets for bots.",
+					"noBot": "You cannot open modmail tickets for bots.",
 					"exists": "Looks like this user already has a ticket opened at {- channel}",
 					"blacklisted": "{user} is blacklisted from opening modmail tickets.",
 					"enbed_title": "Modmail ticket opened",
-					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering of how this ticket got opened, be patient until the moderator contact from through this ticket.",
+					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering why this ticket was opened, wait until a moderator has contaced you through this ticket.",
 					"embed_reason": "Reason",
-					"cantDM": "This user doesn't accept direct messages or has blacked the bot. Could not open the modmail.",
+					"cantDM": "This user doesn't accept direct messages or has blocked the bot. Unable to open the modmail.",
 					"opening": "Opening a modmail ticket, please wait...",
 					"opened": "Ticket was created at {- channel}"
 				}
