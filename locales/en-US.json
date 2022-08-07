@@ -2,11 +2,11 @@
 	"common": {
 		"errors": {
 			"useAutocomplete": "Use the autocomplete for better results.",
-			"invalidDuration": "The duration is not valid.",
+			"invalidDuration": "This duration is invalid.",
 			"invalidMember": "I couldn't find that member in this server.",
 			"invalidID": "I couldn't find a punishment with that ID.",
 			"duration": "The duration must be between {min} and {max}.",
-			"cannotInteract": "You can not interact with this."
+			"cannotInteract": "You cannot interact with this."
 		},
 		"$errors": {
 			"invalidDuration": "${common.errors.invalidDuration} ${common.errors.useAutocomplete}",
@@ -34,7 +34,7 @@
 			"modmail": {
 				"notSet": "The modmail module isn't set up, set it up using `/configure general`",
 				"close": {
-					"invalidChannel": "You may only run this command in a ticker channel.",
+					"invalidChannel": "You may only run this command in a ticket channel.",
 					"invalidUser": "I wasn't able to find the user, did you change the channel topic?",
 					"transcript_title": "Modmail Transcript",
 					"transcript_description": "Modmail Transcript for {user}",
@@ -48,7 +48,7 @@
 					"removed": "**{user}** was removed from the modmail blacklist."
 				},
 				"open": {
-					"noBot": "You can not open modmail tickers for bots.",
+					"noBot": "You can not open modmail tickets for bots.",
 					"exists": "Looks like this user already has a ticket opened at {- channel}",
 					"blacklisted": "{user} is blacklisted from opening modmail tickets.",
 					"enbed_title": "Modmail ticket opened",
