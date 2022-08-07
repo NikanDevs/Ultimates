@@ -16,6 +16,12 @@ export default new Command({
 		const subcommand = options.getSubcommand();
 		const guild = client.guilds.cache.get(process.env.GUILD_ID);
 
+		if (!guild.channels.cache.get(client.config.general.modmailCategoryId))
+			return interaction.reply({
+				embeds: [client.embeds.attention(t('command.modmail.modmail.notSet'))],
+				ephemeral: true,
+			});
+
 		if (subcommand === 'close') {
 			const textChannel = interaction.channel as TextChannel;
 

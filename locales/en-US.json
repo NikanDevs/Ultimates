@@ -32,6 +32,7 @@
 		},
 		"modmail": {
 			"modmail": {
+				"notSet": "The modmail module isn't set up, set it up using `/configure general`",
 				"close": {
 					"invalidChannel": "You may only run this command in a ticker channel.",
 					"invalidUser": "I wasn't able to find the user, did you change the channel topic?",
