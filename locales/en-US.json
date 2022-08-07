@@ -52,7 +52,7 @@
 					"exists": "Looks like this user already has a ticket opened at {- channel}",
 					"blacklisted": "{user} is blacklisted from opening modmail tickets.",
 					"enbed_title": "Modmail ticket opened",
-					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering why this ticket was opened, wait until a moderator has contaced you through this ticket.",
+					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering why this ticket was opened, wait until a moderator has contacted you through this ticket.",
 					"embed_reason": "Reason",
 					"cantDM": "This user doesn't accept direct messages or has blocked the bot. Unable to open the modmail.",
 					"opening": "Opening a modmail ticket, please wait...",
