@@ -16,15 +16,9 @@ import { interactions } from '../../interactions';
 import { configModel } from '../../models/config';
 import { Command } from '../../structures/Command';
 import {
-	automodModulesNames,
-	loggingModulesNames,
 	LoggingModules,
-	automodModulesArray,
 	AutomodModules,
-	automodModuleDescriptions,
 	supportedLoggingIgnores,
-	loggingModulesArray,
-	loggingModuleDescriptions,
 	GeneralConfigTypes,
 	generalConfigNames,
 	generalConfigDescriptions,
@@ -48,20 +42,23 @@ export default new Command({
 			const data = await configModel.findById('logging');
 
 			const embed = new EmbedBuilder()
-				.setTitle(loggingModulesNames[preSelected])
+				.setTitle(t(`command.utility.configure.logs.enum.${preSelected}`, { context: 'name' }))
 				.setColor(client.cc.invisible)
 				.setDescription(
 					[
-						`${loggingModuleDescriptions[preSelected]}\n`,
-						`• **Channel:** ${
-							data.logging[preSelected].channelId
-								? interaction.guild.channels.cache.get(data.logging[preSelected].channelId) ||
-								  data.logging[preSelected].channelId
-								: 'None'
-						}\n`,
+						t('command.utility.configure.logs.enum.' + preSelected, {
+							context: 'description',
+						}),
+						t('command.utility.configure.logs.channel', {
+							channel: data.logging[preSelected].channelId
+								? interaction.guild.channels.cache
+										.get(data.logging[preSelected].channelId)
+										?.toString() || data.logging[preSelected].channelId
+								: t('command.utility.configure.none'),
+						}),
 						supportedLoggingIgnores.includes(preSelected)
-							? `• **Ignores:** ${
-									client.config.ignores.logs[preSelected].channelIds.concat(
+							? t('command.utility.configure.logs.ignores', {
+									ignores: client.config.ignores.logs[preSelected].channelIds.concat(
 										client.config.ignores.logs[preSelected].roleIds
 									).length
 										? `\n${client.config.ignores.logs[preSelected].channelIds
@@ -80,35 +77,57 @@ export default new Command({
 														c
 												)
 												.join(' ')}`
-										: 'No ignores found'
-							  }`
+										: t('command.utility.configure.none'),
+							  })
 							: '',
-					].join('\n')
+					].join('\n\n')
 				);
 
 			const selectMenu = (module: LoggingModules) => {
 				return new ActionRowBuilder<SelectMenuBuilder>().setComponents([
-					new SelectMenuBuilder().setCustomId('logging:modules').setOptions(
-						loggingModulesArray.map((m) => {
-							return {
-								label: m.rewrite,
-								value: m.name,
-								default: m.name === module,
-							};
-						})
-					),
+					new SelectMenuBuilder().setCustomId('logging:modules').setOptions([
+						{
+							label: t('command.utility.configure.logs.enum.mod', { context: 'name' }),
+							value: 'mod',
+							default: 'mod' === module,
+						},
+						{
+							label: t('command.utility.configure.logs.enum.message', { context: 'name' }),
+							value: 'message',
+							default: 'message' === module,
+						},
+						{
+							label: t('command.utility.configure.logs.enum.modmail', { context: 'name' }),
+							value: 'modmail',
+							default: 'modmail' === module,
+						},
+						{
+							label: t('command.utility.configure.logs.enum.servergate', { context: 'name' }),
+							value: 'servergate',
+							default: 'servergate' === module,
+						},
+						{
+							label: t('command.utility.configure.logs.enum.voice', { context: 'name' }),
+							value: 'voice',
+							default: 'voice' === module,
+						},
+					]),
 				]);
 			};
 
 			const buttonComponents = (module: LoggingModules, state: 'enabled' | 'disabled') => {
 				const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
 					new ButtonBuilder()
-						.setLabel(state === 'enabled' ? 'Enabled' : 'Disabled')
+						.setLabel(
+							state === 'enabled'
+								? t('command.utility.configure.logs.button.enabled')
+								: t('command.utility.configure.logs.button.disabled')
+						)
 						.setStyle(state === 'enabled' ? ButtonStyle.Success : ButtonStyle.Danger)
 						.setCustomId(`logging:toggle:${module}`),
 
 					new ButtonBuilder()
-						.setLabel('Edit channel')
+						.setLabel(t('command.utility.configure.logs.button.editChannel'))
 						.setStyle(ButtonStyle.Secondary)
 						.setCustomId(`logging:channel:${module}`)
 				);
@@ -116,7 +135,7 @@ export default new Command({
 				if (supportedLoggingIgnores.includes(module))
 					row.addComponents(
 						new ButtonBuilder()
-							.setLabel('Edit ignores')
+							.setLabel(t('command.utility.configure.logs.button.editIgnores'))
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId(`logging:ignore:${module}`)
 					);
@@ -148,21 +167,25 @@ export default new Command({
 				if (collected.customId === 'logging:modules' && collected.isSelectMenu()) {
 					const selectedModule = collected.values[0] as LoggingModules;
 					const embed = new EmbedBuilder()
-						.setTitle(loggingModulesNames[selectedModule])
+						.setTitle(t(`command.utility.configure.logs.enum.${selectedModule}`, { context: 'name' }))
 						.setColor(client.cc.invisible)
 						.setDescription(
 							[
-								`${loggingModuleDescriptions[selectedModule]}\n`,
-								`• **Channel:** ${
-									data.logging[selectedModule].channelId
-										? interaction.guild.channels.cache.get(
-												data.logging[selectedModule].channelId
-										  ) || data.logging[selectedModule].channelId
-										: 'None'
-								}\n`,
+								t('command.utility.configure.logs.enum.' + selectedModule, {
+									context: 'description',
+								}),
+								t('command.utility.configure.logs.channel', {
+									channel: data.logging[selectedModule].channelId
+										? interaction.guild.channels.cache
+												.get(data.logging[selectedModule].channelId)
+												?.toString() || data.logging[selectedModule].channelId
+										: t('command.utility.configure.none'),
+								}),
 								supportedLoggingIgnores.includes(selectedModule)
-									? `• **Ignores:** ${
-											client.config.ignores.logs[selectedModule].channelIds.concat(
+									? t('command.utility.configure.logs.ignores', {
+											ignores: client.config.ignores.logs[
+												selectedModule
+											].channelIds.concat(
 												client.config.ignores.logs[selectedModule].roleIds
 											).length
 												? `\n${client.config.ignores.logs[selectedModule].channelIds
@@ -179,13 +202,13 @@ export default new Command({
 															(c: string) =>
 																interaction.guild.roles.cache
 																	.get(c)
-																	?.toString() || c
+																	.toString() || c
 														)
 														.join(' ')}`
-												: 'No ignores found'
-									  }`
+												: t('command.utility.configure.none'),
+									  })
 									: '',
-							].join('\n')
+							].join('\n\n')
 						);
 
 					await collected.update({
@@ -226,7 +249,11 @@ export default new Command({
 					const data = (await configModel.findById('logging')).logging[module];
 
 					const modal = new ModalBuilder()
-						.setTitle(`${loggingModulesNames[module]} channel`)
+						.setTitle(
+							`${t(`command.utility.configure.logs.enum.${module}`, {
+								context: 'name',
+							})} channel`
+						)
 						.setCustomId(`logging:channel:${module}`)
 						.addComponents([
 							{
@@ -235,12 +262,13 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'channelId',
-										label: 'Provide the channel id',
+										label: t('command.utility.configure.logs.modal.channel', {
+											context: 'label',
+										}),
 										style: TextInputStyle.Short,
 										required: false,
-										max_length: 18,
 										min_length: 18,
-										placeholder: 'No channel set, set one!',
+										max_length: 20,
 										value: data.channelId ?? null,
 									},
 								],
@@ -251,7 +279,9 @@ export default new Command({
 					const module = collected.customId.replace('logging:ignore:', '') as LoggingModules;
 
 					const modal = new ModalBuilder()
-						.setTitle(`${loggingModulesNames[module]} ignores`)
+						.setTitle(
+							`${t(`command.utility.configure.logs.enum.${module}`, { context: 'name' })} ignores`
+						)
 						.setCustomId(`logging:ignores:${module}`)
 						.addComponents([
 							{
@@ -260,12 +290,13 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'channelIds',
-										label: 'Ignore channels, separate with spaces',
+										label: t('command.utility.configure.logs.modal.ignoreChannels', {
+											context: 'label',
+										}),
 										style: TextInputStyle.Paragraph,
 										required: false,
 										max_length: 400,
 										min_length: 0,
-										placeholder: 'No ignored channel ids, add some!',
 										value: client.config.ignores.logs[module].channelIds
 											? client.config.ignores.logs[module].channelIds.join(' ')
 											: null,
@@ -278,12 +309,13 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'roleIds',
-										label: 'Ignore roles, separate with spaces',
+										label: t('command.utility.configure.logs.modal.ignoreRoles', {
+											context: 'label',
+										}),
 										style: TextInputStyle.Paragraph,
 										required: false,
 										max_length: 400,
 										min_length: 0,
-										placeholder: 'No ignored roles ids, add some!',
 										value: client.config.ignores.logs[module].roleIds
 											? client.config.ignores.logs[module].roleIds.join(' ')
 											: null,
@@ -301,13 +333,13 @@ export default new Command({
 		} else if (mainModule === 'automod') {
 			const preSelected: AutomodModules = 'badwords';
 			const embed = new EmbedBuilder()
-				.setTitle(automodModulesNames[preSelected])
+				.setTitle(t(`command.utility.configure.automod.enum.${preSelected}`, { context: 'name' }))
 				.setColor(client.cc.invisible)
 				.setDescription(
 					[
-						`${automodModuleDescriptions[preSelected]}\n`,
-						`• **Ignores:** ${
-							client.config.ignores.automod[preSelected].channelIds.concat(
+						t(`command.utility.configure.automod.enum.${preSelected}`, { context: 'description' }),
+						t('command.utility.configure.automod.ignores', {
+							ignores: client.config.ignores.automod[preSelected].channelIds.concat(
 								client.config.ignores.automod[preSelected].roleIds
 							).length
 								? `\n${client.config.ignores.automod[preSelected].channelIds
@@ -315,45 +347,82 @@ export default new Command({
 										.join(' ')} ${client.config.ignores.automod[preSelected].roleIds
 										.map((c) => interaction.guild.roles.cache.get(c)?.toString() || c)
 										.join(' ')}`
-								: 'No ignores found'
-						}`,
-					].join('\n')
+								: t('command.utility.configure.none'),
+						}),
+					].join('\n\n')
 				)
 				.setFields([
 					{
-						name: 'Filtered words',
+						name: t('command.utility.configure.automod.enum.badwords', { context: 'name' }),
 						value: client.config.automod.filteredWords.length
 							? splitText(
 									client.config.automod.filteredWords.map((w) => `\`${w}\``).join(' '),
 									MAX_FIELD_VALUE_LENGTH
 							  )
-							: 'No filtered words',
+							: t('command.utility.configure.none'),
 					},
 				]);
 
 			const selectMenu = (module: AutomodModules) => {
 				return new ActionRowBuilder<SelectMenuBuilder>().setComponents([
-					new SelectMenuBuilder().setCustomId('automod:modules').setOptions(
-						automodModulesArray.map((m) => {
-							return {
-								label: m.rewrite,
-								value: m.name,
-								default: m.name === module,
-							};
-						})
-					),
+					new SelectMenuBuilder().setCustomId('automod:modules').setOptions([
+						{
+							label: t('command.utility.configure.automod.enum.badwords', { context: 'name' }),
+							value: 'badwords',
+							default: module === 'badwords',
+						},
+						{
+							label: t('command.utility.configure.automod.enum.invites', { context: 'name' }),
+							value: 'invites',
+							default: module === 'invites',
+						},
+						{
+							label: t('command.utility.configure.automod.enum.largeMessage', { context: 'name' }),
+							value: 'largeMessage',
+							default: module === 'largeMessage',
+						},
+						{
+							label: t('command.utility.configure.automod.enum.massMention', { context: 'name' }),
+							value: 'massMention',
+							default: module === 'massMention',
+						},
+						{
+							label: t('command.utility.configure.automod.enum.massEmoji', { context: 'name' }),
+							value: 'massEmoji',
+							default: module === 'massEmoji',
+						},
+						{
+							label: t('command.utility.configure.automod.enum.spam', { context: 'name' }),
+							value: 'spam',
+							default: module === 'spam',
+						},
+						{
+							label: t('command.utility.configure.automod.enum.capitals', { context: 'name' }),
+							value: 'capitals',
+							default: module === 'capitals',
+						},
+						{
+							label: t('command.utility.configure.automod.enum.urls', { context: 'name' }),
+							value: 'urls',
+							default: module === 'urls',
+						},
+					]),
 				]);
 			};
 
 			const buttonComponents = (module: AutomodModules, state: 'enabled' | 'disabled') => {
 				const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
 					new ButtonBuilder()
-						.setLabel(state === 'enabled' ? 'Enabled' : 'Disabled')
+						.setLabel(
+							state === 'enabled'
+								? t('command.utility.configure.automod.button.enabled')
+								: t('command.utility.configure.automod.button.disabled')
+						)
 						.setStyle(state === 'enabled' ? ButtonStyle.Success : ButtonStyle.Danger)
 						.setCustomId(`automod:toggle:${module}`),
 
 					new ButtonBuilder()
-						.setLabel('Edit ignores')
+						.setLabel(t('command.utility.configure.automod.button.editIgnores'))
 						.setStyle(ButtonStyle.Secondary)
 						.setCustomId(`automod:ignore:${module}`)
 				);
@@ -361,7 +430,7 @@ export default new Command({
 				if (module === 'badwords')
 					row.addComponents(
 						new ButtonBuilder()
-							.setLabel('Edit filtered words')
+							.setLabel(t('command.utility.configure.automod.button.editBadwords'))
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId(`automod:badwords`)
 					);
@@ -397,13 +466,17 @@ export default new Command({
 				if (collected.customId === 'automod:modules' && collected.isSelectMenu()) {
 					const selectedModule = collected.values[0] as AutomodModules;
 					const embed = new EmbedBuilder()
-						.setTitle(automodModulesNames[selectedModule])
+						.setTitle(
+							t(`command.utility.configure.automod.enum.${selectedModule}`, { context: 'name' })
+						)
 						.setColor(client.cc.invisible)
 						.setDescription(
 							[
-								`${automodModuleDescriptions[selectedModule]}\n`,
-								`• **Ignores:** ${
-									client.config.ignores.automod[selectedModule].channelIds.concat(
+								t(`command.utility.configure.automod.enum.${selectedModule}`, {
+									context: 'description',
+								}),
+								t('command.utility.configure.automod.ignores', {
+									ignores: client.config.ignores.automod[selectedModule].channelIds.concat(
 										client.config.ignores.automod[selectedModule].roleIds
 									).length
 										? `\n${client.config.ignores.automod[selectedModule].channelIds
@@ -415,15 +488,15 @@ export default new Command({
 										  ].roleIds
 												.map((c) => interaction.guild.roles.cache.get(c).toString())
 												.join(' ')}`
-										: 'No ignores found'
-								}`,
-							].join('\n')
+										: t('command.utility.configure.none'),
+								}),
+							].join('\n\n')
 						);
 
 					if (selectedModule === 'badwords')
 						embed.setFields([
 							{
-								name: 'Filtered words',
+								name: t('command.utility.configure.enum.badwords', { context: 'name' }),
 								value: client.config.automod.filteredWords.length
 									? splitText(
 											client.config.automod.filteredWords
@@ -431,7 +504,7 @@ export default new Command({
 												.join(' '),
 											MAX_FIELD_VALUE_LENGTH
 									  )
-									: 'No filtered words',
+									: t('command.utility.configure.none'),
 							},
 						]);
 
@@ -469,7 +542,11 @@ export default new Command({
 					const module = collected.customId.replace('automod:ignore:', '') as AutomodModules;
 
 					const modal = new ModalBuilder()
-						.setTitle(`${automodModulesNames[module]} ignores`)
+						.setTitle(
+							`${t(`command.utility.configure.automod.enum.${module}`, {
+								context: 'name',
+							})} ignores`
+						)
 						.setCustomId(`automod:ignores:${module}`)
 						.addComponents([
 							{
@@ -478,12 +555,13 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'channelIds',
-										label: 'Ignore channels, separate with spaces',
+										label: t('command.utility.configure.automod.modal.ignoreChannels', {
+											context: 'label',
+										}),
 										style: TextInputStyle.Paragraph,
 										required: false,
 										max_length: 400,
 										min_length: 0,
-										placeholder: 'No ignored channel ids, add some!',
 										value: client.config.ignores.automod[module].channelIds
 											? client.config.ignores.automod[module].channelIds.join(' ')
 											: null,
@@ -496,12 +574,13 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'roleIds',
-										label: 'Ignore roles, separate with spaces',
+										label: t('command.utility.configure.automod.modal.ignoreRoles', {
+											context: 'label',
+										}),
 										style: TextInputStyle.Paragraph,
 										required: false,
 										max_length: 400,
 										min_length: 0,
-										placeholder: 'No ignored roles ids, add some!',
 										value: client.config.ignores.automod[module].roleIds
 											? client.config.ignores.automod[module].roleIds.join(' ')
 											: null,
@@ -512,7 +591,7 @@ export default new Command({
 					await collected.showModal(modal);
 				} else if (collected.customId == 'automod:badwords' && collected.isButton()) {
 					const modal = new ModalBuilder()
-						.setTitle('Filtered Words')
+						.setTitle(t('command.utility.configure.automod.badwords', { context: 'name' }))
 						.setCustomId('automod:badwords')
 						.addComponents([
 							{
@@ -521,12 +600,13 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'words',
-										label: 'Separate them with commas',
+										label: t('command.utility.configure.automod.modal.addBadwords', {
+											context: 'label',
+										}),
 										style: TextInputStyle.Paragraph,
 										required: false,
 										max_length: 500,
 										min_length: 0,
-										placeholder: 'No filtered words, add some!',
 										value: client.config.automod.filteredWords.length
 											? client.config.automod.filteredWords.join(', ')
 											: null,

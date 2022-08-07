@@ -51,13 +51,79 @@
 					"noBot": "You can not open modmail tickets for bots.",
 					"exists": "Looks like this user already has a ticket opened at {- channel}",
 					"blacklisted": "{user} is blacklisted from opening modmail tickets.",
-					"enbed_title": "Modmail ticket opened",
+					"embed_title": "Modmail ticket opened",
 					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering of how this ticket got opened, be patient until the moderator contact from through this ticket.",
 					"embed_reason": "Reason",
 					"cantDM": "This user doesn't accept direct messages or has blacked the bot. Could not open the modmail.",
 					"opening": "Opening a modmail ticket, please wait...",
 					"opened": "Ticket was created at {- channel}"
 				}
+			}
+		},
+		"utility": {
+			"configure": {
+				"logs": {
+					"enum": {
+						"mod_name": "Moderation logging",
+						"message_name": "Message logging",
+						"modmail_name": "Modmail logging",
+						"servergate_name": "Joins and leaves",
+						"voice_name": "Voice state updates",
+						"mod_description": "Sends all the moderation cases when a punishment is recorded.",
+						"message_description": "Sends logs when a message was deleted, edited, or when a channel was purged.",
+						"modmail_description": "Sends logs when someone creates, deletes a ticket, or when someone gets blacklisted.",
+						"servergate_description": "Sends logs when someone joins or leaves the server.",
+						"voice_description": "Sends logs when someone joins or leaves a voice channel."
+					},
+					"modal": {
+						"channel_label": "Provide a channel ID:",
+						"ignoreChannels_label": "Ignore channels, separate with spaces",
+						"ignoreRoles_label": "Ignore roles, separate with spaces",
+						"invalidChannel": "Please provide a valid text channel ID."
+					},
+					"button": {
+						"enabled": "Enabled",
+						"disabled": "Disabled",
+						"editChannel": "Edit channel",
+						"editIgnores": "Edit ignores"
+					},
+					"channel": "• **Channel:** {- channel}",
+					"ignores": "• **Ignores:** {- ignores}"
+				},
+				"automod": {
+					"enum": {
+						"badwords_name": "Filtered words",
+						"invites_name": "Discord invites",
+						"largeMessage_name": "Large messages",
+						"massMention_name": "Mass mentions",
+						"massEmoji_name": "Mass emoji",
+						"spam_name": "Spam",
+						"capitals_name": "Too many caps",
+						"urls_name": "Urls and links",
+						"badwords_description": "Gets triggered when a filtered-word gets sent in a channel. Click the button below to edit filtered-words.",
+						"invites_description": "Gets triggered when a discord server invite gets sent in a channel.",
+						"largeMessage_description": "Gets triggered when a very large message in content gets sent in a channel.",
+						"massMention_description": "Gets triggered when a person @mentions more than 4 people in a channel.",
+						"massEmoji_description": "Gets triggered when a person uses too many emojis in a single message.",
+						"spam_description": "Gets triggered when a person sends message too quickly in a channel.",
+						"capitals_description": "Gets triggered when a person uses too manu capital letters in a single message.",
+						"urls_description": "Gets triggered when a person sends a link of any type in the chat."
+					},
+					"modal": {
+						"ignoreChannels_label": "Ignore channels, separate with spaces",
+						"ignoreRoles_label": "Ignore roles, separate with spaces",
+						"addBadwords_label": "Separate them with commas",
+						"invalidChannel": "Please provide a valid text channel ID."
+					},
+					"button": {
+						"enabled": "Enabled",
+						"disabled": "Disabled",
+						"editIgnores": "Edit ignores",
+						"editBadwords": "Edit filtered words"
+					},
+					"ignores": "• **Ignores:** {- ignores}"
+				},
+				"none": "None"
 			}
 		}
 	}

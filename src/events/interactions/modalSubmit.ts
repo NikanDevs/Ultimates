@@ -14,12 +14,10 @@ import { splitText } from '../../functions/other/splitText';
 import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
 import {
-	automodModuleDescriptions,
 	AutomodModules,
 	deleteDayRewites,
 	generalConfigDescriptions,
 	GeneralConfigTypes,
-	loggingModuleDescriptions,
 	LoggingModules,
 	loggingWebhookNames,
 	moderationConfigDescriptions,
@@ -48,10 +46,10 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.message.edit({
 			embeds: [
 				EmbedBuilder.from(interaction.message.embeds[0]).spliceFields(0, 1, {
-					name: 'Filtered words',
+					name: t('command.utility.configure.enum.badwords', { context: 'name' }),
 					value: newWords.length
 						? splitText(newWords.map((w) => `\`${w}\``).join(' '), MAX_FIELD_VALUE_LENGTH)
-						: 'No filtered words',
+						: t('command.utility.configure.none'),
 				}),
 			],
 		});
@@ -101,9 +99,11 @@ export default new Event('interactionCreate', async (interaction) => {
 			embeds: [
 				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
 					[
-						`${automodModuleDescriptions[module]}\n`,
-						`• **Ignores:** ${
-							client.config.ignores.automod[module].channelIds.concat(
+						t(`command.utility.configure.automod.enum.${module}`, {
+							context: 'description',
+						}),
+						t('command.utility.configure.automod.ignores', {
+							ignores: client.config.ignores.automod[module].channelIds.concat(
 								client.config.ignores.automod[module].roleIds
 							).length
 								? `\n${client.config.ignores.automod[module].channelIds
@@ -111,9 +111,9 @@ export default new Event('interactionCreate', async (interaction) => {
 										.join(' ')} ${client.config.ignores.automod[module].roleIds
 										.map((c) => interaction.guild.roles.cache.get(c).toString())
 										.join(' ')}`
-								: 'No ignores found'
-						}`,
-					].join('\n')
+								: t('command.utility.configure.none'),
+						}),
+					].join('\n\n')
 				),
 			],
 		});
@@ -123,19 +123,19 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (!interaction.isFromMessage()) return;
 		const module = interaction.customId.replace('logging:channel:', '') as LoggingModules;
 		const channelId = interaction.fields.getTextInputValue('channelId');
-		const channel = interaction.guild.channels.cache.get(channelId);
+		const channel = interaction.guild.channels.cache.get(channelId) as TextChannel;
 		const data = await configModel.findById('logging');
 
 		if (!channel || channel?.type !== ChannelType.GuildText)
-			interaction.reply({
-				embeds: [client.embeds.error('Please provide a valid text-channel ID.')],
+			return interaction.reply({
+				embeds: [client.embeds.error(t('command.utility.configure.logs.modal.invalidChannel'))],
 				ephemeral: true,
 			});
 
 		if (data.logging[module].channelId === channelId) return interaction.deferUpdate();
 
 		await client.config.webhooks[module].delete().catch(() => {});
-		const newWebhook = await (channel as TextChannel).createWebhook({
+		const newWebhook = await channel.createWebhook({
 			name: loggingWebhookNames[module],
 			avatar: client.user.displayAvatarURL({ extension: 'png' }),
 		});
@@ -159,31 +159,39 @@ export default new Event('interactionCreate', async (interaction) => {
 			embeds: [
 				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
 					[
-						`${loggingModuleDescriptions[module]}\n`,
-						`\`Channel:\` ${
-							data.logging[module].channelId
-								? interaction.guild.channels.cache.get(data.logging[module].channelId) ||
-								  data.logging[module].channelId
-								: 'None'
-						}\n`,
+						t('command.utility.configure.logs.enum.' + module, {
+							context: 'description',
+						}),
+						t('command.utility.configure.logs.channel', {
+							channel: data.logging[module].channelId
+								? interaction.guild.channels.cache
+										.get(data.logging[module].channelId)
+										?.toString() || data.logging[module].channelId
+								: t('command.utility.configure.none'),
+						}),
 						supportedLoggingIgnores.includes(module)
-							? `\`Ignores:\` ${
-									client.config.ignores.logs[module].channelIds.concat(
+							? t('command.utility.configure.logs.ignores', {
+									ignores: client.config.ignores.logs[module].channelIds.concat(
 										client.config.ignores.logs[module].roleIds
 									).length
 										? `\n${client.config.ignores.logs[module].channelIds
-												.map((c: string) =>
-													interaction.guild.channels.cache.get(c).toString()
+												.map(
+													(c: string) =>
+														interaction.guild.channels.cache
+															.get(c)
+															?.toString() || c
 												)
 												.join(' ')} ${client.config.ignores.logs[module].roleIds
-												.map((c: string) =>
-													interaction.guild.roles.cache.get(c).toString()
+												.map(
+													(c: string) =>
+														interaction.guild.roles.cache.get(c).toString() ||
+														c
 												)
 												.join(' ')}`
-										: 'No ignores found'
-							  }`
+										: t('command.utility.configure.none'),
+							  })
 							: '',
-					].join('\n')
+					].join('\n\n')
 				),
 			],
 		});
@@ -234,31 +242,39 @@ export default new Event('interactionCreate', async (interaction) => {
 			embeds: [
 				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
 					[
-						`${loggingModuleDescriptions[module]}\n`,
-						`\`Channel:\` ${
-							data.logging[module].channelId
-								? interaction.guild.channels.cache.get(data.logging[module].channelId) ||
-								  data.logging[module].channelId
-								: 'None'
-						}\n`,
+						t('command.utility.configure.logs.enum.' + module, {
+							context: 'description',
+						}),
+						t('command.utility.configure.logs.channel', {
+							channel: data.logging[module].channelId
+								? interaction.guild.channels.cache
+										.get(data.logging[module].channelId)
+										?.toString() || data.logging[module].channelId
+								: t('command.utility.configure.none'),
+						}),
 						supportedLoggingIgnores.includes(module)
-							? `\`Ignores:\` ${
-									client.config.ignores.logs[module].channelIds.concat(
+							? t('command.utility.configure.logs.ignores', {
+									ignores: client.config.ignores.logs[module].channelIds.concat(
 										client.config.ignores.logs[module].roleIds
 									).length
 										? `\n${client.config.ignores.logs[module].channelIds
-												.map((c: string) =>
-													interaction.guild.channels.cache.get(c).toString()
+												.map(
+													(c: string) =>
+														interaction.guild.channels.cache
+															.get(c)
+															?.toString() || c
 												)
 												.join(' ')} ${client.config.ignores.logs[module].roleIds
-												.map((c: string) =>
-													interaction.guild.roles.cache.get(c).toString()
+												.map(
+													(c: string) =>
+														interaction.guild.roles.cache.get(c).toString() ||
+														c
 												)
 												.join(' ')}`
-										: 'No ignores found'
-							  }`
+										: t('command.utility.configure.none'),
+							  })
 							: '',
-					].join('\n')
+					].join('\n\n')
 				),
 			],
 		});
