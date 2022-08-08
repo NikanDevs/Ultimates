@@ -15,12 +15,10 @@ import { configModel } from '../../models/config';
 import { Event } from '../../structures/Event';
 import {
 	AutomodModules,
-	deleteDayRewites,
-	generalConfigDescriptions,
+	Emojis,
 	GeneralConfigTypes,
 	LoggingModules,
 	loggingWebhookNames,
-	moderationConfigDescriptions,
 	ModerationConfigTypes,
 	supportedLoggingIgnores,
 } from '../../typings';
@@ -318,13 +316,13 @@ export default new Event('interactionCreate', async (interaction) => {
 				interaction.guild.channels.cache.get(input)?.type !== ChannelType.GuildCategory)
 		)
 			return interaction.reply({
-				embeds: [client.embeds.error('Please provide a valid category id in this server.')],
+				embeds: [client.embeds.error(t('command.utility.configure.general.modal.invalidCategory'))],
 				ephemeral: true,
 			});
 
 		if (module === 'appealLink' && input && !getURL(input))
 			return interaction.reply({
-				embeds: [client.embeds.error('Please provide a valid url.')],
+				embeds: [client.embeds.error(t('command.utility.configure.general.modal.invalidURL'))],
 				ephemeral: true,
 			});
 
@@ -338,27 +336,30 @@ export default new Event('interactionCreate', async (interaction) => {
 		await interaction.message.edit({
 			embeds: [
 				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
-					`${generalConfigDescriptions[module]}\n\n• **Current:** ${
-						module === 'memberRoleId'
-							? client.config.general.memberRoleId
-								? interaction.guild.roles.cache
-										.get(client.config.general.memberRoleId)
-										?.toString() || client.config.general.memberRoleId
-								: 'None'
-							: module === 'modmailCategoryId'
-							? client.config.general.modmailCategoryId
-								? interaction.guild.channels.cache
-										.get(client.config.general.modmailCategoryId)
-										?.toString() || client.config.general.modmailCategoryId
-								: 'None'
-							: module === 'developers'
-							? client.config.general.developers.length
-								? client.config.general.developers
-										.map((u) => client.users.cache.get(u)?.tag || u)
-										.join(' | ')
-								: 'None'
-							: client.config.general[module] ?? 'None'
-					}`
+					`${t('command.utility.configure.general.enum.' + module, {
+						context: 'description',
+					})}\n\n${t('command.utility.configure.general.current', {
+						value:
+							module === 'memberRoleId'
+								? client.config.general.memberRoleId
+									? interaction.guild.roles.cache
+											.get(client.config.general.memberRoleId)
+											?.toString() || client.config.general.memberRoleId
+									: t('command.utility.configure.none')
+								: module === 'modmailCategoryId'
+								? client.config.general.modmailCategoryId
+									? interaction.guild.channels.cache
+											.get(client.config.general.modmailCategoryId)
+											?.toString() || client.config.general.modmailCategoryId
+									: t('command.utility.configure.none')
+								: module === 'developers'
+								? client.config.general.developers.length
+									? client.config.general.developers
+											.map((u) => client.users.cache.get(u)?.tag || u)
+											.join(' | ')
+									: t('command.utility.configure.none')
+								: client.config.general[module] ?? t('command.utility.configure.none'),
+					})}`
 				),
 			],
 		});
@@ -398,7 +399,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (subModule === 'counts') {
 			if (isNaN(parseInt(input)))
 				return interaction.reply({
-					embeds: [client.embeds.error('Please enter a valid number.')],
+					embeds: [client.embeds.error(t('command.utility.configure.moderation.modal.invalidNumber'))],
 					ephemeral: true,
 				});
 
@@ -406,7 +407,7 @@ export default new Event('interactionCreate', async (interaction) => {
 			const findDups = (a: number[]): number[] => a.filter((item, index) => a.indexOf(item) != index);
 			if (module !== 'automod' && findDups(array).length)
 				return interaction.reply({
-					embeds: [client.embeds.error('Punishment count numbers must be unique.')],
+					embeds: [client.embeds.error(t('command.utility.configure.moderation.modal.noUnique'))],
 					ephemeral: true,
 				});
 
@@ -454,7 +455,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		} else if (subModule === 'defaults') {
 			if (module === 'msgs' && (isNaN(parseInt(input)) || parseInt(input) < 0 || parseInt(input) > 7))
 				return interaction.reply({
-					embeds: [client.embeds.error('The delete messages days must be between 0 and 7.')],
+					embeds: [client.embeds.error(t('command.utility.configure.moderation.modal.days'))],
 					ephemeral: true,
 				});
 
@@ -519,42 +520,63 @@ export default new Event('interactionCreate', async (interaction) => {
 			embeds: [
 				EmbedBuilder.from(interaction.message.embeds[0]).setDescription(
 					[
-						`${moderationConfigDescriptions[subModule]}\n`,
+						`${t('command.utility.configure.moderation.enum.' + subModule, {
+							context: 'description',
+						})}\n`,
 						subModule === 'counts'
 							? [
-									`• **Timeout #1:** ${client.config.moderation[subModule].timeout1}`,
-									`• **Timeout #2:** ${client.config.moderation[subModule].timeout2}`,
-									`• **Ban:** ${client.config.moderation[subModule].ban}`,
-									`• **Automod multiplication:** ${client.config.moderation[subModule].automod}`,
+									`${Emojis[1]} • **${t(
+										'command.utility.configure.moderation.embed.timeout1'
+									)}:** ${client.config.moderation[subModule].timeout1}`,
+									`${Emojis[2]} • **${t(
+										'command.utility.configure.moderation.embed.timeout2'
+									)}:** ${client.config.moderation[subModule].timeout2}`,
+									`${Emojis[3]} • **${t(
+										'command.utility.configure.moderation.embed.ban'
+									)}:** ${client.config.moderation[subModule].ban}`,
+									`${Emojis[4]} • **${t(
+										'command.utility.configure.moderation.embed.automodMulti'
+									)}:** ${client.config.moderation[subModule].automod}`,
 							  ].join('\n')
 							: subModule === 'durations'
 							? [
-									`• **Timeout #1:** ${convertTime(
-										client.config.moderation[subModule].timeout1
-									)}`,
-									`• **Timeout #2:** ${convertTime(
-										client.config.moderation[subModule].timeout2
-									)}`,
-									`• **Ban:** ${
+									`${Emojis[1]} • **${t(
+										'command.utility.configure.moderation.embed.timeout1'
+									)}:** ${convertTime(client.config.moderation[subModule].timeout1)}`,
+									`${Emojis[2]} • **${t(
+										'command.utility.configure.moderation.embed.timeout2'
+									)}:** ${convertTime(client.config.moderation[subModule].timeout2)}`,
+									`${Emojis[3]} • **${t(
+										'command.utility.configure.moderation.embed.ban'
+									)}:** ${
 										client.config.moderation[subModule].ban
 											? convertTime(client.config.moderation[subModule].ban)
-											: 'Permanent'
+											: t('command.utility.configure.moderation.embed.permanent')
 									}`,
-									`• **Automod timeout:** ${convertTime(
-										client.config.moderation[subModule].automod
-									)}`,
+									`${Emojis[4]} • **${t(
+										'command.utility.configure.moderation.embed.automodTimeout'
+									)}:** ${convertTime(client.config.moderation[subModule].automod)}`,
 							  ].join('\n')
 							: subModule === 'defaults'
 							? [
-									`• **Timeout duration:** ${convertTime(
-										client.config.moderation[subModule].timeout
+									`${Emojis[1]} • **${t(
+										'command.utility.configure.moderation.embed.duration',
+										{
+											context: 'timeout',
+										}
+									)}:** ${convertTime(client.config.moderation[subModule].timeout)}`,
+									`${Emojis[2]} • **${t(
+										'command.utility.configure.moderation.embed.duration',
+										{
+											context: 'softban',
+										}
+									)}:** ${convertTime(client.config.moderation[subModule].softban)}`,
+									`${Emojis[3]} • **${t(
+										'command.utility.configure.moderation.embed.days'
+									)}:** ${t(
+										'command.utility.configure.moderation.days.' +
+											client.config.moderation[subModule].msgs.toString()
 									)}`,
-									`• **Softban duration:** ${convertTime(
-										client.config.moderation[subModule].softban
-									)}`,
-									`• **Delete message days:** ${
-										deleteDayRewites[client.config.moderation[subModule].msgs]
-									}`,
 							  ].join('\n')
 							: '',
 					].join('\n')

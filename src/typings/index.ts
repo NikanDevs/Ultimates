@@ -284,73 +284,11 @@ export enum emojisConfigDefaults {
 
 export type GeneralConfigTypes = 'developers' | 'appealLink' | 'memberRoleId' | 'modmailCategoryId';
 
-export enum generalConfigNames {
-	'developers' = 'Developers',
-	'appealLink' = 'Ban appeal link',
-	'memberRoleId' = 'Member role',
-	'modmailCategoryId' = 'Modmail category',
-}
-
-export const generalConfigArray = [
-	{ name: 'developers', rewrite: 'Developers' },
-	{ name: 'appealLink', rewrite: 'Ban appeal link' },
-	{ name: 'memberRoleId', rewrite: 'Member role' },
-	{ name: 'modmailCategoryId', rewrite: 'Modmail category' },
-];
-
-export enum generalConfigDescriptions {
-	'developers' = 'Developers have permissions to use the `/eval` command.',
-	'appealLink' = 'When a person gets banned from the server, the appeal link gets sent to them.',
-	'memberRoleId' = 'Member role id is used for locking down channels and the verification module.',
-	'modmailCategoryId' = 'Modmail tickets are created under this category.',
-}
-
 export const generalConfigIdType: GeneralConfigTypes[] = ['memberRoleId', 'modmailCategoryId'];
 
 // Moderation config
 
 export type ModerationConfigTypes = 'counts' | 'durations' | 'defaults' | 'reasons';
-
-export enum moderationConfigNames {
-	'counts' = 'Punishment counts',
-	'durations' = 'Punishment durations',
-	'defaults' = 'Default values',
-	'reasons' = 'Command reasons',
-}
-
-export const moderationConfigArray = [
-	{ name: 'counts', rewrite: 'Punishment counts' },
-	{ name: 'durations', rewrite: 'Punishment durations' },
-	{ name: 'defaults', rewrite: 'Default values' },
-	{ name: 'reasons', rewrite: 'Command reasons' },
-];
-
-export enum moderationConfigDescriptions {
-	'counts' = 'These counts are used to take automatic actions on users when they reach an amount of warnings; Timeout #1: How many manual warnings should a user have to get timed out for the 1st time; Same thing for the other options.',
-	'durations' = 'These durations are used for automatic punishments users get after reaching an amount of warnings. Timeout #1: How long should the person be timed out for when reaching the first timeout goal? (You may set these goals using the "Punishment counts" option)',
-	'defaults' = "The default values get used when a moderator doesn't enter their value whist using a /command.",
-	'reasons' = 'The reasons are shown in specific commands options as autocompletes to make moderation easier. The max length for the reasons are 100 letters.',
-}
-
-export const moderationModulesNames = {
-	counts: {
-		timeout1: 'Timeout #1',
-		timeout2: 'Timeout #2',
-		ban: 'Ban',
-		automod: 'Automod multiplication',
-	},
-	durations: {
-		timeout1: 'Timeout #1',
-		timeout2: 'Timeout #2',
-		ban: 'Ban',
-		automod: 'Automod',
-	},
-	defaults: {
-		timeout: 'Timeout duration',
-		softban: 'Softban duration',
-		msgs: 'Delete messages days',
-	},
-};
 
 // Verification
 
@@ -390,4 +328,18 @@ export const deleteDayRewites = {
 	5: 'Previous 5 days',
 	6: 'Previous 6 days',
 	7: 'Previous 7 days',
+};
+
+export const Emojis = {
+	0: '0️⃣',
+	1: '1️⃣',
+	2: '2️⃣',
+	3: '3️⃣',
+	4: '4️⃣',
+	5: '5️⃣',
+	6: '6️⃣',
+	7: '7️⃣',
+	8: '8️⃣',
+	9: '9️⃣',
+	10: '🔟',
 };

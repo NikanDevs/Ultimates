@@ -20,16 +20,9 @@ import {
 	AutomodModules,
 	supportedLoggingIgnores,
 	GeneralConfigTypes,
-	generalConfigNames,
-	generalConfigDescriptions,
-	generalConfigArray,
 	generalConfigIdType,
-	moderationConfigNames,
 	ModerationConfigTypes,
-	moderationConfigDescriptions,
-	moderationConfigArray,
-	deleteDayRewites,
-	moderationModulesNames,
+	Emojis,
 } from '../../typings';
 
 export default new Command({
@@ -627,36 +620,63 @@ export default new Command({
 		} else if (mainModule === 'general') {
 			const preSelected: GeneralConfigTypes = 'developers';
 			const embed = new EmbedBuilder()
-				.setTitle(generalConfigNames[preSelected])
+				.setTitle(
+					t('command.utility.configure.general.enum.' + preSelected, {
+						context: 'name',
+					})
+				)
 				.setColor(client.cc.invisible)
 				.setDescription(
-					`${generalConfigDescriptions[preSelected]}\n\n• **Current:** ${
-						client.config.general[preSelected].length
+					`${t('command.utility.configure.general.enum.' + preSelected, {
+						context: 'description',
+					})}\n\n${t('command.utility.configure.general.current', {
+						value: client.config.general[preSelected].length
 							? client.config.general[preSelected]
 									.map((d) => client.users.cache.get(d)?.tag || d)
 									.join(' | ')
-							: 'None'
-					}`
+							: t('command.utility.configure.none'),
+					})}`
 				);
 
 			const selectMenu = (module: GeneralConfigTypes) => {
 				return new ActionRowBuilder<SelectMenuBuilder>().setComponents([
-					new SelectMenuBuilder().setCustomId('general:modules').setOptions(
-						generalConfigArray.map((m) => {
-							return {
-								label: m.rewrite,
-								value: m.name,
-								default: m.name === module,
-							};
-						})
-					),
+					new SelectMenuBuilder().setCustomId('general:modules').setOptions([
+						{
+							label: t('command.utility.configure.general.enum.developers', {
+								context: 'name',
+							}),
+							value: 'developers',
+							default: module === 'developers',
+						},
+						{
+							label: t('command.utility.configure.general.enum.appealLink', {
+								context: 'name',
+							}),
+							value: 'appealLink',
+							default: module === 'appealLink',
+						},
+						{
+							label: t('command.utility.configure.general.enum.memberRoleId', {
+								context: 'name',
+							}),
+							value: 'memberRoleId',
+							default: module === 'memberRoleId',
+						},
+						{
+							label: t('command.utility.configure.general.enum.modmailCategoryId', {
+								context: 'name',
+							}),
+							value: 'modmailCategoryId',
+							default: module === 'modmailCategoryId',
+						},
+					]),
 				]);
 			};
 
 			const buttonComponents = (module: GeneralConfigTypes) => {
 				return new ActionRowBuilder<ButtonBuilder>().setComponents(
 					new ButtonBuilder()
-						.setLabel('Edit')
+						.setLabel(t('command.utility.configure.general.edit'))
 						.setStyle(ButtonStyle.Secondary)
 						.setCustomId(`general:${module}`)
 				);
@@ -683,30 +703,38 @@ export default new Command({
 				if (collected.customId === 'general:modules' && collected.isSelectMenu()) {
 					const selectedModule = collected.values[0] as GeneralConfigTypes;
 					const embed = new EmbedBuilder()
-						.setTitle(generalConfigNames[selectedModule])
+						.setTitle(
+							t('command.utility.configure.general.enum.' + selectedModule, {
+								context: 'name',
+							})
+						)
 						.setColor(client.cc.invisible)
 						.setDescription(
-							`${generalConfigDescriptions[selectedModule]}\n\n• **Current:** ${
-								selectedModule === 'memberRoleId'
-									? client.config.general.memberRoleId
-										? interaction.guild.roles.cache
-												.get(client.config.general.memberRoleId)
-												?.toString() || client.config.general.memberRoleId
-										: 'None'
-									: selectedModule === 'modmailCategoryId'
-									? client.config.general.modmailCategoryId
-										? interaction.guild.channels.cache
-												.get(client.config.general.modmailCategoryId)
-												?.toString() || client.config.general.modmailCategoryId
-										: 'None'
-									: selectedModule === 'developers'
-									? client.config.general.developers.length
-										? client.config.general.developers
-												.map((u) => client.users.cache.get(u)?.tag || u)
-												.join(' | ')
-										: 'None'
-									: client.config.general[selectedModule] ?? 'None'
-							}`
+							`${t('command.utility.configure.general.enum.' + selectedModule, {
+								context: 'description',
+							})}\n\n${t('command.utility.configure.general.current', {
+								value:
+									selectedModule === 'memberRoleId'
+										? client.config.general.memberRoleId
+											? interaction.guild.roles.cache
+													.get(client.config.general.memberRoleId)
+													?.toString() || client.config.general.memberRoleId
+											: t('command.utility.configure.none')
+										: selectedModule === 'modmailCategoryId'
+										? client.config.general.modmailCategoryId
+											? interaction.guild.channels.cache
+													.get(client.config.general.modmailCategoryId)
+													?.toString() || client.config.general.modmailCategoryId
+											: t('command.utility.configure.none')
+										: selectedModule === 'developers'
+										? client.config.general.developers.length
+											? client.config.general.developers
+													.map((u) => client.users.cache.get(u)?.tag || u)
+													.join(' | ')
+											: t('command.utility.configure.none')
+										: client.config.general[selectedModule] ??
+										  t('command.utility.configure.none'),
+							})}`
 						);
 
 					await collected.update({
@@ -716,7 +744,11 @@ export default new Command({
 				} else if (collected.customId.startsWith('general:')) {
 					const module = collected.customId.replace('general:', '') as GeneralConfigTypes;
 					const modal = new ModalBuilder()
-						.setTitle(`${generalConfigNames[module]}`)
+						.setTitle(
+							t('command.utility.configure.general.enum.' + module, {
+								context: 'name',
+							})
+						)
 						.setCustomId(`general:${module}`)
 						.addComponents([
 							{
@@ -726,15 +758,22 @@ export default new Command({
 										type: ComponentType.TextInput,
 										custom_id: 'input',
 										label:
-											generalConfigNames[module] +
-											`${module === 'developers' ? ' (separate with spaces)' : ''}`,
+											t('command.utility.configure.general.modal.enter') +
+											`${
+												module === 'developers'
+													? ' (' +
+													  t(
+															'command.utility.configure.general.modal.seprate'
+													  ) +
+													  ')'
+													: ''
+											}`,
 										style: generalConfigIdType.includes(module)
 											? TextInputStyle.Short
 											: TextInputStyle.Paragraph,
 										required: false,
-										max_length: generalConfigIdType.includes(module) ? 18 : 400,
 										min_length: generalConfigIdType.includes(module) ? 18 : 0,
-										placeholder: null,
+										max_length: generalConfigIdType.includes(module) ? 20 : 400,
 										value:
 											module === 'developers'
 												? client.config.general[module].join(' ')
@@ -753,29 +792,60 @@ export default new Command({
 		} else if (mainModule === 'moderation') {
 			const preSelected: ModerationConfigTypes = 'counts';
 			const embed = new EmbedBuilder()
-				.setTitle(moderationConfigNames[preSelected])
+				.setTitle(t('command.utility.configure.moderation.enum.' + preSelected, { context: 'name' }))
 				.setColor(client.cc.invisible)
 				.setDescription(
 					[
-						`${moderationConfigDescriptions[preSelected]}\n`,
-						`• **Timeout #1:** ${client.config.moderation[preSelected].timeout1}`,
-						`• **Timeout #2:** ${client.config.moderation[preSelected].timeout2}`,
-						`• **Ban:** ${client.config.moderation[preSelected].ban}`,
-						`• **Automod multiplication:** ${client.config.moderation[preSelected].automod}`,
+						`${t('command.utility.configure.moderation.enum.' + preSelected, {
+							context: 'description',
+						})}\n`,
+						`${Emojis[1]} • **${t('command.utility.configure.moderation.embed.timeout1')}:** ${
+							client.config.moderation[preSelected].timeout1
+						}`,
+						`${Emojis[2]} • **${t('command.utility.configure.moderation.embed.timeout2')}:** ${
+							client.config.moderation[preSelected].timeout2
+						}`,
+						`${Emojis[3]} • **${t('command.utility.configure.moderation.embed.ban')}:** ${
+							client.config.moderation[preSelected].ban
+						}`,
+						`${Emojis[4]} • **${t('command.utility.configure.moderation.embed.automodMulti')}:** ${
+							client.config.moderation[preSelected].automod
+						}`,
 					].join('\n')
 				);
 
 			const selectMenu = (module: ModerationConfigTypes) => {
 				return new ActionRowBuilder<SelectMenuBuilder>().addComponents([
-					new SelectMenuBuilder().setCustomId('moderation:modules').setOptions(
-						moderationConfigArray.map((m) => {
-							return {
-								label: m.rewrite,
-								value: m.name,
-								default: m.name === module,
-							};
-						})
-					),
+					new SelectMenuBuilder().setCustomId('moderation:modules').setOptions([
+						{
+							label: t('command.utility.configure.moderation.enum.counts', {
+								context: 'name',
+							}),
+							value: 'counts',
+							default: module === 'counts',
+						},
+						{
+							label: t('command.utility.configure.moderation.enum.durations', {
+								context: 'name',
+							}),
+							value: 'durations',
+							default: module === 'durations',
+						},
+						{
+							label: t('command.utility.configure.moderation.enum.defaults', {
+								context: 'name',
+							}),
+							value: 'defaults',
+							default: module === 'defaults',
+						},
+						{
+							label: t('command.utility.configure.moderation.enum.reasons', {
+								context: 'name',
+							}),
+							value: 'reasons',
+							default: module === 'reasons',
+						},
+					]),
 				]);
 			};
 
@@ -785,19 +855,19 @@ export default new Command({
 				if (module === 'counts')
 					row.setComponents([
 						new ButtonBuilder()
-							.setLabel('Timeout #1')
+							.setEmoji(Emojis[1])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:counts:timeout1'),
 						new ButtonBuilder()
-							.setLabel('Timeout #2')
+							.setEmoji(Emojis[2])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:counts:timeout2'),
 						new ButtonBuilder()
-							.setLabel('Ban')
+							.setEmoji(Emojis[3])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:counts:ban'),
 						new ButtonBuilder()
-							.setLabel('Automod')
+							.setEmoji(Emojis[4])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:counts:automod'),
 					]);
@@ -805,39 +875,19 @@ export default new Command({
 				if (module === 'durations')
 					row.setComponents([
 						new ButtonBuilder()
-							.setLabel('Timeout #1')
+							.setEmoji(Emojis[1])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:durations:timeout1'),
 						new ButtonBuilder()
-							.setLabel('Timeout #2')
+							.setEmoji(Emojis[2])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:durations:timeout2'),
 						new ButtonBuilder()
-							.setLabel('Ban')
+							.setEmoji(Emojis[3])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:durations:ban'),
 						new ButtonBuilder()
-							.setLabel('Automod')
-							.setStyle(ButtonStyle.Secondary)
-							.setCustomId('moderation:durations:automod'),
-					]);
-
-				if (module === 'durations')
-					row.setComponents([
-						new ButtonBuilder()
-							.setLabel('Timeout #1')
-							.setStyle(ButtonStyle.Secondary)
-							.setCustomId('moderation:durations:timeout1'),
-						new ButtonBuilder()
-							.setLabel('Timeout #2')
-							.setStyle(ButtonStyle.Secondary)
-							.setCustomId('moderation:durations:timeout2'),
-						new ButtonBuilder()
-							.setLabel('Ban')
-							.setStyle(ButtonStyle.Secondary)
-							.setCustomId('moderation:durations:ban'),
-						new ButtonBuilder()
-							.setLabel('Automod')
+							.setEmoji(Emojis[4])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:durations:automod'),
 					]);
@@ -845,15 +895,15 @@ export default new Command({
 				if (module === 'defaults')
 					row.setComponents([
 						new ButtonBuilder()
-							.setLabel('Timeout duration')
+							.setEmoji(Emojis[1])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:defaults:timeout'),
 						new ButtonBuilder()
-							.setLabel('Softban duration')
+							.setEmoji(Emojis[2])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:defaults:softban'),
 						new ButtonBuilder()
-							.setLabel('Delete messages days')
+							.setEmoji(Emojis[3])
 							.setStyle(ButtonStyle.Secondary)
 							.setCustomId('moderation:defaults:msgs'),
 					]);
@@ -864,7 +914,7 @@ export default new Command({
 							.setCustomId('moderation:reasons')
 							.setMaxValues(1)
 							.setMinValues(0)
-							.setPlaceholder('Edit autocomplete reasons for...')
+							.setPlaceholder(t('command.utility.configure.moderation.editReasons'))
 							.setOptions([
 								{ label: '/warn', value: 'warn' },
 								{ label: '/timeout', value: 'timeout' },
@@ -899,50 +949,85 @@ export default new Command({
 				if (collected.customId === 'moderation:modules' && collected.isSelectMenu()) {
 					const selectedModule = collected.values[0] as ModerationConfigTypes;
 					const embed = new EmbedBuilder()
-						.setTitle(moderationConfigNames[selectedModule])
+						.setTitle(
+							t('command.utility.configure.moderation.enum.' + selectedModule, { context: 'name' })
+						)
 						.setColor(client.cc.invisible)
 						.setDescription(
 							[
-								`${moderationConfigDescriptions[selectedModule]}\n`,
+								`${t('command.utility.configure.moderation.enum.' + selectedModule, {
+									context: 'description',
+								})}\n`,
 								selectedModule === 'counts'
 									? [
-											`• **Timeout #1:** ${client.config.moderation[selectedModule].timeout1}`,
-											`• **Timeout #2:** ${client.config.moderation[selectedModule].timeout2}`,
-											`• **Ban:** ${client.config.moderation[selectedModule].ban}`,
-											`• **Automod multiplication:** ${client.config.moderation[selectedModule].automod}`,
+											`${Emojis[1]} • **${t(
+												'command.utility.configure.moderation.embed.timeout1'
+											)}:** ${client.config.moderation[selectedModule].timeout1}`,
+											`${Emojis[2]} • **${t(
+												'command.utility.configure.moderation.embed.timeout2'
+											)}:** ${client.config.moderation[selectedModule].timeout2}`,
+											`${Emojis[3]} • **${t(
+												'command.utility.configure.moderation.embed.ban'
+											)}:** ${client.config.moderation[selectedModule].ban}`,
+											`${Emojis[4]} • **${t(
+												'command.utility.configure.moderation.embed.automodMulti'
+											)}:** ${client.config.moderation[selectedModule].automod}`,
 									  ].join('\n')
 									: selectedModule === 'durations'
 									? [
-											`• **Timeout #1:** ${convertTime(
+											`${Emojis[1]} • **${t(
+												'command.utility.configure.moderation.embed.timeout1'
+											)}:** ${convertTime(
 												client.config.moderation[selectedModule].timeout1
 											)}`,
-											`• **Timeout #2:** ${convertTime(
+											`${Emojis[2]} • **${t(
+												'command.utility.configure.moderation.embed.timeout2'
+											)}:** ${convertTime(
 												client.config.moderation[selectedModule].timeout2
 											)}`,
-											`• **Ban:** ${
+											`${Emojis[3]} • **${t(
+												'command.utility.configure.moderation.embed.ban'
+											)}:** ${
 												client.config.moderation[selectedModule].ban
 													? convertTime(
 															client.config.moderation[selectedModule].ban
 													  )
-													: 'Permanent'
+													: t(
+															'command.utility.configure.moderation.embed.permanent'
+													  )
 											}`,
-											`• **Automod timeout:** ${convertTime(
+											`${Emojis[4]} • **${t(
+												'command.utility.configure.moderation.embed.automodTimeout'
+											)}:** ${convertTime(
 												client.config.moderation[selectedModule].automod
 											)}`,
 									  ].join('\n')
 									: selectedModule === 'defaults'
 									? [
-											`• **Timeout duration:** ${convertTime(
+											`${Emojis[1]} • **${t(
+												'command.utility.configure.moderation.embed.duration',
+												{
+													context: 'timeout',
+												}
+											)}:** ${convertTime(
 												client.config.moderation[selectedModule].timeout
 											)}`,
-											`• **Softban duration:** ${convertTime(
+											`${Emojis[2]} • **${t(
+												'command.utility.configure.moderation.embed.duration',
+												{
+													context: 'softban',
+												}
+											)}:** ${convertTime(
 												client.config.moderation[selectedModule].softban
 											)}`,
-											`• **Delete message days:** ${
-												deleteDayRewites[
-													client.config.moderation[selectedModule].msgs
-												]
-											}`,
+											`${Emojis[3]} • **${t(
+												'command.utility.configure.moderation.embed.days'
+											)}:** ${t(
+												'command.utility.configure.moderation.days.' +
+													client.config.moderation[
+														selectedModule
+													].msgs.toString()
+											)}`,
 									  ].join('\n')
 									: '',
 							].join('\n')
@@ -963,12 +1048,11 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'reasons',
-										label: 'Separate reasons with ||',
+										label: t('command.utility.configure.moderation.modal.reasons'),
 										style: TextInputStyle.Paragraph,
 										required: false,
 										max_length: 4000,
 										min_length: 0,
-										placeholder: 'No reasons, add some!',
 										value: client.config.moderation.reasons[collected.values[0]].length
 											? client.config.moderation.reasons[collected.values[0]].join(
 													' || '
@@ -984,7 +1068,7 @@ export default new Command({
 					const module = collected.customId.split(':')[2];
 					const modal = new ModalBuilder()
 						.setTitle(
-							`${moderationConfigNames[subModule]} - ${moderationModulesNames[subModule][module]}`
+							t('command.utility.configure.moderation.enum.' + subModule, { context: 'name' })
 						)
 						.setCustomId(`moderation:${subModule}:${module}`)
 						.addComponents([
@@ -994,7 +1078,7 @@ export default new Command({
 									{
 										type: ComponentType.TextInput,
 										custom_id: 'input',
-										label: `${moderationConfigNames[subModule]} - ${moderationModulesNames[subModule][module]}`,
+										label: t('command.utility.configure.moderation.modal.input'),
 										style: TextInputStyle.Short,
 										required: true,
 										max_length: 100,
@@ -1005,7 +1089,9 @@ export default new Command({
 													? convertTime(
 															client.config.moderation[subModule][module]
 													  )
-													: 'Permanent'
+													: t(
+															'command.utility.configure.moderation.embed.permanent'
+													  )
 												: subModule === 'defaults'
 												? module === 'msgs'
 													? client.config.moderation[subModule][module]

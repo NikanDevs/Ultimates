@@ -123,6 +123,67 @@
 					},
 					"ignores": "• **Ignores:** {- ignores}"
 				},
+				"general": {
+					"enum": {
+						"developers_name": "Developers",
+						"appealLink_name": "Ban appeal link",
+						"memberRoleId_name": "Member role",
+						"modmailCategoryId_name": "Modmail category",
+						"developers_description": "Developers have permissions to use the `/eval` command.",
+						"appealLink_description": "When a person gets banned from the server, the appeal link gets sent to them.",
+						"memberRoleId_description": "Member role id is used for locking down channels and the verification module.",
+						"modmailCategoryId_description": "Modmail tickets are created under this category."
+					},
+					"modal": {
+						"enter": "Enter the value",
+						"seprate": "separate with spaces",
+						"invalidCategory": "Please provide a valid category id in this server.",
+						"invalidURL": "Please provide a valid URL."
+					},
+					"current": "• **Current:** {- value}",
+					"edit": "Edit"
+				},
+				"moderation": {
+					"enum": {
+						"counts_name": "Punishment counts",
+						"durations_name": "Punishment durations",
+						"defaults_name": "Default values",
+						"reasons_name": "Command reasons",
+						"counts_description": "These counts are used to take automatic actions on users when they reach an amount of warnings; Timeout #1: How many manual warnings should a user have to get timed out for the 1st time; Same thing for the other options.",
+						"durations_description": "These durations are used for automatic punishments users get after reaching an amount of warnings. Timeout #1: How long should the person be timed out for when reaching the first timeout goal? (You may set these goals using the `Punishment counts` option)",
+						"defaults_description": "The default values get used when a moderator doesn't enter their value whist using a /command.",
+						"reasons_description": "The reasons are shown in specific commands options as autocompletes to make moderation easier. The max length for the reasons are 100 letters."
+					},
+					"embed": {
+						"timeout1": "Timeout #1",
+						"timeout2": "Timeout #2",
+						"ban": "Ban",
+						"automodMulti": "Automod multiplication",
+						"automodTimeout": "Automod timeout",
+						"duration_timeout": "Timeout duration",
+						"duration_softban": "Softban duration",
+						"days": "Delete message days",
+						"permanent": "Permanent"
+					},
+					"modal": {
+						"reasons": "Separate reasons with ||",
+						"input": "Enter the value",
+						"invalidNumber": "Please enter a valid number.",
+						"noUnique": "Punishment counts must be unique.",
+						"invalidDays": "The delete messages days must be between 0 and 7."
+					},
+					"days": {
+						"0": "Don't delete any",
+						"1": "Previous 24 hours",
+						"2": "Previous 48 hours",
+						"3": "Previous 3 days",
+						"4": "Previous 4 days",
+						"5": "Previous 5 days",
+						"6": "Previous 6 days",
+						"7": "Previous 7 days"
+					},
+					"editReasons": "Edit autocomplete reasons for..."
+				},
 				"none": "None"
 			}
 		}
