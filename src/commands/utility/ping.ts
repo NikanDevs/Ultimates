@@ -1,5 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
-import { ConnectionStates, connection } from 'mongoose';
+import { t } from 'i18next';
+import { connection } from 'mongoose';
 import { convertTime } from '../../functions/convertTime';
 import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
@@ -16,13 +17,15 @@ export default new Command({
 			.setColor(client.cc.ultimates)
 			.setDescription(
 				[
-					`${client.cc.ping.mongoDB} **MongoDB** - ${capitalize(
-						ConnectionStates[connection.readyState]
+					`${client.cc.ping.mongoDB} **${t('command.utility.ping.mongoDB')}** - ${capitalize(
+						t('command.utility.ping.status.' + connection.readyState.toString())
 					)}`,
-					`${client.cc.ping.ping} **Websocket** - ${client.ws.ping}ms`,
-					`${client.cc.ping.ping} **Roundtrip** - ${Date.now() - interaction.createdTimestamp}ms`,
+					`${client.cc.ping.ping} **${t('command.utility.ping.websocket')}** - ${client.ws.ping}ms`,
+					`${client.cc.ping.ping} **${t('command.utility.ping.roundtrip')}** - ${
+						Date.now() - interaction.createdTimestamp
+					}ms`,
 					'',
-					`🕓 **Uptime** - ${convertTime(+client.uptime)}`,
+					`🕓 **${t('command.utility.ping.uptime')}** - ${convertTime(+client.uptime)}`,
 				].join('\n')
 			);
 

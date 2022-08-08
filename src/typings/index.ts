@@ -313,8 +313,6 @@ export interface antiRaidHitData {
 export interface userinfoButtonsOptions {
 	disableAccount?: boolean;
 	disableGuild?: boolean;
-	disableRoles?: boolean;
-	disablePermissions?: boolean;
 }
 
 export type GuardCollectionTypes = `antiraid` | `warn:${string}` | `purge:${string}` | `lockdown`;

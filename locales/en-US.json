@@ -185,6 +185,65 @@
 					"editReasons": "Edit autocomplete reasons for..."
 				},
 				"none": "None"
+			},
+			"ping": {
+				"mongoDB": "MongoDB",
+				"websocket": "Websocket",
+				"roundtrip": "Roundtrip",
+				"uptime": "Uptime",
+				"status": {
+					"0": "Disconnected",
+					"1": "Connected",
+					"2": "Connecting",
+					"3": "Disconnecting",
+					"99": "Uninitialized"
+				}
+			},
+			"staff": {
+				"staffs": "Staff members",
+				"role_owner": "Server Owner",
+				"role_admin": "Administrator",
+				"role_mod": "Moderator"
+			},
+			"verification": {
+				"default_title": "Verification Required",
+				"default_description": "This server requires verification before you can view all the channels and be a part of the server. You prove that you're a human by verifying.\n\n• Click the button below and get started!",
+				"default_button": "Verify",
+				"invalidChannel": "The channel must be in this server.",
+				"sent": "The verification embed was sent to {channel}"
+			},
+			"userinfo": {
+				"id": "ID",
+				"animated": "Animated",
+				"link": "Link",
+				"download": "Download",
+				"account": {
+					"account": "Account",
+					"info": "Account information",
+					"username": "Username",
+					"discrim": "Discriminator",
+					"register": "Registered",
+					"bot": "Bot",
+					"avatar": "Profile picture",
+					"banner": "Banner",
+					"badges": "Badges",
+					"presence": "Presence",
+					"status": "Status",
+					"devices": "Devices"
+				},
+				"guild": {
+					"guild": "Server",
+					"info": "Information in {- guild}",
+					"joined": "Joined",
+					"nickname": "Nickname",
+					"boosting": "Boosting",
+					"acknowments": "Acknowments",
+					"roles_owner": "Server Owner",
+					"roles_mod": "Moderator",
+					"roles_events": "Event manager",
+					"roles_manager": "Server manager",
+					"roles_admin": "Administrator"
+				}
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 import { EmbedBuilder, GuildMember, PermissionResolvable } from 'discord.js';
+import { t } from 'i18next';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 const staffPermissions: PermissionResolvable = [
@@ -42,7 +43,7 @@ export default new Command({
 		};
 
 		const embed = new EmbedBuilder()
-			.setAuthor({ name: 'Staff members', iconURL: client.user.displayAvatarURL() })
+			.setAuthor({ name: t('command.utility.staff.staffs'), iconURL: client.user.displayAvatarURL() })
 			.setColor(client.cc.ultimates)
 			.setDescription(
 				staff
@@ -53,12 +54,13 @@ export default new Command({
 		interaction.followUp({ embeds: [embed] });
 
 		function guessRole(member: GuildMember) {
+			const roles = (context: string) => t('command.utility.staff.role', { context });
 			let role: string;
 			if (member.id === interaction.guild.ownerId) {
-				role = 'Server owner';
+				role = roles('owner');
 			} else if (member.permissions.has('Administrator')) {
-				role = 'Administrator';
-			} else role = 'Moderator';
+				role = roles('admin');
+			} else role = roles('mod');
 
 			return role;
 		}
