@@ -25,7 +25,7 @@ export default new Command({
 
 		if (ignore(member, { interaction, action: PunishmentTypes.Kick })) return;
 
-		const data = new punishmentModel({
+		const data = await new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentTypes.Kick,
@@ -34,8 +34,7 @@ export default new Command({
 			reason: reason,
 			date: new Date(),
 			expire: punishmentExpiry,
-		});
-		await data.save();
+		}).save();
 
 		await sendModDM(member, {
 			action: PunishmentTypes.Kick,
@@ -49,7 +48,7 @@ export default new Command({
 					.setDescription(
 						t('common.modEmbed', {
 							user: member,
-							action: t('common.enum.' + PunishmentTypes.Kick, { context: 'past' }),
+							action: t('command.mod.kick.past'),
 							id: data._id,
 						})
 					)

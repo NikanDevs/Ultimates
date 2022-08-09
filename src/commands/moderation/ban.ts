@@ -54,7 +54,7 @@ export default new Command({
 					.setDescription(
 						t('common.modEmbed', {
 							user: member ? user.toString() : user.tag,
-							action: t('common.enum.' + PunishmentTypes.Ban, { context: 'past' }),
+							action: t('command.mod.ban.past'),
 							id: data._id,
 						})
 					)

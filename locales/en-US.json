@@ -269,7 +269,37 @@
 				"done_other": "The antiraid is done, {count} members were affected."
 			},
 			"ban": {
+				"past": "banned",
 				"banned": "This user is already banned from the server."
+			},
+			"kick": {
+				"past": "kicked"
+			},
+			"lockdown": {
+				"reason": "Reason",
+				"channel": {
+					"lock_title": "Channel Locked",
+					"unlock_title": "Channel Unlocked",
+					"lock_description": "This channel was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the channel gets unlocked.",
+					"unlock_description": "This channel was unlocked by a moderator!\n\nYou can now use the channel, thanks for your patient.",
+					"lock_respond": "{- channel} was locked.",
+					"unlock_respond": "{- channel} was unlocked.",
+					"invalidChannel": "You can only lock text, voice and stage channels."
+				},
+				"server": {
+					"locking": "This server is already getting locked.",
+					"lock_title": "Sever Locked",
+					"unlock_title": "Sever Unlocked",
+					"lock_description": "This server was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the server gets unlocked.",
+					"unlock_description": "This server was unlocked by a moderator!\n\nYou can now use it, thanks for your patient.",
+					"lock_respond": "The server was locked.",
+					"unlock_respond": "The server was unlocked."
+				}
+			},
+			"nickname": {
+				"set": "**{- member}** nickname was set to **{- nick}**",
+				"moderate": "**{- member}** nickname was moderated.",
+				"reset": "**{- member}** nickname was reset."
 			}
 		}
 	}

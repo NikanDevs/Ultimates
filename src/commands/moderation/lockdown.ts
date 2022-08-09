@@ -2,6 +2,7 @@ import { ChannelType, EmbedBuilder, GuildChannel, TextChannel } from 'discord.js
 import { Command } from '../../structures/Command';
 import { interactions } from '../../interactions';
 import { guardCollection } from '../../constants';
+import { t } from 'i18next';
 
 export default new Command({
 	interaction: interactions.lockdown,
@@ -22,19 +23,21 @@ export default new Command({
 			const embed = new EmbedBuilder()
 				.setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
 				.setAuthor({
-					name: 'Channel ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
+					name: !alreadyLocked
+						? t('command.mod.lockdown.channel.lock', { context: 'title' })
+						: t('command.mod.lockdown.channel.unlock', { context: 'title' }),
 					iconURL: client.user.displayAvatarURL(),
 				})
 				.setDescription(
 					!alreadyLocked
-						? 'This channel was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the channel gets unlocked'
-						: 'This channel was unlocked by a moderator!\n\nYou can now use the channel, thanks for your patient.'
+						? t('command.mod.lockdown.channel.lock', { context: 'description' })
+						: t('command.mod.lockdown.channel.unlock', { context: 'description' })
 				);
 
 			if (reason)
 				embed.addFields([
 					{
-						name: 'Reason',
+						name: t('command.mod.lockdown.reason'),
 						value: reason,
 					},
 				]);
@@ -59,20 +62,32 @@ export default new Command({
 					break;
 				default:
 					return interaction.reply({
-						embeds: [client.embeds.attention('You can only lock text, voice and stage channels.')],
+						embeds: [client.embeds.attention(t('command.mod.lockdown.channel.invalidChannel'))],
 						ephemeral: true,
 					});
 			}
 
 			await interaction.reply({
-				embeds: [client.embeds.success(`${channel} was ${!alreadyLocked ? 'locked' : 'unlocked'}.`)],
+				embeds: [
+					client.embeds.success(
+						!alreadyLocked
+							? t('command.mod.lockdown.channel.lock', {
+									context: 'respond',
+									channel: channel.toString(),
+							  })
+							: t('command.mod.lockdown.channel.unlock', {
+									context: 'respond',
+									channel: channel.toString(),
+							  })
+					),
+				],
 			});
 
 			(channel as TextChannel).send({ embeds: [embed] });
 		} else if (getSubCommand === 'server') {
 			if (guardCollection.has('lockdown'))
 				return interaction.reply({
-					embeds: [client.embeds.attention('The server is already locking down, please wait...')],
+					embeds: [client.embeds.attention(t('command.mod.lockdown.server.locking'))],
 					ephemeral: true,
 				});
 
@@ -131,18 +146,20 @@ export default new Command({
 			const embed = new EmbedBuilder()
 				.setColor(!alreadyLocked ? client.cc.moderation : client.cc.invisible)
 				.setAuthor({
-					name: 'Server ' + (!alreadyLocked ? 'Locked' : 'Unlocked'),
+					name: !alreadyLocked
+						? t('command.mod.lockdown.server.lock', { context: 'title' })
+						: t('command.mod.lockdown.server.unlock', { context: 'title' }),
 					iconURL: client.user.displayAvatarURL(),
 				})
 				.setDescription(
 					!alreadyLocked
-						? 'This server was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the server gets unlocked'
-						: 'This server was unlocked by a moderator!\n\nYou can now use it, thanks for your patient.'
+						? t('command.mod.lockdown.server.lock', { context: 'description' })
+						: t('command.mod.lockdown.server.unlock', { context: 'description' })
 				);
 			if (reason)
 				embed.addFields([
 					{
-						name: 'Reason',
+						name: t('command.mod.lockdown.reason'),
 						value: reason,
 					},
 				]);
@@ -152,7 +169,9 @@ export default new Command({
 			await interaction.followUp({
 				embeds: [
 					client.embeds.success(
-						`${interaction.guild.name} was ${!alreadyLocked ? 'locked' : 'unlocked'}.`
+						!alreadyLocked
+							? t('command.mod.lockdown.server.lock', { context: 'respond' })
+							: t('command.mod.lockdown.server.unlock', { context: 'respond' })
 					),
 				],
 			});
