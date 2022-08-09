@@ -8,26 +8,26 @@ import { interactions } from '../../interactions';
 import { PunishmentTypes } from '../../typings';
 import { createModLog } from '../../functions/logs/createModLog';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
-import { AUTOMOD_ID_LENGTH, MAX_REASON_LENGTH, PUNISHMENT_ID_LENGTH } from '../../constants';
+import { AUTOMOD_ID_LENGTH, PUNISHMENT_ID_LENGTH } from '../../constants';
 import { getUrlFromCase } from '../../functions/cases/getURL';
 import { capitalize } from '../../functions/other/capitalize';
-import { splitText } from '../../functions/other/splitText';
 import { t } from 'i18next';
 import { Paginator } from '../../structures/Paginator';
+import { getModCase } from '../../functions/cases/modCase';
 
 export default new Command({
 	interaction: interactions.punishment,
 	excute: async ({ client, interaction, options }) => {
-		const getSubCommand = options.getSubcommand();
+		const subcommand = options.getSubcommand();
 
-		if (getSubCommand === 'revoke') {
-			const warnId = options.getString('id');
-			const reason = splitText(options.getString('reason'), MAX_REASON_LENGTH) ?? t('common.noReason');
+		if (subcommand === 'revoke') {
+			const id = options.getString('id');
+			const reason = options.getString('reason') ?? t('common.noReason');
 
 			const data =
-				warnId.length == AUTOMOD_ID_LENGTH
-					? await automodModel.findById(warnId).catch(() => {})
-					: await punishmentModel.findById(warnId).catch(() => {});
+				id.length == AUTOMOD_ID_LENGTH
+					? await automodModel.findById(id).catch(() => {})
+					: await punishmentModel.findById(id).catch(() => {});
 			if (!data)
 				return interaction.reply({
 					embeds: [client.embeds.error(t('common.$errors.invalidID'))],
@@ -49,15 +49,15 @@ export default new Command({
 							return interaction.followUp({
 								embeds: [
 									client.embeds.error(
-										'The punished user is not in the server. I can not revoke the timeout.'
+										t('command.mod.punishment.revoke.timeout', { context: 'invalid' })
 									),
 								],
 							});
 
-						await getMember.timeout(null, 'Mute ended based on the duration.');
+						await getMember.timeout(null, reason);
 
 						await interaction.followUp({
-							embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
+							embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
 						});
 
 						await createModLog({
@@ -76,7 +76,7 @@ export default new Command({
 						});
 					} else {
 						await interaction.followUp({
-							embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
+							embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
 						});
 
 						await createModLog({
@@ -104,7 +104,7 @@ export default new Command({
 							});
 
 						await interaction.followUp({
-							embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
+							embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
 						});
 
 						await createModLog({
@@ -121,7 +121,7 @@ export default new Command({
 						});
 					} else {
 						await interaction.followUp({
-							embeds: [client.embeds.success(`Punishment **${warnId}** was **revoked**.`)],
+							embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
 						});
 
 						await createModLog({
@@ -141,7 +141,7 @@ export default new Command({
 					break;
 				default:
 					await interaction.followUp({
-						embeds: [client.embeds.success(`Punishment **${warnId}** was revoked.`)],
+						embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
 					});
 
 					await createModLog({
@@ -157,66 +157,72 @@ export default new Command({
 					});
 					break;
 			}
-		} else if (getSubCommand === 'search') {
+		} else if (subcommand === 'search') {
 			let doesExist: boolean = true;
-			const warnId = options.getString('id');
+			const id = options.getString('id');
 			const baseEmbed = new EmbedBuilder().setColor(client.cc.invisible);
 
-			switch (warnId.length) {
+			switch (id.length) {
 				case AUTOMOD_ID_LENGTH:
-					const automodWarn = await automodModel.findById(warnId).catch(() => {
-						doesExist = false;
-					});
+					const automodWarn = await automodModel.findById(id).catch(() => {});
 					if (!automodWarn) return (doesExist = false);
-
 					const automodUser = (await client.users.fetch(automodWarn.userId).catch(() => {})) as User;
 
 					baseEmbed
-						.setDescription(`ID: \`${warnId}\` • Case: ${automodWarn.case}`)
+						.setDescription(
+							t('command.mod.punishment.search.description', {
+								id,
+								case: automodWarn.case,
+								url: await getUrlFromCase(automodWarn.case),
+							})
+						)
 						.setAuthor({
 							name: client.user.username,
 							iconURL: client.user.displayAvatarURL(),
 						})
 						.addFields([
 							{
-								name: 'Type',
-								value: `Automod ${capitalize(automodWarn.type)}`,
+								name: t('command.mod.punishment.search.type', { context: 'name' }),
+								value: t('command.mod.punishment.search.type', {
+									context: 'automod',
+									type: capitalize(automodWarn.type),
+								}),
 								inline: true,
 							},
 							{
-								name: 'Date & Time',
+								name: t('command.mod.punishment.search.date', { context: 'name' }),
 								value: generateDiscordTimestamp(automodWarn.date, 'Short Date/Time'),
 								inline: true,
 							},
 							{
-								name: 'Expire',
+								name: t('command.mod.punishment.search.expire', { context: 'name' }),
 								value: generateDiscordTimestamp(automodWarn.expire),
 								inline: true,
 							},
 							{
-								name: 'User',
+								name: t('command.mod.punishment.search.user', { context: 'name' }),
 								value: automodUser.toString(),
 								inline: true,
 							},
 							{
-								name: 'User Tag',
+								name: t('command.mod.punishment.search.user', { context: 'tag' }),
 								value: automodUser.tag,
 								inline: true,
 							},
 							{
-								name: 'User Id',
+								name: t('command.mod.punishment.search.user', { context: 'id' }),
 								value: automodWarn.userId,
 								inline: true,
 							},
 							{
-								name: 'Reason',
+								name: t('command.mod.punishment.search.reason', { context: 'name' }),
 								value: automodWarn.reason,
 								inline: true,
 							},
 						]);
 					break;
 				case PUNISHMENT_ID_LENGTH:
-					const manualWarn = await punishmentModel.findById(warnId).catch(() => {
+					const manualWarn = await punishmentModel.findById(id).catch(() => {
 						doesExist = false;
 					});
 					if (!manualWarn) return (doesExist = false);
@@ -225,59 +231,68 @@ export default new Command({
 					const getMod = (await client.users.fetch(manualWarn.moderatorId).catch(() => {})) as User;
 
 					baseEmbed
-						.setDescription(`ID: \`${warnId}\` • Case: ${manualWarn.case}`)
+						.setDescription(
+							t('command.mod.punishment.search.description', {
+								id,
+								case: manualWarn.case,
+								url: await getUrlFromCase(manualWarn.case),
+							})
+						)
 						.setAuthor({
 							name: client.user.username,
 							iconURL: client.user.displayAvatarURL(),
 						})
 						.addFields([
 							{
-								name: 'Type',
-								value: `Manual ${capitalize(manualWarn.type)}`,
+								name: t('command.mod.punishment.search.type', { context: 'name' }),
+								value: t('command.mod.punishment.search.type', {
+									context: 'manual',
+									type: capitalize(manualWarn.type),
+								}),
 								inline: true,
 							},
 							{
-								name: 'Date & Time',
+								name: t('command.mod.punishment.search.date', { context: 'name' }),
 								value: generateDiscordTimestamp(manualWarn.date, 'Short Date/Time'),
 								inline: true,
 							},
 							{
-								name: 'Expire',
+								name: t('command.mod.punishment.search.expire', { context: 'name' }),
 								value: generateDiscordTimestamp(manualWarn.expire),
 								inline: true,
 							},
 							{
-								name: 'User',
+								name: t('command.mod.punishment.search.user', { context: 'name' }),
 								value: manualUser.toString(),
 								inline: true,
 							},
 							{
-								name: 'User Tag',
+								name: t('command.mod.punishment.search.user', { context: 'tag' }),
 								value: manualUser.tag,
 								inline: true,
 							},
 							{
-								name: 'User Id',
+								name: t('command.mod.punishment.search.user', { context: 'id' }),
 								value: manualWarn.userId,
 								inline: true,
 							},
 							{
-								name: 'Moderator',
+								name: t('command.mod.punishment.search.mod', { context: 'name' }),
 								value: getMod.toString(),
 								inline: true,
 							},
 							{
-								name: 'Moderator Tag',
+								name: t('command.mod.punishment.search.mod', { context: 'tag' }),
 								value: getMod.tag,
 								inline: true,
 							},
 							{
-								name: 'Moderator Id',
+								name: t('command.mod.punishment.search.mod', { context: 'id' }),
 								value: manualWarn.moderatorId,
 								inline: true,
 							},
 							{
-								name: 'Reason',
+								name: t('command.mod.punishment.search.reason', { context: 'name' }),
 								value: manualWarn.reason,
 								inline: true,
 							},
@@ -295,44 +310,58 @@ export default new Command({
 				});
 
 			interaction.reply({ embeds: [baseEmbed] });
-		} else if (getSubCommand === 'view') {
-			// Catching the proper user
+		} else if (subcommand === 'view') {
 			const user = options.getUser('user');
 
-			// Getting all the warnings
 			const findWarningsNormal = await punishmentModel.find({ userId: user.id });
 			const findWarningsAutomod = await automodModel.find({ userId: user.id });
-			let warnCounter = 0;
+			let warnCount = 0;
 
 			const warnings = findWarningsNormal
 				.map((data) => {
-					warnCounter = warnCounter + 1;
+					warnCount = warnCount + 1;
 					return [
-						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${data._id}**`,
-						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
-						data.moderatorId === client.user.id
-							? `• **Moderator:** Automatic`
-							: client.users.cache.get(data.moderatorId) === undefined
-							? `• **Moderator ID:** ${data.moderatorId}`
-							: `• **Moderator:** ${client.users.cache.get(data.moderatorId).tag}`,
-						data.type === 'WARN'
-							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+						t('command.mod.punishment.view.embed.manual-id', {
+							warnCount: warnCount.toString(),
+							type: capitalize(data.type),
+							id: data._id,
+						}),
+						t('command.mod.punishment.view.embed.date', {
+							date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+						}),
+						t('command.mod.punishment.view.embed.moderator', {
+							moderator:
+								data.moderatorId === client.user.id
+									? t('command.mod.punishment.view.automatic')
+									: client.users.cache.get(data.moderatorId)?.tag || data.moderatorId,
+						}),
+						data.type === PunishmentTypes.Warn
+							? t('command.mod.punishment.view.embed.expire', {
+									expire: generateDiscordTimestamp(data.expire),
+							  })
 							: 'LINE_BREAK',
-						`• **Reason:** ${data.reason}`,
+						t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 					]
 						.join('\n')
 						.replaceAll('\nLINE_BREAK', '');
 				})
 				.concat(
 					findWarningsAutomod.map((data) => {
-						warnCounter = warnCounter + 1;
+						warnCount = warnCount + 1;
 						return [
-							`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
-							`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
-							data.type === 'WARN'
-								? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							t('command.mod.punishment.view.embed.automod-id', {
+								warnCount: warnCount.toString(),
+								type: capitalize(data.type),
+							}),
+							t('command.mod.punishment.view.embed.date', {
+								date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+							}),
+							data.type === PunishmentTypes.Warn
+								? t('command.mod.punishment.view.embed.expire', {
+										expire: generateDiscordTimestamp(data.expire),
+								  })
 								: 'LINE_BREAK',
-							`• **Reason:** ${data.reason}`,
+							t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 						]
 							.join('\n')
 							.replaceAll('\nLINE_BREAK', '');
@@ -344,12 +373,11 @@ export default new Command({
 				.setColor(client.cc.invisible)
 				.setThumbnail(user.displayAvatarURL());
 
-			// Sending the results
 			if (warnings.length === 0)
 				return interaction.reply({
 					embeds: [
 						new EmbedBuilder({
-							description: `No punishments were found for **${user.tag}**`,
+							description: t('command.mod.punishment.view.noPunishments', { user: user.tag }),
 							color: client.cc.invisible,
 						}),
 					],
@@ -362,7 +390,10 @@ export default new Command({
 				interaction.followUp({ embeds: [embed] });
 			} else if (warnings.length > 3) {
 				embed.setDescription('${{array}}').setFooter({
-					text: 'Page ${{currentPage}}/${{totalPages}}',
+					text: t('command.context.punishments.embed.footer', {
+						currentPage: '${{currentPage}}',
+						totalPages: '${{totalPages}}',
+					}),
 				});
 
 				const paginator = new Paginator();
@@ -374,7 +405,7 @@ export default new Command({
 					embed: embed,
 				});
 			}
-		} else if (getSubCommand === 'reason') {
+		} else if (subcommand === 'reason') {
 			const id = options.getString('id');
 			let reason = options.getString('reason');
 			let punishment: any = null;
@@ -396,8 +427,8 @@ export default new Command({
 				});
 
 			if (punishment.reason === reason)
-				return interaction.reply({
-					embeds: [client.embeds.attention('Please provide a different reason than the current one.')],
+				return interaction.followUp({
+					embeds: [client.embeds.attention(t('command.mod.punishment.reason.invalidReason'))],
 				});
 
 			switch (id.length) {
@@ -414,7 +445,7 @@ export default new Command({
 			}
 
 			await interaction.followUp({
-				embeds: [client.embeds.success(`Reason was updated to **${reason}**`)],
+				embeds: [client.embeds.success(t('command.mod.punishment.reason.updated', { reason }))],
 			});
 
 			const updateLog = await createModLog({
@@ -432,19 +463,38 @@ export default new Command({
 				.fetch((await getUrlFromCase(punishment.case)).split('/')[5])
 				.catch(() => {})) as TextChannel;
 			if (!substanceLogChannel) return;
-			const substanceLog = (await substanceLogChannel.messages
-				.fetch(substanceLogID)
-				.catch(() => {})) as Message;
-			if (!substanceLog) return;
+			const logMessage = (await substanceLogChannel.messages.fetch(substanceLogID).catch(() => {})) as Message;
+			if (!logMessage) return;
 
 			client.config.webhooks.mod.editMessage(substanceLogID, {
 				embeds: [
-					EmbedBuilder.from(substanceLog.embeds[0]).setDescription(
-						substanceLog.embeds[0].description.replaceAll(
-							'\n• **Reason',
-							`\n• **Reason [[U](${updateLog})]`
-						)
-					),
+					!logMessage.embeds[0].fields.length
+						? EmbedBuilder.from(logMessage.embeds[0]).setFields([
+								{
+									name: t('command.mod.punishment.reason.history', { context: 'name' }),
+									value: t('command.mod.punishment.reason.history', {
+										context: 'value',
+										changeCount: '1',
+										type: t('command.mod.punishment.reason.name'),
+										case: await getModCase(),
+										url: updateLog,
+									}),
+								},
+						  ])
+						: EmbedBuilder.from(logMessage.embeds[0]).spliceFields(0, 1, {
+								name: logMessage.embeds[0].fields[0].name,
+								value: [
+									logMessage.embeds[0].fields[0].value,
+									t('command.mod.punishment.reason.history', {
+										context: 'value',
+										changeCount:
+											logMessage.embeds[0].fields[0].value.split('\n').length + 1,
+										type: t('command.mod.punishment.reason.name'),
+										case: (await getModCase()).toString(),
+										url: updateLog,
+									}),
+								].join('\n'),
+						  }),
 				],
 			});
 		}

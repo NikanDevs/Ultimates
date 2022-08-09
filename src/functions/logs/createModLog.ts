@@ -19,9 +19,9 @@ export async function createModLog(options: createModLogOptions) {
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
-			name: ` ${revoke ? 'Revoke' : options.update ? 'Update' : capitalize(options.action)} | Case: #${
-				revoke ? options.referencedPunishment.case : currentCase
-			}`,
+			name: ` ${
+				revoke ? 'Revoke' : options.update ? 'Update' : capitalize(options.action)
+			} | Case: #${currentCase}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setColor(

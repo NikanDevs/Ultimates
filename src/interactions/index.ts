@@ -7,7 +7,6 @@ import { lockdownCommand } from './moderation/lockdown';
 import { nicknameCommand } from './moderation/nickname';
 import { punishmentCommand } from './moderation/punishment';
 import { purgeCommand } from './moderation/purge';
-import { roleCommand } from './moderation/role';
 import { slowmodeCommand } from './moderation/slowmode';
 import { softbanCommand } from './moderation/softban';
 import { timeoutCommand } from './moderation/timeout';
@@ -31,7 +30,6 @@ export const interactions = {
 	nickname: nicknameCommand,
 	punishment: punishmentCommand,
 	purge: purgeCommand,
-	role: roleCommand,
 	slowmode: slowmodeCommand,
 	softban: softbanCommand,
 	timeout: timeoutCommand,

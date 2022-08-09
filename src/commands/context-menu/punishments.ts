@@ -15,7 +15,6 @@ export default new Command({
 		if (!interaction.isUserContextMenuCommand()) return;
 		const user = interaction.targetUser as User;
 
-		// Getting all the warnings
 		const findWarningsNormal = await punishmentModel.find({ userId: user.id });
 		const findWarningsAutomod = await automodModel.find({ userId: user.id });
 		let warnCount = 0;
@@ -24,26 +23,26 @@ export default new Command({
 			.map((data) => {
 				warnCount = warnCount + 1;
 				return [
-					t('command.context.punishments.embed.manual-id', {
+					t('command.mod.punishment.view.embed.manual-id', {
 						warnCount: warnCount.toString(),
 						type: capitalize(data.type),
 						id: data._id,
 					}),
-					t('command.context.punishments.embed.date', {
+					t('command.mod.punishment.view.embed.date', {
 						date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
 					}),
-					t('command.context.punishments.embed.moderator', {
+					t('command.mod.punishment.view.embed.moderator', {
 						moderator:
 							data.moderatorId === client.user.id
-								? t('command.context.punishments.automatic')
+								? t('command.mod.punishment.view.automatic')
 								: client.users.cache.get(data.moderatorId)?.tag || data.moderatorId,
 					}),
 					data.type === PunishmentTypes.Warn
-						? t('command.context.punishments.embed.expire', {
+						? t('command.mod.punishment.view.embed.expire', {
 								expire: generateDiscordTimestamp(data.expire),
 						  })
 						: 'LINE_BREAK',
-					t('command.context.punishments.embed.reason', { reason: data.reason }),
+					t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 				]
 					.join('\n')
 					.replaceAll('\nLINE_BREAK', '');
@@ -52,19 +51,19 @@ export default new Command({
 				findWarningsAutomod.map((data) => {
 					warnCount = warnCount + 1;
 					return [
-						t('command.context.punishments.embed.automod-id', {
+						t('command.mod.punishment.view.embed.automod-id', {
 							warnCount: warnCount.toString(),
 							type: capitalize(data.type),
 						}),
-						t('command.context.punishments.embed.date', {
+						t('command.mod.punishment.view.embed.date', {
 							date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
 						}),
 						data.type === PunishmentTypes.Warn
-							? t('command.context.punishments.embed.expire', {
+							? t('command.mod.punishment.view.embed.expire', {
 									expire: generateDiscordTimestamp(data.expire),
 							  })
 							: 'LINE_BREAK',
-						t('command.context.punishments.embed.reason', { reason: data.reason }),
+						t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 					]
 						.join('\n')
 						.replaceAll('\nLINE_BREAK', '');
@@ -81,7 +80,7 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					new EmbedBuilder({
-						description: t('command.context.punishments.noPunishments', { user: user.tag }),
+						description: t('command.mod.punishment.view.noPunishments', { user: user.tag }),
 						color: client.cc.invisible,
 					}),
 				],
@@ -94,7 +93,7 @@ export default new Command({
 			interaction.followUp({ embeds: [embed] });
 		} else if (warnings.length > 3) {
 			embed.setDescription('${{array}}').setFooter({
-				text: t('command.context.punishments.embed.footer', {
+				text: t('command.mod.punishment.view.embed.footer', {
 					currentPage: '${{currentPage}}',
 					totalPages: '${{totalPages}}',
 				}),
