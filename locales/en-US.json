@@ -70,10 +70,10 @@
 						"servergate_name": "Joins and leaves",
 						"voice_name": "Voice state updates",
 						"mod_description": "Sends the moderation case for a punishment when it's recorded.",
-						"message_description": "Log sent when a message was deleted, edited, or when a channel was purged.",
-						"modmail_description": "Log sent when someone creates, deletes a ticket, or when a user gets blacklisted.",
-						"servergate_description": "Log sent when a user has joined or left the server.",
-						"voice_description": "Log sent when a user has joined or left a voice channel."
+						"message_description": "Triggered when a message was deleted, edited, or when a channel was purged.",
+						"modmail_description": "Triggered when someone creates, deletes a ticket, or when a user gets blacklisted.",
+						"servergate_description": "Triggered when a user has joined or left the server.",
+						"voice_description": "Triggered when a user has joined or left a voice channel."
 					},
 					"modal": {
 						"channel_label": "Provide a channel ID:",
