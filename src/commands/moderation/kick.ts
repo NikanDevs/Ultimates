@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -45,10 +45,15 @@ export default new Command({
 
 		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(member.user, {
-					action: PunishmentTypes.Kick,
-					id: data._id,
-				}),
+				new EmbedBuilder()
+					.setDescription(
+						t('common.modEmbed', {
+							user: member,
+							action: t('common.enum.' + PunishmentTypes.Kick, { context: 'past' }),
+							id: data._id,
+						})
+					)
+					.setColor(client.cc.moderation),
 			],
 			ephemeral: true,
 		});

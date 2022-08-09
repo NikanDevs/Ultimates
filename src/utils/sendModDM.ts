@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember } from 'discord.js';
 import { t } from 'i18next';
 import { client } from '..';
-import { punishmentTypeNames, punismentTypeNamesSuffixes, sendModDMOptions } from '../typings';
+import { punishmentTypeNames, sendModDMOptions } from '../typings';
 import { PunishmentTypes } from '../typings';
 import { generateDiscordTimestamp } from './generateDiscordTimestamp';
 
@@ -11,13 +11,10 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
-			name: client.user.username,
-			iconURL: client.user.displayAvatarURL(),
+			name: member.guild.name,
+			iconURL: member.guild.iconURL(),
 		})
-		.setTitle(
-			`You were ${punishmentTypeNames[options.action]} ${punismentTypeNamesSuffixes[options.action]} ` +
-				member.guild.name
-		)
+		.setTitle(`You were ${punishmentTypeNames[options.action]}`)
 		.setColor(client.cc.invisible)
 		.addFields([
 			automod

@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -22,11 +22,11 @@ export default new Command({
 		if (member) if (ignore(member, { interaction, action: PunishmentTypes.Ban })) return;
 		if (await interaction.guild.bans.fetch(user.id).catch(() => {}))
 			return interaction.reply({
-				embeds: [client.embeds.error('This user is already banned from the server.')],
+				embeds: [client.embeds.error(t('command.mod.ban.banned'))],
 				ephemeral: true,
 			});
 
-		const data = new punishmentModel({
+		const data = await new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentTypes.Ban,
@@ -35,8 +35,7 @@ export default new Command({
 			reason: reason,
 			date: new Date(),
 			expire: punishmentExpiry,
-		});
-		await data.save();
+		}).save();
 
 		if (member)
 			await sendModDM(member, {
@@ -51,10 +50,15 @@ export default new Command({
 
 		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(member ? user : user.tag, {
-					action: PunishmentTypes.Ban,
-					id: data._id,
-				}),
+				new EmbedBuilder()
+					.setDescription(
+						t('common.modEmbed', {
+							user: member ? user.toString() : user.tag,
+							action: t('common.enum.' + PunishmentTypes.Ban, { context: 'past' }),
+							id: data._id,
+						})
+					)
+					.setColor(client.cc.moderation),
 			],
 			ephemeral: true,
 		});

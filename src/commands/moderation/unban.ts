@@ -19,16 +19,9 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					client.embeds.error(
-						"I couldn't find that banned member. " + t('common.errors.userAutocomplete')
+						"I couldn't find that banned member. " + t('common.errors.useAutocomplete')
 					),
 				],
-				ephemeral: true,
-			});
-
-		await interaction.guild.bans.remove(userId);
-		if (bannedMember.user.bot)
-			return interaction.reply({
-				embeds: [client.embeds.success(`**${bannedMember.user.tag}** was unbanned.`)],
 				ephemeral: true,
 			});
 

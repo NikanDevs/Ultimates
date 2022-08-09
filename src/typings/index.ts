@@ -131,15 +131,6 @@ export enum punishmentTypeNames {
 	'SOFTBAN' = 'soft banned',
 }
 
-export enum punismentTypeNamesSuffixes {
-	'WARN' = 'in',
-	'BAN' = 'from',
-	'KICK' = 'from',
-	'TIMEOUT' = 'in',
-	'UNBAN' = 'from',
-	'SOFTBAN' = 'from',
-}
-
 export enum punishmentTypeEmbedColors {
 	'WARN' = '#d4c03f',
 	'TIMEOUT' = '#f5a742',

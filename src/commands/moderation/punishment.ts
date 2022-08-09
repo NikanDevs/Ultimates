@@ -114,7 +114,7 @@ export default new Command({
 							reason: reason,
 							referencedPunishment: data,
 						}).then(async () => {
-							if (!(await logsModel.findByIdAndDelete(data.case)).antiraid)
+							if (!(await logsModel.findByIdAndDelete(data.case))?.antiraid)
 								await logsModel.findByIdAndDelete(data.case);
 
 							data.delete();

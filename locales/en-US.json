@@ -12,6 +12,16 @@
 			"invalidDuration": "${common.errors.invalidDuration} ${common.errors.useAutocomplete}",
 			"invalidID": "${common.errors.invalidID} ${common.errors.useAutocomplete}"
 		},
+		"enum": {
+			"WARN_past": "warned",
+			"KICK_past": "kicked",
+			"BAN_past": "banned",
+			"TIMEOUT_past": "timed out",
+			"UNMUTE_past": "unmuted",
+			"UNBAN_past": "unbanned",
+			"SOFTBAN_past": "soft banned"
+		},
+		"modEmbed": "**{- user}** was {action} • ID: `{- id}`",
 		"noReason": "No reason was provided."
 	},
 	"command": {
@@ -244,6 +254,22 @@
 					"roles_manager": "Server manager",
 					"roles_admin": "Administrator"
 				}
+			}
+		},
+		"mod": {
+			"antiraid": {
+				"scanning": "This server is already getting scanned by the antiraid.",
+				"none": "No members were affected by the antiraid.",
+				"button_confirm": "Confirm",
+				"button_cancel": "Cancel",
+				"confirm": "Do you confirm that these are the raiders?\n```\n{- raiders}```",
+				"etr": "The antiraid should be done {- remaining}",
+				"results": "The antiraid results for {- server} at {- date}",
+				"done_one": "The antiraid is done, {count} member was affected.",
+				"done_other": "The antiraid is done, {count} members were affected."
+			},
+			"ban": {
+				"banned": "This user is already banned from the server."
 			}
 		}
 	}
