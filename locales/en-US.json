@@ -28,20 +28,20 @@
 					"invalidChannel": "You may only run this command in a ticket channel.",
 					"invalidUser": "I wasn't able to find the user, did you change the channel topic?",
 					"transcript_title": "Modmail Transcript",
-					"transcript_description": "Modmail Transcript for {user}",
+					"transcript_description": "Modmail Transcript for {- user}",
 					"deleting": "This ticket will be deleted in 10 seconds...",
 					"embed_title": "Ticket closed",
 					"embed_description": "Your ticket was closed by a staff member. If you have any other questions in the future, feel free to ask them!"
 				},
 				"blacklist": {
 					"invalidReason": "Please provide a reason.",
-					"added": "**{user}** was added to the modmail blacklist.",
-					"removed": "**{user}** was removed from the modmail blacklist."
+					"added": "**{- user}** was added to the modmail blacklist.",
+					"removed": "**{- user}** was removed from the modmail blacklist."
 				},
 				"open": {
 					"noBot": "You cannot open modmail tickets for bots.",
 					"exists": "Looks like this user already has a ticket opened at {- channel}",
-					"blacklisted": "{user} is blacklisted from opening modmail tickets.",
+					"blacklisted": "{- user} is blacklisted from opening modmail tickets.",
 					"enbed_title": "Modmail ticket opened",
 					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering why this ticket was opened, wait until a moderator has contacted you through this ticket.",
 					"embed_reason": "Reason",
@@ -202,7 +202,7 @@
 				"default_description": "This server requires verification before you can view all the channels and be a part of the server and prove that you are not a robot. \n\n• Click the button below and get started!",
 				"default_button": "Verify",
 				"invalidChannel": "The channel must be in this server.",
-				"sent": "The verification embed was sent to {channel}"
+				"sent": "The verification embed was sent to {- channel}"
 			},
 			"userinfo": {
 				"id": "ID",
@@ -314,7 +314,7 @@
 						"footer": "Page {currentPage}/{totalPages}"
 					},
 					"automatic": "Automatic",
-					"noPunishments": "No punishments were found for **{user}**"
+					"noPunishments": "No punishments were found for **{- user}**"
 				},
 				"reason": {
 					"name": "reason",
