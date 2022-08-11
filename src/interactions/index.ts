@@ -6,7 +6,7 @@ import { kickCommand } from './moderation/kick';
 import { lockdownCommand } from './moderation/lockdown';
 import { nicknameCommand } from './moderation/nickname';
 import { punishmentCommand } from './moderation/punishment';
-import { purgeCommand } from './moderation/purge';
+import { clearCommand } from './moderation/clear';
 import { slowmodeCommand } from './moderation/slowmode';
 import { softbanCommand } from './moderation/softban';
 import { timeoutCommand } from './moderation/timeout';
@@ -29,7 +29,7 @@ export const interactions = {
 	lockdown: lockdownCommand,
 	nickname: nicknameCommand,
 	punishment: punishmentCommand,
-	purge: purgeCommand,
+	clear: clearCommand,
 	slowmode: slowmodeCommand,
 	softban: softbanCommand,
 	timeout: timeoutCommand,

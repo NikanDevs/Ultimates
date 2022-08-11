@@ -324,13 +324,13 @@
 					"history_value": "• [#{case}]({- url}) - {type}"
 				}
 			},
-			"purge": {
+			"clear": {
 				"channel_one": "Cleared **{count}** message in {channel}",
 				"channel_other": "Cleared **{count}** messages in {channel}",
 				"user_one": "Cleared **{count}** message from {user}",
 				"user_other": "Cleared **{count}** messages from {user}",
 				"none": "No messages were cleared.",
-				"purged": "This channel has been recently purged, try again in a few seconds."
+				"purged": "This channel has been recently cleared, try again in a few seconds."
 			},
 			"slowmode": {
 				"none": "This channel doesn't have any slowmode.",
