@@ -6,7 +6,9 @@
 			"invalidMember": "I couldn't find that member in this server.",
 			"invalidID": "I couldn't find a punishment with that ID.",
 			"duration": "The duration must be between {min} and {max}.",
-			"cannotInteract": "You cannot interact with this."
+			"cannotInteract": "You cannot interact with this.",
+			"noPerms": "You don't have permissions to use this.",
+			"occurred": "An error has occurred."
 		},
 		"$errors": {
 			"invalidDuration": "${common.errors.invalidDuration} ${common.errors.useAutocomplete}",
@@ -127,7 +129,8 @@
 						"enter": "Enter the value",
 						"seprate": "separate with spaces",
 						"invalidCategory": "Please provide a valid category id in this server.",
-						"invalidURL": "Please provide a valid URL."
+						"invalidURL": "Please provide a valid URL.",
+						"invalidRole": "Please provide a valid, and manageble role ID in the server."
 					},
 					"current": "• **Current:** {- value}",
 					"edit": "Edit"
@@ -401,6 +404,13 @@
 				"antiraid": {
 					"noDuration": "Please provide a duration."
 				}
+			},
+			"applicationCommand": {
+				"noCommand": "No commands were found matching `{cmd}`",
+				"botPerm_one": "I need `{permissions}` permission to excute this command.",
+				"botPerm_other": "I need `{permissions}` permissions to excute this command.",
+				"cooldown": "You need to wait for **{time}** before using this command.",
+				"mongoDB": "MongoDB is not connected, please contact a developer."
 			}
 		}
 	}

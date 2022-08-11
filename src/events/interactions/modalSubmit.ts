@@ -303,9 +303,13 @@ export default new Event('interactionCreate', async (interaction) => {
 						.filter((e) => e)
 				: null;
 
-		if (module === 'memberRoleId' && input && !interaction.guild.roles.cache.get(input))
+		if (
+			module === 'memberRoleId' &&
+			input &&
+			(!interaction.guild.roles.cache.get(input) || interaction.guild.roles.cache.get(input)?.managed)
+		)
 			return interaction.reply({
-				embeds: [client.embeds.error('Please provide a valid role id in this server.')],
+				embeds: [client.embeds.error(t('command.utility.configure.general.modal.invalidRole'))],
 				ephemeral: true,
 			});
 
