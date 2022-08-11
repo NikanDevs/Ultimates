@@ -19,7 +19,7 @@ import { isURL } from '../../functions/automod/isURL';
 import { isDiscordInvite } from '../../functions/automod/isDiscordInvite';
 import { mostIsCap } from '../../functions/automod/mostIsCaps';
 import { mostIsEmojis } from '../../functions/automod/mostIsEmojis';
-import { type AutomodModules, automodModuleReasons } from '../../typings';
+import { type AutomodModules } from '../../typings';
 import { t } from 'i18next';
 const config = client.config.automod;
 
@@ -84,7 +84,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.largeMessage,
+			reason: reason('largeMessage'),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -102,7 +102,7 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.largeMessage,
+			reason: reason('largeMessage'),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (isDiscordInvite(message.content) && config.modules.invites && !ignore('invites')) {
@@ -123,7 +123,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.invites,
+			reason: reason('invites'),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -141,7 +141,7 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.invites,
+			reason: reason('invites'),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (isURL(message.content) && config.modules.urls && !ignore('urls')) {
@@ -162,7 +162,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.urls,
+			reason: reason('urls'),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -180,7 +180,7 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.urls,
+			reason: reason('urls'),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -208,7 +208,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.massMention,
+			reason: reason('massMention', AUTOMOD_MAX_MENTIONS),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -226,7 +226,7 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.massMention,
+			reason: reason('massMention', AUTOMOD_MAX_MENTIONS),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (mostIsCap(message.content) && config.modules.capitals && !ignore('capitals')) {
@@ -247,7 +247,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.capitals,
+			reason: reason('capitals'),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -265,7 +265,7 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.capitals,
+			reason: reason('capitals'),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (mostIsEmojis(message.content) && config.modules.massEmoji && !ignore('massEmoji')) {
@@ -286,7 +286,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.massEmoji,
+			reason: reason('massEmoji'),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -304,7 +304,7 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.massEmoji,
+			reason: reason('massEmoji'),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -329,7 +329,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.badwords,
+			reason: reason('badwords'),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -347,7 +347,7 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.badwords,
+			reason: reason('badwords'),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	} else if (
@@ -375,7 +375,7 @@ export default new Event('messageCreate', async (message) => {
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
 			userId: message.author.id,
-			reason: automodModuleReasons.spam,
+			reason: reason('spam'),
 			date: new Date(),
 			expire: automodPunishmentExpiry,
 		});
@@ -393,12 +393,16 @@ export default new Event('messageCreate', async (message) => {
 			punishmentId: data._id,
 			user: message.author,
 			moderator: client.user,
-			reason: automodModuleReasons.spam,
+			reason: reason('spam'),
 			expire: automodPunishmentExpiry,
 		}).then(() => checkForAutoPunish(data));
 	}
 
 	// Functions
+	function reason(type: AutomodModules, count?: number) {
+		return t('event.automod.reason.' + type, { count });
+	}
+
 	function ignore(type: AutomodModules) {
 		if (
 			client.config.ignores.automod[type.toString()].channelIds.includes(textChannel.id) ||

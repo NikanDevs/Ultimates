@@ -363,16 +363,26 @@
 	},
 	"event": {
 		"automod": {
-			"largeMessage": "{- user}, you may not send large messages here.",
-			"invites": "{- user}, you may not send discord invites here.",
-			"urls": "{- user}, you may not send links here.",
-			"massMention": "{- user}, you may not mention more than {count} people.",
-			"capitals": "{- user}, you may not use this many capital letters.",
-			"massEmoji": "{- user}, you may not use this many emojis.",
 			"badwords": "{- user}, you may not use that word.",
+			"invites": "{- user}, you may not send discord invites here.",
+			"largeMessage": "{- user}, you may not send large messages here.",
+			"massMention": "{- user}, you may not mention more than {count} people.",
+			"massEmoji": "{- user}, you may not use this many emojis.",
 			"spam": "{- user}, you may not send messages this quick.",
+			"capitals": "{- user}, you may not use this many capital letters.",
+			"urls": "{- user}, you may not send links here.",
 			"reaching_one": "Reaching {count} auto moderation warning",
-			"reaching_other": "Reaching {count} auto moderation warnings"
+			"reaching_other": "Reaching {count} auto moderation warnings",
+			"reason": {
+				"badwords": "Sending filtered words in the chat",
+				"invites": "Sending discord invites in the chat",
+				"largeMessage": "Sending a large message in the chat",
+				"massMention": "Mentioning more than {count} people",
+				"massEmoji": "Sending too many emojis at once",
+				"spam": "Sending messages too quickly",
+				"capitals": "Using too many capital letters",
+				"urls": "Sending links in the chat"
+			}
 		},
 		"interactions": {
 			"autocomplete": {

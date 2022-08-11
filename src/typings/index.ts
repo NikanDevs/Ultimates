@@ -50,17 +50,6 @@ export type AutomodModules =
 	| 'capitals'
 	| 'urls';
 
-export enum automodModuleReasons {
-	'badwords' = 'Sending filtered words in the chat.',
-	'invites' = 'Sending discord invite links in the chat.',
-	'largeMessage' = 'Sending a large message in content.',
-	'massMention' = 'Mentioning more than 4 people.',
-	'massEmoji' = 'Sending too many emojis at once.',
-	'spam' = 'Sending messages too quickly.',
-	'capitals' = 'Using too many capital letters.',
-	'urls' = 'Sending links and urls.',
-}
-
 // Logging system and modules typings
 
 export type LoggingModules = 'mod' | 'message' | 'modmail' | 'servergate' | 'voice';

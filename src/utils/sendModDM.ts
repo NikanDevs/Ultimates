@@ -11,10 +11,10 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
-			name: member.guild.name,
-			iconURL: member.guild.iconURL(),
+			name: client.user.username,
+			iconURL: client.user.displayAvatarURL(),
 		})
-		.setTitle(`You were ${punishmentTypeNames[options.action]}`)
+		.setTitle(`You were ${punishmentTypeNames[options.action]} - ${member.guild.name}`)
 		.setColor(client.cc.invisible)
 		.addFields([
 			automod
