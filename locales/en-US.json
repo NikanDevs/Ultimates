@@ -360,5 +360,19 @@
 				"no_automod": "No auto moderation warnings were found for you."
 			}
 		}
+	},
+	"event": {
+		"automod": {
+			"largeMessage": "{user}, you may not send large messages here.",
+			"invites": "{user}, you may not send discord invites here.",
+			"urls": "{user}, you may not send links here.",
+			"massMention": "{user}, you may not mention more than {count} people.",
+			"capitals": "{user}, you may not use this many capital letters.",
+			"massEmoji": "{user}, you may not use this many emojis.",
+			"badwords": "{user}, you may not use that word.",
+			"spam": "{user}, you may not send messages this quick.",
+			"reaching_one": "Reaching {count} auto moderation warning",
+			"reaching_other": "Reaching {count} auto moderation warnings"
+		}
 	}
 }
