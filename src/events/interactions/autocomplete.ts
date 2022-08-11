@@ -17,9 +17,7 @@ export default new Event('interactionCreate', async (interaction) => {
 	const getPermissions = client.commands.get(interaction.commandName)?.interaction.permission;
 
 	if (!getPermissions.some((perm) => (interaction.member as GuildMember).permissions.has(perm)))
-		return await interaction.respond([
-			{ name: "You don't have permissions to intract with this.", value: 'NO_PERM' },
-		]);
+		return await interaction.respond([{ name: t('event.interactions.autocomplete.noPerms'), value: 'NO_PERM' }]);
 
 	const focus = interaction.options.getFocused(true);
 
@@ -30,43 +28,36 @@ export default new Event('interactionCreate', async (interaction) => {
 
 			let warnings: string[] = (await punishmentModel.find())
 				.map((data) => {
-					return [
-						`Manual | ${capitalize(data.type)}`,
-						`${
+					return t('event.interactions.autocomplete.punishment.manual', {
+						type: capitalize(data.type),
+						user:
 							client.users.cache.get(data.userId) === undefined
 								? `${data.userId}`
-								: client.users.cache.get(data.userId).tag
-						}`,
-						`ID: ${data._id}`,
-					].join(' • ');
+								: client.users.cache.get(data.userId).tag,
+						id: data._id,
+					});
 				})
 				.concat(
 					(await automodModel.find()).map((data) => {
-						return [
-							`Automod | ${capitalize(data.type)}`,
-							`${
+						return t('event.interactions.autocomplete.punishment.automod', {
+							type: capitalize(data.type),
+							user:
 								client.users.cache.get(data.userId) === undefined
 									? `${data.userId}`
-									: client.users.cache.get(data.userId).tag
-							}`,
-							`ID: ${data._id}`,
-							`${data.reason}`,
-						].join(' • ');
+									: client.users.cache.get(data.userId).tag,
+							id: data._id,
+							reason: data.reason,
+						});
 					})
 				);
 
 			warnings = warnings
 				.filter(
 					(choice) =>
-						(choice.split(' • ')[1].startsWith('Automod')
-							? choice
-									.split(' • ')[2]
-									.slice(4)
-									.startsWith(focus.value as string)
-							: choice
-									.split(' • ')[2]
-									.slice(4)
-									.startsWith(focus.value as string)) ||
+						choice
+							.split(' • ')[2]
+							.slice(4)
+							.startsWith(focus.value as string) ||
 						choice.split(' • ')[1].startsWith(focus.value as string) ||
 						client.users.cache
 							.find((user) => user.tag === choice.split(' • ')[1])
@@ -76,14 +67,14 @@ export default new Event('interactionCreate', async (interaction) => {
 				.slice(0, 25);
 
 			if (warnings.length === 0)
-				return interaction.respond([{ name: 'No Punishments Found!', value: 'null' }]);
+				return interaction.respond([
+					{ name: t('event.interactions.autocomplete.punishment.no'), value: 'null' },
+				]);
 
 			await interaction.respond(
 				warnings.map((choice: string) => ({
 					name: splitText(choice, MAX_AUTOCOMPLETE_LENGTH),
-					value: choice.split(' • ')[1].startsWith('Automod')
-						? choice.split(' • ')[3].slice(4)
-						: choice.split(' • ')[3].slice(4),
+					value: choice.split(' • ')[3].slice(4),
 				}))
 			);
 			break;
@@ -105,7 +96,9 @@ export default new Event('interactionCreate', async (interaction) => {
 					.slice(0, 25);
 
 				if (!filteredBannedMembers.length)
-					return interaction.respond([{ name: 'No banned members were found!', value: 'null' }]);
+					return interaction.respond([
+						{ name: t('event.interactions.autocomplete.unban.no'), value: 'null' },
+					]);
 
 				await interaction.respond(
 					filteredBannedMembers.map((data: string) => ({
@@ -128,7 +121,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (!client.config.moderation.reasons[interaction.commandName].length && !focus.value.toString().length)
 			return interaction.respond([
 				{
-					name: '⭐️' + ' • ' + 'No inbuilt reasons were found, type a reason...',
+					name: '❌' + ' • ' + t('event.interactions.autocomplete.reason.no'),
 					value: t('common.noReason') as string,
 				},
 			]);
@@ -190,7 +183,7 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (!focus.value.toString().trim().length)
 			return interaction.respond([
 				{
-					name: 'Please provide a duration',
+					name: t('event.interactions.autocomplete.antiraid.noDuration'),
 					value: 'null',
 				},
 			]);

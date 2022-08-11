@@ -363,16 +363,35 @@
 	},
 	"event": {
 		"automod": {
-			"largeMessage": "{user}, you may not send large messages here.",
-			"invites": "{user}, you may not send discord invites here.",
-			"urls": "{user}, you may not send links here.",
-			"massMention": "{user}, you may not mention more than {count} people.",
-			"capitals": "{user}, you may not use this many capital letters.",
-			"massEmoji": "{user}, you may not use this many emojis.",
-			"badwords": "{user}, you may not use that word.",
-			"spam": "{user}, you may not send messages this quick.",
+			"largeMessage": "{- user}, you may not send large messages here.",
+			"invites": "{- user}, you may not send discord invites here.",
+			"urls": "{- user}, you may not send links here.",
+			"massMention": "{- user}, you may not mention more than {count} people.",
+			"capitals": "{- user}, you may not use this many capital letters.",
+			"massEmoji": "{- user}, you may not use this many emojis.",
+			"badwords": "{- user}, you may not use that word.",
+			"spam": "{- user}, you may not send messages this quick.",
 			"reaching_one": "Reaching {count} auto moderation warning",
 			"reaching_other": "Reaching {count} auto moderation warnings"
+		},
+		"interactions": {
+			"autocomplete": {
+				"noPerms": "You don't have permissions to interact with this.",
+				"punishment": {
+					"manual": "Manual | {type} • {- user} • ID: {id}",
+					"automod": "Automod | {type} • {- user} • ID: {id} • {reason}",
+					"no": "No punishments found."
+				},
+				"unban": {
+					"no": "No banned members were found."
+				},
+				"reason": {
+					"no": "No inbuilt reasons were found, type a reason..."
+				},
+				"antiraid": {
+					"noDuration": "Please provide a duration."
+				}
+			}
 		}
 	}
 }
