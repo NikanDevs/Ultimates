@@ -1,4 +1,5 @@
 import { EmbedBuilder, TextChannel } from 'discord.js';
+import { t } from 'i18next';
 import { convertTime } from '../../functions/convertTime';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
@@ -16,8 +17,10 @@ export default new Command({
 						new EmbedBuilder()
 							.setDescription(
 								slowmode !== 0
-									? `The current slowmode is **${convertTime(slowmode * 1000)}**`
-									: "This channel doesn't have any slowmode."
+									? t('command.mod.slowmode.current', {
+											slowmode: convertTime(slowmode * 1000),
+									  })
+									: t('command.mod.slowmode.none')
 							)
 							.setColor(client.cc.invisible),
 					],
@@ -25,25 +28,24 @@ export default new Command({
 				});
 				break;
 
-			default:
-				if (slowmode === rate)
-					return interaction.reply({
-						embeds: [
-							client.embeds.attention('Providing the current slowmode will not change anything'),
-						],
-						ephemeral: true,
-					});
+			case slowmode:
+				await interaction.reply({
+					embeds: [client.embeds.attention(t('command.mod.slowmode.same'))],
+					ephemeral: true,
+				});
+				break;
 
-				await (interaction.channel as TextChannel).setRateLimitPerUser(
-					rate,
-					`/slowmode by ${interaction.user.tag}`
-				);
+			default:
+				await (interaction.channel as TextChannel).setRateLimitPerUser(rate);
 				await interaction.reply({
 					embeds: [
 						client.embeds.success(
 							rate !== 0
-								? `Slowmode was set to **${convertTime(rate * 1000)}**`
-								: 'Slowmode was turned off.'
+								? t('command.mod.slowmode.set', {
+										context: 'on',
+										value: convertTime(rate * 1000),
+								  })
+								: t('command.mod.slowmode.set', { context: 'off' })
 						),
 					],
 					ephemeral: true,

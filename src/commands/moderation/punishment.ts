@@ -390,7 +390,7 @@ export default new Command({
 				interaction.followUp({ embeds: [embed] });
 			} else if (warnings.length > 3) {
 				embed.setDescription('${{array}}').setFooter({
-					text: t('command.context.punishments.embed.footer', {
+					text: t('command.mod.punishment.view.embed.footer', {
 						currentPage: '${{currentPage}}',
 						totalPages: '${{totalPages}}',
 					}),

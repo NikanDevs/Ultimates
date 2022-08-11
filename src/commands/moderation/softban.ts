@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { MAX_SOFTBAN_DURATION, MIN_SOFTBAN_DURATION, punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -26,7 +26,7 @@ export default new Command({
 		if (member) if (ignore(member, { interaction, action: PunishmentTypes.Softban })) return;
 		if (await interaction.guild.bans.fetch(user.id).catch(() => {}))
 			return interaction.reply({
-				embeds: [client.embeds.error('This user is already banned from the server.')],
+				embeds: [client.embeds.error(t('command.mod.softban.banned'))],
 				ephemeral: true,
 			});
 
@@ -69,7 +69,7 @@ export default new Command({
 
 		await interaction.guild.members.ban(user, {
 			deleteMessageDays: delete_messages,
-			reason: reason,
+			reason,
 		});
 
 		const durationData = new durationsModel({
@@ -82,10 +82,15 @@ export default new Command({
 
 		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(member ? user : user.tag, {
-					action: PunishmentTypes.Softban,
-					id: data._id,
-				}),
+				new EmbedBuilder()
+					.setDescription(
+						t('common.modEmbed', {
+							user: member ? user.toString() : user.tag,
+							action: t('command.mod.softban.past'),
+							id: data._id,
+						})
+					)
+					.setColor(client.cc.moderation),
 			],
 			ephemeral: true,
 		});

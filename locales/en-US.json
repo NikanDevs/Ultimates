@@ -305,9 +305,9 @@
 						"manual-id": "`{warnCount}` **{type}** | **ID: {id}**",
 						"automod-id": "`{warnCount}` **{type}** | Auto Moderation",
 						"date": "• **Date:** {- date}",
-						"moderator": "• **Moderator:** {moderator}",
-						"expire": "• **Expire:** {expire}",
-						"reason": "• **Reason:** {reason}",
+						"moderator": "• **Moderator:** {- moderator}",
+						"expire": "• **Expire:** {- expire}",
+						"reason": "• **Reason:** {- reason}",
 						"footer": "Page {currentPage}/{totalPages}"
 					},
 					"automatic": "Automatic",
@@ -320,6 +320,44 @@
 					"history_name": "Update History:",
 					"history_value": "• [#{case}]({- url}) - {type}"
 				}
+			},
+			"purge": {
+				"channel_one": "Cleared **{count}** message in {channel}",
+				"channel_other": "Cleared **{count}** messages in {channel}",
+				"user_one": "Cleared **{count}** message from {user}",
+				"user_other": "Cleared **{count}** messages from {user}",
+				"none": "No messages were cleared.",
+				"purged": "This channel has been recently purged, try again in a few seconds."
+			},
+			"slowmode": {
+				"none": "This channel doesn't have any slowmode.",
+				"current": "The current slowmode is **{slowmode}**",
+				"same": "Providing the current slowmode will not change anything.",
+				"set_off": "Slowmode was turned off.",
+				"set_on": "Slowmode was set to **{value}**"
+			},
+			"softban": {
+				"past": "soft banned",
+				"banned": "This user is already banned from the server."
+			},
+			"timeout": {
+				"past": "timed out",
+				"timedOut": "This member is already timed out."
+			},
+			"unban": {
+				"past": "unbanned",
+				"none": "I couldn't find that banned member."
+			},
+			"warn": {
+				"past": "warned",
+				"double": "Whoops, looks like a double warning has appeared!",
+				"reaching_one": "Reaching {count} warning",
+				"reaching_other": "Reaching {count} warnings"
+			},
+			"warnings": {
+				"no": "No warnings were found for you.",
+				"no_manual": "No maunal warnings were found for you.",
+				"no_automod": "No auto moderation warnings were found for you."
 			}
 		}
 	}

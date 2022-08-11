@@ -1,4 +1,5 @@
 import { EmbedBuilder, User } from 'discord.js';
+import { t } from 'i18next';
 import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { automodModel } from '../../models/automod';
@@ -20,38 +21,54 @@ export default new Command({
 		// Finding the warnings [option]
 		const optionChoice = options.getNumber('type');
 		var warningsMap: string[] = [];
+		let warnCount = 0;
+
 		if (!optionChoice) {
 			const findWarningsNormal = await punishmentModel.find({
 				userId: user.id,
 			});
 			const findWarningsAutomod = await automodModel.find({ userId: user.id });
-			let warnCounter = 0;
-
 			findWarningsNormal.forEach((data) => {
-				warnCounter = warnCounter + 1;
+				warnCount = warnCount + 1;
 				warningsMap.push(
 					[
-						`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${data._id}**`,
-						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
+						t('command.mod.punishment.view.embed.manual-id', {
+							warnCount,
+							type: capitalize(data.type),
+							id: data._id,
+						}),
+						t('command.mod.punishment.view.embed.date', {
+							date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+						}),
 						data.type === PunishmentTypes.Warn
-							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							? t('command.mod.punishment.view.embed.expire', {
+									expire: generateDiscordTimestamp(data.expire),
+							  })
 							: 'LINE_BREAK',
-						`• **Reason:** ${data.reason}`,
+						t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 					]
 						.join('\n')
 						.replaceAll('\nLINE_BREAK', '')
 				);
 			});
 			findWarningsAutomod.forEach((data) => {
-				warnCounter = warnCounter + 1;
+				warnCount = warnCount + 1;
 				warningsMap.push(
 					[
-						`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
-						`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
+						t('command.mod.punishment.view.embed.automod-id', {
+							warnCount,
+							type: capitalize(data.type),
+							id: data._id,
+						}),
+						t('command.mod.punishment.view.embed.date', {
+							date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+						}),
 						data.type === PunishmentTypes.Warn
-							? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+							? t('command.mod.punishment.view.embed.expire', {
+									expire: generateDiscordTimestamp(data.expire),
+							  })
 							: 'LINE_BREAK',
-						`• **Reason:** ${data.reason}`,
+						t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 					]
 						.join('\n')
 						.replaceAll('\nLINE_BREAK', '')
@@ -61,33 +78,48 @@ export default new Command({
 			const findWarningsNormal = await punishmentModel.find({
 				userId: user.id,
 			});
-			let warnCounter = 0;
+
 			warningsMap = findWarningsNormal.map((data) => {
-				warnCounter = warnCounter + 1;
+				warnCount = warnCount + 1;
 				return [
-					`\`${warnCounter}\` **${capitalize(data.type)}** | **ID: ${data._id}**`,
-					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
+					t('command.mod.punishment.view.embed.manual-id', {
+						warnCount,
+						type: capitalize(data.type),
+						id: data._id,
+					}),
+					t('command.mod.punishment.view.embed.date', {
+						date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+					}),
 					data.type === PunishmentTypes.Warn
-						? `• **Expire:** ${generateDiscordTimestamp(data.expire)}`
+						? t('command.mod.punishment.view.embed.expire', {
+								expire: generateDiscordTimestamp(data.expire),
+						  })
 						: 'LINE_BREAK',
-					`• **Reason:** ${data.reason}`,
+					t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 				]
 					.join('\n')
 					.replaceAll('\nLINE_BREAK', '');
 			});
 		} else if (optionChoice === 2) {
 			const findWarningsAutomod = await automodModel.find({ userId: user.id });
-			let warnCounter = 0;
 
 			warningsMap = findWarningsAutomod.map((data) => {
-				warnCounter = warnCounter + 1;
+				warnCount = warnCount + 1;
 				return [
-					`\`${warnCounter}\` **${capitalize(data.type)}** | Auto Moderation`,
-					`• **Date:** ${generateDiscordTimestamp(data.date, 'Short Date/Time')}`,
+					t('command.mod.punishment.view.embed.automod-id', {
+						warnCount,
+						type: capitalize(data.type),
+						id: data._id,
+					}),
+					t('command.mod.punishment.view.embed.date', {
+						date: generateDiscordTimestamp(data.date, 'Short Date/Time'),
+					}),
 					data.type === PunishmentTypes.Warn
-						? `• **Expire:** ${generateDiscordTimestamp(data.date)}`
+						? t('command.mod.punishment.view.embed.expire', {
+								expire: generateDiscordTimestamp(data.expire),
+						  })
 						: 'LINE_BREAK',
-					`• **Reason:** ${data.reason}`,
+					t('command.mod.punishment.view.embed.reason', { reason: data.reason }),
 				]
 					.join('\n')
 					.replaceAll('\nLINE_BREAK', '');
@@ -99,9 +131,9 @@ export default new Command({
 			return interaction.reply({
 				embeds: [
 					new EmbedBuilder({
-						description: `No ${
-							optionChoice ? (optionChoice === 1 ? 'manual ' : 'automod ') : ''
-						}warnings were found for you, you're clean!`,
+						description: t('command.mod.warnings.no', {
+							context: optionChoice ? (optionChoice === 1 ? 'manual' : 'automod') : null,
+						}),
 						color: client.cc.invisible,
 					}),
 				],
@@ -114,7 +146,10 @@ export default new Command({
 			interaction.followUp({ embeds: [embed] });
 		} else if (warningsMap.length > 3) {
 			embed.setDescription('${{array}}').setFooter({
-				text: 'Page ${{currentPage}}/${{totalPages}}',
+				text: t('command.mod.punishment.view.embed.footer', {
+					currentPage: '${{currentPage}}',
+					totalPages: '${{totalPages}}',
+				}),
 			});
 
 			const paginator = new Paginator();

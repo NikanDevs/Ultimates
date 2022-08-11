@@ -1,4 +1,5 @@
 import { Collection, Message, TextChannel } from 'discord.js';
+import { t } from 'i18next';
 import { guardCollection } from '../../constants';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
@@ -23,35 +24,40 @@ export default new Command({
 			messagesToPurge = fetchMessages.filter(
 				(msg) => !msg.pinned && Date.now() + msg.createdTimestamp > fifteenDays
 			);
-			descriptionText = `Cleared **${messagesToPurge?.size}** messages in ${channel}`;
+			descriptionText = t('command.mod.purge.channel', {
+				count: messagesToPurge?.size,
+				channel: channel.toString(),
+			});
 		}
+
 		if (user) {
 			messagesToPurge = fetchMessages.filter(
 				(msg) => msg.author.id === user.id && Date.now() + msg.createdTimestamp > fifteenDays
 			);
 
-			descriptionText = `Cleared **${messagesToPurge?.size}** messages from \`${user?.username}\``;
+			descriptionText = t('command.mod.purge.user', {
+				count: messagesToPurge?.size,
+				user: user.username,
+			});
 		}
 
 		// If the purge fails
 		if (messagesToPurge.size === 0)
 			return interaction.reply({
-				embeds: [client.embeds.error('No messages were purged.')],
+				embeds: [client.embeds.error(t('command.mod.purge.none'))],
 				ephemeral: true,
 			});
 
 		if (guardCollection.has(`purge:${channel.id}`))
 			return interaction.reply({
-				embeds: [
-					client.embeds.attention('This channel has recently been purged, try again in a few seconds.'),
-				],
+				embeds: [client.embeds.attention(t('command.mod.purge.purged'))],
 				ephemeral: true,
 			});
 
 		guardCollection.set(`purge:${channel.id}`, null);
 		setTimeout(() => {
 			guardCollection.delete(`purge:${channel.id}`);
-		}, 10 * 1000);
+		}, 7 * 1000);
 
 		interaction.reply({ embeds: [client.embeds.success(descriptionText)], ephemeral: true });
 		await channel.bulkDelete(messagesToPurge, true);
