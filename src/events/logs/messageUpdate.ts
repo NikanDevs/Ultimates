@@ -1,14 +1,15 @@
-import { EmbedBuilder, Formatters, GuildMember, resolveColor, TextChannel } from 'discord.js';
+import { EmbedBuilder, GuildMember, resolveColor } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
 import { splitText } from '../../functions/other/splitText';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
+import { t } from 'i18next';
 
 export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 	if (!logActivity('message')) return;
-	const channel = newMessage?.channel as TextChannel;
+	const channel = newMessage.channel;
 	const member = newMessage.member as GuildMember;
 
 	if (
@@ -30,30 +31,36 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			iconURL: newMessage.author?.displayAvatarURL(),
 		})
 		.setDescription(
-			`${Formatters.hyperlink('Message', newMessage.url)} edited in ${channel} • ${generateDiscordTimestamp(
-				new Date()
-			)}`
+			t('event.logs.messageUpdate.description', {
+				url: newMessage.url,
+				channel: channel.toString(),
+				date: generateDiscordTimestamp(new Date()),
+			})
 		)
 		.setURL(newMessage.url)
 		.setColor(resolveColor('#b59190'))
 		.addFields([
 			{
-				name: 'Old message ',
+				name: t('event.logs.messageUpdate.content', { context: 'old' }),
 				value:
 					splitText(oldMessage?.content, MAX_FIELD_VALUE_LENGTH) ??
-					"The old message doesn't have a content.",
+					t('event.logs.messageUpdate.content', { context: 'none' }),
 			},
 			{
-				name: 'Edited content',
+				name: t('event.logs.messageUpdate.content', { context: 'new' }),
 				value:
 					splitText(newMessage?.content, MAX_FIELD_VALUE_LENGTH) ??
-					"The edited message doesn't have a content.",
+					t('event.logs.messageUpdate.content', { context: 'none' }),
 			},
 		])
 		.addFields([
 			{
-				name: 'IDs',
-				value: `\`\`\`ini\nMember = ${newMessage.author.id}\nMessage = ${newMessage.id}\`\`\``,
+				name: t('event.logs.messageUpdate.ids'),
+				value: t('event.logs.messageUpdate.ids', {
+					context: 'value',
+					member: newMessage.member.id,
+					message: newMessage.id,
+				}),
 			},
 		]);
 

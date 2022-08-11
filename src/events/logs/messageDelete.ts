@@ -1,10 +1,11 @@
-import { EmbedBuilder, Message, resolveColor, TextChannel } from 'discord.js';
+import { EmbedBuilder, Message, resolveColor } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { splitText } from '../../functions/other/splitText';
 import { MAX_FIELD_VALUE_LENGTH } from '../../constants';
+import { t } from 'i18next';
 
 export default new Event('messageDelete', async (message: Message) => {
 	if (!logActivity('message')) return;
@@ -12,7 +13,7 @@ export default new Event('messageDelete', async (message: Message) => {
 	if (!message.author) return;
 	if (!message.content.length && !message.attachments.size) return;
 
-	const channel = message?.channel as TextChannel;
+	const channel = message.channel;
 	if (
 		!message?.guild ||
 		message?.guildId !== process.env.GUILD_ID ||
@@ -27,16 +28,23 @@ export default new Event('messageDelete', async (message: Message) => {
 			name: message.author.tag,
 			iconURL: message.author.displayAvatarURL(),
 		})
-		.setDescription(`Message deleted in ${channel} • ${generateDiscordTimestamp(new Date())}`)
+		.setDescription(
+			t('event.logs.messageDelete.description', {
+				channel: channel.toString(),
+				date: generateDiscordTimestamp(new Date()),
+			})
+		)
 		.setColor(resolveColor('#b59190'))
 		.addFields([
 			{
-				name: 'Content',
-				value: splitText(message.content, MAX_FIELD_VALUE_LENGTH) ?? 'The message has no content.',
+				name: t('event.logs.messageDelete.content'),
+				value:
+					splitText(message.content, MAX_FIELD_VALUE_LENGTH) ??
+					t('event.logs.messageDelete.content', { context: 'none' }),
 			},
 			{
-				name: 'IDs',
-				value: `\`\`\`ini\nMember = ${message.author.id}\`\`\``,
+				name: t('event.logs.messageDelete.ids'),
+				value: t('event.logs.messageDelete.ids', { context: 'value', member: message.member.id }),
 			},
 		]);
 

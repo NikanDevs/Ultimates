@@ -1,4 +1,5 @@
 import { EmbedBuilder, resolveColor } from 'discord.js';
+import { t } from 'i18next';
 import { client } from '../..';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { Event } from '../../structures/Event';
@@ -23,11 +24,16 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				name: newState.member.user.tag,
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
-			.setDescription(`Joined ${newState.channel} • ${generateDiscordTimestamp(new Date())}`)
+			.setDescription(
+				t('event.logs.voiceStateUpdate.joined', {
+					channel: newState.channel.toString(),
+					date: generateDiscordTimestamp(new Date()),
+				})
+			)
 			.addFields([
 				{
-					name: 'IDs',
-					value: `\`\`\`ini\nMember = ${newState.member.id}\`\`\``,
+					name: t('event.logs.voiceStateUpdate.ids'),
+					value: t('event.logs.voiceStateUpdate.ids', { context: 'value', member: newState.member.id }),
 				},
 			])
 			.setColor(resolveColor('#9edadb'));
@@ -39,11 +45,16 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				name: newState.member.user.tag,
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
-			.setDescription(`Left ${oldState.channel} • ${generateDiscordTimestamp(new Date())}`)
+			.setDescription(
+				t('event.logs.voiceStateUpdate.left', {
+					channel: oldState.channel.toString(),
+					date: generateDiscordTimestamp(new Date()),
+				})
+			)
 			.addFields([
 				{
-					name: 'IDs',
-					value: `\`\`\`ini\nMember = ${oldState.member.id}\`\`\``,
+					name: t('event.logs.voiceStateUpdate.ids'),
+					value: t('event.logs.voiceStateUpdate.ids', { context: 'value', member: oldState.member.id }),
 				},
 			])
 			.setColor(resolveColor('#d98d84'));
@@ -56,12 +67,16 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 				iconURL: newState.member.user.displayAvatarURL(),
 			})
 			.setDescription(
-				`Moved from ${oldState.channel} to ${newState.channel} • ${generateDiscordTimestamp(new Date())}`
+				t('event.logs.voiceStateUpdate.moved', {
+					oldChannel: oldState.channel.toString(),
+					newChannel: newState.channel.toString(),
+					date: generateDiscordTimestamp(new Date()),
+				})
 			)
 			.addFields([
 				{
-					name: 'IDs',
-					value: `\`\`\`ini\nMember = ${oldState.member.id}\`\`\``,
+					name: t('event.logs.voiceStateUpdate.ids'),
+					value: t('event.logs.voiceStateUpdate.ids', { context: 'value', member: newState.member.id }),
 				},
 			])
 			.setColor(resolveColor('#887fdb'));

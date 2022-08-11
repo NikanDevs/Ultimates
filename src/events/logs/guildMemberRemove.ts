@@ -4,6 +4,8 @@ import { leftMembersModel } from '../../models/leftMembers';
 import { guardCollection, leftMemberExpiry } from '../../constants';
 import { logActivity } from '../../functions/logs/checkActivity';
 import { EmbedBuilder } from 'discord.js';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
+import { t } from 'i18next';
 
 export default new Event('guildMemberRemove', async (member) => {
 	if (member.guild.id !== process.env.GUILD_ID) return;
@@ -18,13 +20,15 @@ export default new Event('guildMemberRemove', async (member) => {
 		.setColor(client.cc.invisible)
 		.setDescription(
 			[
-				`• **Mention:** ${member}\n`,
-				`• **Member:** ${member.user.tag} • ${member.user.id}`,
-				`• **Registered:** <t:${~~(member.user.createdTimestamp / 1000)}:R>`,
-				`• **Joined:** <t:${~~(member.joinedTimestamp / 1000)}:R>`,
-				`• **Left:** <t:${~~(Date.now() / 1000)}:R>`,
-				`• **Member Count:** ${member.guild.memberCount}`,
-				`\nMember Left! ${checkAntiraid(member.id) ? 'Most likely affected by the antiraid.' : ''}`,
+				`${t('event.logs.guildMemberJL.mention', { mention: member.toString() })}\n`,
+				t('event.logs.guildMemberJL.user', { tag: member.user.tag, id: member.id }),
+				t('event.logs.guildMemberJL.registered', { date: generateDiscordTimestamp(member.user.createdAt) }),
+				t('event.logs.guildMemberJL.joined', { date: generateDiscordTimestamp(member.joinedAt) }),
+				t('event.logs.guildMemberJL.left', { date: generateDiscordTimestamp(new Date()) }),
+				t('event.logs.guildMemberJL.memberCount', { count: member.guild.memberCount }),
+				`${t('event.logs.guildMemberJL.left', {
+					context: checkAntiraid(member.id) ? 'antiraid' : 'normal',
+				})}\n`,
 			].join('\n')
 		);
 
@@ -37,9 +41,7 @@ export default new Event('guildMemberRemove', async (member) => {
 		}).save();
 	}
 
-	if (logActivity('servergate'))
-		// Sending the left message
-		client.config.webhooks.servergate?.send({ embeds: [embed] });
+	if (logActivity('servergate')) client.config.webhooks.servergate?.send({ embeds: [embed] });
 });
 
 function checkAntiraid(id: string): boolean {

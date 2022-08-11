@@ -411,6 +411,51 @@
 				"botPerm_other": "I need `{permissions}` permissions to excute this command.",
 				"cooldown": "You need to wait for **{time}** before using this command.",
 				"mongoDB": "MongoDB is not connected, please contact a developer."
+			},
+			"logs": {
+				"guildMemberJL": {
+					"mention": "• **Mention:** {- mention}",
+					"user": "• **User:** {- tag} • {id}",
+					"registered": "• **Registered:** {- date}",
+					"joined": "• **Joined:** {- date}",
+					"left": "• **Left:** {- date}",
+					"memberCount": "• **Member Count:** {count}",
+					"joined_first": "A user has joined!",
+					"joined_back": "A user has joined back!",
+					"left_normal": "Member left!",
+					"left_antiraid": "Member left, most likely attected by the antiraid."
+				},
+				"messageDelete": {
+					"description": "Message deleted in {- channel} • {date}",
+					"content": "Content",
+					"content_none": "The message has no content.",
+					"ids": "IDs",
+					"ids_value": "```ini\nMember = {member}```"
+				},
+				"messageDeleteBulk": {
+					"noContent": "No content",
+					"bulkDeleted": "Messages bulk deleted",
+					"channel": "Channel",
+					"showing": "Showing",
+					"amount": "Amount",
+					"preparing": "Preparing bulk delete logs...",
+					"viewAll": "View all messages"
+				},
+				"messageUpdate": {
+					"description": "[Message]({url}) edited in {- channel} • {- date}",
+					"content_old": "Old content",
+					"content_edited": "Edited content",
+					"content_none": "No content",
+					"ids": "IDs",
+					"ids_value": "```ini\nMember = {member}\nMessage = {message}```"
+				},
+				"voiceStateUpdate": {
+					"joined": "Joined {- channel} • {- date}",
+					"left": "Left {- channel} • {- date}",
+					"moved": "Moved from {- oldChannel} to {- newChannel} • {- date}",
+					"ids": "IDs",
+					"ids_value": "```ini\nMember = {member}```"
+				}
 			}
 		}
 	}
