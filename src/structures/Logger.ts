@@ -27,13 +27,18 @@ export class Logger {
 		return true;
 	}
 
-	public warn(options: LoggerDataOptions): boolean | null {
+	public warn(options: string | LoggerDataOptions): boolean | null {
 		const current = chalk.gray.italic(this.current);
 		const header = chalk.yellowBright.bold('[WARN]');
-		const source = chalk.blueBright(options.source);
-		const reason = this.formatReason(options.reason);
+		if (typeof options === 'string') {
+			const reason = chalk.whiteBright(options);
+			console.log(['\n', current, `${header} ${chalk.cyan('•')} ${reason}`].join('\n'));
+		} else {
+			const source = chalk.blueBright(options.source);
+			const reason = this.formatReason(options.reason);
 
-		console.log(['\n', current, `${header} ${chalk.cyan('•')} ${source}`, reason].join('\n'));
+			console.log(['\n', current, `${header} ${chalk.cyan('•')} ${source}`, reason].join('\n'));
+		}
 		return true;
 	}
 

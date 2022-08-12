@@ -13,6 +13,7 @@ import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 import { userinfoButtonsOptions } from '../../typings';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
 	interaction: interactions.userinfo,
@@ -29,22 +30,22 @@ export default new Command({
 
 		const userinfoEmbed = new EmbedBuilder()
 			.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-			.setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
+			.setDescription(t('command.utility.userinfo.description', { id: user.id, user: user.toString() }))
 			.setThumbnail(user.displayAvatarURL())
 			.setColor(client.cc.invisible)
 			.addFields([
 				{
 					name: t('command.utility.userinfo.account.info'),
 					value: [
-						`• **${t('command.utility.userinfo.id')}:** ${user.id}`,
-						`• **${t('command.utility.userinfo.account.username')}:** ${user.username}`,
-						`• **${t('command.utility.userinfo.account.discrim')}:** #${user.discriminator}`,
-						`• **${t('command.utility.userinfo.account.register')}:** <t:${~~(
-							+user.createdAt / 1000
-						)}:f> | <t:${~~(+user.createdAt / 1000)}:R>`,
-						`• **${t('command.utility.userinfo.account.bot')}:** ${
-							user?.bot ? `${client.cc.success}` : `${client.cc.error}`
-						}`,
+						t('command.utility.userinfo.account.id', { id: user.id }),
+						t('command.utility.userinfo.account.username', { usermame: user.username }),
+						t('command.utility.userinfo.account.discrim', { discrim: user.discriminator }),
+						t('command.utility.userinfo.account.register', {
+							date: generateDiscordTimestamp(user.createdAt),
+						}),
+						t('command.utility.userinfo.account.bot', {
+							emojis: user?.bot ? `${client.cc.success}` : `${client.cc.error}`,
+						}),
 					].join('\n'),
 				},
 			]);
@@ -76,7 +77,7 @@ export default new Command({
 		if (badgesArray.length) {
 			userinfoEmbed.addFields([
 				{
-					name: `${t('command.utility.userinfo.account.badges')} [${badgesArray.length}]`,
+					name: t('command.utility.userinfo.account.badges', { count: badgesArray.length }),
 					value: badgesArray.map((b) => `• ${badgesReweite[b]}`).join('\n'),
 				},
 			]);
@@ -91,14 +92,15 @@ export default new Command({
 					{
 						name: t('command.utility.userinfo.account.presence'),
 						value: [
-							`• **${t('command.utility.userinfo.account.status')}:** ${capitalize(
-								member?.presence?.status
-							)}`,
-							`• **${t('command.utility.userinfo.account.devices')} [${
-								Object.entries(devices).length
-							}]:** ${Object.entries(devices)
-								.map((value) => `${value[0][0].toUpperCase()}${value[0].slice(1)}`)
-								.join(', ')}`,
+							t('command.utility.userinfo.account.status', {
+								status: capitalize(member?.presence?.status),
+							}),
+							t('command.utility.userinfo.account.devices', {
+								count: Object.entries(devices).length,
+								devices: Object.entries(devices)
+									.map((value) => `${value[0][0].toUpperCase()}${value[0].slice(1)}`)
+									.join(', '),
+							}),
 						].join('\n'),
 					},
 				]);
@@ -109,16 +111,16 @@ export default new Command({
 					{
 						name: t('command.utility.userinfo.account.avatar'),
 						value: [
-							`• **${t('command.utility.userinfo.animated')}:** ${
-								user.displayAvatarURL().endsWith('.gif')
+							t('command.utility.userinfo.animated', {
+								emoji: user.displayAvatarURL().endsWith('.gif')
 									? `${client.cc.success}`
-									: `${client.cc.error}`
-							}`,
-							`• **${t('command.utility.userinfo.link')}:** [${t(
-								'command.utility.userinfo.download'
-							)}](${user.displayAvatarURL({
-								size: 1024,
-							})})`,
+									: `${client.cc.error}`,
+							}),
+							t('command.utility.userinfo.download', {
+								url: user.displayAvatarURL({
+									size: 1024,
+								}),
+							}),
 						].join('\n'),
 						inline: true,
 					},
@@ -129,16 +131,16 @@ export default new Command({
 					{
 						name: t('command.utility.userinfo.account.banner'),
 						value: [
-							`• **${t('command.utility.userinfo.animated')}:** ${
-								user.bannerURL().endsWith('.gif')
+							t('command.utility.userinfo.animated', {
+								emoji: user.bannerURL().endsWith('.gif')
 									? `${client.cc.success}`
-									: `${client.cc.error}`
-							}`,
-							`• **${t('command.utility.userinfo.link')}:** [${t(
-								'command.utility.userinfo.download'
-							)}](${user.bannerURL({
-								size: 1024,
-							})})`,
+									: `${client.cc.error}`,
+							}),
+							t('command.utility.userinfo.download', {
+								url: user.bannerURL({
+									size: 1024,
+								}),
+							}),
 						].join('\n'),
 						inline: true,
 					},
@@ -217,9 +219,10 @@ export default new Command({
 								iconURL: member.avatar ? member.avatarURL() : user.avatarURL(),
 							})
 							.setDescription(
-								[`**${t('command.utility.userinfo.id')}:** ${user.id}`, user.toString()].join(
-									' • '
-								)
+								t('command.utility.userinfo.description', {
+									id: user.id,
+									user: user.toString(),
+								})
 							)
 							.setThumbnail(member.avatar ? member.avatarURL() : user.avatarURL())
 							.setColor(client.cc.invisible)
@@ -229,24 +232,23 @@ export default new Command({
 										guild: interaction.guild.name,
 									}),
 									value: [
-										`• **${t('command.utility.userinfo.guild.joined')}:** <t:${~~(
-											+member.joinedAt / 1000
-										)}:f> [<t:${~~(+member.joinedAt / 1000)}:R>]`,
-										`• **${t('command.utility.userinfo.guild.nickname')}:** ${
-											member.displayName === member.user?.username
-												? 'No Nickname'
-												: `${member.displayName}`
-										}`,
-										`• **${t('command.utility.userinfo.guild.boosting')}:** ${
-											member.premiumSinceTimestamp
-												? `<t:${~~(
-														member.premiumSinceTimestamp / 1000
-												  )}:f> | <t:${~~(member.premiumSinceTimestamp / 1000)}:R>`
-												: client.cc.error
-										}`,
-										`• **${t(
-											'command.utility.userinfo.guild.acknowments'
-										)}:** ${acknowments}`,
+										t('command.utility.userinfo.guild.joined', {
+											date: generateDiscordTimestamp(member.joinedAt),
+										}),
+										t('command.utility.userinfo.guild.nickname', {
+											nickname:
+												member.displayName === member.user?.username
+													? client.cc.error
+													: `${member.displayName}`,
+										}),
+										t('command.utility.userinfo.guild.boosting', {
+											date: member.premiumSinceTimestamp
+												? generateDiscordTimestamp(member.premiumSince)
+												: client.cc.error,
+										}),
+										t('command.utility.userinfo.guild.acknowments', {
+											value: acknowments,
+										}),
 									].join('\n'),
 								},
 							]);
@@ -256,16 +258,16 @@ export default new Command({
 								{
 									name: t('command.utility.userinfo.account.avatar'),
 									value: [
-										`• **${t('command.utility.userinfo.animated')}:** ${
-											member.avatarURL().endsWith('.gif')
+										t('command.utility.userinfo.animated', {
+											emoji: member.avatarURL().endsWith('.gif')
 												? `${client.cc.success}`
-												: `${client.cc.error}`
-										}`,
-										`• **${t('command.utility.userinfo.link')}:** [${t(
-											'command.utility.userinfo.download'
-										)}](${member.avatarURL({
-											size: 1024,
-										})})`,
+												: `${client.cc.error}`,
+										}),
+										t('command.utility.userinfo.download', {
+											url: member.avatarURL({
+												size: 1024,
+											}),
+										}),
 									].join('\n'),
 								},
 							]);

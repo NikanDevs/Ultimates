@@ -278,6 +278,12 @@ export enum VerificationModes {
 	Selection = 3,
 }
 
+// Collections
+
+export type GuardCollectionTypes = `antiraid` | `warn:${string}` | `purge:${string}` | `lockdown`;
+
+export type ModmailCollectionTypes = `slowmode:${string}` | `cooldown:${string}` | `confirmation:${string}`;
+
 // Other
 
 export interface ignoreFunctionOptions {
@@ -294,8 +300,6 @@ export interface userinfoButtonsOptions {
 	disableAccount?: boolean;
 	disableGuild?: boolean;
 }
-
-export type GuardCollectionTypes = `antiraid` | `warn:${string}` | `purge:${string}` | `lockdown`;
 
 export const deleteDayRewites = {
 	0: "Don't delete any",

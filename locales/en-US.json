@@ -147,14 +147,14 @@
 						"reasons_description": "The reasons are shown in specific command options as autocomplete to make moderation easier. The max length for the reason is 100 characters."
 					},
 					"embed": {
-						"timeout1": "Timeout #1",
-						"timeout2": "Timeout #2",
-						"ban": "Ban",
-						"automodMulti": "Automod multiplication",
-						"automodTimeout": "Automod timeout",
-						"duration_timeout": "Timeout duration",
-						"duration_softban": "Softban duration",
-						"days": "Delete message days",
+						"timeout1": "{emoji} • **Timeout #1:** {- value}",
+						"timeout2": "{emoji} • **Timeout #2:** {- value}",
+						"ban": "{emoji} • **Ban:** {- value}",
+						"automodMulti": "{emoji} • **Automod multiplication:** {- value}",
+						"automodTimeout": "{emoji} • **Automod timeout:** {- value}",
+						"duration_timeout": "{emoji} • **Timeout duration:** {- value}",
+						"duration_softban": "{emoji} • **Softban duration:** {- value}",
+						"days": "{emoji} • **Delete message days:** {- value}",
 						"permanent": "Permanent"
 					},
 					"modal": {
@@ -179,10 +179,10 @@
 				"none": "None"
 			},
 			"ping": {
-				"mongoDB": "MongoDB",
-				"websocket": "Websocket",
-				"roundtrip": "Roundtrip",
-				"uptime": "Uptime",
+				"mongoDB": "{emoji} **MongoDB** - {status}",
+				"websocket": "{emoji} **Websocket** - {ping}ms",
+				"roundtrip": "{emoji} **Roundtrip** - {ping}ms",
+				"uptime": "🕓 **Uptime** - {uptime}",
 				"status": {
 					"0": "Disconnected",
 					"1": "Connected",
@@ -205,31 +205,32 @@
 				"sent": "The verification embed was sent to {- channel}"
 			},
 			"userinfo": {
-				"id": "ID",
-				"animated": "Animated",
-				"link": "Link",
-				"download": "Download",
+				"description": "**ID:** {id} • {- user}",
+				"animated": "• **Animated:** {- emoji}",
+				"download": "• **Download:** [here]({url})",
 				"account": {
 					"account": "Account",
 					"info": "Account information",
-					"username": "Username",
-					"discrim": "Discriminator",
-					"register": "Registered",
-					"bot": "Bot",
-					"avatar": "Profile picture",
-					"banner": "Banner",
-					"badges": "Badges",
+					"id": "• **ID:** {id}",
+					"username": "• **Username:** {- username}",
+					"discrim": "• **Discriminator:** #{discrim}",
+					"register": "• **Registered:** {- date}",
+					"bot": "• **Bot:** {- emoji}",
+					"badges_one": "Badge [{count}]",
+					"badges_other": "Badges [{count}]",
+					"status": "• **Status:** {status}",
+					"devices": "• **Devices [{count}]:** {devices}",
 					"presence": "Presence",
-					"status": "Status",
-					"devices": "Devices"
+					"banner": "Banner",
+					"avatar": "Profile picture"
 				},
 				"guild": {
 					"guild": "Server",
 					"info": "Information in {- guild}",
-					"joined": "Joined",
-					"nickname": "Nickname",
-					"boosting": "Boosting",
-					"acknowments": "Acknowments",
+					"joined": "• **Joined:** {- date}",
+					"nickname": "• **Nickname:** {- nickname}",
+					"boosting": "• **Boosting:** {- date}",
+					"acknowments": "• **Acknowments:** {- value}",
 					"roles_owner": "Server Owner",
 					"roles_mod": "Moderator",
 					"roles_events": "Event manager",
@@ -411,52 +412,85 @@
 				"botPerm_other": "I need `{permissions}` permissions to excute this command.",
 				"cooldown": "You need to wait for **{time}** before using this command.",
 				"mongoDB": "MongoDB is not connected, please contact a developer."
-			},
-			"logs": {
-				"guildMemberJL": {
-					"mention": "• **Mention:** {- mention}",
-					"user": "• **User:** {- tag} • {id}",
-					"registered": "• **Registered:** {- date}",
-					"joined": "• **Joined:** {- date}",
-					"left": "• **Left:** {- date}",
-					"memberCount": "• **Member Count:** {count}",
-					"joined_first": "A user has joined!",
-					"joined_back": "A user has joined back!",
-					"left_normal": "Member left!",
-					"left_antiraid": "Member left, most likely attected by the antiraid."
-				},
-				"messageDelete": {
-					"description": "Message deleted in {- channel} • {date}",
-					"content": "Content",
-					"content_none": "The message has no content.",
-					"ids": "IDs",
-					"ids_value": "```ini\nMember = {member}```"
-				},
-				"messageDeleteBulk": {
-					"noContent": "No content",
-					"bulkDeleted": "Messages bulk deleted",
-					"channel": "Channel",
-					"showing": "Showing",
-					"amount": "Amount",
-					"preparing": "Preparing bulk delete logs...",
-					"viewAll": "View all messages"
-				},
-				"messageUpdate": {
-					"description": "[Message]({url}) edited in {- channel} • {- date}",
-					"content_old": "Old content",
-					"content_edited": "Edited content",
-					"content_none": "No content",
-					"ids": "IDs",
-					"ids_value": "```ini\nMember = {member}\nMessage = {message}```"
-				},
-				"voiceStateUpdate": {
-					"joined": "Joined {- channel} • {- date}",
-					"left": "Left {- channel} • {- date}",
-					"moved": "Moved from {- oldChannel} to {- newChannel} • {- date}",
-					"ids": "IDs",
-					"ids_value": "```ini\nMember = {member}```"
-				}
 			}
+		},
+		"logs": {
+			"guildMemberJL": {
+				"mention": "• **Mention:** {- mention}",
+				"user": "• **User:** {- tag} • {id}",
+				"registered": "• **Registered:** {- date}",
+				"joined": "• **Joined:** {- date}",
+				"left": "• **Left:** {- date}",
+				"memberCount": "• **Member Count:** {count}",
+				"joined_first": "A user has joined!",
+				"joined_back": "A user has joined back!",
+				"left_normal": "Member left!",
+				"left_antiraid": "Member left, most likely attected by the antiraid."
+			},
+			"messageDelete": {
+				"description": "Message deleted in {- channel} • {date}",
+				"content": "Content",
+				"content_none": "The message has no content.",
+				"ids": "IDs",
+				"ids_value": "```ini\nMember = {member}```"
+			},
+			"messageDeleteBulk": {
+				"noContent": "No content",
+				"bulkDeleted": "Messages bulk deleted",
+				"channel": "Channel",
+				"showing": "Showing",
+				"amount": "Amount",
+				"preparing": "Preparing bulk delete logs...",
+				"viewAll": "View all messages"
+			},
+			"messageUpdate": {
+				"description": "[Message]({url}) edited in {- channel} • {- date}",
+				"content_old": "Old content",
+				"content_edited": "Edited content",
+				"content_none": "No content",
+				"ids": "IDs",
+				"ids_value": "```ini\nMember = {member}\nMessage = {message}```"
+			},
+			"voiceStateUpdate": {
+				"joined": "Joined {- channel} • {- date}",
+				"left": "Left {- channel} • {- date}",
+				"moved": "Moved from {- oldChannel} to {- newChannel} • {- date}",
+				"ids": "IDs",
+				"ids_value": "```ini\nMember = {member}```"
+			}
+		},
+		"modmail": {
+			"notSet": "This server doesn't have the modmail module set up.",
+			"blacklist_title": "Blacklisted from opening tickets",
+			"blacklist_description": "Sorry, but looks like you were blacklisted from using the modmail.\nIf you think that this is not fair and you don't deserve it, please contact a moderator!",
+			"blacklist_reason": "Reason",
+			"filteredWord": "You can not use that word in tickets.",
+			"timedOut": "You can not open modmail tickets whilst timed out.",
+			"cooldown": "You need to wait **{time}** before creating another ticket.",
+			"confirmation": {
+				"exists": "Please accept or cancel the existing confirmation.",
+				"title": "Are you sure about creating a modmail ticket?",
+				"description": "Confirming this message creates a tunnel between you and **{- guild}** staff members. Please consider creating a ticket if you have an important question or you need support!",
+				"create": "Create",
+				"cancel": "Cancel",
+				"creating": "Your modmail ticket is being created, please wait...",
+				"created_title": "Modmail ticket created",
+				"created_notSent": "• If your message wasn't reacted with {emoji}, it was not sent.",
+				"created_description": "The ticket you requested has been created.\nPlease consider asking your question and wait for a staff member to respond.\n${event.modmail.confirmation.created_notSent}"
+			},
+			"embed": {
+				"description": "**ID:** {id} • {- user}",
+				"account": "Account information",
+				"username": "• **Username:** {- username}",
+				"id": "• **ID:** {id}",
+				"registered": "• **Registered:** {- date}",
+				"guild": "Server Information",
+				"joined": "• **Joined:** {- date}",
+				"nickname": "• **Nickname:** {- nickname}"
+			},
+			"attachment": "Attachment #{count}",
+			"staff": "Staff Member",
+			"cannotDM": "I wasn't able to DM the user."
 		}
 	}
 }

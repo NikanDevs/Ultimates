@@ -1,6 +1,5 @@
 import { ChannelType, GuildMember, TextChannel, CategoryChannel, EmbedBuilder, Colors } from 'discord.js';
 import { create } from 'sourcebin';
-import { modmailCooldown } from '../../events/modmail/messageCreate';
 import { getModmailTicket } from '../../functions/cases/modmailCase';
 import { createModmailLog } from '../../functions/logs/createModmailLog';
 import { modmailModel } from '../../models/modmail';
@@ -9,6 +8,7 @@ import { ModmailActionTypes } from '../../typings';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { interactions } from '../../interactions';
 import { t } from 'i18next';
+import { modmailCollection } from '../../constants';
 
 export default new Command({
 	interaction: interactions.modmail,
@@ -112,9 +112,9 @@ export default new Command({
 							.setColor(Colors.Red);
 						user?.send({ embeds: [closedEmbed] }).catch(() => {});
 
-						modmailCooldown.set(`open_${user?.id}`, Date.now() + 600000);
+						modmailCollection.set(`cooldown:${user?.id}`, Date.now() + 600000);
 						setTimeout(() => {
-							modmailCooldown.delete(`open_${user?.id}`);
+							modmailCollection.delete(`cooldown:${user?.id}`);
 						}, 600000);
 					}, 10000);
 				});
@@ -270,7 +270,7 @@ export default new Command({
 							});
 
 							// Deleting any cooldowns from past
-							modmailCooldown.delete(`open_${member.user.id}`);
+							modmailCollection.delete(`cooldown:${member.user.id}`);
 
 							await interaction.editReply({
 								embeds: [

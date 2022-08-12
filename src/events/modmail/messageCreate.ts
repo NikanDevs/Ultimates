@@ -3,7 +3,6 @@ import {
 	ButtonBuilder,
 	ButtonStyle,
 	ChannelType,
-	Collection,
 	Colors,
 	ComponentType,
 	DMChannel,
@@ -19,8 +18,9 @@ import { getModmailTicket } from '../../functions/cases/modmailCase';
 import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { convertTime } from '../../functions/convertTime';
 import { durationsModel } from '../../models/durations';
-export const modmailCooldown: Collection<string, number> = new Collection();
-let confirmationExists: boolean = false;
+import { t } from 'i18next';
+import { modmailCollection } from '../../constants';
+import { logger } from '../../logger';
 let canDM: boolean = true;
 let canSend: boolean = true;
 
@@ -30,53 +30,46 @@ export default new Event('messageCreate', async (message) => {
 	if (!message?.guild && message.channel.type === ChannelType.DM && !message.author?.bot) {
 		if (!guild.channels.cache.get(client.config.general.modmailCategoryId))
 			return message.channel?.send({
-				content: 'This server does not have the modmail module set up.',
+				content: t('event.modmail.notSet'),
 			});
 
 		// Checking for blacklist
-		const data = await modmailModel.findById(message.author.id);
-		const blacklistedEmbed = new EmbedBuilder()
-			.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
-			.setTitle('Blacklisted from using modmail')
-			.setDescription(
-				[
-					'Sorry, but looks like you were blacklisted from using the modmail.',
-					"If you think that this is not fair and you don't deserve it, please contact a moderator!",
-				].join('\n')
-			)
-			.addFields([{ name: 'Reason', value: `${data?.reason}` }])
-			.setColor(Colors.Red);
-
-		if (data)
+		const blacklistData = await modmailModel.findById(message.author.id).catch(() => {});
+		if (blacklistData)
 			return message.channel?.send({
-				embeds: [blacklistedEmbed],
+				embeds: [
+					new EmbedBuilder()
+						.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
+						.setTitle(t('event.modmail.blacklist', { context: 'title' }))
+						.setDescription(t('event.modmail.blacklist', { context: 'description' }))
+						.addFields([
+							{
+								name: t('event.modmail.blacklist', { context: 'reason' }),
+								value: blacklistData.reason,
+							},
+						])
+						.setColor(Colors.Red),
+				],
 			});
 
-		const muteData = await durationsModel.findOne({
-			type: PunishmentTypes.Timeout,
-			userId: message.author.id,
-		});
-		if (muteData)
-			return (message.channel as DMChannel)?.send({
-				content: 'You can not open a ticket right now.',
-			});
+		const muteData = await durationsModel.findOne({ type: PunishmentTypes.Timeout, userId: message.author.id });
+		if (muteData) return message.channel?.send({ content: t('event.modmail.timedOut') });
 
-		if (confirmationExists === true)
-			return (message.channel as DMChannel).send({
-				content: 'Please accept or cancel the existing confirmation.',
-			});
+		if (modmailCollection.has(`confirmation:${message.author.id}`))
+			return message.channel
+				.send({ content: t('event.modmail.confirmation.exists') })
+				.then((msg) => setTimeout(() => msg.delete(), 5 * 1000));
 
 		// Checking for cooldowns
-		const getOpenCooldownRamaining = `${~~(modmailCooldown.get(`open_${message.author.id}`) - Date.now())}`;
-
-		if (modmailCooldown.has(`open_${message.author.id}`))
+		const getOpenCooldownRamaining = `${~~(modmailCollection.get(`cooldown:${message.author.id}`) - Date.now())}`;
+		if (modmailCollection.has(`cooldown:${message.author.id}`))
 			return (message.channel as DMChannel).send({
-				content: `You need to wait **${convertTime(+getOpenCooldownRamaining)}** to open a ticket again.`,
+				content: t('event.modmail.cooldown', { time: convertTime(+getOpenCooldownRamaining) }),
 			});
 
-		if (modmailCooldown.has(`send-message_${message.author.id}`)) return;
+		if (modmailCollection.has(`slowmode:${message.author.id}`)) return;
 
-		const openedThread = guild.channels.cache
+		const existingTicket = guild.channels.cache
 			.filter(
 				(channel) =>
 					channel.parentId === client.config.general.modmailCategoryId &&
@@ -84,15 +77,15 @@ export default new Event('messageCreate', async (message) => {
 			)
 			.find((channel: TextChannel) => channel?.topic?.endsWith(message.author.id)) as TextChannel;
 
-		if (openedThread) {
+		if (existingTicket) {
 			if (client.config.automod.filteredWords.some((word) => message.content.toLowerCase().includes(word)))
 				return message.reply({
-					content: "You're not allowed to use this word in modmails.",
+					content: t('event.modmail.filteredWord'),
 				});
 
-			modmailCooldown.set(`send-message_${message.author.id}`, Date.now() + 500);
+			modmailCollection.set(`slowmode:${message.author.id}`, Date.now() + 500);
 			setTimeout(() => {
-				modmailCooldown.delete(`send-message_${message.author.id}`);
+				modmailCollection.delete(`slowmode:${message.author.id}`);
 			}, 500);
 
 			const finalEmbeds = [];
@@ -109,22 +102,22 @@ export default new Event('messageCreate', async (message) => {
 			finalEmbeds.push(toSendEmbed);
 
 			if (message.attachments?.size > 1) {
-				let attachmentCounter = 2;
+				let attachmentCount = 2;
 				message.attachments
 					?.map((attach) => attach)
 					.slice(1, message.attachments?.size)
 					.forEach((attachment) => {
 						const attachmentEmbed = new EmbedBuilder()
-							.setAuthor({ name: `Attachment #${attachmentCounter}` })
+							.setAuthor({ name: t('event.modmail.attachment', { count: attachmentCount }) })
 							.setImage(attachment.proxyURL)
 							.setColor(Colors.Orange);
 
 						finalEmbeds.push(attachmentEmbed);
-						attachmentCounter = attachmentCounter + 1;
+						attachmentCount = attachmentCount + 1;
 					});
 			}
 
-			openedThread
+			existingTicket
 				.send({ embeds: finalEmbeds })
 				.catch(() => {
 					canSend = false;
@@ -138,27 +131,28 @@ export default new Event('messageCreate', async (message) => {
 						case false:
 							await message.react(client.cc.error);
 							await message.reply({
-								content: 'Something went wrong while trying to send your message, try again!',
+								content: t('common.errors.occurred'),
 							});
 							break;
 					}
 					canSend = true;
 				});
-		} else if (!openedThread) {
+		} else if (!existingTicket) {
 			const confirmationEmbed = new EmbedBuilder()
 				.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
-				.setTitle('Are you sure that you want to create a ticket?')
+				.setTitle(t('event.modmail.confirmation.title'))
 				.setColor(client.cc.ultimates)
-				.setDescription(
-					[
-						`Confirming this message creates a tunnel between you and **${guild.name}** staff members.`,
-						'Please consider creating a ticket if you have an important question or you need support!',
-					].join(' ')
-				);
+				.setDescription(t('event.modmail.confirmation.description', { guild: guild.name }));
 
 			const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
-				new ButtonBuilder().setLabel('Create').setStyle(ButtonStyle.Success).setCustomId('1'),
-				new ButtonBuilder().setLabel('Cancel').setStyle(ButtonStyle.Danger).setCustomId('2'),
+				new ButtonBuilder()
+					.setLabel(t('event.modmail.confirmation.create'))
+					.setStyle(ButtonStyle.Success)
+					.setCustomId('create'),
+				new ButtonBuilder()
+					.setLabel(t('event.modmail.confirmation.cancel'))
+					.setStyle(ButtonStyle.Danger)
+					.setCustomId('cancel'),
 			]);
 
 			let msg = await (message.channel as DMChannel).send({
@@ -166,30 +160,31 @@ export default new Event('messageCreate', async (message) => {
 				components: [buttons],
 			});
 
-			confirmationExists = true;
 			const confirmationColloctor = msg.createMessageComponentCollector({
 				componentType: ComponentType.Button,
 				time: 30000,
 				filter: (msg) => msg.user.id === message.author.id,
 			});
+			modmailCollection.set(`confirmation:${message.author.id}`, null);
 
 			confirmationColloctor.on('collect', async (collected) => {
-				collected.deferUpdate();
-
 				switch (collected.customId) {
-					// If the person choice is cancel
-					case '2':
+					case 'cancel':
 						confirmationColloctor.stop('fail');
 						break;
 
-					// If the person choice is create
-					case '1':
+					case 'create':
 						confirmationColloctor.stop('success');
 
-						await msg.edit({
-							content: 'Please wait...',
-							embeds: [],
-							components: [],
+						await collected.reply({
+							embeds: [
+								new EmbedBuilder().setDescription(
+									t('event.modmail.confirmation.creating', {
+										emoji: client.cc.success,
+									})
+								),
+							],
+							ephemeral: true,
 						});
 
 						const threadChannel = await guild.channels.create({
@@ -197,14 +192,12 @@ export default new Event('messageCreate', async (message) => {
 							type: ChannelType.GuildText,
 							parent: client.config.general.modmailCategoryId,
 							topic: `A tunnel to contact **${message.author.username}**, they requested this ticket to be opened through DMs. | ID: ${message.author.id}`,
-							reason: `Modmail ticket open request.`,
 						});
 
-						await threadChannel.send({
-							embeds: [await generateModmailInfoEmbed(message.author)],
-						});
+						await threadChannel.send({ embeds: [await generateModmailInfoEmbed(message.author)] });
+						await threadChannel.setRateLimitPerUser(2);
 
-						createModmailLog({
+						await createModmailLog({
 							action: ModmailActionTypes.Open,
 							user: message.author,
 							ticket: {
@@ -217,15 +210,9 @@ export default new Event('messageCreate', async (message) => {
 						// Thread Created
 						const createdEmbed = new EmbedBuilder()
 							.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
-							.setTitle('Ticket created')
+							.setTitle(t('event.modmail.confirmation.created', { context: 'title' }))
 							.setColor(Colors.Green)
-							.setDescription(
-								[
-									'The ticket you requested has been created.',
-									'Please consider asking your question and wait for a staff member to respond.',
-									`\n• If your message wasn't reacted with ${client.cc.success}, it was not sent.`,
-								].join('\n')
-							);
+							.setDescription(t('event.modmail.confirmation.created', { context: 'description' }));
 						msg?.delete();
 						message.author.send({ embeds: [createdEmbed] });
 						break;
@@ -233,7 +220,7 @@ export default new Event('messageCreate', async (message) => {
 			});
 
 			confirmationColloctor.on('end', (_, reason) => {
-				confirmationExists = false;
+				modmailCollection.delete(`confirmation:${message.author.id}`);
 
 				if (reason == 'success') return;
 				msg?.delete();
@@ -251,15 +238,17 @@ export default new Event('messageCreate', async (message) => {
 				user.id === channelTopic.split('|')[channelTopic.split('|').length - 1].replace('ID:', '').trim()
 		);
 
-		if (!usersThread)
+		if (!usersThread) {
+			logger.warn('Modmail - User was not found in the channel topic; channel ID: ' + message.channel.id);
 			return (message.channel as TextChannel).send({
-				content: 'The user was not found.',
+				content: t('common.errors.occurred'),
 			});
+		}
 
 		const finalEmbeds = [];
 		const toSendEmbed = new EmbedBuilder()
 			.setAuthor({
-				name: 'Staff Member',
+				name: t('event.modmail.staff'),
 				iconURL: 'https://cdn.discordapp.com/attachments/870637449158742057/909825851225427978/staff-icon.png',
 			})
 			.setImage(message.attachments?.first()?.proxyURL)
@@ -270,18 +259,18 @@ export default new Event('messageCreate', async (message) => {
 		finalEmbeds.push(toSendEmbed);
 
 		if (message.attachments?.size > 1) {
-			let attachmentCounter = 2;
+			let attachmentCount = 2;
 			message.attachments
 				?.map((attach) => attach)
 				.slice(1, message.attachments?.size)
 				.forEach((attachment) => {
 					const attachmentEmbed = new EmbedBuilder()
-						.setAuthor({ name: `Attachment #${attachmentCounter}` })
+						.setAuthor({ name: t('event.modmail.attachment', { count: attachmentCount }) })
 						.setImage(attachment.proxyURL)
 						.setColor(Colors.Orange);
 
 					finalEmbeds.push(attachmentEmbed);
-					attachmentCounter = attachmentCounter + 1;
+					attachmentCount = attachmentCount + 1;
 				});
 		}
 
@@ -299,7 +288,7 @@ export default new Event('messageCreate', async (message) => {
 					case false:
 						await message.react(client.cc.error);
 						await message.reply({
-							content: "I wasn't able to DM the user.",
+							content: t('event.modmail.cannotDM'),
 						});
 						break;
 				}

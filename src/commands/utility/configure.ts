@@ -799,18 +799,22 @@ export default new Command({
 						`${t('command.utility.configure.moderation.enum.' + preSelected, {
 							context: 'description',
 						})}\n`,
-						`${Emojis[1]} • **${t('command.utility.configure.moderation.embed.timeout1')}:** ${
-							client.config.moderation[preSelected].timeout1
-						}`,
-						`${Emojis[2]} • **${t('command.utility.configure.moderation.embed.timeout2')}:** ${
-							client.config.moderation[preSelected].timeout2
-						}`,
-						`${Emojis[3]} • **${t('command.utility.configure.moderation.embed.ban')}:** ${
-							client.config.moderation[preSelected].ban
-						}`,
-						`${Emojis[4]} • **${t('command.utility.configure.moderation.embed.automodMulti')}:** ${
-							client.config.moderation[preSelected].automod
-						}`,
+						t('command.utility.configure.moderation.embed.timeout1', {
+							value: client.config.moderation[preSelected].timeout1,
+							emoji: Emojis[1],
+						}),
+						t('command.utility.configure.moderation.embed.timeout2', {
+							value: client.config.moderation[preSelected].timeout2,
+							emoji: Emojis[2],
+						}),
+						t('command.utility.configure.moderation.embed.ban', {
+							value: client.config.moderation[preSelected].ban,
+							emoji: Emojis[3],
+						}),
+						t('command.utility.configure.moderation.embed.automodMulti', {
+							value: client.config.moderation[preSelected].automod,
+							emoji: Emojis[4],
+						}),
 					].join('\n')
 				);
 
@@ -960,74 +964,80 @@ export default new Command({
 								})}\n`,
 								selectedModule === 'counts'
 									? [
-											`${Emojis[1]} • **${t(
-												'command.utility.configure.moderation.embed.timeout1'
-											)}:** ${client.config.moderation[selectedModule].timeout1}`,
-											`${Emojis[2]} • **${t(
-												'command.utility.configure.moderation.embed.timeout2'
-											)}:** ${client.config.moderation[selectedModule].timeout2}`,
-											`${Emojis[3]} • **${t(
-												'command.utility.configure.moderation.embed.ban'
-											)}:** ${client.config.moderation[selectedModule].ban}`,
-											`${Emojis[4]} • **${t(
-												'command.utility.configure.moderation.embed.automodMulti'
-											)}:** ${client.config.moderation[selectedModule].automod}`,
+											t('command.utility.configure.moderation.embed.timeout1', {
+												value: client.config.moderation[selectedModule].timeout1,
+												emoji: Emojis[1],
+											}),
+											t('command.utility.configure.moderation.embed.timeout2', {
+												value: client.config.moderation[selectedModule].timeout2,
+												emoji: Emojis[2],
+											}),
+											t('command.utility.configure.moderation.embed.ban', {
+												value: client.config.moderation[selectedModule].ban,
+												emoji: Emojis[3],
+											}),
+											t('command.utility.configure.moderation.embed.automodMulti', {
+												value: client.config.moderation[selectedModule].automod,
+												emoji: Emojis[4],
+											}),
 									  ].join('\n')
 									: selectedModule === 'durations'
 									? [
-											`${Emojis[1]} • **${t(
-												'command.utility.configure.moderation.embed.timeout1'
-											)}:** ${convertTime(
-												client.config.moderation[selectedModule].timeout1
-											)}`,
-											`${Emojis[2]} • **${t(
-												'command.utility.configure.moderation.embed.timeout2'
-											)}:** ${convertTime(
-												client.config.moderation[selectedModule].timeout2
-											)}`,
-											`${Emojis[3]} • **${t(
-												'command.utility.configure.moderation.embed.ban'
-											)}:** ${
-												client.config.moderation[selectedModule].ban
+											t('command.utility.configure.moderation.embed.timeout1', {
+												value: convertTime(
+													client.config.moderation[selectedModule].timeout1
+												),
+												emoji: Emojis[1],
+											}),
+											t('command.utility.configure.moderation.embed.timeout2', {
+												value: convertTime(
+													client.config.moderation[selectedModule].timeout2
+												),
+												emoji: Emojis[2],
+											}),
+											t('command.utility.configure.moderation.embed.ban', {
+												value: client.config.moderation[selectedModule].ban
 													? convertTime(
 															client.config.moderation[selectedModule].ban
 													  )
 													: t(
 															'command.utility.configure.moderation.embed.permanent'
-													  )
-											}`,
-											`${Emojis[4]} • **${t(
-												'command.utility.configure.moderation.embed.automodTimeout'
-											)}:** ${convertTime(
-												client.config.moderation[selectedModule].automod
-											)}`,
+													  ),
+												emoji: Emojis[3],
+											}),
+											t('command.utility.configure.moderation.embed.automodTimeout', {
+												value: convertTime(
+													client.config.moderation[selectedModule].automod
+												),
+												emoji: Emojis[4],
+											}),
 									  ].join('\n')
 									: selectedModule === 'defaults'
 									? [
-											`${Emojis[1]} • **${t(
-												'command.utility.configure.moderation.embed.duration',
-												{
-													context: 'timeout',
-												}
-											)}:** ${convertTime(
-												client.config.moderation[selectedModule].timeout
-											)}`,
-											`${Emojis[2]} • **${t(
-												'command.utility.configure.moderation.embed.duration',
-												{
-													context: 'softban',
-												}
-											)}:** ${convertTime(
-												client.config.moderation[selectedModule].softban
-											)}`,
-											`${Emojis[3]} • **${t(
-												'command.utility.configure.moderation.embed.days'
-											)}:** ${t(
-												'command.utility.configure.moderation.days.' +
-													client.config.moderation[
-														selectedModule
-													].msgs.toString()
-											)}`,
+											t('command.utility.configure.moderation.embed.duration', {
+												context: 'timeout',
+												value: convertTime(
+													client.config.moderation[selectedModule].timeout
+												),
+												emoji: Emojis[1],
+											}),
+											t('command.utility.configure.moderation.embed.duration', {
+												context: 'softban',
+												value: convertTime(
+													client.config.moderation[selectedModule].softban
+												),
+												emoji: Emojis[2],
+											}),
+											t('command.utility.configure.moderation.embed.days', {
+												context: 'softban',
+												value: t(
+													'command.utility.configure.moderation.days.' +
+														client.config.moderation[
+															selectedModule
+														].msgs.toString()
+												),
+												emoji: Emojis[3],
+											}),
 									  ].join('\n')
 									: '',
 							].join('\n')

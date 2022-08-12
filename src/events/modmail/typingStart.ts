@@ -1,17 +1,18 @@
-import { ChannelType, DMChannel, GuildBasedChannel, TextChannel } from 'discord.js';
+import { ChannelType, DMChannel, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 
 export default new Event('typingStart', async (typing) => {
-	await typing.channel?.fetch().catch(() => {});
-
 	const guild = client.guilds.cache.get(process.env.GUILD_ID);
+
+	await typing.channel?.fetch().catch(() => {});
 	if (typing.user.bot) return;
 
-	if (typing.guild) {
-		if ((typing.channel as GuildBasedChannel).parentId !== client.config.general.modmailCategoryId) return;
+	if (typing.inGuild()) {
+		if (typing.channel.type !== ChannelType.GuildText) return;
+		if (typing.channel.parentId !== client.config.general.modmailCategoryId) return;
 
-		const channelTopic = (typing.channel as TextChannel).topic;
+		const channelTopic = typing.channel.topic;
 		const usersThread = guild.members.cache.find(
 			(user) =>
 				user.id === channelTopic.split('|')[channelTopic.split('|').length - 1].replace('ID:', '').trim()

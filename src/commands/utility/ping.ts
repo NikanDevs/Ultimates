@@ -17,15 +17,22 @@ export default new Command({
 			.setColor(client.cc.ultimates)
 			.setDescription(
 				[
-					`${client.cc.ping.mongoDB} **${t('command.utility.ping.mongoDB')}** - ${capitalize(
-						t('command.utility.ping.status.' + connection.readyState.toString())
-					)}`,
-					`${client.cc.ping.ping} **${t('command.utility.ping.websocket')}** - ${client.ws.ping}ms`,
-					`${client.cc.ping.ping} **${t('command.utility.ping.roundtrip')}** - ${
-						Date.now() - interaction.createdTimestamp
-					}ms`,
+					t('command.utility.ping.mongoDB', {
+						emoji: client.cc.ping.mongoDB,
+						status: capitalize(t('command.utility.ping.status.' + connection.readyState.toString())),
+					}),
+					t('command.utility.ping.websocket', {
+						emoji: client.cc.ping.ping,
+						ping: client.ws.ping.toString(),
+					}),
+					t('command.utility.ping.roundtrip', {
+						emoji: client.cc.ping.ping,
+						ping: (Date.now() - interaction.createdTimestamp).toString(),
+					}),
 					'',
-					`🕓 **${t('command.utility.ping.uptime')}** - ${convertTime(+client.uptime)}`,
+					t('command.utility.ping.uptime', {
+						uptime: convertTime(+client.uptime),
+					}),
 				].join('\n')
 			);
 
