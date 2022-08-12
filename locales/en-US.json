@@ -322,7 +322,7 @@
 					"invalidReason": "Please provide a different reason than the current one.",
 					"updated": "The reason was updated to **{reason}**",
 					"history_name": "Update History:",
-					"history_value": "• [#{case}]({- url}) - {type}"
+					"history_value": "• [#{case}]({- url}) - {- date}"
 				}
 			},
 			"clear": {
@@ -543,6 +543,20 @@
 			"millisecond_one": "millisecond",
 			"millisecond_other": "milliseconds",
 			"and": "and"
+		}
+	},
+	"log": {
+		"automatic": "Automatic",
+		"mod": {
+			"title": "{action} | Case: #{case}",
+			"id": "• **ID:** {id}",
+			"reference": "• **Referenced to:** [#{case}]({- url})",
+			"action": "• **Action:** {action}",
+			"duration": "• **Duration:** {duration}",
+			"member": "• **Member:** {- member} • {id}",
+			"moderator": "• **Moderator:** {- moderator}",
+			"date": "• **Date:** {- date}",
+			"reason": "• **Reason:** {- reason}"
 		}
 	}
 }

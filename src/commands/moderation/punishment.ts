@@ -474,7 +474,8 @@ export default new Command({
 									name: t('command.mod.punishment.reason.history', { context: 'name' }),
 									value: t('command.mod.punishment.reason.history', {
 										context: 'value',
-										type: t('command.mod.punishment.reason.name'),
+										date: generateDiscordTimestamp(new Date()),
+										// type: t('command.mod.punishment.reason.name'),
 										case: (await getModCase()) - 1,
 										url: updateLog,
 									}),
@@ -486,7 +487,8 @@ export default new Command({
 									logMessage.embeds[0].fields[0].value,
 									t('command.mod.punishment.reason.history', {
 										context: 'value',
-										type: t('command.mod.punishment.reason.name'),
+										date: generateDiscordTimestamp(new Date()),
+										// type: t('command.mod.punishment.reason.name'),
 										case: (await getModCase()) - 1,
 										url: updateLog,
 									}),

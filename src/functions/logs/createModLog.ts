@@ -6,10 +6,8 @@ import { addModCase, getModCase } from '../cases/modCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
 import { convertTime } from '../convertTime';
-import { MAX_REASON_LENGTH } from '../../constants';
 import { getUrlFromCase } from '../cases/getURL';
 import { capitalize } from '../other/capitalize';
-import { splitText } from '../other/splitText';
 import { t } from 'i18next';
 
 export async function createModLog(options: createModLogOptions) {
@@ -19,9 +17,10 @@ export async function createModLog(options: createModLogOptions) {
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
-			name: ` ${
-				revoke ? 'Revoke' : options.update ? 'Update' : capitalize(options.action)
-			} | Case: #${currentCase}`,
+			name: `${t('log.mod.title', {
+				action: revoke ? 'Revoke' : options.update ? 'Update' : capitalize(options.action),
+				case: currentCase,
+			})}`,
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setColor(
@@ -35,23 +34,27 @@ export async function createModLog(options: createModLogOptions) {
 			[
 				`${
 					!options.referencedPunishment
-						? `• **ID:** ${options.punishmentId}`
-						: `• **Referenced to:** [Case #${
-								options.referencedPunishment.case
-						  }](${await getUrlFromCase(options.referencedPunishment.case)})`
+						? t('log.mod.id', { id: options.punishmentId })
+						: t('log.mod.reference', {
+								case: options.referencedPunishment.case,
+								url: await getUrlFromCase(options.referencedPunishment.case),
+						  })
 				}\n`,
-				`• **Action:** ${capitalize(options.action)}`,
-				`${options.duration ? `• **Duration:** ${convertTime(options.duration)}` : 'LINE_BREAK'}`,
-				`• **Member:** ${options.user.tag} • ${options.user.id}`,
-				`• **Moderator:** ${
-					options.moderator.id !== client.user.id
-						? `${options.moderator.tag} • ${options.moderator.id}`
-						: 'Automatic'
+				t('log.mod.action', { action: capitalize(options.action) }),
+				`${
+					options.duration
+						? t('log.mod.duration', { duration: convertTime(options.duration) })
+						: 'LINE_BREAK'
 				}`,
-				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason${options.update ? ' [U]' : ''}:** ${
-					splitText(options.reason, MAX_REASON_LENGTH) ?? t('common.noReason')
-				}`,
+				t('log.mod.member', { member: options.user.toString(), id: options.user.id }),
+				t('log.mod.moderator', {
+					moderator:
+						options.moderator.id !== client.user.id
+							? `${options.moderator.tag} • ${options.moderator.id}`
+							: t('log.automatic'),
+				}),
+				t('log.mod.date', { date: generateDiscordTimestamp(new Date(), 'Short Date/Time') }),
+				t('log.mod.reason', { reason: options.reason ?? t('common.noReason') }),
 			]
 				.join('\n')
 				.replaceAll('\nLINE_BREAK', '')
