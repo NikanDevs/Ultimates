@@ -55,6 +55,8 @@ export function convertTime(time: number | string): string {
 					break;
 				}
 				switch (item.replaceAll(/[0-9]/g, '').trim().toLowerCase()) {
+					case t('function.convertTime.year', { count: 2 }):
+					case t('function.convertTime.year', { count: 1 }):
 					case 'years':
 					case 'year':
 					case 'yrs':
@@ -63,12 +65,16 @@ export function convertTime(time: number | string): string {
 						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 360 * 24 * 60 * 60;
 						break;
+					case t('function.convertTime.day', { count: 2 }):
+					case t('function.convertTime.day', { count: 1 }):
 					case 'days':
 					case 'day':
 					case 'd':
 						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 24 * 60 * 60 * 1000;
 						break;
+					case t('function.convertTime.hour', { count: 2 }):
+					case t('function.convertTime.hour', { count: 1 }):
 					case 'hours':
 					case 'hour':
 					case 'hrs':
@@ -77,6 +83,8 @@ export function convertTime(time: number | string): string {
 						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 60 * 60 * 1000;
 						break;
+					case t('function.convertTime.minute', { count: 2 }):
+					case t('function.convertTime.minute', { count: 1 }):
 					case 'minutes':
 					case 'minute':
 					case 'mins':
@@ -85,6 +93,8 @@ export function convertTime(time: number | string): string {
 						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 60 * 1000;
 						break;
+					case t('function.convertTime.second', { count: 2 }):
+					case t('function.convertTime.second', { count: 1 }):
 					case 'seconds':
 					case 'second':
 					case 'secs':
@@ -93,6 +103,8 @@ export function convertTime(time: number | string): string {
 						item.replaceAll(timeFormatRegxp, '').trim();
 						miliseconds = miliseconds + parseInt(item) * 1000;
 						break;
+					case t('function.convertTime.millisecond', { count: 2 }):
+					case t('function.convertTime.millisecond', { count: 1 }):
 					case 'milliseconds':
 					case 'millisecond':
 					case 'ms':
