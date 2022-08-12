@@ -556,7 +556,9 @@
 			"member": "• **Member:** {- member} • {id}",
 			"moderator": "• **Moderator:** {- moderator}",
 			"date": "• **Date:** {- date}",
-			"reason": "• **Reason:** {- reason}"
+			"reason": "• **Reason:** {- reason}",
+			"revoke": "Revoke",
+			"update": "Update"
 		}
 	}
 }
