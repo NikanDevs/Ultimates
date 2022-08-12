@@ -287,7 +287,8 @@
 			"punishment": {
 				"revoke": {
 					"revoked": "Punishment **{id}** was revoked",
-					"timeout_invalid": "The punished user is not in the server, I can not revoke the timeout."
+					"timeout_invalid": "The punished user is not in the server, I can not revoke the timeout.",
+					"history": "*Punishment revoked at [#{case}]({- url})*"
 				},
 				"search": {
 					"description": "ID: `{id}` • Case: [#{case}]({- url})",
@@ -321,8 +322,7 @@
 					"name": "reason",
 					"invalidReason": "Please provide a different reason than the current one.",
 					"updated": "The reason was updated to **{reason}**",
-					"history_name": "Update History:",
-					"history_value": "• [#{case}]({- url}) - {- date}"
+					"history": "*Reason was updated at [#{case}]({- url}) - {- date}*"
 				}
 			},
 			"clear": {

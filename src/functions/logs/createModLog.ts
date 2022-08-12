@@ -62,7 +62,7 @@ export async function createModLog(options: createModLogOptions) {
 
 	if (!logActivity('mod')) return;
 	var logMessage = await client.config.webhooks.mod.send({ embeds: [embed] });
-	if (options.update)
+	if (options.update || revoke)
 		return `https://discord.com/channels/${process.env.GUILD_ID}/${logMessage.channel_id}/${logMessage.id}`;
 
 	if (

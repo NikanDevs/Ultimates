@@ -24,25 +24,25 @@ export default new Command({
 			const id = options.getString('id');
 			const reason = options.getString('reason') ?? t('common.noReason');
 
-			const data =
+			const punishment =
 				id.length == AUTOMOD_ID_LENGTH
 					? await automodModel.findById(id).catch(() => {})
 					: await punishmentModel.findById(id).catch(() => {});
-			if (!data)
+			if (!punishment)
 				return interaction.reply({
 					embeds: [client.embeds.error(t('common.$errors.invalidID'))],
 					ephemeral: true,
 				});
 
 			await interaction.deferReply({ ephemeral: true });
-			const getMember = interaction.guild.members.cache.get(data.userId);
-			const fetchUser = await client.users.fetch(data.userId);
-			switch (data.type) {
+			const getMember = interaction.guild.members.cache.get(punishment.userId);
+			const fetchUser = await client.users.fetch(punishment.userId);
+			switch (punishment.type) {
 				case PunishmentTypes.Timeout:
 					if (
 						await durationsModel.findOne({
 							type: PunishmentTypes.Timeout,
-							userId: data.userId,
+							userId: punishment.userId,
 						})
 					) {
 						if (!getMember)
@@ -65,14 +65,14 @@ export default new Command({
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
-							referencedPunishment: data,
-						}).then(async () => {
+							referencedPunishment: punishment,
+						}).then(async (updateLog) => {
 							await durationsModel.findOneAndDelete({
 								type: PunishmentTypes.Timeout,
-								case: data.case,
+								case: punishment.case,
 							});
-							await logsModel.findByIdAndDelete(data.case);
-							data.delete();
+							await punishment.delete();
+							await updateRevokeCases(punishment, updateLog);
 						});
 					} else {
 						await interaction.followUp({
@@ -80,27 +80,27 @@ export default new Command({
 						});
 
 						await createModLog({
-							action: data.type as PunishmentTypes,
+							action: punishment.type as PunishmentTypes,
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
-							referencedPunishment: data,
+							referencedPunishment: punishment,
 							revoke: true,
-						}).then(async () => {
-							await logsModel.findByIdAndDelete(data.case);
-							data.delete();
+						}).then(async (updateLog) => {
+							await punishment.delete();
+							await updateRevokeCases(punishment, updateLog);
 						});
 					}
 					break;
 				case PunishmentTypes.Ban:
 				case PunishmentTypes.Softban:
-					if (await interaction.guild.bans.fetch(data.userId).catch(() => {})) {
+					if (await interaction.guild.bans.fetch(punishment.userId).catch(() => {})) {
 						interaction.guild.members.unban(fetchUser, reason);
 
-						if (data.type === PunishmentTypes.Softban)
+						if (punishment.type === PunishmentTypes.Softban)
 							await durationsModel.findOneAndDelete({
 								type: PunishmentTypes.Softban,
-								case: data.case,
+								case: punishment.case,
 							});
 
 						await interaction.followUp({
@@ -112,12 +112,10 @@ export default new Command({
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
-							referencedPunishment: data,
-						}).then(async () => {
-							if (!(await logsModel.findByIdAndDelete(data.case))?.antiraid)
-								await logsModel.findByIdAndDelete(data.case);
-
-							data.delete();
+							referencedPunishment: punishment,
+						}).then(async (updateLog) => {
+							await punishment.delete();
+							await updateRevokeCases(punishment, updateLog);
 						});
 					} else {
 						await interaction.followUp({
@@ -125,17 +123,15 @@ export default new Command({
 						});
 
 						await createModLog({
-							action: data.type as PunishmentTypes,
+							action: punishment.type as PunishmentTypes,
 							user: fetchUser,
 							moderator: interaction.user,
 							reason: reason,
-							referencedPunishment: data,
+							referencedPunishment: punishment,
 							revoke: true,
-						}).then(async () => {
-							if (!(await logsModel.findByIdAndDelete(data.case)).antiraid)
-								await logsModel.findByIdAndDelete(data.case);
-
-							data.delete();
+						}).then(async (updateLog) => {
+							await punishment.delete();
+							await updateRevokeCases(punishment, updateLog);
 						});
 					}
 					break;
@@ -145,17 +141,60 @@ export default new Command({
 					});
 
 					await createModLog({
-						action: data.type as PunishmentTypes,
+						action: punishment.type as PunishmentTypes,
 						user: fetchUser,
 						moderator: interaction.user,
 						reason: reason,
-						referencedPunishment: data,
+						referencedPunishment: punishment,
 						revoke: true,
-					}).then(async () => {
-						await logsModel.findByIdAndDelete(data.case);
-						data.delete();
+					}).then(async (updateLog) => {
+						await punishment.delete();
+						await updateRevokeCases(punishment, updateLog);
 					});
 					break;
+			}
+
+			// Functions
+			async function updateRevokeCases(punishment: any, updateLog: any) {
+				if ((await logsModel.findById(punishment.case)).antiraid) return;
+				const substanceLogID = (await getUrlFromCase(punishment.case)).split('/')[6];
+				const substanceLogChannel = (await client.channels
+					.fetch((await getUrlFromCase(punishment.case)).split('/')[5])
+					.catch(() => {})) as TextChannel;
+				if (!substanceLogChannel) return;
+				const logMessage = (await substanceLogChannel.messages
+					.fetch(substanceLogID)
+					.catch(() => {})) as Message;
+				if (!logMessage) return;
+
+				await client.config.webhooks.mod
+					.editMessage(substanceLogID, {
+						embeds: [
+							!logMessage.embeds[0].description.endsWith(':R>*')
+								? EmbedBuilder.from(logMessage.embeds[0]).setDescription(
+										[
+											logMessage.embeds[0].description,
+											'',
+											t('command.mod.punishment.revoke.history', {
+												case: (await getModCase()) - 1,
+												url: updateLog,
+											}),
+										].join('\n')
+								  )
+								: EmbedBuilder.from(logMessage.embeds[0]).setDescription(
+										[
+											logMessage.embeds[0].description,
+											t('command.mod.punishment.revoke.history', {
+												case: (await getModCase()) - 1,
+												url: updateLog,
+											}),
+										].join('\n')
+								  ),
+						],
+					})
+					.then(async () => {
+						await logsModel.findByIdAndDelete(punishment.case);
+					});
 			}
 		} else if (subcommand === 'search') {
 			let doesExist: boolean = true;
@@ -468,32 +507,28 @@ export default new Command({
 
 			client.config.webhooks.mod.editMessage(substanceLogID, {
 				embeds: [
-					!logMessage.embeds[0].fields.length
-						? EmbedBuilder.from(logMessage.embeds[0]).setFields([
-								{
-									name: t('command.mod.punishment.reason.history', { context: 'name' }),
-									value: t('command.mod.punishment.reason.history', {
-										context: 'value',
-										date: generateDiscordTimestamp(new Date()),
-										// type: t('command.mod.punishment.reason.name'),
-										case: (await getModCase()) - 1,
-										url: updateLog,
-									}),
-								},
-						  ])
-						: EmbedBuilder.from(logMessage.embeds[0]).spliceFields(0, 1, {
-								name: logMessage.embeds[0].fields[0].name,
-								value: [
-									logMessage.embeds[0].fields[0].value,
+					!logMessage.embeds[0].description.endsWith(':R>*')
+						? EmbedBuilder.from(logMessage.embeds[0]).setDescription(
+								[
+									logMessage.embeds[0].description,
+									'',
 									t('command.mod.punishment.reason.history', {
-										context: 'value',
-										date: generateDiscordTimestamp(new Date()),
-										// type: t('command.mod.punishment.reason.name'),
 										case: (await getModCase()) - 1,
+										date: generateDiscordTimestamp(new Date()),
 										url: updateLog,
 									}),
-								].join('\n'),
-						  }),
+								].join('\n')
+						  )
+						: EmbedBuilder.from(logMessage.embeds[0]).setDescription(
+								[
+									logMessage.embeds[0].description,
+									t('command.mod.punishment.reason.history', {
+										case: (await getModCase()) - 1,
+										date: generateDiscordTimestamp(new Date()),
+										url: updateLog,
+									}),
+								].join('\n')
+						  ),
 				],
 			});
 		}
