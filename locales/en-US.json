@@ -491,6 +491,31 @@
 			"attachment": "Attachment #{count}",
 			"staff": "Staff Member",
 			"cannotDM": "I wasn't able to DM the user."
+		},
+		"verification": {
+			"noMemberRole": "The member role wasn't found, contact an administrator.",
+			"alreadyVerified": "You are already verified into the server.",
+			"cooldown": "You need to wait **{time}** before trying to verify again.",
+			"correct": "Congrats! You were verified in the server.",
+			"incorrect": "Whoops, your answer wasn't correct. Try again to get verified.",
+			"timeout": "Your time has ended, try again to verify yourself.",
+			"matching": {
+				"title": "Do these keys match each other?",
+				"description": "'Check if the 2 keys below are **exactly** the same as each other. Submit your answer by clicking the buttons!",
+				"key": "Key #{count}",
+				"matching": "Matching",
+				"notMatching": "Not Matching"
+			},
+			"modal": {
+				"title": "Your key is {key}",
+				"label": "Enter your code here:",
+				"timeout": "Looks like your time has already ended to sumbit an answer."
+			},
+			"selection": {
+				"title": "Select the option that matches your key",
+				"description": "Select the option in the menu below which is **exactly** matching your key.\n\n**Your key:** {key}",
+				"selectMatching": "Select the matching key"
+			}
 		}
 	}
 }

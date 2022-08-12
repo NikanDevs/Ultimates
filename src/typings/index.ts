@@ -284,6 +284,8 @@ export type GuardCollectionTypes = `antiraid` | `warn:${string}` | `purge:${stri
 
 export type ModmailCollectionTypes = `slowmode:${string}` | `cooldown:${string}` | `confirmation:${string}`;
 
+export type VerificationCollectionTypes = `cooldown:${string}` | `modal:${string}`;
+
 // Other
 
 export interface ignoreFunctionOptions {
