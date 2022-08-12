@@ -111,15 +111,6 @@ export enum PunishmentTypes {
 	Unknown = 'UNKNOWN',
 }
 
-export enum punishmentTypeNames {
-	'WARN' = 'warned',
-	'BAN' = 'banned',
-	'KICK' = 'kicked',
-	'TIMEOUT' = 'timed out',
-	'UNBAN' = 'unbanned',
-	'SOFTBAN' = 'soft banned',
-}
-
 export enum punishmentTypeEmbedColors {
 	'WARN' = '#d4c03f',
 	'TIMEOUT' = '#f5a742',

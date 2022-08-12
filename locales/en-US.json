@@ -517,5 +517,32 @@
 				"selectMatching": "Select the matching key"
 			}
 		}
+	},
+	"function": {
+		"ignore": {
+			"bot": "You cannot perform actions on bots.",
+			"yourself": "You can't perform that action on yourself[.](https://takeb1nzyto.space/)",
+			"botPerms": "I don't have enough permissions to perform this action.",
+			"userPerms": "Your position is not high enough to perform this action.",
+			"admin": "You can not take actions on an administrator.",
+			"ban": "This member can't be banned.",
+			"kick": "This member can't be kicked.",
+			"timeout": "This member can't be timed out, most likely because they are an administrator."
+		},
+		"convertTime": {
+			"year_one": "year",
+			"year_other": "years",
+			"day_one": "day",
+			"day_other": "days",
+			"hour_one": "hour",
+			"hour_other": "hours",
+			"minute_one": "minute",
+			"minute_other": "minutes",
+			"second_one": "second",
+			"second_other": "seconds",
+			"millisecond_one": "millisecond",
+			"millisecond_other": "milliseconds",
+			"and": "and"
+		}
 	}
 }
