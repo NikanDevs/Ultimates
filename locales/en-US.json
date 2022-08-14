@@ -543,6 +543,18 @@
 			"millisecond_one": "millisecond",
 			"millisecond_other": "milliseconds",
 			"and": "and"
+		},
+		"sendModDM": {
+			"title": "You were {action}",
+			"type": "Type",
+			"automod": "Automod",
+			"punishmentId": "Punishment ID",
+			"ends": "Ends",
+			"expires": "Expires",
+			"joinable": "You can join back",
+			"permanent": "Permanent",
+			"reason": "Reason",
+			"appeal": "Appeal"
 		}
 	},
 	"log": {
@@ -585,6 +597,15 @@
 			"registered": "• **Registered:** in the past {- date}",
 			"joined": "• **Registered:** in the past {- date}",
 			"results": "[View the results]({- url})"
+		}
+	},
+	"job": {
+		"unban": {
+			"unbanned": "Unbanned due to softban duration",
+			"alreadyUnbanned": "~~Unbanned due to softban duration~~ Already unbanned"
+		},
+		"unmute": {
+			"ended": "Timeout ended based on the duration"
 		}
 	}
 }

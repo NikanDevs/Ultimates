@@ -14,40 +14,48 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 			name: member.guild.name,
 			iconURL: member.guild.iconURL(),
 		})
-		.setTitle(`You were ${t('command.mod.' + options.action.toLowerCase() + '.past')}`)
+		.setTitle(
+			t('function.sendModDM.title', { action: t('command.mod.' + options.action.toLowerCase() + '.past') })
+		)
 		.setColor(client.cc.invisible)
 		.addFields([
 			automod
 				? {
-						name: 'Type',
-						value: 'Automod',
+						name: t('function.sendModDM.type'),
+						value: t('function.sendModDM.automod'),
 						inline: true,
 				  }
 				: {
-						name: 'Punishment ID',
+						name: t('function.sendModDM.punishmentId'),
 						value: options.punishment._id,
 						inline: true,
 				  },
 			{
-				name: options.action === PunishmentTypes.Timeout ? 'Ends' : 'Expires',
+				name:
+					options.action === PunishmentTypes.Timeout
+						? t('function.sendModDM.ends')
+						: t('function.sendModDM.expires'),
 				value: `${
 					options.expire
 						? generateDiscordTimestamp(options.expire)
 						: options.action === PunishmentTypes.Kick
-						? 'You can join back'
-						: 'Permanent'
+						? t('function.sendModDM.joinable')
+						: t('function.sendModDM.permanent')
 				}`,
 				inline: true,
 			},
 			{
-				name: 'Reason',
+				name: t('function.sendModDM.reason'),
 				value: options.punishment.reason ?? t('common.noReason'),
 				inline: false,
 			},
 		]);
 
 	const appealButton = new ActionRowBuilder<ButtonBuilder>().addComponents([
-		new ButtonBuilder().setURL(client.config.general.appealLink).setStyle(ButtonStyle.Link).setLabel('Appeal'),
+		new ButtonBuilder()
+			.setURL(client.config.general.appealLink)
+			.setStyle(ButtonStyle.Link)
+			.setLabel(t('function.sendModDM.appeal')),
 	]);
 	let appealComponent: ActionRowBuilder<ButtonBuilder>[] = [];
 	if (

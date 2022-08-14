@@ -1,4 +1,5 @@
 import type { GuildMember, User } from 'discord.js';
+import { t } from 'i18next';
 import { client } from '..';
 import { createModLog } from '../functions/logs/createModLog';
 import { durationsModel } from '../models/durations';
@@ -15,13 +16,13 @@ export const checkUnmutes = async () => {
 		const guildMember = (await guild.members?.fetch(data.userId).catch(() => {})) as GuildMember;
 		const findUser = (await client.users.fetch(data.userId, { force: true }).catch(() => {})) as User;
 
-		if (guildMember) guildMember.timeout(null, 'Timeout ended based on the duration.');
+		if (guildMember) guildMember.timeout(null, t('job.unmute.ended'));
 
 		await createModLog({
 			action: PunishmentTypes.Unmute,
 			user: findUser,
 			moderator: client.user,
-			reason: 'Timeout ended based on the duration.',
+			reason: t('job.unmute.ended'),
 			referencedPunishment: data,
 		});
 	}

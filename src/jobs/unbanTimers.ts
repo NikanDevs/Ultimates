@@ -1,4 +1,5 @@
-import { Formatters, type User } from 'discord.js';
+import { type User } from 'discord.js';
+import { t } from 'i18next';
 import { client } from '..';
 import { createModLog } from '../functions/logs/createModLog';
 import { durationsModel } from '../models/durations';
@@ -8,7 +9,7 @@ export const checkUnbans = async () => {
 	const guild = await client.guilds.fetch(process.env.GUILD_ID);
 	const allData = await durationsModel.find({ type: PunishmentTypes.Softban });
 	const endedData = allData?.filter((c) => Date.now() > c.expires.getTime());
-	let reason = Formatters.strikethrough('Unbanned due to softban duration') + ' Already unbanned.';
+	let reason = t('job.unban.alreadyUnbanned');
 	if (!endedData) return;
 
 	for (const data of endedData) {
@@ -17,7 +18,7 @@ export const checkUnbans = async () => {
 		const findUser = (await client.users.fetch(data.userId, { force: true }).catch(() => {})) as User;
 
 		if (bannedMember || bannedMember !== undefined) {
-			reason = 'Unbanned due to softban duration.';
+			reason = t('job.unban.unbanned');
 			await guild.bans?.remove(data.userId);
 		}
 
