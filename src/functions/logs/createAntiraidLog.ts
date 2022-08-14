@@ -5,8 +5,7 @@ import { addModCase, getModCase } from '../cases/modCase';
 import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 import { logActivity } from './checkActivity';
 import { convertTime } from '../convertTime';
-import { MAX_REASON_LENGTH, punishmentExpiry } from '../../constants';
-import { splitText } from '../other/splitText';
+import { punishmentExpiry } from '../../constants';
 import { t } from 'i18next';
 import { logsModel } from '../../models/logs';
 
@@ -16,24 +15,25 @@ export async function createAntiraidLog(options: createAntiraidLogOptions) {
 
 	const embed = new EmbedBuilder()
 		.setAuthor({
-			name: `Antiraid | Case: #${currentCase}`,
+			name: t('log.antiraid.title', { case: currentCase }),
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setColor('#e32727')
 		.setDescription(
 			[
-				`• **Action:** Antiraid`,
-				`• **Affected:** ${options.affected.toLocaleString()} member${options.affected === 1 ? '' : 's'}`,
-				`• **Moderator:** ${
-					options.moderator.id !== client.user.id
-						? `${options.moderator.tag} • ${options.moderator.id}`
-						: 'Automatic'
-				}`,
-				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason:** ${splitText(options.reason, MAX_REASON_LENGTH) ?? t('common.noReason')}`,
-				`• **Registered:** in the past ${convertTime(options.registered)}`,
-				`• **Joined:** in the past ${convertTime(options.joined)}\n`,
-				`[View the results](${options.results})`,
+				t('log.antiraid.action', { action: 'Antiraid' }),
+				t('log.antiraid.affected', { count: options.affected }),
+				t('log.antiraid.moderator', {
+					moderator:
+						options.moderator.id !== client.user.id
+							? `${options.moderator.tag} • ${options.moderator.id}`
+							: t('log.automatic'),
+				}),
+				t('log.antiraid.date', { date: generateDiscordTimestamp(new Date(), 'Short Date/Time') }),
+				t('log.antiraid.reason', { reason: options.reason ?? t('common.noReason') }),
+				t('log.antiraid.registered', { date: convertTime(options.registered) }),
+				`${t('log.antiraid.joined', { date: convertTime(options.joined) })}\n`,
+				t('log.antiraid.results', { url: options.results }),
 			].join('\n')
 		);
 

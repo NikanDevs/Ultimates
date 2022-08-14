@@ -207,7 +207,7 @@
 			"userinfo": {
 				"description": "**ID:** {id} • {- user}",
 				"animated": "• **Animated:** {- emoji}",
-				"download": "• **Download:** [here]({url})",
+				"download": "• **Download:** [here]({- url})",
 				"account": {
 					"account": "Account",
 					"info": "Account information",
@@ -444,7 +444,7 @@
 				"viewAll": "View all messages"
 			},
 			"messageUpdate": {
-				"description": "[Message]({url}) edited in {- channel} • {- date}",
+				"description": "[Message]({- url}) edited in {- channel} • {- date}",
 				"content_old": "Old content",
 				"content_edited": "Edited content",
 				"content_none": "No content",
@@ -572,7 +572,19 @@
 			"date": "• **Date:** {- date}",
 			"reason": "• **Reason:** {- reason}",
 			"on_close": "[Take me to the creation]({creation}) • [View transcript]({transcript})",
-			"on_blacklist": "[Take me to the blacklist]({url})"
+			"on_blacklist": "[Take me to the blacklist]({- url})"
+		},
+		"antiraid": {
+			"title": "Antiraid | Case: #{case}",
+			"action": "• **Action:** {action}",
+			"affected_one": "• **Affected:** {count} member",
+			"affected_other": "• **Affected:** {count} members",
+			"moderator": "• **Moderator:** {- moderator}",
+			"date": "• **Date:** {- date}",
+			"reason": "• **Reason:** {- reason}",
+			"registered": "• **Registered:** in the past {- date}",
+			"joined": "• **Registered:** in the past {- date}",
+			"results": "[View the results]({- url})"
 		}
 	}
 }
