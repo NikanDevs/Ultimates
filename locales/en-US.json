@@ -559,6 +559,20 @@
 			"reason": "• **Reason:** {- reason}",
 			"revoke": "Revoke",
 			"update": "Update"
+		},
+		"modmail": {
+			"title": "Modmail | {action}",
+			"open_direct": "Direct Open",
+			"open_request": "Open Request",
+			"ticket": "• **Ticket:** #{ticket}",
+			"action": "• **Action:** {action}",
+			"member": "• **Member:** {- tag} • {id}",
+			"channel": "• **Channel:** {- channel}",
+			"moderator": "• **Moderator:** {- moderator}",
+			"date": "• **Date:** {- date}",
+			"reason": "• **Reason:** {- reason}",
+			"on_close": "[Take me to the creation]({creation}) • [View transcript]({transcript})",
+			"on_blacklist": "[Take me to the blacklist]({url})"
 		}
 	}
 }
