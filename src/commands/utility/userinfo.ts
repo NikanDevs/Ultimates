@@ -38,13 +38,13 @@ export default new Command({
 					name: t('command.utility.userinfo.account.info'),
 					value: [
 						t('command.utility.userinfo.account.id', { id: user.id }),
-						t('command.utility.userinfo.account.username', { usermame: user.username }),
+						t('command.utility.userinfo.account.username', { username: user.username }),
 						t('command.utility.userinfo.account.discrim', { discrim: user.discriminator }),
 						t('command.utility.userinfo.account.register', {
 							date: generateDiscordTimestamp(user.createdAt),
 						}),
 						t('command.utility.userinfo.account.bot', {
-							emojis: user?.bot ? `${client.cc.success}` : `${client.cc.error}`,
+							emoji: user?.bot ? `${client.cc.success}` : `${client.cc.error}`,
 						}),
 					].join('\n'),
 				},
