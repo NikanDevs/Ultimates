@@ -47,7 +47,7 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 					t('event.logs.messageUpdate.content', { context: 'none' }),
 			},
 			{
-				name: t('event.logs.messageUpdate.content', { context: 'new' }),
+				name: t('event.logs.messageUpdate.content', { context: 'edited' }),
 				value:
 					splitText(newMessage?.content, MAX_FIELD_VALUE_LENGTH) ??
 					t('event.logs.messageUpdate.content', { context: 'none' }),

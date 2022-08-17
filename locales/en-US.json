@@ -42,7 +42,7 @@
 					"noBot": "You cannot open modmail tickets for bots.",
 					"exists": "Looks like this user already has a ticket opened at {- channel}",
 					"blacklisted": "{- user} is blacklisted from opening modmail tickets.",
-					"enbed_title": "Modmail ticket opened",
+					"embed_title": "Modmail ticket opened",
 					"embed_description": "**A wild ticket has appeared!**\nYou've received a direct modmail from a staff member in {guild}. If you're wondering why this ticket was opened, wait until a moderator has contacted you through this ticket.",
 					"embed_reason": "Reason",
 					"cantDM": "This user doesn't accept direct messages or has blocked the bot. Unable to open the modmail.",
@@ -428,7 +428,7 @@
 				"left_antiraid": "Member left, most likely attected by the antiraid."
 			},
 			"messageDelete": {
-				"description": "Message deleted in {- channel} • {date}",
+				"description": "Message deleted in {- channel} • {- date}",
 				"content": "Content",
 				"content_none": "The message has no content.",
 				"ids": "IDs",
@@ -583,7 +583,7 @@
 			"moderator": "• **Moderator:** {- moderator}",
 			"date": "• **Date:** {- date}",
 			"reason": "• **Reason:** {- reason}",
-			"on_close": "[Take me to the creation]({creation}) • [View transcript]({transcript})",
+			"on_close": "[Take me to the creation]({- creation}) • [View transcript]({- transcript})",
 			"on_blacklist": "[Take me to the blacklist]({- url})"
 		},
 		"antiraid": {

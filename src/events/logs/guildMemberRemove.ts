@@ -26,7 +26,7 @@ export default new Event('guildMemberRemove', async (member) => {
 				t('event.logs.guildMemberJL.joined', { date: generateDiscordTimestamp(member.joinedAt) }),
 				t('event.logs.guildMemberJL.left', { date: generateDiscordTimestamp(new Date()) }),
 				t('event.logs.guildMemberJL.memberCount', { count: member.guild.memberCount }),
-				`${t('event.logs.guildMemberJL.left', {
+				`\n${t('event.logs.guildMemberJL.left', {
 					context: checkAntiraid(member.id) ? 'antiraid' : 'normal',
 				})}\n`,
 			].join('\n')

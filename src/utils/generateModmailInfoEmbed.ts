@@ -16,7 +16,7 @@ export async function generateModmailInfoEmbed(user: User) {
 			{
 				name: t('event.modmail.embed.account'),
 				value: [
-					t('event.modmail.embed.username', { username: user.username }),
+					t('event.modmail.embed.username', { username: user.tag }),
 					t('event.modmail.embed.id', { id: user.id }),
 					t('event.modmail.embed.registered', { date: generateDiscordTimestamp(user.createdAt) }),
 				].join('\n'),
