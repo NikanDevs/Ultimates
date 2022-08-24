@@ -142,7 +142,7 @@
 						"defaults_name": "Default values",
 						"reasons_name": "Command reasons",
 						"counts_description": "These counts are used to take automatic actions on users when they reach a number of warnings.\nEx - Timeout #1: How many manual warnings should a user acquire before they are placed on timeout for the first time? This also applies for the other options.",
-						"durations_description": "These durations are used for automatic punishments that a user can receive after reaching a number of warnings.\nEx - Timeout #1: How long should the person be timed out for when reaching the first timeout goal? (You may set these goals using the ${command.utility.configure.moderation.enum.counts_name} option.)",
+						"durations_description": "These durations are used for automatic punishments that a user can receive after reaching a number of warnings.\nEx - Timeout #1: How long should the person be timed out for when reaching the first timeout goal? (You may set these goals using the ${command.utility.configure.moderation.enum.counts_name} option)",
 						"defaults_description": "The default values are used when a moderator doesn't enter their value whilst using a (/) command.",
 						"reasons_description": "The reasons are shown in specific command options as autocomplete to make moderation easier. The max length for a reason is 100 characters."
 					},
@@ -264,7 +264,7 @@
 					"lock_title": "Channel Locked",
 					"unlock_title": "Channel Unlocked",
 					"lock_description": "A moderator locked down this channel!\nYou are not muted.\n\nPlease be patient until the channel gets unlocked.",
-					"unlock_description": "A moderator locked down this channel!\n\nYou can now use the channel, we appreciate your patience.",
+					"unlock_description": "A moderator unlocked this channel!\n\nYou can now use the channel, we appreciate your patience.",
 					"lock_respond": "{- channel} was locked.",
 					"unlock_respond": "{- channel} was unlocked.",
 					"invalidChannel": "You can only lock text, voice, and stage channels."
@@ -338,7 +338,7 @@
 				"current": "The current slowmode is **{slowmode}**",
 				"same": "Providing the current slowmode will not change anything.",
 				"set_off": "Slowmode is turned off.",
-                "set_on": "Slowmode set to **{value}**."
+                	"set_on": "Slowmode set to **{value}**"
 			},
 			"softban": {
 				"past": "soft banned",
@@ -441,7 +441,7 @@
 				"showing": "Showing",
 				"amount": "Amount",
 				"preparing": "Preparing bulk delete logs...",
-				"viewAll": "View all messages."
+				"viewAll": "View all messages"
 			},
 			"messageUpdate": {
 				"description": "[Message]({- url}) edited in {- channel} • {- date}",
@@ -602,10 +602,10 @@
 	"job": {
 		"unban": {
 			"unbanned": "Unbanned due to softban duration",
-			"alreadyUnbanned": "~~Unbanned due to softban duration~~ Already unbanned."
+			"alreadyUnbanned": "~~Unbanned due to softban duration~~ Already unbanned"
 		},
 		"unmute": {
-			"ended": "Timeout ended based on the duration."
+			"ended": "Timeout ended based on the duration"
 		}
 	}
 }
