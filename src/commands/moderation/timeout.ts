@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { Command } from '../../structures/Command';
 import { punishmentModel } from '../../models/punishments';
 import { MAX_TIMEOUT_DURATION, MIN_TIMEOUT_DURATION, warningExpiry } from '../../constants';
@@ -32,7 +32,7 @@ export default new Command({
 
 		if (await durationsModel.findOne({ userId: member.id }))
 			return interaction.reply({
-				embeds: [client.embeds.error('This member is already timed out.')],
+				embeds: [client.embeds.error(t('command.mod.timeout.timedOut'))],
 				ephemeral: true,
 			});
 
@@ -71,10 +71,15 @@ export default new Command({
 
 		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(member.user, {
-					action: PunishmentTypes.Timeout,
-					id: data._id,
-				}),
+				new EmbedBuilder()
+					.setDescription(
+						t('common.modEmbed', {
+							user: member.toString(),
+							action: t('command.mod.timeout.past'),
+							id: data._id,
+						})
+					)
+					.setColor(client.cc.moderation),
 			],
 			ephemeral: true,
 		});

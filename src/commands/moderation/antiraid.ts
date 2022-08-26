@@ -49,7 +49,7 @@ export default new Command({
 
 		if (guardCollection.has('antiraid'))
 			return interaction.reply({
-				embeds: [client.embeds.attention('The server is already getting scanned by the antiraid...')],
+				embeds: [client.embeds.attention(t('command.mod.antiraid.scanning'))],
 				ephemeral: true,
 			});
 
@@ -74,21 +74,24 @@ export default new Command({
 		if (!filtered.length) {
 			guardCollection.delete('antiraid');
 			return interaction.followUp({
-				embeds: [client.embeds.attention('No members were affected by the antiraid.')],
+				embeds: [client.embeds.attention(t('command.mod.antiraid.none'))],
 			});
 		}
 
 		const hitMembers = filtered.map((m) => `- ${m.user.tag} (${m.user.id})`);
 		const confirmButtons = new ActionRowBuilder<ButtonBuilder>().addComponents([
-			new ButtonBuilder().setLabel('Confirm').setCustomId('confirm').setStyle(ButtonStyle.Success),
-			new ButtonBuilder().setLabel('Cancel').setCustomId('cancel').setStyle(ButtonStyle.Danger),
+			new ButtonBuilder()
+				.setLabel(t('command.mod.antiraid.button', { context: 'confirm' }))
+				.setCustomId('confirm')
+				.setStyle(ButtonStyle.Success),
+			new ButtonBuilder()
+				.setLabel(t('command.mod.antiraid.button', { context: 'cancel' }))
+				.setCustomId('cancel')
+				.setStyle(ButtonStyle.Danger),
 		]);
 
 		const confirmMsg = (await interaction.followUp({
-			content: `Do you confirm that these are the raiders?\n\`\`\`\n${splitText(
-				hitMembers.join('\n'),
-				4000 - 55
-			)}\n\`\`\``,
+			content: t('command.mod.antiraid.confirm', { raiders: splitText(hitMembers.join('\n'), 4000 - 55) }),
 			components: [confirmButtons],
 		})) as Message;
 
@@ -109,9 +112,11 @@ export default new Command({
 				embeds: [
 					new EmbedBuilder()
 						.setDescription(
-							`The antiraid should be done ${generateDiscordTimestamp(
-								new Date(Date.now() + filtered.length * 2000 + 5000)
-							)}`
+							t('command.mod.antiraid.etr', {
+								remaining: generateDiscordTimestamp(
+									new Date(Date.now() + filtered.length * 2000 + 5000)
+								),
+							})
 						)
 						.setColor(Colors.Yellow),
 				],
@@ -150,10 +155,11 @@ export default new Command({
 					},
 				],
 				{
-					title: `Antiraid results`,
-					description: `The antiraid results for ${
-						interaction.guild.name
-					} at ${new Date().toLocaleDateString()}`,
+					title: interaction.guild.name,
+					description: t('command.mod.antiraid.results', {
+						server: interaction.guild.name,
+						date: new Date().toLocaleDateString(),
+					}),
 				}
 			);
 
@@ -168,13 +174,7 @@ export default new Command({
 				});
 
 				await interaction.editReply({
-					embeds: [
-						client.embeds.success(
-							`Antiraid is done, ${filtered.length} member${
-								filtered.length === 1 ? ' was' : 's were'
-							} affected.`
-						),
-					],
+					embeds: [client.embeds.success(t('command.mod.antiraid.done', { count: filtered.length }))],
 				});
 				guardCollection.delete('antiraid');
 			}, 5 * 1000);

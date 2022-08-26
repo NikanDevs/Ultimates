@@ -1,21 +1,21 @@
-import { ChannelType, DMChannel, Guild, GuildBasedChannel, TextChannel } from 'discord.js';
+import { ChannelType, DMChannel, TextChannel } from 'discord.js';
 import { client } from '../..';
 import { Event } from '../../structures/Event';
 
 export default new Event('typingStart', async (typing) => {
-	await typing.channel?.fetch().catch(() => {});
+	const guild = client.guilds.cache.get(process.env.GUILD_ID);
 
-	const guild =
-		client.guilds.cache.get(process.env.GUILD_ID) ||
-		((await client.guilds.fetch(process.env.GUILD_NAME)) as Guild);
+	await typing.channel?.fetch().catch(() => {});
 	if (typing.user.bot) return;
 
-	if (typing.guild) {
-		if ((typing.channel as GuildBasedChannel).parentId !== client.config.general.modmailCategoryId) return;
+	if (typing.inGuild()) {
+		if (typing.channel.type !== ChannelType.GuildText) return;
+		if (typing.channel.parentId !== client.config.general.modmailCategoryId) return;
 
-		const channelTopic = (typing.channel as TextChannel).topic;
+		const channelTopic = typing.channel.topic;
 		const usersThread = guild.members.cache.find(
-			(user) => user.id === channelTopic.slice(channelTopic.length - user.id.length)
+			(user) =>
+				user.id === channelTopic.split('|')[channelTopic.split('|').length - 1].replace('ID:', '').trim()
 		);
 
 		if (!usersThread) return;
@@ -29,10 +29,9 @@ export default new Event('typingStart', async (typing) => {
 					channel.parentId === client.config.general.modmailCategoryId &&
 					channel.type === ChannelType.GuildText
 			)
-			.find((channel: TextChannel) => channel?.topic?.endsWith(`${typing.user.id}`)) as TextChannel;
+			.find((channel: TextChannel) => channel?.topic?.endsWith(typing.user.id)) as TextChannel;
 
 		if (!openedThread) return;
-
 		await openedThread?.sendTyping();
 	}
 });

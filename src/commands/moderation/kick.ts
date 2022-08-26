@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { punishmentExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -25,7 +25,7 @@ export default new Command({
 
 		if (ignore(member, { interaction, action: PunishmentTypes.Kick })) return;
 
-		const data = new punishmentModel({
+		const data = await new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentTypes.Kick,
@@ -34,8 +34,7 @@ export default new Command({
 			reason: reason,
 			date: new Date(),
 			expire: punishmentExpiry,
-		});
-		await data.save();
+		}).save();
 
 		await sendModDM(member, {
 			action: PunishmentTypes.Kick,
@@ -45,10 +44,15 @@ export default new Command({
 
 		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(member.user, {
-					action: PunishmentTypes.Kick,
-					id: data._id,
-				}),
+				new EmbedBuilder()
+					.setDescription(
+						t('common.modEmbed', {
+							user: member,
+							action: t('command.mod.kick.past'),
+							id: data._id,
+						})
+					)
+					.setColor(client.cc.moderation),
 			],
 			ephemeral: true,
 		});

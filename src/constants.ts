@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import { GuardCollectionTypes } from './typings';
+import { GuardCollectionTypes, ModmailCollectionTypes, VerificationCollectionTypes } from './typings';
 
 // DB expiry calculations.
 
@@ -16,9 +16,10 @@ export const warningExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 export const punishmentExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24 * 90);
 
 // Collections
-export const verificationCollection = new Collection<string, string | number>();
+export const verificationCollection = new Collection<VerificationCollectionTypes, string | number>();
 export const automodSpamCollection = new Collection<string, number>();
 export const guardCollection = new Collection<GuardCollectionTypes, null | string[]>();
+export const modmailCollection = new Collection<ModmailCollectionTypes, number | null>();
 
 // Other constants
 export const EMBED_DESCRIPTION_MAX_LENGTH = 4096;

@@ -13,43 +13,51 @@ import { logActivity } from './checkActivity';
 import { capitalize } from '../other/capitalize';
 import { t } from 'i18next';
 
-/** Creates a new modmail log and post the log to the modmail webhook. */
 export async function createModmailLog(options: createModmailLogOptions) {
 	const ticket = options.ticket;
 	const embed = new EmbedBuilder()
 		.setAuthor({
-			name: `Modmail | ${
-				options.action === ModmailActionTypes.Open
-					? ticket.type === 'DIRECT'
-						? 'Direct Open'
-						: 'Open Request'
-					: capitalize(options.action)
-			}`,
+			name: t('log.modmail.title', {
+				action:
+					options.action === ModmailActionTypes.Open
+						? ticket.type === 'DIRECT'
+							? t('log.modmail.open', { context: 'direct' })
+							: t('log.modmail.open', { context: 'request' })
+						: capitalize(options.action),
+			}),
 			iconURL: client.user.displayAvatarURL(),
 		})
 		.setColor(resolveColor(modmailActionTypeEmbedColors[options.action]))
 		.setDescription(
 			[
-				`${options.ticketId ? `• **Ticket:** #${options.ticketId}` : ''}\n`,
-				`• **Action:** ${capitalize(options.action)}`,
-				`• **Member:** ${options.user.tag} • ${options.user.id}`,
-				options.action === ModmailActionTypes.Open ? `• **Channel:** ${ticket.channel}` : 'LINE_BREAK',
-				options.moderator
-					? `• **Moderator:** ${
-							options.moderator.id !== client.user.id
-								? `${options.moderator.tag} • ${options.moderator.id}`
-								: 'Automatic'
-					  }`
+				`${options.ticketId ? t('log.modmail.ticket', { ticket: options.ticketId }) : ''}\n`,
+				t('log.modmail.action', { action: capitalize(options.action) }),
+
+				t('log.modmail.member', { tag: options.user.tag, id: options.user.id }),
+				options.action === ModmailActionTypes.Open
+					? t('log.modmail.channel', { channel: ticket.channel.toString() })
 					: 'LINE_BREAK',
-				`• **Date:** ${generateDiscordTimestamp(new Date(), 'Short Date/Time')}`,
-				`• **Reason:** ${options.reason ?? t('common.noReason')}`,
+				options.moderator
+					? t('log.modmail.moderator', {
+							moderator:
+								options.moderator.id !== client.user.id
+									? `${options.moderator.tag} • ${options.moderator.id}`
+									: t('log.automatic'),
+					  })
+					: 'LINE_BREAK',
+				t('log.modmail.date', { date: generateDiscordTimestamp(new Date(), 'Short Date/Time') }),
+				t('log.modmail.reason', { reason: options.reason ?? t('common.noReason') }),
 				`\n${
 					!options.referencedCaseUrl
 						? ''
 						: options.action === ModmailActionTypes.Close
-						? `[Take me to the creation](${options.referencedCaseUrl}) • [View transcript](${options.transcript})`
+						? t('log.modmail.on', {
+								context: 'close',
+								creation: options.referencedCaseUrl,
+								transcript: options.transcript,
+						  })
 						: options.action === ModmailActionTypes.BlacklistRemove
-						? `[Take me to the blacklist](${options.referencedCaseUrl})`
+						? t('log.modmail.on', { context: 'blacklist', url: options.referencedCaseUrl })
 						: ''
 				}`,
 			]

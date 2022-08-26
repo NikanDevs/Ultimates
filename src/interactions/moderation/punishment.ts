@@ -27,6 +27,8 @@ export const punishmentCommand = {
 					description: 'The reason of this action',
 					required: false,
 					type: ApplicationCommandOptionType.String,
+					min_length: 1,
+					max_length: MAX_REASON_LENGTH,
 				},
 			],
 		},

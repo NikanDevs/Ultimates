@@ -4,19 +4,24 @@ import { CommandInteractionOptionResolver, GuildMember, Collection, EmbedBuilder
 import { connection, ConnectionStates } from 'mongoose';
 import { logger } from '../../logger';
 import { convertTime } from '../../functions/convertTime';
+import { t } from 'i18next';
 const cooldown = new Collection();
 
 export default new Event('interactionCreate', async (interaction) => {
 	if (!interaction.inGuild()) return;
 	if (!interaction.inCachedGuild()) return;
 
-	if (interaction?.isChatInputCommand()) {
+	if (interaction.isChatInputCommand()) {
 		const member = interaction.member as GuildMember;
 		const command = client.commands.get(interaction.commandName);
 
 		if (!command)
 			return interaction.reply({
-				embeds: [client.embeds.error(`No commands were found matching \`/${interaction.commandName}\``)],
+				embeds: [
+					client.embeds.error(
+						t('event.interactions.applicationCommand.noCommand', { cmd: interaction.commandName })
+					),
+				],
 				ephemeral: true,
 			});
 
@@ -25,14 +30,14 @@ export default new Event('interactionCreate', async (interaction) => {
 			command.interaction.directory === 'developer'
 		)
 			return interaction.reply({
-				embeds: [client.embeds.attention("You don't have permissions to use this command.")],
+				embeds: [client.embeds.attention(t('common.errors.noPerms'))],
 				ephemeral: true,
 			});
 
 		// Permission Check
 		if (command.interaction.permission?.some((perm) => !member.permissions.has(perm)))
 			return interaction.reply({
-				embeds: [client.embeds.attention("You don't have permissions to use this command.")],
+				embeds: [client.embeds.attention(t('common.errors.noPerms'))],
 				ephemeral: true,
 			});
 
@@ -41,11 +46,10 @@ export default new Event('interactionCreate', async (interaction) => {
 			return interaction.reply({
 				embeds: [
 					client.embeds.attention(
-						`I need ${command.interaction.botPermission
-							.map((p) => p.toString())
-							.join(' & ')} permission${
-							command.interaction.botPermission.length === 1 ? '' : 's'
-						} for this command.`
+						t('event.interactions.applicationCommand', {
+							permissions: command.interaction.botPermission.map((p) => p.toString()).join(', '),
+							count: command.interaction.botPermission.length,
+						})
 					),
 				],
 				ephemeral: true,
@@ -56,20 +60,22 @@ export default new Event('interactionCreate', async (interaction) => {
 			const cooldownRemaining = `${~~(
 				+cooldown.get(`${command.interaction.name}${interaction.user.id}`) - +Date.now()
 			)}`;
-			const cooldownEmbed = new EmbedBuilder()
-				.setColor(Colors.Red)
-				.setDescription(`You need to wait \`${convertTime(~~+cooldownRemaining)}\` to use this command.`);
+			const cooldownEmbed = new EmbedBuilder().setColor(Colors.Red).setDescription(
+				t('event.interactions.applicationCommand.cooldown', {
+					time: convertTime(~~+cooldownRemaining),
+				})
+			);
 
 			return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
 		}
 
 		if (command.interaction.directory !== 'developer' && connection.readyState !== 1) {
 			interaction.reply({
-				embeds: [client.embeds.attention('MongoDB is not connected properly, please contact a developer.')],
+				embeds: [client.embeds.attention(t('event.interactions.applicationCommand.mongoDB'))],
 				ephemeral: true,
 			});
 			return logger.warn({
-				source: `/${interaction.commandName} command`,
+				source: `/${interaction.commandName}`,
 				reason: {
 					name: 'MongoDB',
 					message: 'Mongoose database is not connected properly',
@@ -86,12 +92,16 @@ export default new Event('interactionCreate', async (interaction) => {
 				interaction: interaction,
 				options: interaction.options as CommandInteractionOptionResolver,
 			})
-			.catch((err: Error) =>
+			.catch((err: Error) => {
+				interaction.deferred
+					? interaction.followUp(t('common.errors.occurred'))
+					: interaction.reply(t('common.errors.occurred'));
+
 				logger.error({
 					source: `/${interaction.commandName} command`,
 					reason: err,
-				})
-			);
+				});
+			});
 
 		if (command.interaction.cooldown && !client.config.general.developers.includes(interaction.user.id)) {
 			cooldown.set(

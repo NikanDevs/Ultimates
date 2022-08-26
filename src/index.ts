@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 require('dotenv').config();
 
+// i18next locales
 i18next.use(Backend).init({
 	lng: 'en-US',
 	fallbackLng: 'en-US',

@@ -13,6 +13,7 @@ import { capitalize } from '../../functions/other/capitalize';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
 import { userinfoButtonsOptions } from '../../typings';
+import { generateDiscordTimestamp } from '../../utils/generateDiscordTimestamp';
 
 export default new Command({
 	interaction: interactions.userinfo,
@@ -24,128 +25,30 @@ export default new Command({
 			user = interaction.user as User;
 		}
 
-		// Functions
-		const UrlTypeCheck = function (avatarURL: string, type: 'Avatar' | 'Banner') {
-			switch (type) {
-				case 'Avatar':
-					if (avatarURL.endsWith('.gif')) {
-						return [
-							`[WEBP](${user?.displayAvatarURL({
-								extension: 'webp',
-								size: 1024,
-							})})`,
-							`[GIF](${user?.displayAvatarURL({
-								extension: 'gif',
-								size: 1024,
-							})})`,
-						].join(' • ');
-					} else {
-						return [
-							`[WEBP](${user?.displayAvatarURL({
-								extension: 'webp',
-								size: 1024,
-							})})`,
-							`[JPEG](${user?.displayAvatarURL({
-								extension: 'jpeg',
-								size: 1024,
-							})})`,
-							`[JPG](${user?.displayAvatarURL({
-								extension: 'jpg',
-								size: 1024,
-							})})`,
-							`[PNG](${user?.displayAvatarURL({
-								extension: 'png',
-								size: 1024,
-							})})`,
-						].join(' • ');
-					}
-				// break;
-				case 'Banner':
-					if (avatarURL.endsWith('.gif')) {
-						return [
-							`[WEBP](${user?.bannerURL({
-								extension: 'webp',
-								size: 1024,
-							})})`,
-							`[GIF](${user?.bannerURL({
-								extension: 'gif',
-								size: 1024,
-							})})`,
-						].join(' • ');
-					} else {
-						return [
-							`[WEBP](${user?.bannerURL({
-								extension: 'webp',
-								size: 1024,
-							})})`,
-							`[JPEG](${user?.bannerURL({
-								extension: 'jpeg',
-								size: 1024,
-							})})`,
-							`[JPG](${user?.bannerURL({
-								extension: 'jpg',
-								size: 1024,
-							})})`,
-							`[PNG](${user?.bannerURL({
-								extension: 'png',
-								size: 1024,
-							})})`,
-						].join(' • ');
-					}
-				// break;
-			}
-		};
-
-		// Fetching users
 		await user?.fetch(true);
 		await member?.fetch(true);
+
 		const userinfoEmbed = new EmbedBuilder()
 			.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-			.setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
+			.setDescription(t('command.utility.userinfo.description', { id: user.id, user: user.toString() }))
 			.setThumbnail(user.displayAvatarURL())
 			.setColor(client.cc.invisible)
 			.addFields([
 				{
-					name: 'Account Information',
+					name: t('command.utility.userinfo.account.info'),
 					value: [
-						`• **ID:** ${user.id}`,
-						`• **Username:** ${user.username}`,
-						`• **Discriminator:** #${user.discriminator}`,
-						`• **Registered:** <t:${~~(+user.createdAt / 1000)}:f> | <t:${~~(
-							+user.createdAt / 1000
-						)}:R>`,
-						`• **Bot:** ${user?.bot ? `${client.cc.success}` : `${client.cc.error}`}`,
+						t('command.utility.userinfo.account.id', { id: user.id }),
+						t('command.utility.userinfo.account.username', { username: user.username }),
+						t('command.utility.userinfo.account.discrim', { discrim: user.discriminator }),
+						t('command.utility.userinfo.account.register', {
+							date: generateDiscordTimestamp(user.createdAt),
+						}),
+						t('command.utility.userinfo.account.bot', {
+							emoji: user?.bot ? `${client.cc.success}` : `${client.cc.error}`,
+						}),
 					].join('\n'),
-				},
-				{
-					name: 'Avatar',
-					value: [
-						`• **Animated:** ${
-							user.displayAvatarURL().endsWith('.gif')
-								? `${client.cc.success}`
-								: `${client.cc.error}`
-						}`,
-						`• **Formats:** ${UrlTypeCheck(user.displayAvatarURL(), 'Avatar')}`,
-					].join('\n'),
-					inline: true,
 				},
 			]);
-
-		// User's banner
-		if (user.bannerURL()) {
-			userinfoEmbed.setImage(user.bannerURL({ size: 1024 })).addFields([
-				{
-					name: 'Banner',
-					value: [
-						`• **Animated:** ${
-							user.bannerURL().endsWith('.gif') ? `${client.cc.success}` : `${client.cc.error}`
-						}`,
-						`• **Formats:** ${UrlTypeCheck(user.bannerURL(), 'Banner')}`,
-					].join('\n'),
-					inline: true,
-				},
-			]);
-		}
 
 		// User's Badges
 		enum badgesReweite {
@@ -169,13 +72,13 @@ export default new Command({
 
 		const badgesArray: string[] = [];
 		if (user.bot && !user.flags?.toArray().includes('VerifiedBot')) badgesArray.push('UnverifiedBot');
-		user.flags?.toArray().forEach((badge) => badgesArray.push(`• ${badgesReweite[badge]}`));
+		user.flags?.toArray().forEach((badge) => badgesArray.push(badge));
 
 		if (badgesArray.length) {
 			userinfoEmbed.addFields([
 				{
-					name: `Badges [${badgesArray.length}]`,
-					value: badgesArray.join('\n'),
+					name: t('command.utility.userinfo.account.badges', { count: badgesArray.length }),
+					value: badgesArray.map((b) => `• ${badgesReweite[b]}`).join('\n'),
 				},
 			]);
 		}
@@ -187,13 +90,59 @@ export default new Command({
 				const devices = member.presence?.clientStatus || {};
 				userinfoEmbed.addFields([
 					{
-						name: `Presence`,
+						name: t('command.utility.userinfo.account.presence'),
 						value: [
-							`• **Status:** ${capitalize(member?.presence?.status)}`,
-							`• **Devices [${Object.entries(devices).length}]:** ${Object.entries(devices)
-								.map((value) => `${value[0][0].toUpperCase()}${value[0].slice(1)}`)
-								.join(', ')}`,
+							t('command.utility.userinfo.account.status', {
+								status: capitalize(member?.presence?.status),
+							}),
+							t('command.utility.userinfo.account.devices', {
+								count: Object.entries(devices).length,
+								devices: Object.entries(devices)
+									.map((value) => `${value[0][0].toUpperCase()}${value[0].slice(1)}`)
+									.join(', '),
+							}),
 						].join('\n'),
+					},
+				]);
+			}
+
+			if (user.avatar) {
+				userinfoEmbed.addFields([
+					{
+						name: t('command.utility.userinfo.account.avatar'),
+						value: [
+							t('command.utility.userinfo.animated', {
+								emoji: user.displayAvatarURL().endsWith('.gif')
+									? `${client.cc.success}`
+									: `${client.cc.error}`,
+							}),
+							t('command.utility.userinfo.download', {
+								url: user.displayAvatarURL({
+									size: 1024,
+								}),
+							}),
+						].join('\n'),
+						inline: true,
+					},
+				]);
+			}
+			if (user.banner) {
+				userinfoEmbed.setImage(user.bannerURL({ size: 1024 })).addFields([
+					{
+						name: t('command.utility.userinfo.account.banner'),
+						value: [
+							t('command.utility.userinfo.animated', {
+								emoji: user.bannerURL().endsWith('.gif')
+									? `${client.cc.success}`
+									: `${client.cc.error}`,
+							}),
+							t('command.utility.userinfo.download', {
+								url: user.bannerURL({
+									size: 1024,
+								}),
+							}),
+						].join('\n'),
+						inline: true,
 					},
 				]);
 			}
@@ -202,22 +151,16 @@ export default new Command({
 			const buttonComponents = (options: userinfoButtonsOptions) => [
 				new ActionRowBuilder<ButtonBuilder>().addComponents([
 					new ButtonBuilder()
-						.setLabel('Account')
+						.setLabel(t('command.utility.userinfo.account.account'))
 						.setStyle(ButtonStyle.Primary)
 						.setDisabled(options.disableAccount || false)
 						.setCustomId('1'),
 
 					new ButtonBuilder()
-						.setLabel('Guild')
+						.setLabel(t('command.utility.userinfo.guild.guild'))
 						.setStyle(ButtonStyle.Primary)
 						.setDisabled(options.disableGuild || false)
 						.setCustomId('2'),
-
-					new ButtonBuilder()
-						.setLabel('Roles')
-						.setStyle(ButtonStyle.Primary)
-						.setDisabled(options.disableRoles || false)
-						.setCustomId('3'),
 				]),
 			];
 
@@ -228,11 +171,10 @@ export default new Command({
 			})) as Message;
 
 			const userinfoCollector = sentInteraction.createMessageComponentCollector({
-				time: 30000,
+				time: 60000,
 				componentType: ComponentType.Button,
 			});
 
-			// Whenever the collector is triggered
 			userinfoCollector.on('collect', async (collected): Promise<any> => {
 				if (collected.user.id !== interaction.user.id)
 					return collected.reply({
@@ -249,61 +191,64 @@ export default new Command({
 						await collected.deferUpdate();
 						break;
 					case '2':
-						let acknowments = 'None';
+						let acknowments = t('command.utility.configure.none');
 						if (
 							member.permissions.has('BanMembers') ||
 							member.permissions.has('ManageMessages') ||
 							member.permissions.has('KickMembers') ||
 							member.permissions.has('ManageRoles')
 						) {
-							acknowments = 'Moderator';
+							acknowments = t('command.utility.userinfo.guild.roles', { context: 'mod' });
 						}
 						if (member.permissions.has('ManageEvents')) {
-							acknowments = 'Event Manager';
+							acknowments = t('command.utility.userinfo.guild.roles', { context: 'events' });
 						}
 						if (member.permissions.has('ManageGuild')) {
-							acknowments = 'Server Manager';
+							acknowments = t('command.utility.userinfo.guild.roles', { context: 'manager' });
 						}
 						if (member.permissions.has('Administrator')) {
-							acknowments = 'Administrator';
+							acknowments = t('command.utility.userinfo.guild.roles', { context: 'admin' });
 						}
 						if (user?.id === interaction.guild.ownerId) {
-							acknowments = 'Server Owner';
+							acknowments = t('command.utility.userinfo.guild.roles', { context: 'owner' });
 						}
 
 						const userinfoGuildEmbed = new EmbedBuilder()
 							.setAuthor({
 								name: user.tag,
-								iconURL: user.displayAvatarURL(),
+								iconURL: member.avatar ? member.avatarURL() : user.avatarURL(),
 							})
-							.setDescription([`**ID:** ${user.id}`, user.toString()].join(' • '))
-							.setThumbnail(user.displayAvatarURL())
+							.setDescription(
+								t('command.utility.userinfo.description', {
+									id: user.id,
+									user: user.toString(),
+								})
+							)
+							.setThumbnail(member.avatar ? member.avatarURL() : user.avatarURL())
 							.setColor(client.cc.invisible)
 							.addFields([
 								{
-									name: `Information in ${interaction.guild.name}`,
+									name: t('command.utility.userinfo.guild.info', {
+										guild: interaction.guild.name,
+									}),
 									value: [
-										`• ** Joined:** <t:${~~(+member.joinedAt / 1000)}:f> [<t:${~~(
-											+member.joinedAt / 1000
-										)}:R>]`,
-										`• **Nickname:** ${
-											member.displayName === member.user?.username
-												? 'No Nickname'
-												: `${member.displayName}`
-										}`,
-										`• **Booster:** ${
-											member.premiumSinceTimestamp
-												? `${client.cc.success}`
-												: `${client.cc.error}`
-										}`,
-										`• **Boosting Since:** ${
-											member.premiumSinceTimestamp
-												? `<t:${~~(
-														member.premiumSinceTimestamp / 1000
-												  )}:f> | <t:${~~(member.premiumSinceTimestamp / 1000)}:R>`
-												: 'Not boosting the server!'
-										}`,
-										`• **Acknowments:** ${acknowments}`,
+										t('command.utility.userinfo.guild.joined', {
+											date: generateDiscordTimestamp(member.joinedAt),
+										}),
+										t('command.utility.userinfo.guild.nickname', {
+											nickname:
+												member.displayName === member.user?.username
+													? client.cc.error
+													: `${member.displayName}`,
+										}),
+										t('command.utility.userinfo.guild.boosting', {
+											date: member.premiumSinceTimestamp
+												? generateDiscordTimestamp(member.premiumSince)
+												: client.cc.error,
+										}),
+										t('command.utility.userinfo.guild.acknowments', {
+											value: acknowments,
+										}),
 									].join('\n'),
 								},
 							]);
@@ -311,14 +256,18 @@ export default new Command({
 						if (member.avatarURL())
 							userinfoGuildEmbed.addFields([
 								{
-									name: 'Server Avatar',
+									name: t('command.utility.userinfo.account.avatar'),
 									value: [
-										`• **Animated:** ${
-											member.avatarURL().endsWith('.gif')
+										t('command.utility.userinfo.animated', {
+											emoji: member.avatarURL().endsWith('.gif')
 												? `${client.cc.success}`
-												: `${client.cc.error}`
-										}`,
-										`• **Formats:** ${UrlTypeCheck(member.avatarURL(), 'Avatar')}`,
+												: `${client.cc.error}`,
+										}),
+										t('command.utility.userinfo.download', {
+											url: member.avatarURL({
+												size: 1024,
+											}),
+										}),
 									].join('\n'),
 								},
 							]);
@@ -329,40 +278,9 @@ export default new Command({
 						});
 						await collected.deferUpdate();
 						break;
-
-					case '3':
-						const mappedRoles = member.roles.cache
-							.sort((a, b) => b.position - a.position)
-							.filter((r) => r.id !== interaction.guildId);
-						const userinfoRolesEmbed = new EmbedBuilder()
-							.setAuthor({
-								name: user.tag,
-								iconURL: user.displayAvatarURL(),
-							})
-							.setThumbnail(user.displayAvatarURL())
-							.setColor(client.cc.invisible)
-							.setDescription(
-								[
-									`${user} • ID: ${user?.id}\n`,
-									`**Roles [${mappedRoles.size}]**`,
-									`${
-										mappedRoles.size
-											? mappedRoles.map((role) => role).join(' ')
-											: 'No roles'
-									}`,
-								].join('\n')
-							);
-
-						interaction.editReply({
-							embeds: [userinfoRolesEmbed],
-							components: buttonComponents({ disableRoles: true }),
-						});
-						await collected.deferUpdate();
-						break;
 				}
 			});
 
-			// Whenever the collector times out
 			userinfoCollector.on('end', () => {
 				interaction.editReply({ components: [] });
 			});

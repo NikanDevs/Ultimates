@@ -1,4 +1,4 @@
-import { GuildMember } from 'discord.js';
+import { EmbedBuilder, GuildMember } from 'discord.js';
 import { getModCase } from '../../functions/cases/modCase';
 import { guardCollection, punishmentExpiry, warningExpiry } from '../../constants';
 import { ignore } from '../../functions/ignore';
@@ -29,7 +29,7 @@ export default new Command({
 
 		if (guardCollection.has(`warn:${member.id}`))
 			return interaction.reply({
-				embeds: [client.embeds.attention('Whoops, looks like a double warning has appeared!')],
+				embeds: [client.embeds.attention(t('command.mod.warn.double'))],
 				ephemeral: true,
 			});
 
@@ -38,7 +38,7 @@ export default new Command({
 			guardCollection.delete(`warn:${member.id}`);
 		}, 10 * 1000);
 
-		const warnData = new punishmentModel({
+		const data = new punishmentModel({
 			_id: await generateManualId(),
 			case: await getModCase(),
 			type: PunishmentTypes.Warn,
@@ -48,27 +48,32 @@ export default new Command({
 			date: new Date(),
 			expire: warningExpiry,
 		});
-		await warnData.save();
+		await data.save();
 
-		interaction.reply({
+		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(member.user, {
-					action: PunishmentTypes.Warn,
-					id: warnData._id,
-				}),
+				new EmbedBuilder()
+					.setDescription(
+						t('common.modEmbed', {
+							user: member.toString(),
+							action: t('command.mod.warn.past'),
+							id: data._id,
+						})
+					)
+					.setColor(client.cc.moderation),
 			],
 			ephemeral: true,
 		});
 
 		sendModDM(member, {
 			action: PunishmentTypes.Warn,
-			expire: warnData.expire,
-			punishment: warnData,
+			expire: data.expire,
+			punishment: data,
 		});
 
 		await createModLog({
 			action: PunishmentTypes.Warn,
-			punishmentId: warnData._id,
+			punishmentId: data._id,
 			user: member.user,
 			moderator: interaction.user,
 			reason: reason,
@@ -86,7 +91,9 @@ export default new Command({
 				case client.config.moderation.counts.timeout1:
 					await timeoutMember(member, {
 						duration: client.config.moderation.durations.timeout1,
-						reason: `Reaching ${client.config.moderation.counts.timeout1} warnings.`,
+						reason: t('command.mod.warn.reaching', {
+							count: client.config.moderation.counts.timeout1,
+						}),
 					});
 
 					const data = new punishmentModel({
@@ -95,7 +102,9 @@ export default new Command({
 						type: PunishmentTypes.Timeout,
 						userId: member.id,
 						moderatorId: client.user.id,
-						reason: `Reaching ${client.config.moderation.counts.timeout1} warnings.`,
+						reason: t('command.mod.warn.reaching', {
+							count: client.config.moderation.counts.timeout1,
+						}),
 						date: new Date(),
 						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout1),
 					});
@@ -106,9 +115,11 @@ export default new Command({
 						punishmentId: data._id,
 						user: member.user,
 						moderator: client.user,
-						reason: `Reaching ${client.config.moderation.counts.timeout1} warnings.`,
+						reason: t('command.mod.warn.reaching', {
+							count: client.config.moderation.counts.timeout1,
+						}),
 						duration: client.config.moderation.durations.timeout1,
-						referencedPunishment: warnData,
+						referencedPunishment: data,
 						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout1),
 					});
 
@@ -118,10 +129,13 @@ export default new Command({
 						expire: new Date(Date.now() + client.config.moderation.durations.timeout1),
 					});
 					break;
+
 				case client.config.moderation.counts.timeout2:
 					await timeoutMember(member, {
 						duration: client.config.moderation.durations.timeout2,
-						reason: `Reaching ${client.config.moderation.counts.timeout2} warnings.`,
+						reason: t('command.mod.warn.reaching', {
+							count: client.config.moderation.counts.timeout2,
+						}),
 					});
 
 					const data2 = new punishmentModel({
@@ -130,7 +144,9 @@ export default new Command({
 						type: PunishmentTypes.Timeout,
 						userId: member.id,
 						moderatorId: client.user.id,
-						reason: `Reaching ${client.config.moderation.counts.timeout2} warnings.`,
+						reason: t('command.mod.warn.reaching', {
+							count: client.config.moderation.counts.timeout2,
+						}),
 						date: new Date(),
 						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout2),
 					});
@@ -141,9 +157,11 @@ export default new Command({
 						punishmentId: data2._id,
 						user: member.user,
 						moderator: client.user,
-						reason: `Reaching ${client.config.moderation.counts.timeout2} warnings.`,
+						reason: t('command.mod.warn.reaching', {
+							count: client.config.moderation.counts.timeout2,
+						}),
 						duration: client.config.moderation.durations.timeout2,
-						referencedPunishment: warnData,
+						referencedPunishment: data,
 						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout1),
 					});
 
@@ -162,7 +180,9 @@ export default new Command({
 								type: PunishmentTypes.Ban,
 								userId: member.id,
 								moderatorId: client.user.id,
-								reason: `Reaching ${client.config.moderation.counts.ban} warnings.`,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.ban,
+								}),
 								date: new Date(),
 								expire: punishmentExpiry,
 							});
@@ -173,8 +193,10 @@ export default new Command({
 								punishmentId: data3._id,
 								user: member.user,
 								moderator: client.user,
-								reason: `Reaching ${client.config.moderation.counts.ban} warnings.`,
-								referencedPunishment: warnData,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.ban,
+								}),
+								referencedPunishment: data,
 								expire: punishmentExpiry,
 							});
 
@@ -190,7 +212,9 @@ export default new Command({
 								type: PunishmentTypes.Softban,
 								userId: member.id,
 								moderatorId: client.user.id,
-								reason: `Reaching ${client.config.moderation.counts.ban} warnings.`,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.ban,
+								}),
 								date: new Date(),
 								expire: new Date(
 									punishmentExpiry.getTime() + client.config.moderation.durations.ban
@@ -211,9 +235,11 @@ export default new Command({
 								punishmentId: data4._id,
 								user: member.user,
 								moderator: client.user,
-								reason: `Reaching ${client.config.moderation.counts.ban} warnings.`,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.ban,
+								}),
 								duration: client.config.moderation.durations.ban,
-								referencedPunishment: warnData,
+								referencedPunishment: data,
 								expire: punishmentExpiry,
 							});
 
@@ -226,7 +252,9 @@ export default new Command({
 					}
 
 					await member.ban({
-						reason: `Reaching ${client.config.moderation.counts.ban} warnings.`,
+						reason: t('command.mod.warn.reaching', {
+							count: client.config.moderation.counts.ban,
+						}),
 						deleteMessageDays: client.config.moderation.defaults.msgs,
 					});
 					break;

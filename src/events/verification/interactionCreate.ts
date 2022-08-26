@@ -15,6 +15,7 @@ import { verificationCollection, VERIFICATION_TIME } from '../../constants';
 import { Event } from '../../structures/Event';
 import { convertTime } from '../../functions/convertTime';
 import { VerificationModes } from '../../typings';
+import { t } from 'i18next';
 const characters = '0123456789';
 
 export default new Event('interactionCreate', async (interaction) => {
@@ -24,33 +25,31 @@ export default new Event('interactionCreate', async (interaction) => {
 	// No member role
 	if (!interaction.guild.roles.cache.get(client.config.general.memberRoleId))
 		return interaction.reply({
-			content: "Member role wasn't found, please contact a staff member!",
+			content: t('event.verification.noMemberRole'),
 			ephemeral: true,
 		});
 
 	// Already verified
 	if ((interaction.member as GuildMember).roles.cache.has(client.config.general.memberRoleId))
 		return interaction.reply({
-			content: "You're already verified into the server!",
+			content: t('event.verification.alreadyVerified'),
 			ephemeral: true,
 		});
 
 	// Verificaton Cooldown
-	const cooldownRemaining = `${~~(+verificationCollection.get('cooldown:' + interaction.user.id) - Date.now())}`;
-	if (verificationCollection.has('cooldown:' + interaction.user.id))
+	const cooldownRemaining = `${~~(+verificationCollection.get(`cooldown:${interaction.user.id}`) - Date.now())}`;
+	if (verificationCollection.has(`cooldown:${interaction.user.id}`))
 		return interaction.reply({
 			embeds: [
 				new EmbedBuilder()
-					.setDescription(
-						`Please wait **${convertTime(~~+cooldownRemaining)}** before trying to verify again.`
-					)
+					.setDescription(t('event.verification.cooldown', { time: convertTime(~~+cooldownRemaining) }))
 					.setColor(Colors.Yellow),
 			],
 			ephemeral: true,
 		});
-	verificationCollection.set('cooldown:' + interaction.user.id, Date.now() + 30000);
+	verificationCollection.set(`cooldown:${interaction.user.id}`, Date.now() + 30000);
 	setTimeout(() => {
-		verificationCollection.delete('cooldown:' + interaction.user.id);
+		verificationCollection.delete(`cooldown:${interaction.user.id}`);
 	}, 30000);
 
 	const verifiactionMode: number = generateRandomNumber(1, 3);
@@ -62,13 +61,11 @@ export default new Event('interactionCreate', async (interaction) => {
 				let key2 = generateRandomNumber(1, 2) === 1 ? key1 : generateCode();
 
 				const embed = new EmbedBuilder()
-					.setAuthor({ name: 'Are these keys matching each other?' })
-					.setDescription(
-						'Check if the 2 keys below are **exactly** the same as each other. Submit your answer by clicking the buttons!'
-					)
+					.setAuthor({ name: t('event.verification.matching.title') })
+					.setDescription(t('event.verification.matching.description'))
 					.addFields([
-						{ name: 'Key #1', value: key1, inline: true },
-						{ name: 'Key #2', value: key2, inline: true },
+						{ name: t('event.verification.matching.key', { count: 1 }), value: key1, inline: true },
+						{ name: t('event.verification.matching.key', { count: 2 }), value: key2, inline: true },
 					])
 					.setColor(client.cc.invisible);
 
@@ -110,19 +107,17 @@ export default new Event('interactionCreate', async (interaction) => {
 							embeds: [
 								new EmbedBuilder()
 									.setColor(Colors.Green)
-									.setDescription('Congrats! You were verified in the server.'),
+									.setDescription(t('event.verification.correct')),
 							],
 							components: [],
 						});
-						verificationCollection.delete('cooldown:' + interaction.user.id);
+						verificationCollection.delete(`cooldown:${interaction.user.id}`);
 					} else {
 						interaction.editReply({
 							embeds: [
 								new EmbedBuilder()
 									.setColor(Colors.Red)
-									.setDescription(
-										"Whoops, your answer wasn't correct. Try again to get verified."
-									),
+									.setDescription(t('event.verification.incorrect')),
 							],
 							components: [],
 						});
@@ -136,7 +131,7 @@ export default new Event('interactionCreate', async (interaction) => {
 						embeds: [
 							new EmbedBuilder()
 								.setColor(Colors.Red)
-								.setDescription('Verification timed out, try again to verify yourself.'),
+								.setDescription(t('event.verification.timeout')),
 						],
 						components: [],
 					});
@@ -148,7 +143,7 @@ export default new Event('interactionCreate', async (interaction) => {
 				let key = generateCode();
 
 				const modal = new ModalBuilder()
-					.setTitle(`Your code is ${key}`)
+					.setTitle(t('event.verification.modal.title', { key }))
 					.setCustomId('verification:modal-' + interaction.user.id)
 					.addComponents([
 						{
@@ -157,7 +152,7 @@ export default new Event('interactionCreate', async (interaction) => {
 								{
 									type: ComponentType.TextInput,
 									custom_id: 'answer',
-									label: 'Enter your code here:',
+									label: t('event.verification.modal.label'),
 									style: TextInputStyle.Short,
 									required: true,
 									max_length: 5,
@@ -169,22 +164,20 @@ export default new Event('interactionCreate', async (interaction) => {
 
 				await interaction.showModal(modal);
 
-				verificationCollection.set('modal:answer-' + interaction.user.id, key);
+				verificationCollection.set(`modal:${interaction.user.id}`, key);
 				setTimeout(() => {
-					if (!verificationCollection.get('modal:answer-' + interaction.user.id)) return;
+					if (!verificationCollection.get(`modal:${interaction.user.id}`)) return;
 
 					interaction.followUp({
 						embeds: [
 							new EmbedBuilder()
 								.setColor(Colors.Red)
-								.setDescription(
-									'Your time has ended to submit your answer, try again to get verified.'
-								),
+								.setDescription(t('event.verification.timeout')),
 						],
 						ephemeral: true,
 					});
 
-					verificationCollection.delete('modal:answer-' + interaction.user.id);
+					verificationCollection.delete(`modal:${interaction.user.id}`);
 				}, VERIFICATION_TIME);
 			}
 			break;
@@ -193,10 +186,8 @@ export default new Event('interactionCreate', async (interaction) => {
 				let key = generateCode();
 
 				const embed = new EmbedBuilder()
-					.setAuthor({ name: 'Select the option which is matching your key' })
-					.setDescription(
-						`Select the option in the menu below which is **exactly** matching your key.\n\n**Your key:** ${key}`
-					)
+					.setAuthor({ name: t('event.verification.selection.title') })
+					.setDescription(t('event.verification.selection.description', { key }))
 					.setColor(client.cc.invisible);
 
 				const options: string[] = [key];
@@ -206,7 +197,7 @@ export default new Event('interactionCreate', async (interaction) => {
 
 				const buttonComponent = new ActionRowBuilder<SelectMenuBuilder>().addComponents([
 					new SelectMenuBuilder()
-						.setPlaceholder('Select the matching key')
+						.setPlaceholder(t('event.verification.selection.selectMatching'))
 						.setCustomId('verification:selection')
 						.setMaxValues(1)
 						.setMinValues(1)
@@ -242,19 +233,17 @@ export default new Event('interactionCreate', async (interaction) => {
 							embeds: [
 								new EmbedBuilder()
 									.setColor(Colors.Green)
-									.setDescription('Congrats! You were verified in the server.'),
+									.setDescription(t('event.verification.correct')),
 							],
 							components: [],
 						});
-						verificationCollection.delete('cooldown:' + interaction.user.id);
+						verificationCollection.delete(`cooldown:${interaction.user.id}`);
 					} else {
 						interaction.editReply({
 							embeds: [
 								new EmbedBuilder()
 									.setColor(Colors.Red)
-									.setDescription(
-										"Whoops, your answer wasn't correct. Try again to get verified."
-									),
+									.setDescription(t('event.verification.incorrect')),
 							],
 							components: [],
 						});
@@ -268,7 +257,7 @@ export default new Event('interactionCreate', async (interaction) => {
 						embeds: [
 							new EmbedBuilder()
 								.setColor(Colors.Red)
-								.setDescription('Verification timed out, try again to verify yourself.'),
+								.setDescription(t('event.verification.timeout')),
 						],
 						components: [],
 					});

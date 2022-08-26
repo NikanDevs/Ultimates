@@ -1,12 +1,6 @@
-import { Colors, EmbedBuilder, Formatters, resolveColor, User } from 'discord.js';
+import { Colors, EmbedBuilder, resolveColor } from 'discord.js';
 import { client } from '../..';
-import {
-	type emojisConfigTypes,
-	punishmentTypeNames,
-	type EmojisConfigTypes,
-	emojisConfigDefaults,
-} from '../../typings';
-import { PunishmentTypes } from '../../typings';
+import { type emojisConfigTypes, type EmojisConfigTypes, emojisConfigDefaults } from '../../typings';
 import { load } from 'js-yaml';
 import { existsSync, readFileSync } from 'node:fs';
 
@@ -44,16 +38,6 @@ export const clientEmbeds = {
 	},
 	error: function name(error: string) {
 		const embed = new EmbedBuilder().setDescription(client.cc.error + ' • ' + error).setColor(Colors.Red);
-		return embed;
-	},
-	moderation: function (user: User | string, options: { action: PunishmentTypes; id: string }) {
-		const embed = new EmbedBuilder()
-			.setDescription(
-				`${Formatters.bold(user.toString())} was ${punishmentTypeNames[options.action]}  • ID: \`${
-					options['id']
-				}\``
-			)
-			.setColor(client.cc.moderation);
 		return embed;
 	},
 };

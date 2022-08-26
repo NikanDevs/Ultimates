@@ -7,6 +7,7 @@ import { PunishmentTypes } from '../../typings';
 import { generateManualId } from '../../utils/generatePunishmentId';
 import { interactions } from '../../interactions';
 import { t } from 'i18next';
+import { EmbedBuilder } from 'discord.js';
 
 export default new Command({
 	interaction: interactions.unban,
@@ -18,17 +19,8 @@ export default new Command({
 		if (!bannedMember)
 			return interaction.reply({
 				embeds: [
-					client.embeds.error(
-						"I couldn't find that banned member. " + t('common.errors.userAutocomplete')
-					),
+					client.embeds.error(t('command.mod.unban.none') + ' ' + t('common.errors.useAutocomplete')),
 				],
-				ephemeral: true,
-			});
-
-		await interaction.guild.bans.remove(userId);
-		if (bannedMember.user.bot)
-			return interaction.reply({
-				embeds: [client.embeds.success(`**${bannedMember.user.tag}** was unbanned.`)],
 				ephemeral: true,
 			});
 
@@ -46,10 +38,15 @@ export default new Command({
 
 		await interaction.reply({
 			embeds: [
-				client.embeds.moderation(`**${bannedMember.user.tag}**`, {
-					action: PunishmentTypes.Unban,
-					id: data._id,
-				}),
+				new EmbedBuilder()
+					.setDescription(
+						t('common.modEmbed', {
+							user: bannedMember.user.tag,
+							action: t('command.mod.unban.past'),
+							id: data._id,
+						})
+					)
+					.setColor(client.cc.moderation),
 			],
 			ephemeral: true,
 		});
