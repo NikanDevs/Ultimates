@@ -1,7 +1,7 @@
 {
 	"common": {
 		"errors": {
-			"useAutocomplete": "Use the autocomplete for better results.",
+			"useAutocomplete": "Use the autocomplete for more accurate results.",
 			"invalidDuration": "This duration is invalid.",
 			"invalidMember": "I couldn't find that member in this server.",
 			"invalidID": "I couldn't find a punishment with that ID.",
@@ -23,10 +23,10 @@
 		},
 		"modmail": {
 			"modmail": {
-				"notSet": "The modmail module isn't set up, set it up using `/configure general`",
+				"notSet": "The modmail module isn't set up. Set it up using `/configure general`.",
 				"close": {
 					"invalidChannel": "You may only run this command in a ticket channel.",
-					"invalidUser": "I wasn't able to find the user, did you change the channel topic?",
+					"invalidUser": "I wasn't able to find the user. Did you change the channel topic?",
 					"transcript_title": "Modmail Transcript",
 					"transcript_description": "Modmail Transcript for {- user}",
 					"deleting": "This ticket will be deleted in 10 seconds...",
@@ -60,11 +60,11 @@
 						"modmail_name": "Modmail logging",
 						"servergate_name": "Joins and leaves",
 						"voice_name": "Voice state updates",
-						"mod_description": "Sends the moderation case for a punishment when it's recorded.",
+						"mod_description": "Sends the moderation case for a punishment when it is recorded.",
 						"message_description": "Triggered when a message was deleted, edited, or when a channel was purged.",
 						"modmail_description": "Triggered when someone creates, deletes a ticket, or when a user gets blacklisted.",
-						"servergate_description": "Triggered when a user has joined or left the server.",
-						"voice_description": "Triggered when a user has joined or left a voice channel."
+						"servergate_description": "Triggered when a user joins or leaves the server.",
+						"voice_description": "Triggered when a user joins or leaves a voice channel."
 					},
 					"modal": {
 						"channel_label": "Provide a channel ID:",
@@ -92,13 +92,13 @@
 						"capitals_name": "Too many capital letters",
 						"urls_name": "Urls and links",
 						"badwords_description": "Triggered when a filtered word is sent in a channel. Click the button below to edit the filtered words.",
-						"invites_description": "Triggered when a discord server invite is sent in a channel.",
-						"largeMessage_description": "Triggered when a very large message is sent in a channel",
+						"invites_description": "Triggered when a Discord server invite is sent in a channel.",
+						"largeMessage_description": "Triggered when a huge message is sent in a channel",
 						"massMention_description": "Triggered when a user @mentions more than 4 people in a channel.",
 						"massEmoji_description": "Triggered when a user uses too many emojis in a single message.",
-						"spam_description": "Triggered when a user sends message too quickly in a channel.",
+						"spam_description": "Triggered when a user sends messages too quickly in a channel.",
 						"capitals_description": "Triggered when a user uses too many capital letters in a single message.",
-						"urls_description": "Triggered when a user sends a link of any type in the chat."
+						"urls_description": "Triggered when a user sends a link of any type in a channel."
 					},
 					"modal": {
 						"ignoreChannels_label": "Ignore channels, separate with spaces",
@@ -130,7 +130,7 @@
 						"seprate": "separate with spaces",
 						"invalidCategory": "Please provide a valid category id in this server.",
 						"invalidURL": "Please provide a valid URL.",
-						"invalidRole": "Please provide a valid, and manageble role ID in the server."
+						"invalidRole": "Please provide a valid, and manageable role ID in the server."
 					},
 					"current": "• **Current:** {- value}",
 					"edit": "Edit"
@@ -141,10 +141,10 @@
 						"durations_name": "Punishment durations",
 						"defaults_name": "Default values",
 						"reasons_name": "Command reasons",
-						"counts_description": "These counts are used to take automatic actions on users when they reach a number of warnings. \nEx - Timeout #1: How many manual warnings should a user have to get before they are placed on timeout for the 1st time; Same thing for the other options.",
-						"durations_description": "These durations are used for automatic punishments that a user can receive after reaching a number of warnings. \nEx - Timeout #1: How long should the person be timed out for when reaching the first timeout goal? (You may set these goals using the ${command.utility.configure.moderation.enum.counts_name} option)",
+						"counts_description": "These counts are used to take automatic actions on users when they reach a number of warnings.\nEx - Timeout #1: How many manual warnings should a user acquire before they are placed on timeout for the first time? This also applies for the other options.",
+						"durations_description": "These durations are used for automatic punishments that a user can receive after reaching a number of warnings.\nEx - Timeout #1: How long should the person be timed out for when reaching the first timeout goal? (You may set these goals using the ${command.utility.configure.moderation.enum.counts_name} option)",
 						"defaults_description": "The default values are used when a moderator doesn't enter their value whilst using a (/) command.",
-						"reasons_description": "The reasons are shown in specific command options as autocomplete to make moderation easier. The max length for the reason is 100 characters."
+						"reasons_description": "The reasons are shown in specific command options as autocomplete to make moderation easier. The max length for a reason is 100 characters."
 					},
 					"embed": {
 						"timeout1": "{emoji} • **Timeout #1:** {- value}",
@@ -162,7 +162,7 @@
 						"input": "Enter the value",
 						"invalidNumber": "Please enter a valid number.",
 						"noUnique": "Punishment counts must be unique.",
-						"invalidDays": "The delete messages days must be between 0 and 7."
+						"invalidDays": "The delete message days must be between 0 and 7."
 					},
 					"days": {
 						"0": "Don't delete any",
@@ -199,7 +199,7 @@
 			},
 			"verification": {
 				"default_title": "Verification Required",
-				"default_description": "This server requires verification before you can view all the channels and be a part of the server and prove that you are not a robot. \n\n• Click the button below and get started!",
+				"default_description": "This server requires verification before you can view all the channels, be a part of the server, and prove you are not a robot.\n\n• Click the button below to get started!",
 				"default_button": "Verify",
 				"invalidChannel": "The channel must be in this server.",
 				"sent": "The verification embed was sent to {- channel}"
@@ -230,7 +230,7 @@
 					"joined": "• **Joined:** {- date}",
 					"nickname": "• **Nickname:** {- nickname}",
 					"boosting": "• **Boosting:** {- date}",
-					"acknowments": "• **Acknowments:** {- value}",
+					"acknowments": "• **Acknowledgments:** {- value}",
 					"roles_owner": "Server Owner",
 					"roles_mod": "Moderator",
 					"roles_events": "Event manager",
@@ -263,18 +263,18 @@
 				"channel": {
 					"lock_title": "Channel Locked",
 					"unlock_title": "Channel Unlocked",
-					"lock_description": "This channel was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the channel gets unlocked.",
-					"unlock_description": "This channel was unlocked by a moderator!\n\nYou can now use the channel, thanks for your patient.",
+					"lock_description": "A moderator locked down this channel!\nYou are not muted.\n\nPlease be patient until the channel gets unlocked.",
+					"unlock_description": "A moderator unlocked this channel!\n\nYou can now use the channel, we appreciate your patience.",
 					"lock_respond": "{- channel} was locked.",
 					"unlock_respond": "{- channel} was unlocked.",
-					"invalidChannel": "You can only lock text, voice and stage channels."
+					"invalidChannel": "You can only lock text, voice, and stage channels."
 				},
 				"server": {
 					"locking": "This server is already getting locked.",
 					"lock_title": "Sever Locked",
 					"unlock_title": "Sever Unlocked",
-					"lock_description": "This server was locked down by a moderator!\nYou are not muted!\n\nPlease be patient until the server gets unlocked.",
-					"unlock_description": "This server was unlocked by a moderator!\n\nYou can now use it, thanks for your patient.",
+					"lock_description": "A moderator locked down this server!\nYou are not muted!\n\nPlease be patient until the server gets unlocked.",
+					"unlock_description": "A moderator unlocked this server!\n\nYou can now use it, we appreciate your patience.",
 					"lock_respond": "The server was locked.",
 					"unlock_respond": "The server was unlocked."
 				}
@@ -287,7 +287,7 @@
 			"punishment": {
 				"revoke": {
 					"revoked": "Punishment **{id}** was revoked",
-					"timeout_invalid": "The punished user is not in the server, I can not revoke the timeout.",
+					"timeout_invalid": "The punished user is not in the server, so I cannot revoke the timeout.",
 					"history": "*Punishment revoked at [#{case}]({- url})*"
 				},
 				"search": {
@@ -308,7 +308,7 @@
 				"view": {
 					"embed": {
 						"manual-id": "`{warnCount}` **{type}** | **ID: {id}**",
-						"automod-id": "`{warnCount}` **{type}** | Auto Moderation",
+						"automod-id": "`{warnCount}` **{type}** | Auto-Moderation",
 						"date": "• **Date:** {- date}",
 						"moderator": "• **Moderator:** {- moderator}",
 						"expire": "• **Expire:** {- expire}",
@@ -337,8 +337,8 @@
 				"none": "This channel doesn't have any slowmode.",
 				"current": "The current slowmode is **{slowmode}**",
 				"same": "Providing the current slowmode will not change anything.",
-				"set_off": "Slowmode was turned off.",
-				"set_on": "Slowmode was set to **{value}**"
+				"set_off": "Slowmode is turned off.",
+				"set_on": "Slowmode set to **{value}**"
 			},
 			"softban": {
 				"past": "soft banned",
@@ -360,27 +360,27 @@
 			},
 			"warnings": {
 				"no": "No warnings were found for you.",
-				"no_manual": "No maunal warnings were found for you.",
-				"no_automod": "No auto moderation warnings were found for you."
+				"no_manual": "No manual warnings were found for you.",
+				"no_automod": "No auto-moderation warnings were found for you."
 			}
 		}
 	},
 	"event": {
 		"automod": {
 			"badwords": "{- user}, you may not use that word.",
-			"invites": "{- user}, you may not send discord invites here.",
-			"largeMessage": "{- user}, you may not send large messages here.",
+			"invites": "{- user}, you may not send Discord invites here.",
+			"largeMessage": "{- user}, you may not send huge messages here.",
 			"massMention": "{- user}, you may not mention more than {count} people.",
-			"massEmoji": "{- user}, you may not use this many emojis.",
-			"spam": "{- user}, you may not send messages this quick.",
-			"capitals": "{- user}, you may not use this many capital letters.",
+			"massEmoji": "{- user}, you may not use that many emojis.",
+			"spam": "{- user}, you may not send messages too quickly.",
+			"capitals": "{- user}, you may not use that many capital letters.",
 			"urls": "{- user}, you may not send links here.",
-			"reaching_one": "Reaching {count} auto moderation warning",
-			"reaching_other": "Reaching {count} auto moderation warnings",
+			"reaching_one": "Reaching {count} auto-moderation warning",
+			"reaching_other": "Reaching {count} auto-moderation warnings",
 			"reason": {
 				"badwords": "Sending filtered words in the chat",
-				"invites": "Sending discord invites in the chat",
-				"largeMessage": "Sending a large message in the chat",
+				"invites": "Sending Discord invites in the chat",
+				"largeMessage": "Sending a huge message in the chat",
 				"massMention": "Mentioning more than {count} people",
 				"massEmoji": "Sending too many emojis at once",
 				"spam": "Sending messages too quickly",
@@ -408,8 +408,8 @@
 			},
 			"applicationCommand": {
 				"noCommand": "No commands were found matching `{cmd}`",
-				"botPerm_one": "I need `{permissions}` permission to excute this command.",
-				"botPerm_other": "I need `{permissions}` permissions to excute this command.",
+				"botPerm_one": "I need `{permissions}` permission to execute this command.",
+				"botPerm_other": "I need `{permissions}` permissions to execute this command.",
 				"cooldown": "You need to wait for **{time}** before using this command.",
 				"mongoDB": "MongoDB is not connected, please contact a developer."
 			}
@@ -425,7 +425,7 @@
 				"joined_first": "A user has joined!",
 				"joined_back": "A user has joined back!",
 				"left_normal": "Member left!",
-				"left_antiraid": "Member left, most likely attected by the antiraid."
+				"left_antiraid": "Member left, most likely affected by the antiraid."
 			},
 			"messageDelete": {
 				"description": "Message deleted in {- channel} • {- date}",
@@ -462,10 +462,10 @@
 		"modmail": {
 			"notSet": "This server doesn't have the modmail module set up.",
 			"blacklist_title": "Blacklisted from opening tickets",
-			"blacklist_description": "Sorry, but looks like you were blacklisted from using the modmail.\nIf you think that this is not fair and you don't deserve it, please contact a moderator!",
+			"blacklist_description": "Sorry, but looks like you are blacklisted from using the modmail.\nIf you think that this is not fair and you don't deserve it, please contact a moderator!",
 			"blacklist_reason": "Reason",
-			"filteredWord": "You can not use that word in tickets.",
-			"timedOut": "You can not open modmail tickets whilst timed out.",
+			"filteredWord": "You cannot use that word in tickets.",
+			"timedOut": "You cannot open modmail tickets while timed out.",
 			"cooldown": "You need to wait **{time}** before creating another ticket.",
 			"confirmation": {
 				"exists": "Please accept or cancel the existing confirmation.",
@@ -496,9 +496,9 @@
 			"noMemberRole": "The member role wasn't found, contact an administrator.",
 			"alreadyVerified": "You are already verified into the server.",
 			"cooldown": "You need to wait **{time}** before trying to verify again.",
-			"correct": "Congrats! You were verified in the server.",
+			"correct": "Congratulations! You were verified in the server.",
 			"incorrect": "Whoops, your answer wasn't correct. Try again to get verified.",
-			"timeout": "Your time has ended, try again to verify yourself.",
+			"timeout": "Your time has ended. To verify yourself, try again.",
 			"matching": {
 				"title": "Do these keys match each other?",
 				"description": "'Check if the 2 keys below are **exactly** the same as each other. Submit your answer by clicking the buttons!",
@@ -509,7 +509,7 @@
 			"modal": {
 				"title": "Your key is {key}",
 				"label": "Enter your code here:",
-				"timeout": "Looks like your time has already ended to sumbit an answer."
+				"timeout": "Looks like your time has already ended to submit an answer."
 			},
 			"selection": {
 				"title": "Select the option that matches your key",
@@ -521,13 +521,13 @@
 	"function": {
 		"ignore": {
 			"bot": "You cannot perform actions on bots.",
-			"yourself": "You can't perform that action on yourself[.](https://takeb1nzyto.space/)",
+			"yourself": "You cannot perform that action on yourself[.](https://takeb1nzyto.space/)",
 			"botPerms": "I don't have enough permissions to perform this action.",
 			"userPerms": "Your position is not high enough to perform this action.",
-			"admin": "You can not take actions on an administrator.",
-			"ban": "This member can't be banned.",
-			"kick": "This member can't be kicked.",
-			"timeout": "This member can't be timed out, most likely because they are an administrator."
+			"admin": "You cannot take actions on an administrator.",
+			"ban": "This member cannot be banned.",
+			"kick": "This member cannot be kicked.",
+			"timeout": "This member cannot be timed out, most likely because they are an administrator."
 		},
 		"convertTime": {
 			"year_one": "year",
