@@ -11,8 +11,7 @@
 		"start:prod": "node dist/index.js",
 		"register": "ts-node scripts/register.ts",
 		"format": "prettier --write .",
-		"check:format": "prettier 'src' 'scripts' 'locales' --check",
-		"postinstall": "husky install"
+		"check:format": "prettier 'src' 'scripts' 'locales' --check"
 	},
 	"private": true,
 	"keywords": [],
