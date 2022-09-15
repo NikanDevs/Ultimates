@@ -147,14 +147,14 @@
 						"reasons_description": "The reasons are shown in specific command options as autocomplete to make moderation easier. The max length for a reason is 100 characters."
 					},
 					"embed": {
-						"timeout1": "{emoji} • **Timeout #1:** {- value}",
-						"timeout2": "{emoji} • **Timeout #2:** {- value}",
-						"ban": "{emoji} • **Ban:** {- value}",
-						"automodMulti": "{emoji} • **Automod multiplication:** {- value}",
-						"automodTimeout": "{emoji} • **Automod timeout:** {- value}",
-						"duration_timeout": "{emoji} • **Timeout duration:** {- value}",
-						"duration_softban": "{emoji} • **Softban duration:** {- value}",
-						"days": "{emoji} • **Delete message days:** {- value}",
+						"timeout1": "{- emoji} • **Timeout #1:** {- value}",
+						"timeout2": "{- emoji} • **Timeout #2:** {- value}",
+						"ban": "{- emoji} • **Ban:** {- value}",
+						"automodMulti": "{- emoji} • **Automod multiplication:** {- value}",
+						"automodTimeout": "{- emoji} • **Automod timeout:** {- value}",
+						"duration_timeout": "{- emoji} • **Timeout duration:** {- value}",
+						"duration_softban": "{- emoji} • **Softban duration:** {- value}",
+						"days": "{- emoji} • **Delete message days:** {- value}",
 						"permanent": "Permanent"
 					},
 					"modal": {
@@ -179,9 +179,9 @@
 				"none": "None"
 			},
 			"ping": {
-				"mongoDB": "{emoji} **MongoDB** - {status}",
-				"websocket": "{emoji} **Websocket** - {ping}ms",
-				"roundtrip": "{emoji} **Roundtrip** - {ping}ms",
+				"mongoDB": "{- emoji} **MongoDB** - {status}",
+				"websocket": "{- emoji} **Websocket** - {ping}ms",
+				"roundtrip": "{- emoji} **Roundtrip** - {ping}ms",
 				"uptime": "🕓 **Uptime** - {uptime}",
 				"status": {
 					"0": "Disconnected",
@@ -475,7 +475,7 @@
 				"cancel": "Cancel",
 				"creating": "Your modmail ticket is being created, please wait...",
 				"created_title": "Modmail ticket created",
-				"created_notSent": "• If your message wasn't reacted with {emoji}, it was not sent.",
+				"created_notSent": "• If your message wasn't reacted with {- emoji}, it was not sent.",
 				"created_description": "The ticket you requested has been created.\nPlease consider asking your question and wait for a staff member to respond.\n${event.modmail.confirmation.created_notSent}"
 			},
 			"embed": {
