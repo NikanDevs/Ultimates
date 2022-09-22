@@ -9,7 +9,7 @@ export async function generateModmailInfoEmbed(user: User) {
 
 	return new EmbedBuilder()
 		.setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-		.setColor(client.cc.ultimates)
+		.setColor(client.cc.invisible)
 		.setDescription(t('event.modmail.embed.description', { id: user.id, user: user.toString() }))
 		.setThumbnail(user.displayAvatarURL())
 		.addFields([

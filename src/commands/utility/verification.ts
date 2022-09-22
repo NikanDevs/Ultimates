@@ -21,7 +21,7 @@ export default new Command({
 
 		const embed = new EmbedBuilder()
 			.setTitle(title)
-			.setColor(client.cc.ultimates)
+			.setColor(client.cc.invisible)
 			.setDescription(description)
 			.setImage(image ? image.proxyURL : null);
 
@@ -39,3 +39,4 @@ export default new Command({
 		});
 	},
 });
+

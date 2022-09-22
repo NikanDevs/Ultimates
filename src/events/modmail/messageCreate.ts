@@ -96,7 +96,7 @@ export default new Event('messageCreate', async (message) => {
 					url: `https://discord.com/users/${message.author.id}`,
 				})
 				.setImage(message.attachments?.first()?.proxyURL)
-				.setColor(client.cc.ultimates);
+				.setColor(client.cc.invisible);
 
 			if (message.content) toSendEmbed.setDescription(message.content);
 			finalEmbeds.push(toSendEmbed);
@@ -141,7 +141,7 @@ export default new Event('messageCreate', async (message) => {
 			const confirmationEmbed = new EmbedBuilder()
 				.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
 				.setTitle(t('event.modmail.confirmation.title'))
-				.setColor(client.cc.ultimates)
+				.setColor(client.cc.invisible)
 				.setDescription(t('event.modmail.confirmation.description', { guild: guild.name }));
 
 			const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents([
@@ -252,7 +252,7 @@ export default new Event('messageCreate', async (message) => {
 				iconURL: 'https://cdn.discordapp.com/attachments/870637449158742057/909825851225427978/staff-icon.png',
 			})
 			.setImage(message.attachments?.first()?.proxyURL)
-			.setColor(client.cc.ultimates);
+			.setColor(client.cc.invisible);
 
 		if (message.content) toSendEmbed.setDescription(message.content);
 

@@ -44,7 +44,7 @@ export default new Command({
 
 		const embed = new EmbedBuilder()
 			.setAuthor({ name: t('command.utility.staff.staffs'), iconURL: client.user.displayAvatarURL() })
-			.setColor(client.cc.ultimates)
+			.setColor(client.cc.invisible)
 			.setDescription(
 				staff
 					.map((staff) => `${statuses[staff.presence?.status]} • ${staff} - ${guessRole(staff)}`)

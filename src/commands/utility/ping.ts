@@ -14,7 +14,7 @@ export default new Command({
 				name: client.user.username,
 				iconURL: client.user.displayAvatarURL(),
 			})
-			.setColor(client.cc.ultimates)
+			.setColor(client.cc.invisible)
 			.setDescription(
 				[
 					t('command.utility.ping.mongoDB', {
