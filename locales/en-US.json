@@ -55,11 +55,14 @@
 			"configure": {
 				"logs": {
 					"enum": {
+						"logs": "Logs",
+						"base_name": "Base forum channel",
 						"mod_name": "Moderation logging",
 						"message_name": "Message logging",
 						"modmail_name": "Modmail logging",
 						"servergate_name": "Joins and leaves",
 						"voice_name": "Voice state updates",
+						"base_description": "All logging module channels are made as posts under this forum channel.",
 						"mod_description": "Sends the moderation case for a punishment when it is recorded.",
 						"message_description": "Triggered when a message was deleted, edited, or when a channel was purged.",
 						"modmail_description": "Triggered when someone creates, deletes a ticket, or when a user gets blacklisted.",
@@ -67,17 +70,20 @@
 						"voice_description": "Triggered when a user joins or leaves a voice channel."
 					},
 					"modal": {
-						"channel_label": "Provide a channel ID:",
+						"channel_label": "Provide a forum channel ID:",
 						"ignoreChannels_label": "Ignore channels, separate with spaces",
 						"ignoreRoles_label": "Ignore roles, separate with spaces",
-						"invalidChannel": "Please provide a valid text channel ID."
+						"invalidChannel": "Please provide a valid forum channel ID."
 					},
 					"button": {
-						"enabled": "Enabled",
-						"disabled": "Disabled",
+						"enable": "Enable",
+						"disable": "Disable",
+						"createChannel": "Create channel",
+						"deleteChannel": "Delete channel",
 						"editChannel": "Edit channel",
 						"editIgnores": "Edit ignores"
 					},
+					"noBase": "Please set a base forum channel first.",
 					"channel": "• **Channel:** {- channel}",
 					"ignores": "• **Ignores:** {- ignores}"
 				},

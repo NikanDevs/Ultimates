@@ -64,7 +64,8 @@ export default new Event('messageUpdate', async (oldMessage, newMessage) => {
 			},
 		]);
 
-	client.config.webhooks.message.send({
+	client.config.logging.webhook.send({
+		threadId: client.config.logging.message.channelId,
 		embeds: [logEmbed],
 	});
 });

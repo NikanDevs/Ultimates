@@ -64,7 +64,11 @@ export async function createModmailLog(options: createModmailLogOptions) {
 				.join('\n')
 				.replaceAll('LINE_BREAK\n', '')
 		);
-	if (logActivity('modmail')) var logMessage = await client.config.webhooks.modmail.send({ embeds: [embed] });
+	if (logActivity('modmail'))
+		var logMessage = await client.config.logging.webhook.send({
+			threadId: client.config.logging.modmail.channelId,
+			embeds: [embed],
+		});
 
 	if (options.action === ModmailActionTypes.Open) {
 		await addModmailTicket();

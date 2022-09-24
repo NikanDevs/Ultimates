@@ -58,7 +58,8 @@ export default new Event('messageDeleteBulk', async (messages) => {
 	logEmbed.setDescription(`${splitText(messagesMapped.join('\n'), EMBED_DESCRIPTION_MAX_LENGTH)}`);
 
 	if (messages.size > 10) {
-		const webHookMsg = await client.config.webhooks.message.send({
+		const webHookMsg = await client.config.logging.webhook.send({
+			threadId: client.config.logging.message.channelId,
 			content: t('event.logs.messageDeleteBulk.preparing'),
 		});
 
@@ -89,12 +90,13 @@ export default new Event('messageDeleteBulk', async (messages) => {
 				.setURL(srcbin.url),
 		]);
 
-		client.config.webhooks.message.editMessage(webHookMsg.id, {
+		client.config.logging.webhook.editMessage(webHookMsg.id, {
+			threadId: client.config.logging.message.channelId,
 			embeds: [logEmbed],
 			components: [viewAllRow],
 			content: null,
 		});
 	} else {
-		client.config.webhooks.message.send({ embeds: [logEmbed] });
+		client.config.logging.webhook.send({ threadId: client.config.logging.message.channelId, embeds: [logEmbed] });
 	}
 });

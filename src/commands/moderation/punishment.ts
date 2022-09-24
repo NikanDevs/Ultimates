@@ -167,8 +167,9 @@ export default new Command({
 					.catch(() => {})) as Message;
 				if (!logMessage) return;
 
-				await client.config.webhooks.mod
+				await client.config.logging.webhook
 					.editMessage(substanceLogID, {
+						threadId: client.config.logging.mod.channelId,
 						embeds: [
 							!logMessage.embeds[0].description.endsWith(':R>*')
 								? EmbedBuilder.from(logMessage.embeds[0]).setDescription(
@@ -505,7 +506,8 @@ export default new Command({
 			const logMessage = (await substanceLogChannel.messages.fetch(substanceLogID).catch(() => {})) as Message;
 			if (!logMessage) return;
 
-			client.config.webhooks.mod.editMessage(substanceLogID, {
+			client.config.logging.webhook.editMessage(substanceLogID, {
+				threadId: client.config.logging.mod.channelId,
 				embeds: [
 					!logMessage.embeds[0].description.endsWith(':R>*')
 						? EmbedBuilder.from(logMessage.embeds[0]).setDescription(
