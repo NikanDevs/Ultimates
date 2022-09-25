@@ -52,17 +52,9 @@ export type AutomodModules =
 
 // Logging system and modules typings
 
-export type LoggingModules = 'mod' | 'message' | 'modmail' | 'servergate' | 'voice';
+export type LoggingModules = 'base' | 'mod' | 'message' | 'modmail' | 'servergate' | 'voice';
 
 export const supportedLoggingIgnores: LoggingModules[] = ['message', 'voice'];
-
-export enum loggingWebhookNames {
-	'mod' = 'Mod-Logs',
-	'message' = 'Message-Logs',
-	'modmail' = 'Modmail-Logs',
-	'servergate' = 'Server-Gate',
-	'voice' = 'Voice-Logs',
-}
 
 // Logger
 

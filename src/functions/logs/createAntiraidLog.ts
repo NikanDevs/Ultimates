@@ -38,7 +38,10 @@ export async function createAntiraidLog(options: createAntiraidLogOptions) {
 		);
 
 	if (!logActivity('mod')) return;
-	var logMessage = await client.config.webhooks.mod.send({ embeds: [embed] });
+	var logMessage = await client.config.logging.webhook.send({
+		threadId: client.config.logging.mod.channelId,
+		embeds: [embed],
+	});
 
 	var findMessage = await (client.channels.cache.get(logMessage.channel_id) as TextChannel).messages.fetch(
 		logMessage.id

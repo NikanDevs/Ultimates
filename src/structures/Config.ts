@@ -2,22 +2,14 @@ import { WebhookClient } from 'discord.js';
 import { configModel } from '../models/config';
 
 export class Config {
-	/** Logging system webhook clients */
-	public webhooks = {
-		mod: null as WebhookClient,
-		message: null as WebhookClient,
-		modmail: null as WebhookClient,
-		servergate: null as WebhookClient,
-		voice: null as WebhookClient,
-	};
-
-	/** Logging system active status */
+	/** Logging system status */
 	public logging = {
-		mod: null as boolean,
-		message: null as boolean,
-		modmail: null as boolean,
-		servergate: null as boolean,
-		voice: null as boolean,
+		webhook: null as WebhookClient,
+		mod: { channelId: null as string, active: null as boolean },
+		message: { channelId: null as string, active: null as boolean },
+		modmail: { channelId: null as string, active: null as boolean },
+		servergate: { channelId: null as string, active: null as boolean },
+		voice: { channelId: null as string, active: null as boolean },
 	};
 
 	/** Automod data */
@@ -108,33 +100,16 @@ export class Config {
 			return returns;
 		}
 
-		this.webhooks.mod = new WebhookClient({
-			id: getWebhookInfo(data.logging.mod.webhook)[0],
-			token: getWebhookInfo(data.logging.mod.webhook)[1],
-		});
-		this.webhooks.message = new WebhookClient({
-			id: getWebhookInfo(data.logging.message.webhook)[0],
-			token: getWebhookInfo(data.logging.message.webhook)[1],
-		});
-		this.webhooks.modmail = new WebhookClient({
-			id: getWebhookInfo(data.logging.modmail.webhook)[0],
-			token: getWebhookInfo(data.logging.modmail.webhook)[1],
-		});
-		this.webhooks.servergate = new WebhookClient({
-			id: getWebhookInfo(data.logging.servergate.webhook)[0],
-			token: getWebhookInfo(data.logging.servergate.webhook)[1],
-		});
-		this.webhooks.voice = new WebhookClient({
-			id: getWebhookInfo(data.logging.voice.webhook)[0],
-			token: getWebhookInfo(data.logging.voice.webhook)[1],
-		});
-
 		this.logging = {
-			mod: data.logging.mod.active,
-			modmail: data.logging.modmail.active,
-			message: data.logging.message.active,
-			servergate: data.logging.servergate.active,
-			voice: data.logging.voice.active,
+			webhook: new WebhookClient({
+				id: getWebhookInfo(data.logging.base.webhook)[0],
+				token: getWebhookInfo(data.logging.base.webhook)[1],
+			}),
+			mod: { channelId: data.logging.mod.channelId, active: data.logging.mod.active },
+			modmail: { channelId: data.logging.modmail.channelId, active: data.logging.modmail.active },
+			message: { channelId: data.logging.message.channelId, active: data.logging.message.active },
+			servergate: { channelId: data.logging.servergate.channelId, active: data.logging.servergate.active },
+			voice: { channelId: data.logging.voice.channelId, active: data.logging.voice.active },
 		};
 	}
 
@@ -264,11 +239,12 @@ export class Config {
 			await new configModel({
 				_id: 'logging',
 				logging: {
-					mod: { channelId: null, webhook: null, active: false },
-					modmail: { channelId: null, webhook: null, active: false },
-					message: { channelId: null, webhook: null, active: false },
-					servergate: { channelId: null, webhook: null, active: false },
-					voice: { channelId: null, webhook: null, active: false },
+					base: { channelId: null, webhook: null },
+					mod: { channelId: null, active: true },
+					modmail: { channelId: null, active: true },
+					message: { channelId: null, active: true },
+					servergate: { channelId: null, active: true },
+					voice: { channelId: null, active: true },
 				},
 			}).save();
 

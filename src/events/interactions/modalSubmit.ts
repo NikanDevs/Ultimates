@@ -1,4 +1,4 @@
-import { ChannelType, EmbedBuilder, InteractionType, TextChannel } from 'discord.js';
+import { ChannelType, EmbedBuilder, ForumChannel, InteractionType } from 'discord.js';
 import { t } from 'i18next';
 import { client } from '../..';
 import {
@@ -18,7 +18,6 @@ import {
 	Emojis,
 	GeneralConfigTypes,
 	LoggingModules,
-	loggingWebhookNames,
 	ModerationConfigTypes,
 	supportedLoggingIgnores,
 } from '../../typings';
@@ -121,10 +120,10 @@ export default new Event('interactionCreate', async (interaction) => {
 		if (!interaction.isFromMessage()) return;
 		const module = interaction.customId.replace('logging:channel:', '') as LoggingModules;
 		const channelId = interaction.fields.getTextInputValue('channelId');
-		const channel = interaction.guild.channels.cache.get(channelId) as TextChannel;
-		const data = await configModel.findById('logging');
+		const channel = interaction.guild.channels.cache.get(channelId) as ForumChannel;
+		let data = await configModel.findById('logging');
 
-		if (!channel || channel?.type !== ChannelType.GuildText)
+		if (!channel || channel?.type !== ChannelType.GuildForum)
 			return interaction.reply({
 				embeds: [client.embeds.error(t('command.utility.configure.logs.modal.invalidChannel'))],
 				ephemeral: true,
@@ -132,10 +131,11 @@ export default new Event('interactionCreate', async (interaction) => {
 
 		if (data.logging[module].channelId === channelId) return interaction.deferUpdate();
 
-		await client.config.webhooks[module].delete().catch(() => {});
-		const newWebhook = await channel.createWebhook({
-			name: loggingWebhookNames[module],
-			avatar: client.user.displayAvatarURL({ extension: 'png' }),
+		await client.config.logging.webhook?.delete().catch(() => {});
+		const newWebhook = await interaction.guild.channels.createWebhook({
+			channel: channel.id,
+			name: t('command.utility.configure.logs.enum.logs'),
+			avatar: client.user.displayAvatarURL(),
 		});
 
 		await configModel.findByIdAndUpdate('logging', {
@@ -152,6 +152,8 @@ export default new Event('interactionCreate', async (interaction) => {
 		});
 
 		await client.config.updateLogs();
+		data = await configModel.findById('logging');
+
 		await interaction.deferUpdate();
 		await interaction.message.edit({
 			embeds: [

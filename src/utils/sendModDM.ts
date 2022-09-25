@@ -53,7 +53,7 @@ export async function sendModDM(member: GuildMember, options: sendModDMOptions) 
 
 	const appealButton = new ActionRowBuilder<ButtonBuilder>().addComponents([
 		new ButtonBuilder()
-			.setURL(client.config.general.appealLink)
+			.setURL(client.config.general.appealLink || 'https://discord.com')
 			.setStyle(ButtonStyle.Link)
 			.setLabel(t('function.sendModDM.appeal')),
 	]);
