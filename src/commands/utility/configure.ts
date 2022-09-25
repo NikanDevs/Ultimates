@@ -669,16 +669,36 @@ export default new Command({
 							value: 'modmailCategoryId',
 							default: module === 'modmailCategoryId',
 						},
+						{
+							label: t('command.utility.configure.general.enum.confirmation', {
+								context: 'name',
+							}),
+							value: 'confirmation',
+							default: module === 'confirmation',
+						},
 					]),
 				]);
 			};
 
 			const buttonComponents = (module: GeneralConfigTypes) => {
 				return new ActionRowBuilder<ButtonBuilder>().setComponents(
-					new ButtonBuilder()
-						.setLabel(t('command.utility.configure.general.edit'))
-						.setStyle(ButtonStyle.Secondary)
-						.setCustomId(`general:${module}`)
+					module === 'confirmation'
+						? new ButtonBuilder()
+								.setLabel(
+									client.config.general.confirmation
+										? t('command.utility.configure.general.button.disable')
+										: t('command.utility.configure.general.button.enable')
+								)
+								.setStyle(
+									client.config.general.confirmation
+										? ButtonStyle.Danger
+										: ButtonStyle.Success
+								)
+								.setCustomId(`general:toggle:${module}`)
+						: new ButtonBuilder()
+								.setLabel(t('command.utility.configure.general.button.edit'))
+								.setStyle(ButtonStyle.Secondary)
+								.setCustomId(`general:${module}`)
 				);
 			};
 
@@ -732,7 +752,11 @@ export default new Command({
 													.map((u) => client.users.cache.get(u)?.tag || u)
 													.join(' | ')
 											: t('command.utility.configure.none')
-										: client.config.general[selectedModule] ??
+										: selectedModule === 'confirmation'
+										? client.config.general.confirmation
+											? t('command.utility.configure.general.button.enabled')
+											: t('command.utility.configure.general.button.disabled')
+										: client.config.general[selectedModule]?.toString() ??
 										  t('command.utility.configure.none'),
 							})}`
 						);
@@ -740,6 +764,60 @@ export default new Command({
 					await collected.update({
 						embeds: [embed],
 						components: [selectMenu(selectedModule), buttonComponents(selectedModule)],
+					});
+				} else if (collected.customId.startsWith('general:toggle')) {
+					const module = collected.customId.replace('general:toggle:', '') as GeneralConfigTypes;
+					const data = await configModel.findById('general');
+
+					await configModel.findByIdAndUpdate('general', {
+						$set: {
+							[module]: !data[module],
+						},
+					});
+					await client.config.updateGeneral();
+
+					const embed = new EmbedBuilder()
+						.setTitle(
+							t('command.utility.configure.general.enum.' + module, {
+								context: 'name',
+							})
+						)
+						.setColor(client.cc.invisible)
+						.setDescription(
+							`${t('command.utility.configure.general.enum.' + module, {
+								context: 'description',
+							})}\n\n${t('command.utility.configure.general.current', {
+								value:
+									module === 'memberRoleId'
+										? client.config.general.memberRoleId
+											? interaction.guild.roles.cache
+													.get(client.config.general.memberRoleId)
+													?.toString() || client.config.general.memberRoleId
+											: t('command.utility.configure.none')
+										: module === 'modmailCategoryId'
+										? client.config.general.modmailCategoryId
+											? interaction.guild.channels.cache
+													.get(client.config.general.modmailCategoryId)
+													?.toString() || client.config.general.modmailCategoryId
+											: t('command.utility.configure.none')
+										: module === 'developers'
+										? client.config.general.developers.length
+											? client.config.general.developers
+													.map((u) => client.users.cache.get(u)?.tag || u)
+													.join(' | ')
+											: t('command.utility.configure.none')
+										: module === 'confirmation'
+										? client.config.general.confirmation
+											? t('command.utility.configure.general.button.enabled')
+											: t('command.utility.configure.general.button.disabled')
+										: client.config.general[module]?.toString() ??
+										  t('command.utility.configure.none'),
+							})}`
+						);
+
+					await collected.update({
+						embeds: [embed],
+						components: [selectMenu(module), buttonComponents(module)],
 					});
 				} else if (collected.customId.startsWith('general:')) {
 					const module = collected.customId.replace('general:', '') as GeneralConfigTypes;
@@ -777,7 +855,7 @@ export default new Command({
 										value:
 											module === 'developers'
 												? client.config.general[module].join(' ')
-												: client.config.general[module],
+												: client.config.general[module].toString(),
 									},
 								],
 							},

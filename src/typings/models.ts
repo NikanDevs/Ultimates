@@ -21,9 +21,10 @@ export type ConfigSchemaType = {
 
 	// general config
 	developers?: string[];
-	appealLink: string;
-	memberRoleId: string;
-	modmailCategoryId: string;
+	appealLink?: string;
+	memberRoleId?: string;
+	modmailCategoryId?: string;
+	confirmation?: boolean;
 
 	// moderation config
 	counts?: {

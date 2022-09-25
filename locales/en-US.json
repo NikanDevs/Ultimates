@@ -120,10 +120,12 @@
 						"appealLink_name": "Ban appeal link",
 						"memberRoleId_name": "Member role",
 						"modmailCategoryId_name": "Modmail category",
+						"confirmation_name": "Confirmation",
 						"developers_description": "Developers have permissions to use the `/eval` command.",
 						"appealLink_description": "When a person gets banned from the server, the appeal link gets sent to them.",
 						"memberRoleId_description": "The member role is used for locking down channels and accessing the verification module.",
-						"modmailCategoryId_description": "Modmail tickets are created under this category."
+						"modmailCategoryId_description": "Modmail tickets are created under this category.",
+						"confirmation_description": "Shows a confirmation message whenever a moderation command is used."
 					},
 					"modal": {
 						"enter": "Enter the value",
@@ -132,8 +134,14 @@
 						"invalidURL": "Please provide a valid URL.",
 						"invalidRole": "Please provide a valid, and manageable role ID in the server."
 					},
-					"current": "• **Current:** {- value}",
-					"edit": "Edit"
+					"button": {
+						"enable": "Enable",
+						"disable": "Disable",
+						"enabled": "Enabled",
+						"disabled": "Disabled",
+						"edit": "Edit"
+					},
+					"current": "• **Current:** {- value}"
 				},
 				"moderation": {
 					"enum": {

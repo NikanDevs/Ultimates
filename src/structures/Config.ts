@@ -43,6 +43,7 @@ export class Config {
 		appealLink: null as string,
 		memberRoleId: null as string,
 		modmailCategoryId: null as string,
+		confirmation: null as boolean,
 	};
 
 	/** The config for the moderation system. */
@@ -165,6 +166,7 @@ export class Config {
 			appealLink: data.appealLink,
 			memberRoleId: data.memberRoleId,
 			modmailCategoryId: data.modmailCategoryId,
+			confirmation: data.confirmation,
 		};
 	}
 
@@ -295,6 +297,7 @@ export class Config {
 				appealLink: null,
 				memberRoleId: null,
 				modmailCategoryId: null,
+				confirmation: true,
 			}).save();
 
 		if (!moderation)

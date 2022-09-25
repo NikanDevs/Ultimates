@@ -253,7 +253,7 @@ export enum emojisConfigDefaults {
 
 // General config
 
-export type GeneralConfigTypes = 'developers' | 'appealLink' | 'memberRoleId' | 'modmailCategoryId';
+export type GeneralConfigTypes = 'developers' | 'appealLink' | 'memberRoleId' | 'modmailCategoryId' | 'confirmation';
 
 export const generalConfigIdType: GeneralConfigTypes[] = ['memberRoleId', 'modmailCategoryId'];
 

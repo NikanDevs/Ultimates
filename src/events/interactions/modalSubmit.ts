@@ -362,7 +362,12 @@ export default new Event('interactionCreate', async (interaction) => {
 											.map((u) => client.users.cache.get(u)?.tag || u)
 											.join(' | ')
 									: t('command.utility.configure.none')
-								: client.config.general[module] ?? t('command.utility.configure.none'),
+								: module === 'confirmation'
+								? client.config.general.confirmation
+									? t('command.utility.configure.general.button.enabled')
+									: t('command.utility.configure.general.button.disabled')
+								: client.config.general[module]?.toString() ??
+								  t('command.utility.configure.none'),
 					})}`
 				),
 			],

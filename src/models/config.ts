@@ -8,6 +8,7 @@ const schema = new Schema({
 	appealLink: { type: SchemaTypes.String, required: false },
 	memberRoleId: { type: SchemaTypes.String, required: false },
 	modmailCategoryId: { type: SchemaTypes.String, required: false },
+	confirmation: { type: SchemaTypes.Boolean, required: false },
 	// moderation config
 	counts: { type: Object, required: false },
 	durations: { type: Object, required: false },
