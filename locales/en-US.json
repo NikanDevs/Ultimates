@@ -31,7 +31,9 @@
 					"transcript_description": "Modmail Transcript for {- user}",
 					"deleting": "This ticket will be deleted in 10 seconds...",
 					"embed_title": "Ticket closed",
-					"embed_description": "Your ticket was closed by a staff member. If you have any other questions in the future, feel free to ask them!"
+					"embed_description": "Your ticket was closed by a staff member. If you have any other questions in the future, feel free to ask them!",
+					"confirm": "Wait! This will close **{- user}**'s ticket",
+					"noMsgs": "No messages were sent in this ticket"
 				},
 				"blacklist": {
 					"invalidReason": "Please provide a reason.",
