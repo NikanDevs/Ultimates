@@ -8,6 +8,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { interactions } from '../../interactions';
 import { t } from 'i18next';
 import { EmbedBuilder } from 'discord.js';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.unban,
@@ -24,40 +25,46 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		const data = new punishmentModel({
-			_id: await generateManualId(),
-			case: await getModCase(),
-			type: PunishmentTypes.Unban,
-			userId: userId,
-			moderatorId: interaction.user.id,
-			reason: reason,
-			date: new Date(),
-			expire: punishmentExpiry,
-		});
-		await data.save();
-
-		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-					.setDescription(
-						t('common.modEmbed', {
-							user: bannedMember.user.tag,
-							action: t('command.mod.unban.past'),
-							id: data._id,
-						})
-					)
-					.setColor(client.cc.moderation),
-			],
+		await confirm(interaction, {
+			confirmMessage: t('command.mod.unban.confirm', { user: bannedMember.user.tag }),
 			ephemeral: true,
-		});
+			callback: async () => {
+				const data = new punishmentModel({
+					_id: await generateManualId(),
+					case: await getModCase(),
+					type: PunishmentTypes.Unban,
+					userId: userId,
+					moderatorId: interaction.user.id,
+					reason: reason,
+					date: new Date(),
+					expire: punishmentExpiry,
+				});
+				await data.save();
 
-		await createModLog({
-			action: PunishmentTypes.Unban,
-			punishmentId: data._id,
-			user: bannedMember.user,
-			moderator: interaction.user,
-			reason: reason,
-			expire: punishmentExpiry,
+				await interaction.editReply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(
+								t('common.modEmbed', {
+									user: bannedMember.user.tag,
+									action: t('command.mod.unban.past'),
+									id: data._id,
+								})
+							)
+							.setColor(client.cc.moderation),
+					],
+					components: [],
+				});
+
+				await createModLog({
+					action: PunishmentTypes.Unban,
+					punishmentId: data._id,
+					user: bannedMember.user,
+					moderator: interaction.user,
+					reason: reason,
+					expire: punishmentExpiry,
+				});
+			},
 		});
 	},
 });

@@ -68,11 +68,12 @@ export type ConfigSchemaType = {
 
 	// logging config
 	logging?: {
-		mod?: { channelId?: string; webhook?: string; active?: boolean };
-		modmail?: { channelId?: string; webhook?: string; active?: boolean };
-		message?: { channelId?: string; webhook?: string; active?: boolean };
-		servergate?: { channelId?: string; webhook?: string; active?: boolean };
-		voice?: { channelId?: string; webhook?: string; active?: boolean };
+		base?: { channelId?: string; webhook?: string; active?: boolean };
+		mod?: { channelId?: string; active?: boolean };
+		modmail?: { channelId?: string; active?: boolean };
+		message?: { channelId?: string; active?: boolean };
+		servergate?: { channelId?: string; active?: boolean };
+		voice?: { channelId?: string; active?: boolean };
 	};
 
 	// ignores config

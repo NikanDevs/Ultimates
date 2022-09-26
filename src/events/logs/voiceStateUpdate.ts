@@ -38,7 +38,7 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 			])
 			.setColor(resolveColor('#9edadb'));
 
-		client.config.webhooks.voice.send({ embeds: [embed] });
+		client.config.logging.webhook.send({ threadId: client.config.logging.voice.channelId, embeds: [embed] });
 	} else if (oldState.channel && !newState.channel) {
 		const embed = new EmbedBuilder()
 			.setAuthor({
@@ -59,7 +59,7 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 			])
 			.setColor(resolveColor('#d98d84'));
 
-		client.config.webhooks.voice.send({ embeds: [embed] });
+		client.config.logging.webhook.send({ threadId: client.config.logging.voice.channelId, embeds: [embed] });
 	} else if (oldState.channel && newState.channel && oldState.channelId !== newState.channelId) {
 		const embed = new EmbedBuilder()
 			.setAuthor({
@@ -81,6 +81,9 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 			])
 			.setColor(resolveColor('#887fdb'));
 
-		client.config.webhooks.voice.send({ embeds: [embed] });
+		client.config.logging.webhook.send({
+			threadId: client.config.logging.voice.channelId,
+			embeds: [embed],
+		});
 	}
 });

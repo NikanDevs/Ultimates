@@ -55,6 +55,8 @@
 			"configure": {
 				"logs": {
 					"enum": {
+						"logs": "Logs",
+						"base_name": "Base forum channel",
 						"mod_name": "Moderation logging",
 						"message_name": "Message logging",
 						"modmail_name": "Modmail logging",
@@ -64,20 +66,24 @@
 						"message_description": "Triggered when a message was deleted, edited, or when a channel was purged.",
 						"modmail_description": "Triggered when someone creates, deletes a ticket, or when a user gets blacklisted.",
 						"servergate_description": "Triggered when a user joins or leaves the server.",
-						"voice_description": "Triggered when a user joins or leaves a voice channel."
+						"voice_description": "Triggered when a user joins or leaves a voice channel.",
+						"base_description": "All logging module channels are made as posts under this forum channel."
 					},
 					"modal": {
-						"channel_label": "Provide a channel ID:",
+						"channel_label": "Provide a forum channel ID:",
 						"ignoreChannels_label": "Ignore channels, separate with spaces",
 						"ignoreRoles_label": "Ignore roles, separate with spaces",
-						"invalidChannel": "Please provide a valid text channel ID."
+						"invalidChannel": "Please provide a valid forum channel ID."
 					},
 					"button": {
-						"enabled": "Enabled",
-						"disabled": "Disabled",
+						"enable": "Enable",
+						"disable": "Disable",
+						"createChannel": "Create channel",
+						"deleteChannel": "Delete channel",
 						"editChannel": "Edit channel",
 						"editIgnores": "Edit ignores"
 					},
+					"noBase": "Please set a base forum channel first.",
 					"channel": "• **Channel:** {- channel}",
 					"ignores": "• **Ignores:** {- ignores}"
 				},
@@ -261,10 +267,12 @@
 			},
 			"ban": {
 				"past": "banned",
-				"banned": "This user is already banned from the server."
+				"banned": "This user is already banned from the server.",
+				"confirm": "Wait! This will ban **{- user}**"
 			},
 			"kick": {
-				"past": "kicked"
+				"past": "kicked",
+				"confirm": "Wait! This will kick **{- user}**"
 			},
 			"lockdown": {
 				"reason": "Reason",
@@ -350,21 +358,25 @@
 			},
 			"softban": {
 				"past": "soft banned",
-				"banned": "This user is already banned from the server."
+				"banned": "This user is already banned from the server.",
+				"confirm": "Wait! This will softban **{- user}** for {- duration}"
 			},
 			"timeout": {
 				"past": "timed out",
-				"timedOut": "This member is already timed out."
+				"timedOut": "This member is already timed out.",
+				"confirm": "Wait! This will timeout **{- user}** for {- duration}"
 			},
 			"unban": {
 				"past": "unbanned",
-				"none": "I couldn't find that banned member."
+				"none": "I couldn't find that banned member.",
+				"confirm": "Wait! This will unban **{- user}**"
 			},
 			"warn": {
 				"past": "warned",
 				"double": "Whoops, looks like a double warning has appeared!",
 				"reaching_one": "Reaching {count} warning",
-				"reaching_other": "Reaching {count} warnings"
+				"reaching_other": "Reaching {count} warnings",
+				"confirm": "Wait! This will warn **{- user}**"
 			},
 			"warnings": {
 				"no": "No warnings were found for you.",
@@ -563,6 +575,17 @@
 			"permanent": "Permanent",
 			"reason": "Reason",
 			"appeal": "Appeal"
+		},
+		"sendConfirmation": {
+			"button": {
+				"confirm": "Confirm",
+				"cancel": "Cancel"
+			},
+			"cancelled": "This action was cancelled!",
+			"going": "You already have an ongoing confirmation.",
+			"timedOut": "The confirmation timed out.",
+			"working": "Working on it...",
+			"continue": "Are you sure you want to continue?"
 		}
 	},
 	"log": {

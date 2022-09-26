@@ -48,5 +48,5 @@ export default new Event('messageDelete', async (message: Message) => {
 			},
 		]);
 
-	client.config.webhooks.message.send({ embeds: [logEmbed] });
+	client.config.logging.webhook.send({ threadId: client.config.logging.message.channelId, embeds: [logEmbed] });
 });

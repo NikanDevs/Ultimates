@@ -12,6 +12,7 @@ import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { durationsModel } from '../../models/durations';
 import { t } from 'i18next';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.warn,
@@ -33,232 +34,249 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		guardCollection.set(`warn:${member.id}`, null);
-		setTimeout(() => {
-			guardCollection.delete(`warn:${member.id}`);
-		}, 10 * 1000);
-
-		const data = new punishmentModel({
-			_id: await generateManualId(),
-			case: await getModCase(),
-			type: PunishmentTypes.Warn,
-			userId: member.id,
-			moderatorId: interaction.user.id,
-			reason: reason,
-			date: new Date(),
-			expire: warningExpiry,
-		});
-		await data.save();
-
-		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-					.setDescription(
-						t('common.modEmbed', {
-							user: member.toString(),
-							action: t('command.mod.warn.past'),
-							id: data._id,
-						})
-					)
-					.setColor(client.cc.moderation),
-			],
+		await confirm(interaction, {
+			confirmMessage: t('command.mod.warn.confirm', { user: member.user.tag }),
 			ephemeral: true,
-		});
+			callback: async () => {
+				guardCollection.set(`warn:${member.id}`, null);
+				setTimeout(() => {
+					guardCollection.delete(`warn:${member.id}`);
+				}, 10_000);
 
-		sendModDM(member, {
-			action: PunishmentTypes.Warn,
-			expire: data.expire,
-			punishment: data,
-		});
+				const data = new punishmentModel({
+					_id: await generateManualId(),
+					case: await getModCase(),
+					type: PunishmentTypes.Warn,
+					userId: member.id,
+					moderatorId: interaction.user.id,
+					reason: reason,
+					date: new Date(),
+					expire: warningExpiry,
+				});
+				await data.save();
 
-		await createModLog({
-			action: PunishmentTypes.Warn,
-			punishmentId: data._id,
-			user: member.user,
-			moderator: interaction.user,
-			reason: reason,
-			expire: warningExpiry,
-		}).then(async () => {
-			// ------------------------------------- checking for auto action on warn counts --------------------------------
+				await interaction.editReply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(
+								t('common.modEmbed', {
+									user: member.toString(),
+									action: t('command.mod.warn.past'),
+									id: data._id,
+								})
+							)
+							.setColor(client.cc.moderation),
+					],
+					components: [],
+				});
 
-			const findWarnings = await punishmentModel.find({
-				userId: member.id,
-				type: PunishmentTypes.Warn,
-			});
-			const warningsCount = findWarnings.length;
+				sendModDM(member, {
+					action: PunishmentTypes.Warn,
+					expire: data.expire,
+					punishment: data,
+				});
 
-			switch (warningsCount) {
-				case client.config.moderation.counts.timeout1:
-					await timeoutMember(member, {
-						duration: client.config.moderation.durations.timeout1,
-						reason: t('command.mod.warn.reaching', {
-							count: client.config.moderation.counts.timeout1,
-						}),
-					});
+				await createModLog({
+					action: PunishmentTypes.Warn,
+					punishmentId: data._id,
+					user: member.user,
+					moderator: interaction.user,
+					reason: reason,
+					expire: warningExpiry,
+				}).then(async () => {
+					// ------------------------------------- checking for auto action on warn counts --------------------------------
 
-					const data = new punishmentModel({
-						_id: await generateManualId(),
-						case: await getModCase(),
-						type: PunishmentTypes.Timeout,
+					const findWarnings = await punishmentModel.find({
 						userId: member.id,
-						moderatorId: client.user.id,
-						reason: t('command.mod.warn.reaching', {
-							count: client.config.moderation.counts.timeout1,
-						}),
-						date: new Date(),
-						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout1),
+						type: PunishmentTypes.Warn,
 					});
-					data.save();
+					const warningsCount = findWarnings.length;
 
-					await createModLog({
-						action: PunishmentTypes.Timeout,
-						punishmentId: data._id,
-						user: member.user,
-						moderator: client.user,
-						reason: t('command.mod.warn.reaching', {
-							count: client.config.moderation.counts.timeout1,
-						}),
-						duration: client.config.moderation.durations.timeout1,
-						referencedPunishment: data,
-						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout1),
-					});
+					switch (warningsCount) {
+						case client.config.moderation.counts.timeout1:
+							await timeoutMember(member, {
+								duration: client.config.moderation.durations.timeout1,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.timeout1,
+								}),
+							});
 
-					sendModDM(member, {
-						action: PunishmentTypes.Timeout,
-						punishment: data,
-						expire: new Date(Date.now() + client.config.moderation.durations.timeout1),
-					});
-					break;
-
-				case client.config.moderation.counts.timeout2:
-					await timeoutMember(member, {
-						duration: client.config.moderation.durations.timeout2,
-						reason: t('command.mod.warn.reaching', {
-							count: client.config.moderation.counts.timeout2,
-						}),
-					});
-
-					const data2 = new punishmentModel({
-						_id: await generateManualId(),
-						case: await getModCase(),
-						type: PunishmentTypes.Timeout,
-						userId: member.id,
-						moderatorId: client.user.id,
-						reason: t('command.mod.warn.reaching', {
-							count: client.config.moderation.counts.timeout2,
-						}),
-						date: new Date(),
-						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout2),
-					});
-					data2.save();
-
-					await createModLog({
-						action: PunishmentTypes.Timeout,
-						punishmentId: data2._id,
-						user: member.user,
-						moderator: client.user,
-						reason: t('command.mod.warn.reaching', {
-							count: client.config.moderation.counts.timeout2,
-						}),
-						duration: client.config.moderation.durations.timeout2,
-						referencedPunishment: data,
-						expire: new Date(warningExpiry.getTime() + client.config.moderation.durations.timeout1),
-					});
-
-					sendModDM(member, {
-						action: PunishmentTypes.Timeout,
-						punishment: data2,
-						expire: new Date(Date.now() + client.config.moderation.durations.timeout2),
-					});
-					break;
-				case client.config.moderation.counts.ban:
-					switch (client.config.moderation.durations.ban) {
-						case null:
-							const data3 = new punishmentModel({
+							const data = new punishmentModel({
 								_id: await generateManualId(),
 								case: await getModCase(),
-								type: PunishmentTypes.Ban,
+								type: PunishmentTypes.Timeout,
 								userId: member.id,
 								moderatorId: client.user.id,
 								reason: t('command.mod.warn.reaching', {
-									count: client.config.moderation.counts.ban,
-								}),
-								date: new Date(),
-								expire: punishmentExpiry,
-							});
-							data3.save();
-
-							await createModLog({
-								action: PunishmentTypes.Ban,
-								punishmentId: data3._id,
-								user: member.user,
-								moderator: client.user,
-								reason: t('command.mod.warn.reaching', {
-									count: client.config.moderation.counts.ban,
-								}),
-								referencedPunishment: data,
-								expire: punishmentExpiry,
-							});
-
-							await sendModDM(member, {
-								action: PunishmentTypes.Ban,
-								punishment: data3,
-							});
-							break;
-						default:
-							const data4 = new punishmentModel({
-								_id: await generateManualId(),
-								case: await getModCase(),
-								type: PunishmentTypes.Softban,
-								userId: member.id,
-								moderatorId: client.user.id,
-								reason: t('command.mod.warn.reaching', {
-									count: client.config.moderation.counts.ban,
+									count: client.config.moderation.counts.timeout1,
 								}),
 								date: new Date(),
 								expire: new Date(
-									punishmentExpiry.getTime() + client.config.moderation.durations.ban
+									warningExpiry.getTime() + client.config.moderation.durations.timeout1
 								),
 							});
-							data4.save();
-
-							const durationData = new durationsModel({
-								case: await getModCase(),
-								type: PunishmentTypes.Softban,
-								userId: member.user.id,
-								expires: new Date(Date.now() + client.config.moderation.durations.ban),
-							});
-							await durationData.save();
+							data.save();
 
 							await createModLog({
-								action: PunishmentTypes.Softban,
-								punishmentId: data4._id,
+								action: PunishmentTypes.Timeout,
+								punishmentId: data._id,
 								user: member.user,
 								moderator: client.user,
 								reason: t('command.mod.warn.reaching', {
-									count: client.config.moderation.counts.ban,
+									count: client.config.moderation.counts.timeout1,
 								}),
-								duration: client.config.moderation.durations.ban,
+								duration: client.config.moderation.durations.timeout1,
 								referencedPunishment: data,
-								expire: punishmentExpiry,
+								expire: new Date(
+									warningExpiry.getTime() + client.config.moderation.durations.timeout1
+								),
 							});
 
-							await sendModDM(member, {
-								action: PunishmentTypes.Softban,
-								punishment: data4,
-								expire: new Date(Date.now() + client.config.moderation.durations.ban),
+							sendModDM(member, {
+								action: PunishmentTypes.Timeout,
+								punishment: data,
+								expire: new Date(Date.now() + client.config.moderation.durations.timeout1),
+							});
+							break;
+
+						case client.config.moderation.counts.timeout2:
+							await timeoutMember(member, {
+								duration: client.config.moderation.durations.timeout2,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.timeout2,
+								}),
+							});
+
+							const data2 = new punishmentModel({
+								_id: await generateManualId(),
+								case: await getModCase(),
+								type: PunishmentTypes.Timeout,
+								userId: member.id,
+								moderatorId: client.user.id,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.timeout2,
+								}),
+								date: new Date(),
+								expire: new Date(
+									warningExpiry.getTime() + client.config.moderation.durations.timeout2
+								),
+							});
+							data2.save();
+
+							await createModLog({
+								action: PunishmentTypes.Timeout,
+								punishmentId: data2._id,
+								user: member.user,
+								moderator: client.user,
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.timeout2,
+								}),
+								duration: client.config.moderation.durations.timeout2,
+								referencedPunishment: data,
+								expire: new Date(
+									warningExpiry.getTime() + client.config.moderation.durations.timeout1
+								),
+							});
+
+							sendModDM(member, {
+								action: PunishmentTypes.Timeout,
+								punishment: data2,
+								expire: new Date(Date.now() + client.config.moderation.durations.timeout2),
+							});
+							break;
+						case client.config.moderation.counts.ban:
+							switch (client.config.moderation.durations.ban) {
+								case null:
+									const data3 = new punishmentModel({
+										_id: await generateManualId(),
+										case: await getModCase(),
+										type: PunishmentTypes.Ban,
+										userId: member.id,
+										moderatorId: client.user.id,
+										reason: t('command.mod.warn.reaching', {
+											count: client.config.moderation.counts.ban,
+										}),
+										date: new Date(),
+										expire: punishmentExpiry,
+									});
+									data3.save();
+
+									await createModLog({
+										action: PunishmentTypes.Ban,
+										punishmentId: data3._id,
+										user: member.user,
+										moderator: client.user,
+										reason: t('command.mod.warn.reaching', {
+											count: client.config.moderation.counts.ban,
+										}),
+										referencedPunishment: data,
+										expire: punishmentExpiry,
+									});
+
+									await sendModDM(member, {
+										action: PunishmentTypes.Ban,
+										punishment: data3,
+									});
+									break;
+								default:
+									const data4 = new punishmentModel({
+										_id: await generateManualId(),
+										case: await getModCase(),
+										type: PunishmentTypes.Softban,
+										userId: member.id,
+										moderatorId: client.user.id,
+										reason: t('command.mod.warn.reaching', {
+											count: client.config.moderation.counts.ban,
+										}),
+										date: new Date(),
+										expire: new Date(
+											punishmentExpiry.getTime() +
+												client.config.moderation.durations.ban
+										),
+									});
+									data4.save();
+
+									const durationData = new durationsModel({
+										case: await getModCase(),
+										type: PunishmentTypes.Softban,
+										userId: member.user.id,
+										expires: new Date(
+											Date.now() + client.config.moderation.durations.ban
+										),
+									});
+									await durationData.save();
+
+									await createModLog({
+										action: PunishmentTypes.Softban,
+										punishmentId: data4._id,
+										user: member.user,
+										moderator: client.user,
+										reason: t('command.mod.warn.reaching', {
+											count: client.config.moderation.counts.ban,
+										}),
+										duration: client.config.moderation.durations.ban,
+										referencedPunishment: data,
+										expire: punishmentExpiry,
+									});
+
+									await sendModDM(member, {
+										action: PunishmentTypes.Softban,
+										punishment: data4,
+										expire: new Date(Date.now() + client.config.moderation.durations.ban),
+									});
+									break;
+							}
+
+							await member.ban({
+								reason: t('command.mod.warn.reaching', {
+									count: client.config.moderation.counts.ban,
+								}),
+								deleteMessageDays: client.config.moderation.defaults.msgs,
 							});
 							break;
 					}
-
-					await member.ban({
-						reason: t('command.mod.warn.reaching', {
-							count: client.config.moderation.counts.ban,
-						}),
-						deleteMessageDays: client.config.moderation.defaults.msgs,
-					});
-					break;
-			}
+				});
+			},
 		});
 	},
 });

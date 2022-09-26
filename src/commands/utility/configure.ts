@@ -1,9 +1,11 @@
 import {
 	ActionRowBuilder,
+	AnyThreadChannel,
 	ButtonBuilder,
 	ButtonStyle,
 	ComponentType,
 	EmbedBuilder,
+	ForumChannel,
 	ModalBuilder,
 	SelectMenuBuilder,
 	TextInputStyle,
@@ -31,7 +33,7 @@ export default new Command({
 		const mainModule = options.getString('module') as 'general' | 'moderation' | 'automod' | 'logs';
 
 		if (mainModule === 'logs') {
-			const preSelected: LoggingModules = 'mod';
+			const preSelected: LoggingModules = 'base';
 			const data = await configModel.findById('logging');
 
 			const embed = new EmbedBuilder()
@@ -49,36 +51,17 @@ export default new Command({
 										?.toString() || data.logging[preSelected].channelId
 								: t('command.utility.configure.none'),
 						}),
-						supportedLoggingIgnores.includes(preSelected)
-							? t('command.utility.configure.logs.ignores', {
-									ignores: client.config.ignores.logs[preSelected].channelIds.concat(
-										client.config.ignores.logs[preSelected].roleIds
-									).length
-										? `\n${client.config.ignores.logs[preSelected].channelIds
-												.map(
-													(c: string) =>
-														interaction.guild.channels.cache
-															.get(c)
-															?.toString() || c
-												)
-												.join(' ')} ${client.config.ignores.logs[
-												preSelected
-										  ].roleIds
-												.map(
-													(c: string) =>
-														interaction.guild.roles.cache.get(c).toString() ||
-														c
-												)
-												.join(' ')}`
-										: t('command.utility.configure.none'),
-							  })
-							: '',
 					].join('\n\n')
 				);
 
 			const selectMenu = (module: LoggingModules) => {
 				return new ActionRowBuilder<SelectMenuBuilder>().setComponents([
 					new SelectMenuBuilder().setCustomId('logging:modules').setOptions([
+						{
+							label: t('command.utility.configure.logs.enum.base', { context: 'name' }),
+							value: 'base',
+							default: 'base' === module,
+						},
 						{
 							label: t('command.utility.configure.logs.enum.mod', { context: 'name' }),
 							value: 'mod',
@@ -109,20 +92,35 @@ export default new Command({
 			};
 
 			const buttonComponents = (module: LoggingModules, state: 'enabled' | 'disabled') => {
-				const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
-					new ButtonBuilder()
-						.setLabel(
-							state === 'enabled'
-								? t('command.utility.configure.logs.button.enabled')
-								: t('command.utility.configure.logs.button.disabled')
-						)
-						.setStyle(state === 'enabled' ? ButtonStyle.Success : ButtonStyle.Danger)
-						.setCustomId(`logging:toggle:${module}`),
+				const row = new ActionRowBuilder<ButtonBuilder>().setComponents([]);
 
-					new ButtonBuilder()
-						.setLabel(t('command.utility.configure.logs.button.editChannel'))
-						.setStyle(ButtonStyle.Secondary)
-						.setCustomId(`logging:channel:${module}`)
+				if (module !== 'base')
+					row.addComponents(
+						new ButtonBuilder()
+							.setLabel(
+								state === 'enabled'
+									? t('command.utility.configure.logs.button.disable')
+									: t('command.utility.configure.logs.button.enable')
+							)
+							.setStyle(state === 'enabled' ? ButtonStyle.Danger : ButtonStyle.Success)
+							.setCustomId(`logging:toggle:${module}`)
+					);
+
+				row.addComponents(
+					module === 'base'
+						? new ButtonBuilder()
+								.setLabel(t('command.utility.configure.logs.button.editChannel'))
+								.setStyle(ButtonStyle.Secondary)
+								.setCustomId(`logging:channel:${module}`)
+						: data.logging[module].channelId
+						? new ButtonBuilder()
+								.setLabel(t('command.utility.configure.logs.button.deleteChannel'))
+								.setStyle(ButtonStyle.Danger)
+								.setCustomId(`logging:channel:${module}`)
+						: new ButtonBuilder()
+								.setLabel(t('command.utility.configure.logs.button.createChannel'))
+								.setStyle(ButtonStyle.Success)
+								.setCustomId(`logging:channel:${module}`)
 				);
 
 				if (supportedLoggingIgnores.includes(module))
@@ -210,7 +208,7 @@ export default new Command({
 							selectMenu(selectedModule),
 							buttonComponents(
 								selectedModule,
-								client.config.logging[selectedModule] ? 'enabled' : 'disabled'
+								client.config.logging[selectedModule]?.active ? 'enabled' : 'disabled'
 							),
 						],
 					});
@@ -234,40 +232,170 @@ export default new Command({
 					await collected.update({
 						components: [
 							selectMenu(module),
-							buttonComponents(module, client.config.logging[module] ? 'enabled' : 'disabled'),
+							buttonComponents(
+								module,
+								client.config.logging[module].active ? 'enabled' : 'disabled'
+							),
 						],
 					});
 				} else if (collected.customId.startsWith('logging:channel') && collected.isButton()) {
 					const module = collected.customId.replace('logging:channel:', '') as LoggingModules;
-					const data = (await configModel.findById('logging')).logging[module];
+					let db = await configModel.findById('logging');
+					const data = db.logging[module];
 
-					const modal = new ModalBuilder()
-						.setTitle(
-							`${t(`command.utility.configure.logs.enum.${module}`, {
+					if (!db.logging.base.channelId && module !== 'base') {
+						collected.reply({
+							embeds: [client.embeds.attention(t('command.utility.configure.logs.noBase'))],
+							ephemeral: true,
+						});
+						return;
+					}
+
+					if (module === 'base') {
+						const modal = new ModalBuilder()
+							.setTitle(
+								t(`command.utility.configure.logs.enum.${module}`, {
+									context: 'name',
+								})
+							)
+							.setCustomId(`logging:channel:${module}`)
+							.addComponents([
+								{
+									type: ComponentType.ActionRow,
+									components: [
+										{
+											type: ComponentType.TextInput,
+											custom_id: 'channelId',
+											label: t('command.utility.configure.logs.modal.channel', {
+												context: 'label',
+											}),
+											style: TextInputStyle.Short,
+											required: false,
+											min_length: 18,
+											max_length: 20,
+											value: data.channelId ?? null,
+										},
+									],
+								},
+							]);
+						await collected.showModal(modal);
+						return;
+					}
+
+					if (data.channelId) {
+						const forum = interaction.guild.channels.cache.get(
+							db.logging.base.channelId
+						) as ForumChannel;
+						const thread = (await forum.threads
+							.fetch(data.channelId)
+							.catch(() => {})) as AnyThreadChannel;
+
+						await thread?.setLocked(true);
+						await thread?.setArchived(true);
+						await configModel.findByIdAndUpdate('logging', {
+							$set: {
+								logging: {
+									...db.logging,
+									[module]: {
+										...db.logging[module],
+										channelId: null,
+									},
+								},
+							},
+						});
+						await client.config.updateLogs();
+					} else if (!data.channelId) {
+						const forum = interaction.guild.channels.cache.get(
+							db.logging.base.channelId
+						) as ForumChannel;
+
+						const thread = await forum.threads.create({
+							name: t(`command.utility.configure.logs.enum.${module}`, {
 								context: 'name',
-							})} channel`
-						)
-						.setCustomId(`logging:channel:${module}`)
-						.addComponents([
-							{
-								type: ComponentType.ActionRow,
-								components: [
+							}),
+							message: {
+								embeds: [
 									{
-										type: ComponentType.TextInput,
-										custom_id: 'channelId',
-										label: t('command.utility.configure.logs.modal.channel', {
-											context: 'label',
+										title: t(`command.utility.configure.logs.enum.${module}`, {
+											context: 'name',
 										}),
-										style: TextInputStyle.Short,
-										required: false,
-										min_length: 18,
-										max_length: 20,
-										value: data.channelId ?? null,
+										description: t(`command.utility.configure.logs.enum.${module}`, {
+											context: 'description',
+										}),
+										color: client.cc.invisible,
 									},
 								],
 							},
-						]);
-					await collected.showModal(modal);
+						});
+
+						await configModel.findByIdAndUpdate('logging', {
+							$set: {
+								logging: {
+									...db.logging,
+									[module]: {
+										...db.logging[module],
+										channelId: thread.id,
+									},
+								},
+							},
+						});
+						await client.config.updateLogs();
+					}
+
+					db = await configModel.findById('logging');
+					const embed = new EmbedBuilder()
+						.setTitle(t(`command.utility.configure.logs.enum.${module}`, { context: 'name' }))
+						.setColor(client.cc.invisible)
+						.setDescription(
+							[
+								t('command.utility.configure.logs.enum.' + module, {
+									context: 'description',
+								}),
+								t('command.utility.configure.logs.channel', {
+									channel: db.logging[module].channelId
+										? interaction.guild.channels.cache
+												.get(db.logging[module].channelId)
+												?.toString() || db.logging[module].channelId
+										: t('command.utility.configure.none'),
+								}),
+								supportedLoggingIgnores.includes(module)
+									? t('command.utility.configure.logs.ignores', {
+											ignores: client.config.ignores.logs[module].channelIds.concat(
+												client.config.ignores.logs[module].roleIds
+											).length
+												? `\n${client.config.ignores.logs[module].channelIds
+														.map(
+															(c: string) =>
+																interaction.guild.channels.cache
+																	.get(c)
+																	?.toString() || c
+														)
+														.join(' ')} ${client.config.ignores.logs[
+														module
+												  ].roleIds
+														.map(
+															(c: string) =>
+																interaction.guild.roles.cache
+																	.get(c)
+																	.toString() || c
+														)
+														.join(' ')}`
+												: t('command.utility.configure.none'),
+									  })
+									: '',
+							].join('\n\n')
+						);
+
+					await collected.update({
+						embeds: [embed],
+						components: [
+							selectMenu(module),
+							buttonComponents(
+								module,
+								client.config.logging[module].active ? 'enabled' : 'disabled'
+							),
+						],
+					});
 				} else if (collected.customId.startsWith('logging:ignore') && collected.isButton()) {
 					const module = collected.customId.replace('logging:ignore:', '') as LoggingModules;
 

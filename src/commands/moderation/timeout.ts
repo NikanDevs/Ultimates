@@ -13,6 +13,7 @@ import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { t } from 'i18next';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.timeout,
@@ -30,7 +31,7 @@ export default new Command({
 
 		if (ignore(member, { interaction, action: PunishmentTypes.Timeout })) return;
 
-		if (await durationsModel.findOne({ userId: member.id }))
+		if (await durationsModel.findOne({ userId: member.id, type: PunishmentTypes.Timeout }))
 			return interaction.reply({
 				embeds: [client.embeds.error(t('command.mod.timeout.timedOut'))],
 				ephemeral: true,
@@ -55,49 +56,58 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		await timeoutMember(member, { duration: duration, reason: reason });
-
-		const data = new punishmentModel({
-			_id: await generateManualId(),
-			case: await getModCase(),
-			type: PunishmentTypes.Timeout,
-			userId: member.id,
-			moderatorId: interaction.user.id,
-			reason: reason,
-			date: new Date(),
-			expire: new Date(warningExpiry.getTime() + duration),
-		});
-		await data.save();
-
-		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-					.setDescription(
-						t('common.modEmbed', {
-							user: member.toString(),
-							action: t('command.mod.timeout.past'),
-							id: data._id,
-						})
-					)
-					.setColor(client.cc.moderation),
-			],
+		await confirm(interaction, {
+			confirmMessage: t('command.mod.timeout.confirm', {
+				user: member.user.tag,
+				duration: convertTime(duration),
+			}),
 			ephemeral: true,
-		});
+			callback: async () => {
+				await timeoutMember(member, { duration: duration, reason: reason });
 
-		await sendModDM(member, {
-			action: PunishmentTypes.Timeout,
-			punishment: data,
-			expire: new Date(Date.now() + duration),
-		});
+				const data = new punishmentModel({
+					_id: await generateManualId(),
+					case: await getModCase(),
+					type: PunishmentTypes.Timeout,
+					userId: member.id,
+					moderatorId: interaction.user.id,
+					reason: reason,
+					date: new Date(),
+					expire: new Date(warningExpiry.getTime() + duration),
+				});
+				await data.save();
 
-		await createModLog({
-			action: PunishmentTypes.Timeout,
-			punishmentId: data._id,
-			duration: duration,
-			user: member.user,
-			moderator: interaction.user,
-			reason: reason,
-			expire: new Date(warningExpiry.getTime() + duration),
+				await interaction.editReply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(
+								t('common.modEmbed', {
+									user: member.toString(),
+									action: t('command.mod.timeout.past'),
+									id: data._id,
+								})
+							)
+							.setColor(client.cc.moderation),
+					],
+					components: [],
+				});
+
+				await sendModDM(member, {
+					action: PunishmentTypes.Timeout,
+					punishment: data,
+					expire: new Date(Date.now() + duration),
+				});
+
+				await createModLog({
+					action: PunishmentTypes.Timeout,
+					punishmentId: data._id,
+					duration: duration,
+					user: member.user,
+					moderator: interaction.user,
+					reason: reason,
+					expire: new Date(warningExpiry.getTime() + duration),
+				});
+			},
 		});
 	},
 });

@@ -10,6 +10,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { t } from 'i18next';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.kick,
@@ -25,45 +26,51 @@ export default new Command({
 
 		if (ignore(member, { interaction, action: PunishmentTypes.Kick })) return;
 
-		const data = await new punishmentModel({
-			_id: await generateManualId(),
-			case: await getModCase(),
-			type: PunishmentTypes.Kick,
-			userId: member.id,
-			moderatorId: interaction.user.id,
-			reason: reason,
-			date: new Date(),
-			expire: punishmentExpiry,
-		}).save();
-
-		await sendModDM(member, {
-			action: PunishmentTypes.Kick,
-			punishment: data,
-		});
-		await member.kick(reason);
-
-		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-					.setDescription(
-						t('common.modEmbed', {
-							user: member,
-							action: t('command.mod.kick.past'),
-							id: data._id,
-						})
-					)
-					.setColor(client.cc.moderation),
-			],
+		await confirm(interaction, {
+			confirmMessage: t('command.mod.kick.confirm', { user: member.user.tag }),
 			ephemeral: true,
-		});
+			callback: async () => {
+				const data = await new punishmentModel({
+					_id: await generateManualId(),
+					case: await getModCase(),
+					type: PunishmentTypes.Kick,
+					userId: member.id,
+					moderatorId: interaction.user.id,
+					reason: reason,
+					date: new Date(),
+					expire: punishmentExpiry,
+				}).save();
 
-		await createModLog({
-			action: PunishmentTypes.Kick,
-			punishmentId: data._id,
-			user: member.user,
-			moderator: interaction.user,
-			reason: reason,
-			expire: punishmentExpiry,
+				await sendModDM(member, {
+					action: PunishmentTypes.Kick,
+					punishment: data,
+				});
+				await member.kick(reason);
+
+				await interaction.editReply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(
+								t('common.modEmbed', {
+									user: member,
+									action: t('command.mod.kick.past'),
+									id: data._id,
+								})
+							)
+							.setColor(client.cc.moderation),
+					],
+					components: [],
+				});
+
+				await createModLog({
+					action: PunishmentTypes.Kick,
+					punishmentId: data._id,
+					user: member.user,
+					moderator: interaction.user,
+					reason: reason,
+					expire: punishmentExpiry,
+				});
+			},
 		});
 	},
 });
