@@ -12,6 +12,7 @@ import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { convertTime, convertToTime, isValidTime } from '../../functions/convertTime';
 import { t } from 'i18next';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.softban,
@@ -48,61 +49,67 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		const data = new punishmentModel({
-			_id: await generateManualId(),
-			case: await getModCase(),
-			type: PunishmentTypes.Softban,
-			userId: user.id,
-			moderatorId: interaction.user.id,
-			reason: reason,
-			date: new Date(),
-			expire: new Date(punishmentExpiry.getTime() + duration),
-		});
-		await data.save();
-
-		if (member)
-			await sendModDM(member, {
-				action: PunishmentTypes.Softban,
-				punishment: data,
-				expire: new Date(Date.now() + duration),
-			});
-
-		await interaction.guild.members.ban(user, {
-			deleteMessageDays: delete_messages,
-			reason,
-		});
-
-		const durationData = new durationsModel({
-			case: await getModCase(),
-			type: PunishmentTypes.Softban,
-			userId: user.id,
-			expires: new Date(Date.now() + duration),
-		});
-		await durationData.save();
-
-		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-					.setDescription(
-						t('common.modEmbed', {
-							user: member ? user.toString() : user.tag,
-							action: t('command.mod.softban.past'),
-							id: data._id,
-						})
-					)
-					.setColor(client.cc.moderation),
-			],
+		await confirm(interaction, {
+			confirmMessage: t('command.mod.softban.confirm', { user: user.tag, duration: convertTime(duration) }),
 			ephemeral: true,
-		});
+			callback: async () => {
+				const data = new punishmentModel({
+					_id: await generateManualId(),
+					case: await getModCase(),
+					type: PunishmentTypes.Softban,
+					userId: user.id,
+					moderatorId: interaction.user.id,
+					reason: reason,
+					date: new Date(),
+					expire: new Date(punishmentExpiry.getTime() + duration),
+				});
+				await data.save();
 
-		await createModLog({
-			action: PunishmentTypes.Softban,
-			punishmentId: data._id,
-			user: user,
-			duration: duration,
-			moderator: interaction.user,
-			reason: reason,
-			expire: new Date(punishmentExpiry.getTime() + duration),
+				if (member)
+					await sendModDM(member, {
+						action: PunishmentTypes.Softban,
+						punishment: data,
+						expire: new Date(Date.now() + duration),
+					});
+
+				await interaction.guild.members.ban(user, {
+					deleteMessageDays: delete_messages,
+					reason,
+				});
+
+				const durationData = new durationsModel({
+					case: await getModCase(),
+					type: PunishmentTypes.Softban,
+					userId: user.id,
+					expires: new Date(Date.now() + duration),
+				});
+				await durationData.save();
+
+				await interaction.editReply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(
+								t('common.modEmbed', {
+									user: member ? user.toString() : user.tag,
+									action: t('command.mod.softban.past'),
+									id: data._id,
+								})
+							)
+							.setColor(client.cc.moderation),
+					],
+					components: [],
+				});
+
+				await createModLog({
+					action: PunishmentTypes.Softban,
+					punishmentId: data._id,
+					user: user,
+					duration: duration,
+					moderator: interaction.user,
+					reason: reason,
+					expire: new Date(punishmentExpiry.getTime() + duration),
+				});
+			},
 		});
 	},
 });

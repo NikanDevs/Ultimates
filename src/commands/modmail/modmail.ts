@@ -9,6 +9,7 @@ import { generateModmailInfoEmbed } from '../../utils/generateModmailInfoEmbed';
 import { interactions } from '../../interactions';
 import { t } from 'i18next';
 import { modmailCollection } from '../../constants';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.modmail,
@@ -41,83 +42,95 @@ export default new Command({
 					ephemeral: true,
 				});
 
-			await interaction.deferReply();
-			const userId = textChannel.topic
-				?.split('|')
-				[textChannel.topic.split('|').length - 1].replace('ID:', '')
-				.trim();
+			await confirm(interaction, {
+				confirmMessage: t('command.modmail.modmail.close.confirm', { user: user.tag }),
+				ephemeral: true,
+				callback: async () => {
+					const userId = textChannel.topic
+						?.split('|')
+						[textChannel.topic.split('|').length - 1].replace('ID:', '')
+						.trim();
 
-			let fetchMessages = await interaction.channel.messages.fetch({
-				limit: 100,
+					let fetchMessages = await interaction.channel.messages.fetch({
+						limit: 100,
+					});
+					fetchMessages = fetchMessages.filter(
+						(fetchedMessage) =>
+							!fetchedMessage.author.bot || fetchedMessage.author.id === client.user.id
+					);
+
+					let filtered = fetchMessages
+						.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
+						.map((msg) => {
+							if (msg.author.bot && msg.author.id !== client.user.id) return 'LINE_BREAK';
+							if (msg.author.id === client.user.id) {
+								if (!msg.embeds[0]?.author?.url?.endsWith(userId)) return 'LINE_BREAK';
+								return `${msg.embeds[0]?.author.name} :: ${
+									msg.embeds[0]?.description || 'No content.'
+								}`;
+							} else if (!msg.author.bot) {
+								return `${msg?.author?.tag} :: ${msg?.content || 'No content.'}`;
+							}
+						})
+						.join('\n')
+						.replaceAll('LINE_BREAK', '');
+
+					const openedTickets = (await modmailModel.findById('substance')).openedTickets;
+					const ticketData = openedTickets.find((data) => data.userId === userId);
+
+					const transcript = await create(
+						[
+							{
+								content: fetchMessages.size
+									? filtered.toString()
+									: t('command.modmail.modmail.close.noMsgs'),
+								language: 'AsciiDoc',
+							},
+						],
+						{
+							title: t('command.modmail.modmail.close.transcript', { context: 'title' }),
+							description: t('command.modmail.modmail.close.transcript', {
+								context: 'description',
+								user: user.tag,
+							}),
+						}
+					);
+
+					await createModmailLog({
+						action: ModmailActionTypes.Close,
+						user: await client.users.fetch(userId),
+						moderator: interaction.user,
+						referencedCaseUrl: ticketData.url,
+						transcript: transcript.url,
+						ticketId: ticketData.id,
+					});
+
+					await interaction
+						.editReply({
+							embeds: [client.embeds.attention(t('command.modmail.modmail.close.deleting'))],
+							components: [],
+						})
+						.then(() => {
+							setTimeout(() => {
+								interaction?.channel?.delete();
+
+								const closedEmbed = new EmbedBuilder()
+									.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
+									.setTitle(t('command.modmail.modmail.close.embed', { context: 'title' }))
+									.setDescription(
+										t('command.modmail.modmail.close.embed', { context: 'description' })
+									)
+									.setColor(Colors.Red);
+								user?.send({ embeds: [closedEmbed] }).catch(() => {});
+
+								modmailCollection.set(`cooldown:${user?.id}`, Date.now() + 600000);
+								setTimeout(() => {
+									modmailCollection.delete(`cooldown:${user?.id}`);
+								}, 600000);
+							}, 10000);
+						});
+				},
 			});
-			fetchMessages = fetchMessages.filter(
-				(fetchedMessage) => !fetchedMessage.author.bot || fetchedMessage.author.id === client.user.id
-			);
-
-			let filtered = fetchMessages
-				.sort((a, b) => a.createdTimestamp - b.createdTimestamp)
-				.map((msg) => {
-					if (msg.author.bot && msg.author.id !== client.user.id) return 'LINE_BREAK';
-					if (msg.author.id === client.user.id) {
-						if (!msg.embeds[0]?.author?.url?.endsWith(userId)) return 'LINE_BREAK';
-						return `${msg.embeds[0]?.author.name} :: ${msg.embeds[0]?.description || 'No content.'}`;
-					} else if (!msg.author.bot) {
-						return `${msg?.author?.tag} :: ${msg?.content || 'No content.'}`;
-					}
-				})
-				.join('\n')
-				.replaceAll('LINE_BREAK', '');
-
-			const openedTickets = (await modmailModel.findById('substance')).openedTickets;
-			const ticketData = openedTickets.find((data) => data.userId === userId);
-
-			const transcript = await create(
-				[
-					{
-						content: filtered.toString(),
-						language: 'AsciiDoc',
-					},
-				],
-				{
-					title: t('command.modmail.modmail.close.transcript', { context: 'title' }),
-					description: t('command.modmail.modmail.close.transcript', {
-						context: 'description',
-						user: user.tag,
-					}),
-				}
-			);
-
-			await createModmailLog({
-				action: ModmailActionTypes.Close,
-				user: await client.users.fetch(userId),
-				moderator: interaction.user,
-				referencedCaseUrl: ticketData.url,
-				transcript: transcript.url,
-				ticketId: ticketData.id,
-			});
-
-			await interaction
-				.followUp({
-					embeds: [client.embeds.attention(t('command.modmail.modmail.close.deleting'))],
-					components: [],
-				})
-				.then(() => {
-					setTimeout(() => {
-						interaction?.channel?.delete();
-
-						const closedEmbed = new EmbedBuilder()
-							.setAuthor({ name: guild.name, iconURL: guild.iconURL() })
-							.setTitle(t('command.modmail.modmail.close.embed', { context: 'title' }))
-							.setDescription(t('command.modmail.modmail.close.embed', { context: 'description' }))
-							.setColor(Colors.Red);
-						user?.send({ embeds: [closedEmbed] }).catch(() => {});
-
-						modmailCollection.set(`cooldown:${user?.id}`, Date.now() + 600000);
-						setTimeout(() => {
-							modmailCollection.delete(`cooldown:${user?.id}`);
-						}, 600000);
-					}, 10000);
-				});
 		} else if (subcommand === 'blacklist') {
 			const user = options.getUser('user');
 			const reason = options.getString('reason');

@@ -21,9 +21,10 @@ export type ConfigSchemaType = {
 
 	// general config
 	developers?: string[];
-	appealLink: string;
-	memberRoleId: string;
-	modmailCategoryId: string;
+	appealLink?: string;
+	memberRoleId?: string;
+	modmailCategoryId?: string;
+	confirmation?: boolean;
 
 	// moderation config
 	counts?: {
@@ -67,7 +68,7 @@ export type ConfigSchemaType = {
 
 	// logging config
 	logging?: {
-		base?: { channelId?: string; webhook?: string; active: true };
+		base?: { channelId?: string; webhook?: string; active?: boolean };
 		mod?: { channelId?: string; active?: boolean };
 		modmail?: { channelId?: string; active?: boolean };
 		message?: { channelId?: string; active?: boolean };

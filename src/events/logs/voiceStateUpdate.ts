@@ -81,6 +81,9 @@ export default new Event('voiceStateUpdate', async (oldState, newState) => {
 			])
 			.setColor(resolveColor('#887fdb'));
 
-		client.config.logging.webhook.send({ threadId: client.config.logging.voice.channelId, embeds: [embed] });
+		client.config.logging.webhook.send({
+			threadId: client.config.logging.voice.channelId,
+			embeds: [embed],
+		});
 	}
 });

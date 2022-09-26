@@ -42,7 +42,7 @@ export default new Event('guildMemberRemove', async (member) => {
 	}
 
 	if (logActivity('servergate'))
-		client.config.logging.webhook?.send({ threadId: client.config.logging.mod.channelId, embeds: [embed] });
+		client.config.logging.webhook.send({ threadId: client.config.logging.servergate.channelId, embeds: [embed] });
 });
 
 function checkAntiraid(id: string): boolean {

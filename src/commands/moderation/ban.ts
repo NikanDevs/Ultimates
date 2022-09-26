@@ -10,6 +10,7 @@ import { generateManualId } from '../../utils/generatePunishmentId';
 import { sendModDM } from '../../utils/sendModDM';
 import { interactions } from '../../interactions';
 import { t } from 'i18next';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.ban,
@@ -26,50 +27,56 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		const data = await new punishmentModel({
-			_id: await generateManualId(),
-			case: await getModCase(),
-			type: PunishmentTypes.Ban,
-			userId: user.id,
-			moderatorId: interaction.user.id,
-			reason: reason,
-			date: new Date(),
-			expire: punishmentExpiry,
-		}).save();
-
-		if (member)
-			await sendModDM(member, {
-				action: PunishmentTypes.Ban,
-				punishment: data,
-			});
-
-		await interaction.guild.members.ban(user, {
-			deleteMessageDays: delete_messages,
-			reason: reason,
-		});
-
-		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-					.setDescription(
-						t('common.modEmbed', {
-							user: member ? user.toString() : user.tag,
-							action: t('command.mod.ban.past'),
-							id: data._id,
-						})
-					)
-					.setColor(client.cc.moderation),
-			],
+		await confirm(interaction, {
+			confirmMessage: t('command.mod.ban.confirm', { user: user.tag }),
 			ephemeral: true,
-		});
+			callback: async () => {
+				const data = await new punishmentModel({
+					_id: await generateManualId(),
+					case: await getModCase(),
+					type: PunishmentTypes.Ban,
+					userId: user.id,
+					moderatorId: interaction.user.id,
+					reason: reason,
+					date: new Date(),
+					expire: punishmentExpiry,
+				}).save();
 
-		await createModLog({
-			action: PunishmentTypes.Ban,
-			punishmentId: data._id,
-			user: user,
-			moderator: interaction.user,
-			reason: reason,
-			expire: punishmentExpiry,
+				if (member)
+					await sendModDM(member, {
+						action: PunishmentTypes.Ban,
+						punishment: data,
+					});
+
+				await interaction.guild.members.ban(user, {
+					deleteMessageDays: delete_messages,
+					reason: reason,
+				});
+
+				await interaction.editReply({
+					embeds: [
+						new EmbedBuilder()
+							.setDescription(
+								t('common.modEmbed', {
+									user: member ? user.toString() : user.tag,
+									action: t('command.mod.ban.past'),
+									id: data._id,
+								})
+							)
+							.setColor(client.cc.moderation),
+					],
+					components: [],
+				});
+
+				await createModLog({
+					action: PunishmentTypes.Ban,
+					punishmentId: data._id,
+					user: user,
+					moderator: interaction.user,
+					reason: reason,
+					expire: punishmentExpiry,
+				});
+			},
 		});
 	},
 });

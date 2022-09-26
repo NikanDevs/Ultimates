@@ -3,6 +3,7 @@ import { t } from 'i18next';
 import { guardCollection } from '../../constants';
 import { interactions } from '../../interactions';
 import { Command } from '../../structures/Command';
+import { confirm } from '../../utils/sendConfirmation';
 const fifteenDays = 1000 * 60 * 60 * 24 * 15;
 
 export default new Command({
@@ -13,7 +14,7 @@ export default new Command({
 		const channel = interaction.channel as TextChannel;
 
 		const fetchMessages = await channel.messages.fetch({
-			limit: +amount,
+			limit: amount,
 			before: interaction.id,
 		});
 		let messagesToPurge: Collection<string, Message<boolean>>;
@@ -54,12 +55,19 @@ export default new Command({
 				ephemeral: true,
 			});
 
-		guardCollection.set(`purge:${channel.id}`, null);
-		setTimeout(() => {
-			guardCollection.delete(`purge:${channel.id}`);
-		}, 7 * 1000);
+		await confirm(interaction, {
+			confirmMessage: t('command.mod.clear.confirm', { count: messagesToPurge.size }),
+			ephemeral: true,
+			callback: async () => {
+				guardCollection.set(`purge:${channel.id}`, null);
+				setTimeout(() => {
+					guardCollection.delete(`purge:${channel.id}`);
+				}, 7_000);
 
-		interaction.reply({ embeds: [client.embeds.success(descriptionText)], ephemeral: true });
-		await channel.bulkDelete(messagesToPurge, true);
+				interaction.editReply({ embeds: [client.embeds.success(descriptionText)], components: [] });
+				await channel.bulkDelete(messagesToPurge, true);
+			},
+		});
 	},
 });
+

@@ -35,7 +35,7 @@ export default new Event('guildMemberAdd', async (member) => {
 		);
 
 	if (logActivity('servergate'))
-		client.config.logging.webhook?.send({
+		client.config.logging.webhook.send({
 			threadId: client.config.logging.servergate.channelId,
 			embeds: [embed],
 		});

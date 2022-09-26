@@ -245,7 +245,7 @@ export enum emojisConfigDefaults {
 
 // General config
 
-export type GeneralConfigTypes = 'developers' | 'appealLink' | 'memberRoleId' | 'modmailCategoryId';
+export type GeneralConfigTypes = 'developers' | 'appealLink' | 'memberRoleId' | 'modmailCategoryId' | 'confirmation';
 
 export const generalConfigIdType: GeneralConfigTypes[] = ['memberRoleId', 'modmailCategoryId'];
 
@@ -263,12 +263,24 @@ export enum VerificationModes {
 
 // Collections
 
-export type GuardCollectionTypes = `antiraid` | `warn:${string}` | `purge:${string}` | `lockdown`;
+export type GuardCollectionTypes =
+	| `antiraid`
+	| `warn:${string}`
+	| `purge:${string}`
+	| `lockdown`
+	| `confirm:${string}:${string}`;
 
 export type ModmailCollectionTypes = `slowmode:${string}` | `cooldown:${string}` | `confirmation:${string}`;
 
 export type VerificationCollectionTypes = `cooldown:${string}` | `modal:${string}`;
 
+// Confirmation
+
+export interface ConfirmationOptions {
+	confirmMessage: string;
+	ephemeral: boolean;
+	callback?: Function;
+}
 // Other
 
 export interface ignoreFunctionOptions {
