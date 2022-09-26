@@ -304,7 +304,10 @@
 				"revoke": {
 					"revoked": "Punishment **{id}** was revoked",
 					"timeout_invalid": "The punished user is not in the server, so I cannot revoke the timeout.",
-					"history": "*Punishment revoked at [#{case}]({- url})*"
+					"history": "*Punishment revoked at [#{case}]({- url})*",
+					"confirm": "Wait! This will revoke punishment **{- id}**",
+					"confirm_unmute": "Wait! This will remove punishment **{- id}** and unmute **{- user}**",
+					"confirm_unban": "Wait! This will remove punishment **{- id}** and unmute **{- user}**"
 				},
 				"search": {
 					"description": "ID: `{id}` • Case: [#{case}]({- url})",
@@ -338,7 +341,8 @@
 					"name": "reason",
 					"invalidReason": "Please provide a different reason than the current one.",
 					"updated": "The reason was updated to **{reason}**",
-					"history": "*Reason was updated at [#{case}]({- url}) - {- date}*"
+					"history": "*Reason was updated at [#{case}]({- url}) - {- date}*",
+					"confirm": "Wait! This will change this punishment's reason to **{- reason}**"
 				}
 			},
 			"clear": {
@@ -347,7 +351,9 @@
 				"user_one": "Cleared **{count}** message from {- user}",
 				"user_other": "Cleared **{count}** messages from {- user}",
 				"none": "No messages were cleared.",
-				"purged": "This channel has been recently cleared, try again in a few seconds."
+				"purged": "This channel has been recently cleared, try again in a few seconds.",
+				"confirm_one": "Wait! This will clear **{count}** message",
+				"confirm_other": "Wait! This will clear **{count}** messages"
 			},
 			"slowmode": {
 				"none": "This channel doesn't have any slowmode.",

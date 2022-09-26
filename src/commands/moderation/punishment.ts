@@ -14,6 +14,7 @@ import { capitalize } from '../../functions/other/capitalize';
 import { t } from 'i18next';
 import { Paginator } from '../../structures/Paginator';
 import { getModCase } from '../../functions/cases/modCase';
+import { confirm } from '../../utils/sendConfirmation';
 
 export default new Command({
 	interaction: interactions.punishment,
@@ -34,7 +35,6 @@ export default new Command({
 					ephemeral: true,
 				});
 
-			await interaction.deferReply({ ephemeral: true });
 			const getMember = interaction.guild.members.cache.get(punishment.userId);
 			const fetchUser = await client.users.fetch(punishment.userId);
 			switch (punishment.type) {
@@ -54,25 +54,40 @@ export default new Command({
 								],
 							});
 
-						await getMember.timeout(null, reason);
+						await confirm(interaction, {
+							confirmMessage: t('command.mod.punishment.revoke.confirm', {
+								context: 'unmute',
+								id,
+								user: getMember.user.tag,
+							}),
+							ephemeral: true,
+							callback: async () => {
+								await getMember.timeout(null, reason);
 
-						await interaction.followUp({
-							embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
-						});
+								await interaction.editReply({
+									embeds: [
+										client.embeds.success(
+											t('command.mod.punishment.revoke.revoked', { id })
+										),
+									],
+									components: [],
+								});
 
-						await createModLog({
-							action: PunishmentTypes.Unmute,
-							user: fetchUser,
-							moderator: interaction.user,
-							reason: reason,
-							referencedPunishment: punishment,
-						}).then(async (updateLog) => {
-							await durationsModel.findOneAndDelete({
-								type: PunishmentTypes.Timeout,
-								case: punishment.case,
-							});
-							await punishment.delete();
-							await updateRevokeCases(punishment, updateLog);
+								await createModLog({
+									action: PunishmentTypes.Unmute,
+									user: fetchUser,
+									moderator: interaction.user,
+									reason: reason,
+									referencedPunishment: punishment,
+								}).then(async (updateLog) => {
+									await durationsModel.findOneAndDelete({
+										type: PunishmentTypes.Timeout,
+										case: punishment.case,
+									});
+									await punishment.delete();
+									await updateRevokeCases(punishment, updateLog);
+								});
+							},
 						});
 					} else {
 						await interaction.followUp({
@@ -95,61 +110,92 @@ export default new Command({
 				case PunishmentTypes.Ban:
 				case PunishmentTypes.Softban:
 					if (await interaction.guild.bans.fetch(punishment.userId).catch(() => {})) {
-						interaction.guild.members.unban(fetchUser, reason);
+						await confirm(interaction, {
+							confirmMessage: t('command.mod.punishment.revoke.confirm', { context: 'unban', id }),
+							ephemeral: true,
+							callback: async () => {
+								interaction.guild.members.unban(fetchUser, reason);
 
-						if (punishment.type === PunishmentTypes.Softban)
-							await durationsModel.findOneAndDelete({
-								type: PunishmentTypes.Softban,
-								case: punishment.case,
-							});
+								if (punishment.type === PunishmentTypes.Softban)
+									await durationsModel.findOneAndDelete({
+										type: PunishmentTypes.Softban,
+										case: punishment.case,
+									});
 
-						await interaction.followUp({
-							embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
-						});
+								await interaction.editReply({
+									embeds: [
+										client.embeds.success(
+											t('command.mod.punishment.revoke.revoked', { id })
+										),
+									],
+									components: [],
+								});
 
-						await createModLog({
-							action: PunishmentTypes.Unban,
-							user: fetchUser,
-							moderator: interaction.user,
-							reason: reason,
-							referencedPunishment: punishment,
-						}).then(async (updateLog) => {
-							await punishment.delete();
-							await updateRevokeCases(punishment, updateLog);
+								await createModLog({
+									action: PunishmentTypes.Unban,
+									user: fetchUser,
+									moderator: interaction.user,
+									reason: reason,
+									referencedPunishment: punishment,
+								}).then(async (updateLog) => {
+									await punishment.delete();
+									await updateRevokeCases(punishment, updateLog);
+								});
+							},
 						});
 					} else {
-						await interaction.followUp({
-							embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
-						});
+						await confirm(interaction, {
+							confirmMessage: t('command.mod.punishment.revoke.confirm', { id }),
+							ephemeral: true,
+							callback: async () => {
+								await interaction.editReply({
+									embeds: [
+										client.embeds.success(
+											t('command.mod.punishment.revoke.revoked', { id })
+										),
+									],
+									components: [],
+								});
 
-						await createModLog({
-							action: punishment.type as PunishmentTypes,
-							user: fetchUser,
-							moderator: interaction.user,
-							reason: reason,
-							referencedPunishment: punishment,
-							revoke: true,
-						}).then(async (updateLog) => {
-							await punishment.delete();
-							await updateRevokeCases(punishment, updateLog);
+								await createModLog({
+									action: punishment.type as PunishmentTypes,
+									user: fetchUser,
+									moderator: interaction.user,
+									reason: reason,
+									referencedPunishment: punishment,
+									revoke: true,
+								}).then(async (updateLog) => {
+									await punishment.delete();
+									await updateRevokeCases(punishment, updateLog);
+								});
+							},
 						});
 					}
 					break;
 				default:
-					await interaction.followUp({
-						embeds: [client.embeds.success(t('command.mod.punishment.revoke.revoked', { id }))],
-					});
+					await confirm(interaction, {
+						confirmMessage: t('command.mod.punishment.revoke.confirm', { id }),
+						ephemeral: true,
+						callback: async () => {
+							await interaction.editReply({
+								embeds: [
+									client.embeds.success(t('command.mod.punishment.revoke.revoked', { id })),
+								],
+								components: [],
+							});
 
-					await createModLog({
-						action: punishment.type as PunishmentTypes,
-						user: fetchUser,
-						moderator: interaction.user,
-						reason: reason,
-						referencedPunishment: punishment,
-						revoke: true,
-					}).then(async (updateLog) => {
-						await punishment.delete();
-						await updateRevokeCases(punishment, updateLog);
+							await createModLog({
+								action: punishment.type as PunishmentTypes,
+								user: fetchUser,
+								moderator: interaction.user,
+								reason: reason,
+								referencedPunishment: punishment,
+								revoke: true,
+							}).then(async (updateLog) => {
+								await punishment.delete();
+								await updateRevokeCases(punishment, updateLog);
+							});
+						},
 					});
 					break;
 			}
@@ -450,7 +496,6 @@ export default new Command({
 			let reason = options.getString('reason');
 			let punishment: any = null;
 
-			await interaction.deferReply({ ephemeral: true });
 			switch (id.length) {
 				case PUNISHMENT_ID_LENGTH:
 					punishment = await punishmentModel.findById(id).catch(() => {});
@@ -484,54 +529,63 @@ export default new Command({
 					break;
 			}
 
-			await interaction.followUp({
-				embeds: [client.embeds.success(t('command.mod.punishment.reason.updated', { reason }))],
-			});
+			await confirm(interaction, {
+				confirmMessage: t('command.mod.punishment.reason.confirm', { reason }),
+				ephemeral: true,
+				callback: async () => {
+					await interaction.editReply({
+						embeds: [client.embeds.success(t('command.mod.punishment.reason.updated', { reason }))],
+						components: [],
+					});
 
-			const updateLog = await createModLog({
-				action: punishment.type as PunishmentTypes,
-				user: await client.users.fetch(punishment.userId),
-				moderator: interaction.user,
-				reason: reason,
-				referencedPunishment: punishment,
-				update: true,
-			});
+					const updateLog = await createModLog({
+						action: punishment.type as PunishmentTypes,
+						user: await client.users.fetch(punishment.userId),
+						moderator: interaction.user,
+						reason: reason,
+						referencedPunishment: punishment,
+						update: true,
+					});
 
-			if ((await logsModel.findById(punishment.case)).antiraid) return;
-			const substanceLogID = (await getUrlFromCase(punishment.case)).split('/')[6];
-			const substanceLogChannel = (await client.channels
-				.fetch((await getUrlFromCase(punishment.case)).split('/')[5])
-				.catch(() => {})) as TextChannel;
-			if (!substanceLogChannel) return;
-			const logMessage = (await substanceLogChannel.messages.fetch(substanceLogID).catch(() => {})) as Message;
-			if (!logMessage) return;
+					if ((await logsModel.findById(punishment.case)).antiraid) return;
+					const substanceLogID = (await getUrlFromCase(punishment.case)).split('/')[6];
+					const substanceLogChannel = (await client.channels
+						.fetch((await getUrlFromCase(punishment.case)).split('/')[5])
+						.catch(() => {})) as TextChannel;
+					if (!substanceLogChannel) return;
+					const logMessage = (await substanceLogChannel.messages
+						.fetch(substanceLogID)
+						.catch(() => {})) as Message;
+					if (!logMessage) return;
 
-			client.config.logging.webhook.editMessage(substanceLogID, {
-				threadId: client.config.logging.mod.channelId,
-				embeds: [
-					!logMessage.embeds[0].description.endsWith(':R>*')
-						? EmbedBuilder.from(logMessage.embeds[0]).setDescription(
-								[
-									logMessage.embeds[0].description,
-									'',
-									t('command.mod.punishment.reason.history', {
-										case: (await getModCase()) - 1,
-										date: generateDiscordTimestamp(new Date()),
-										url: updateLog,
-									}),
-								].join('\n')
-						  )
-						: EmbedBuilder.from(logMessage.embeds[0]).setDescription(
-								[
-									logMessage.embeds[0].description,
-									t('command.mod.punishment.reason.history', {
-										case: (await getModCase()) - 1,
-										date: generateDiscordTimestamp(new Date()),
-										url: updateLog,
-									}),
-								].join('\n')
-						  ),
-				],
+					client.config.logging.webhook.editMessage(substanceLogID, {
+						threadId: client.config.logging.mod.channelId,
+						embeds: [
+							!logMessage.embeds[0].description.endsWith(':R>*')
+								? EmbedBuilder.from(logMessage.embeds[0]).setDescription(
+										[
+											logMessage.embeds[0].description,
+											'',
+											t('command.mod.punishment.reason.history', {
+												case: (await getModCase()) - 1,
+												date: generateDiscordTimestamp(new Date()),
+												url: updateLog,
+											}),
+										].join('\n')
+								  )
+								: EmbedBuilder.from(logMessage.embeds[0]).setDescription(
+										[
+											logMessage.embeds[0].description,
+											t('command.mod.punishment.reason.history', {
+												case: (await getModCase()) - 1,
+												date: generateDiscordTimestamp(new Date()),
+												url: updateLog,
+											}),
+										].join('\n')
+								  ),
+						],
+					});
+				},
 			});
 		}
 	},
