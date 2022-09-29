@@ -69,8 +69,7 @@
 						"message_description": "Triggered when a message was deleted, edited, or when a channel was purged.",
 						"modmail_description": "Triggered when someone creates, deletes a ticket, or when a user gets blacklisted.",
 						"servergate_description": "Triggered when a user joins or leaves the server.",
-						"voice_description": "Triggered when a user joins or leaves a voice channel.",
-						"base_description": "All logging module channels are made as posts under this forum channel."
+						"voice_description": "Triggered when a user joins or leaves a voice channel."
 					},
 					"modal": {
 						"channel_label": "Provide a forum channel ID:",
