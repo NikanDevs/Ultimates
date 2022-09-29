@@ -983,7 +983,7 @@ export default new Command({
 										value:
 											module === 'developers'
 												? client.config.general[module].join(' ')
-												: client.config.general[module].toString(),
+												: client.config.general[module]?.toString(),
 									},
 								],
 							},
