@@ -230,7 +230,8 @@ export default new Event('messageCreate', async (message) => {
 		message?.guild &&
 		message.channel.type === ChannelType.GuildText &&
 		!message.author?.bot &&
-		message.channel.parentId === client.config.general.modmailCategoryId
+		message.channel.parentId === client.config.general.modmailCategoryId &&
+		message.channel.parentId
 	) {
 		const channelTopic = (message.channel as TextChannel).topic;
 		const usersThread = guild.members.cache.find(

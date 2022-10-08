@@ -10,7 +10,7 @@ export default new Event('typingStart', async (typing) => {
 
 	if (typing.inGuild()) {
 		if (typing.channel.type !== ChannelType.GuildText) return;
-		if (typing.channel.parentId !== client.config.general.modmailCategoryId) return;
+		if (typing.channel.parentId !== client.config.general.modmailCategoryId || !typing.channel.parentId) return;
 
 		const channelTopic = typing.channel.topic;
 		const usersThread = guild.members.cache.find(
